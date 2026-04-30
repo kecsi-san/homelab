@@ -8,28 +8,12 @@ uv_venv_path: "{{ ansible_env.HOME }}/.venv/devops"
 uv_venv_autoactivate: true
 
 # CLI tools installed in isolated environments via `uv tool install`.
-# Use extras to pull in plugins that must share the same env (e.g. mkdocs + mkdocstrings).
 uv_tools:
   - name: ansible
   - name: ansible-lint
-  - name: black
   - name: checkov
-  - name: commitizen
-  - name: flake8
   - name: git-changelog
-  - name: git-semver
-  - name: gitstats
-  - name: mkdocs
-    extras:
-      - mkdocs-material
-      - mkdocstrings-python
-  - name: mypy
-  - name: pdoc3
   - name: pip-audit
-  - name: pip-tools
-  - name: pipreqs
-  - name: pylint
-  - name: pytest
   - name: ruff
   - name: yamllint
 
@@ -46,15 +30,11 @@ uv_pip_packages:
   - lxml
   - markdown2
   - matplotlib
-  - mkdocstrings-python
   - nc-py-api
   - openai
   - pyhcl
   - PyJWT
   - pyOpenSSL
-  - pytest-asyncio
-  - pytest-cov
-  - pytest-mock
   - python-jenkins
   - requests-mock
   - setuptools-scm
