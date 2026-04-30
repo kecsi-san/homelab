@@ -1,4 +1,4 @@
 # Linting tools for CI. Pin to specific versions for reproducible runs.
 # Check current local versions with: uv tool list
-ansible-lint>=25.1,<26
+ansible-lint>=26.4.0,<27
 yamllint>=1.38.0,<2
