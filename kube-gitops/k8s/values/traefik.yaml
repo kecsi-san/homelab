@@ -1,10 +1,9 @@
 ---
 # Traefik values — k8s (bare-metal, kube-vip)
-# Service is ClusterIP; kube-vip exposes it via LoadBalancer annotation
-# set on the service separately (or switch type to LoadBalancer here and
-# add the kube-vip.io/loadbalancerIPs annotation).
 service:
-  type: ClusterIP
+  type: LoadBalancer
+  annotations:
+    kube-vip.io/loadbalancerIPs: "192.168.1.101"
 
 providers:
   kubernetesIngress:
