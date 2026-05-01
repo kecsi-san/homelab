@@ -5,6 +5,11 @@ service:
   annotations:
     kube-vip.io/loadbalancerIPs: "192.168.1.101"
 
+ports:
+  web:
+    redirectTo:
+      port: websecure
+
 providers:
   kubernetesIngress:
     enabled: true
