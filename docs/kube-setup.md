@@ -103,7 +103,7 @@ Kubeconfig is written to `~/.kube/k3s.yaml` and appended to `KUBECONFIG` in `~/.
 # Install
 ansible-playbook playbooks/k3s.yml
 
-# Post-install: Traefik, Sealed Secrets, ArgoCD
+# Post-install: ArgoCD bootstrap — ArgoCD then manages Traefik, Sealed Secrets, Headlamp
 ansible-playbook playbooks/post-k3s.yml
 
 # Uninstall

@@ -22,11 +22,13 @@ Both clusters follow the same component model to keep configuration and skills t
 ┌─────────────────────────────────────────────────────────────┐
 │  Layer 1 — Infrastructure (this repo: ansible-env-setup)    │
 │                                                             │
-│  ansible-playbook playbooks/post-k8s.yml              │
-│    → Traefik          (Helm, both clusters)                 │
-│    → Sealed Secrets   (Helm, both clusters)                 │
-│    → Headlamp         (Helm, homelab)                       │
-│    → ArgoCD app-of-apps bootstrap (kubectl apply)           │
+│  post-k8s.yml → Traefik, Sealed Secrets, Headlamp (Helm)   │
+│               → ArgoCD app-of-apps bootstrap (pending)      │
+│                                                             │
+│  post-k3s.yml → ArgoCD (Helm)                              │
+│               → app-of-apps bootstrap (kubectl apply)       │
+│                 ArgoCD then installs Traefik, Sealed        │
+│                 Secrets, and Headlamp from kube-gitops/     │
 │                                                             │
 │  Re-run only for: cluster rebuilds, node changes,           │
 │  component version upgrades                                 │
@@ -69,13 +71,13 @@ ArgoCD owns everything running on top (continuous reconciliation).
 | Component | Version | Installed by | Managed by |
 |-----------|---------|-------------|------------|
 | k3s | v1.34.6 | Ansible `k3s.yml` | Ansible |
-| Traefik | latest stable | Ansible `post-k3s.yml` (new) | ArgoCD |
-| cert-manager | latest stable | Ansible `post-k3s.yml` (new) | ArgoCD |
-| Sealed Secrets | latest stable | Ansible `post-k3s.yml` (new) | ArgoCD |
-| ArgoCD | latest stable | Ansible `post-k3s.yml` (new) | ArgoCD (self-manages) |
+| ArgoCD | v2.13.1 | Ansible `post-k3s.yml` (`setup_argocd`) | ArgoCD (self-manages) |
+| Traefik | chart 34.4.1 | ArgoCD (`kube-gitops/k3s/apps/`) | ArgoCD |
+| Sealed Secrets | chart 2.16.1 | ArgoCD (`kube-gitops/k3s/apps/`) | ArgoCD |
+| Headlamp | chart 0.40.0 | ArgoCD (`kube-gitops/k3s/apps/`) | ArgoCD |
 
-> **Note:** k3s ships Traefik built-in. It will be disabled at install time and replaced
-> with our own Helm-managed instance for consistency with the homelab.
+> **Note:** k3s ships Traefik built-in. It is disabled at install time (`k3s_disable_traefik: true`)
+> so our ArgoCD-managed instance is the only one running.
 
 ---
 
@@ -300,10 +302,11 @@ To upgrade a component: bump `targetRevision` in `apps/<component>.yaml` and upd
 
 | Role | Playbook | Status | Purpose |
 |------|---------|--------|---------|
-| `setup_traefik` | `post-k8s.yml`, `post-k3s.yml` | ✅ Done | Install Traefik via Helm |
-| `setup_sealed-secrets` | `post-k8s.yml`, `post-k3s.yml` | ✅ Done | Install Sealed Secrets controller via Helm |
-| `setup_headlamp` | `post-k8s.yml`, `post-k3s.yml` | ✅ Done | Install Headlamp via Helm |
-| `setup_argocd-apps` | `post-k8s.yml`, `post-k3s.yml` | 🔲 Planned | Apply `kube-gitops/{k8s,k3s}/root.yaml` to hand off to ArgoCD |
+| `setup_traefik` | `post-k8s.yml` | ✅ Done | Install Traefik via Helm (homelab bootstrap) |
+| `setup_sealed-secrets` | `post-k8s.yml` | ✅ Done | Install Sealed Secrets controller via Helm (homelab bootstrap) |
+| `setup_headlamp` | `post-k8s.yml` | ✅ Done | Install Headlamp via Helm (homelab bootstrap) |
+| `setup_argocd` | `post-k3s.yml` | ✅ Done | Install ArgoCD via Helm; shows initial admin password |
+| `setup_argocd-apps` | `post-k3s.yml` ✅ / `post-k8s.yml` 🔲 | ✅ k3s done | Apply `kube-gitops/{k3s,k8s}/root.yaml` to hand off to ArgoCD |
 
 ---
 

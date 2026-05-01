@@ -70,12 +70,15 @@ It is written to `~/.vault_pass.txt` using `printf` (not `echo`) to correctly ha
 containing special characters or no trailing newline. The path matches `vault_password_file`
 in `ansible.cfg`.
 
+**Dependabot PRs:** Dependabot does not have access to repository secrets by default.
+When the vault password is unavailable, ansible-lint is skipped entirely and a `::notice::`
+annotation is emitted pointing to the fix (add `ANSIBLE_VAULT_PASSWORD` to Dependabot secrets
+in repo Settings → Secrets and variables → Dependabot). `yamllint` still runs on all PRs.
+
 ### Linter behaviour
 
-Both linters always report results even if the other fails:
-
-- `yamllint` runs first with `--strict` (configured in `.pre-commit-config.yaml`)
-- `ansible-lint` runs with `if: success() || failure()` — never skipped due to yamllint failure
+- `yamllint` always runs, even if triggered by Dependabot
+- `ansible-lint` runs only when `ANSIBLE_VAULT_PASSWORD` is available; skipped with a notice otherwise
 
 ---
 
@@ -95,7 +98,7 @@ Configured via `.ansible-lint` (project root):
 | `profile` | `moderate` | Balanced — catches real issues without noise |
 | `offline` | `true` | Skips galaxy role downloads; roles are mocked |
 | `mock_roles` | `markosamuli.linuxbrew` | Vendored galaxy role — prevents "role not found" error |
-| `exclude_paths` | `.venv/`, `collections/`, `roles/markosamuli.linuxbrew/`, `playbooks/k8s.yml`, `playbooks/reset-k8s.yml` | Kubespray collection not installed in lint environment |
+| `exclude_paths` | `.venv/`, `collections/`, `roles/markosamuli.linuxbrew/`, `playbooks/k8s.yml`, `playbooks/reset-k8s.yml`, `kube-gitops/` | Kubespray collection and plain Kubernetes YAML not for ansible-lint |
 | `skip_list` | `yaml[line-length]`, `var-naming[no-role-prefix]`, `role-name` | Intentional deviations — see ROLES.md for naming conventions |
 
 Ansible collections required by the playbooks (`community.general`, `ansible.posix`,
@@ -127,8 +130,8 @@ pre-commit install
 Linting tool versions are pinned in `requirements-lint.txt`:
 
 ```
-ansible-lint>=25.1,<26
-yamllint>=1.35,<2
+ansible-lint>=26.4.0,<27
+yamllint>=1.38.0,<2
 ```
 
 Update these deliberately after testing new versions locally:
@@ -181,8 +184,15 @@ are still included but grouped under an "Other" section.
 
 ## Dependabot
 
-`.github/dependabot.yml` opens weekly pull requests to bump GitHub Actions versions
-(`actions/checkout`, `actions/setup-python`, `actions/cache`). Commit message prefix: `chore`.
+`.github/dependabot.yml` opens weekly pull requests for two ecosystems:
+
+| Ecosystem | What gets bumped | Directory |
+|-----------|-----------------|-----------|
+| `github-actions` | `actions/checkout`, `actions/setup-python`, `actions/cache` | `/` |
+| `pip` | `requirements.txt` (ansible, ansible-lint, yamllint, etc.) | `/` |
+
+Commit message prefix: `chore`. ansible-lint is skipped on Dependabot PRs unless
+`ANSIBLE_VAULT_PASSWORD` is also added to Dependabot secrets (see Vault password section above).
 
 ---
 
