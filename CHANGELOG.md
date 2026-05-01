@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix: remove apex domain from wildcard cert — wildcard is sufficient ([13a9ebf](https://github.com/kecsi-san/ansible-env-setup/commit/13a9ebf49817521d9c3f6bb9b961765e589c3305) by Zoltan K).
 - fix: skip ansible-lint when vault password is unavailable (Dependabot) ([6171d8a](https://github.com/kecsi-san/ansible-env-setup/commit/6171d8a09aae80ca9c971534a89f24f60bab77b3) by Zoltan K).
 - fix: break long line in configure_oh-my-posh theme selection ([43edd7b](https://github.com/kecsi-san/ansible-env-setup/commit/43edd7b700f2e496a143ca1d5b90c47d15c3302e) by Zoltan K).
 - fix: resolve ansible-lint key-order and name-casing violations ([a4925fe](https://github.com/kecsi-san/ansible-env-setup/commit/a4925fea70c9c860d1bd7fcab5cfcadb7fb26357) by Zoltan K).
