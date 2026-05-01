@@ -4,9 +4,11 @@
   become: false
   remote_user: "{{ ansible_ssh_user }}"
   tasks:
-    - name: Setup Longhorn distributed storage
+    - name: Install iSCSI prerequisites for Longhorn (node-level)
       ansible.builtin.import_role:
         name: setup_longhorn
+      vars:
+        install_longhorn: false  # Helm install delegated to ArgoCD
       tags:
         - longhorn
         - storage
@@ -19,26 +21,11 @@
         - kubeconfig
         - kubernetes
 
-    - name: Install Traefik ingress controller
+    - name: Bootstrap ArgoCD root application
       ansible.builtin.import_role:
-        name: setup_traefik
+        name: setup_argocd-apps
       vars:
-        traefik_kubeconfig: "~/.kube/k8s.yaml"
+        argocd_apps_kubeconfig: "~/.kube/k8s.yaml"
+        argocd_apps_cluster_type: k8s
       tags:
-        - traefik
-
-    - name: Install Sealed Secrets controller
-      ansible.builtin.import_role:
-        name: setup_sealed-secrets
-      vars:
-        sealed_secrets_kubeconfig: "~/.kube/k8s.yaml"
-      tags:
-        - sealed-secrets
-
-    - name: Install Headlamp dashboard
-      ansible.builtin.import_role:
-        name: setup_headlamp
-      vars:
-        headlamp_kubeconfig: "~/.kube/k8s.yaml"
-      tags:
-        - headlamp
+        - argocd-apps

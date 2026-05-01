@@ -7,6 +7,7 @@
   environment:
     KUBECONFIG: "{{ argocd_apps_kubeconfig | replace('~', ansible_env.HOME) }}"
   delegate_to: localhost
+  run_once: true
   become: false
   register: kubectl_apply
   changed_when: "'created' in kubectl_apply.stdout or 'configured' in kubectl_apply.stdout"
