@@ -27,3 +27,7 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+  # Fresh-install note: Longhorn's pre-upgrade Helm hook (mapped to ArgoCD PreSync) fails
+  # on first install because the longhorn-service-account doesn't exist yet. Workaround:
+  #   argocd app terminate-op longhorn
+  #   argocd app sync longhorn --strategy apply   (skips hooks for this sync only)
