@@ -1,0 +1,54 @@
+---
+- name: Add Argo Helm repository
+  kubernetes.core.helm_repository:
+    name: "{{ argocd_helm_repo_name }}"
+    repo_url: "{{ argocd_helm_repo_url }}"
+  delegate_to: localhost
+  become: false
+  run_once: true
+  when: argocd_enabled
+  tags: argocd
+
+- name: Install ArgoCD via Helm
+  kubernetes.core.helm:
+    name: "{{ argocd_helm_release_name }}"
+    chart_ref: "{{ argocd_helm_repo_name }}/argo-cd"
+    chart_version: "{{ argocd_chart_version }}"
+    release_namespace: "{{ argocd_namespace }}"
+    create_namespace: true
+    kubeconfig: "{{ argocd_kubeconfig | default(omit) }}"
+    values: "{{ argocd_helm_values }}"
+    state: present
+    wait: true
+  delegate_to: localhost
+  become: false
+  run_once: true
+  when: argocd_enabled
+  tags: argocd
+
+- name: Retrieve ArgoCD initial admin password
+  ansible.builtin.command:
+    cmd: >-
+      kubectl get secret argocd-initial-admin-secret
+      -n {{ argocd_namespace }}
+      -o jsonpath={.data.password}
+  environment:
+    KUBECONFIG: "{{ argocd_kubeconfig | replace('~', ansible_env.HOME) }}"
+  delegate_to: localhost
+  become: false
+  register: argocd_encoded_password
+  changed_when: false
+  failed_when: false
+  when: argocd_enabled
+  tags: argocd
+
+- name: Display ArgoCD access info
+  ansible.builtin.debug:
+    msg:
+      - "ArgoCD installed successfully."
+      - "  Port-forward: kubectl port-forward svc/argocd-server -n {{ argocd_namespace }} 8080:80"
+      - "  URL: http://localhost:8080"
+      - "  Username: admin"
+      - "  Password: {{ argocd_encoded_password.stdout | b64decode }}"
+  when: argocd_enabled and argocd_encoded_password.rc == 0 and argocd_encoded_password.stdout != ''
+  tags: argocd

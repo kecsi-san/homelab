@@ -1,0 +1,18 @@
+---
+argocd_enabled: true
+
+argocd_namespace: argocd
+argocd_helm_release_name: argocd
+argocd_helm_repo_name: argo
+argocd_helm_repo_url: https://argoproj.github.io/argo-helm
+argocd_chart_version: "7.7.5"  # ships ArgoCD v2.14.x; check https://github.com/argoproj/argo-helm for latest
+
+# Path to kubeconfig file — set per playbook to target the right cluster.
+# Empty string falls back to KUBECONFIG env var / ~/.kube/config.
+argocd_kubeconfig: ""
+
+# server.insecure: ingress controller (Traefik) handles TLS; ArgoCD serves plain HTTP.
+argocd_helm_values:
+  configs:
+    params:
+      server.insecure: "true"

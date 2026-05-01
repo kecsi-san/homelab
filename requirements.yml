@@ -7,6 +7,7 @@ collections:
   - name: community.general
   - name: ansible.posix
   - name: kubernetes.core
+    version: ">=4.0.0"
   - name: https://github.com/kubernetes-sigs/kubespray
     type: git
     version: release-2.29

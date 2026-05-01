@@ -1,0 +1,9 @@
+---
+argocd_apps_enabled: true
+
+# Selects kube-gitops/{k3s,k8s}/root.yaml — set per playbook.
+argocd_apps_cluster_type: k3s
+
+# Path to kubeconfig file — set per playbook to target the right cluster.
+# Empty string falls back to KUBECONFIG env var / ~/.kube/config.
+argocd_apps_kubeconfig: ""

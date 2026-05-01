@@ -4,26 +4,19 @@
   connection: local
   become: false
   tasks:
-    - name: Install Traefik ingress controller
+    - name: Install ArgoCD
       ansible.builtin.import_role:
-        name: setup_traefik
+        name: setup_argocd
       vars:
-        traefik_kubeconfig: "~/.kube/k3s.yaml"
+        argocd_kubeconfig: "~/.kube/k3s.yaml"
       tags:
-        - traefik
+        - argocd
 
-    - name: Install Sealed Secrets controller
+    - name: Bootstrap ArgoCD root application
       ansible.builtin.import_role:
-        name: setup_sealed-secrets
+        name: setup_argocd-apps
       vars:
-        sealed_secrets_kubeconfig: "~/.kube/k3s.yaml"
+        argocd_apps_kubeconfig: "~/.kube/k3s.yaml"
+        argocd_apps_cluster_type: k3s
       tags:
-        - sealed-secrets
-
-    - name: Install Headlamp Kubernetes dashboard
-      ansible.builtin.import_role:
-        name: setup_headlamp
-      vars:
-        headlamp_kubeconfig: "~/.kube/k3s.yaml"
-      tags:
-        - headlamp
+        - argocd-apps

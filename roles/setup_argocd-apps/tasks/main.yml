@@ -1,0 +1,14 @@
+---
+- name: Apply ArgoCD root Application
+  ansible.builtin.command:
+    cmd: >-
+      kubectl apply -f
+      {{ playbook_dir }}/../kube-gitops/{{ argocd_apps_cluster_type }}/root.yaml
+  environment:
+    KUBECONFIG: "{{ argocd_apps_kubeconfig | replace('~', ansible_env.HOME) }}"
+  delegate_to: localhost
+  become: false
+  register: kubectl_apply
+  changed_when: "'created' in kubectl_apply.stdout or 'configured' in kubectl_apply.stdout"
+  when: argocd_apps_enabled
+  tags: argocd-apps
