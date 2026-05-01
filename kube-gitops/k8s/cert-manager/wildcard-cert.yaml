@@ -8,7 +8,6 @@ spec:
   secretName: wildcard-k8s-tls
   dnsNames:
     - "*.k8s.kecskemethy.org"
-    - "k8s.kecskemethy.org"
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer
