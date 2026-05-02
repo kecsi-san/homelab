@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudflared-config
+  namespace: cloudflared
+data:
+  config.yaml: |
+    tunnel: 9fa18953-8d82-424d-a8b5-9941940d4230
+    credentials-file: /etc/cloudflared/creds/credentials.json
+    ingress:
+      - hostname: "*.k8s.kecskemethy.org"
+        service: https://traefik.traefik.svc.cluster.local
+        originRequest:
+          noTLSVerify: true
+      - service: http_status:404
