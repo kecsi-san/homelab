@@ -1,7 +1,13 @@
 ---
 # Traefik values — k3s (local dev)
+# k3s servicelb exposes LoadBalancer on the node IP (192.168.1.25)
 service:
-  type: ClusterIP
+  type: LoadBalancer
+
+ports:
+  web:
+    redirectTo:
+      port: websecure
 
 providers:
   kubernetesIngress:
