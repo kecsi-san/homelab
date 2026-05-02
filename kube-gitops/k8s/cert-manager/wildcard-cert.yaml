@@ -2,12 +2,12 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: wildcard-k8s
+  name: wildcard-kecskemethy
   namespace: traefik
 spec:
-  secretName: wildcard-k8s-tls
+  secretName: wildcard-tls
   dnsNames:
-    - "*.k8s.kecskemethy.org"
+    - "*.kecskemethy.org"
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer

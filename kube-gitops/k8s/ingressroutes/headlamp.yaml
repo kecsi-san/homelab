@@ -8,7 +8,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`headlamp.k8s.kecskemethy.org`)
+    - match: Host(`headlamp.kecskemethy.org`)
       kind: Rule
       services:
         - name: headlamp
