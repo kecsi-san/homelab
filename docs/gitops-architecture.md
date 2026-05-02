@@ -100,13 +100,22 @@ New services get a hostname in the appropriate subdomain — no new IPs needed.
 
 ### DNS records required (Cloudflare)
 
+**Homelab (k8s) — internet-facing via Cloudflare Tunnel:**
+
 ```
-A  *.k8s.yourdomain.com  →  192.168.1.101   (Traefik, homelab)
-A  *.k3s.yourdomain.com  →  <k3s Traefik IP>
+CNAME  argocd.k8s.kecskemethy.org    →  <tunnel-id>.cfargotunnel.com  (proxied)
+CNAME  headlamp.k8s.kecskemethy.org  →  <tunnel-id>.cfargotunnel.com  (proxied)
+CNAME  longhorn.k8s.kecskemethy.org  →  <tunnel-id>.cfargotunnel.com  (proxied)
 ```
 
-Both records point at the Traefik LoadBalancer IP. All routing is done by Traefik
-via host-header matching — a single IP serves all services per cluster.
+LAN access uses router DNS overrides (A records → 192.168.1.101) and bypasses
+Cloudflare entirely.
+
+**k3s (local dev) — LAN only:**
+
+```
+A  *.k3s.kecskemethy.org  →  192.168.1.25  (router DNS, LAN only)
+```
 
 ---
 
@@ -207,23 +216,38 @@ sealed version of shared secrets (Cloudflare token, etc.).
 
 ## Traffic Flow
 
-### How a request reaches a service (homelab)
+### Internet request (homelab, via Cloudflare Tunnel)
 
 ```
-Browser: https://argocd.k8s.yourdomain.com
+Browser: https://argocd.k8s.kecskemethy.org
          │
          ▼
-Cloudflare DNS: *.k8s.yourdomain.com → 192.168.1.101
+Cloudflare edge  (CNAME → <tunnel-id>.cfargotunnel.com)
+         │  outbound tunnel
+         ▼
+cloudflared pod  (Deployment in cluster, namespace: cloudflared)
+         │  https://traefik.traefik.svc.cluster.local
+         ▼
+Traefik: TLS termination (wildcard cert from cert-manager)
+         Host: argocd.k8s.kecskemethy.org → argocd-server:80 (ClusterIP)
+         │
+         ▼
+ArgoCD pod
+```
+
+### LAN request (homelab, direct)
+
+```
+Browser: https://argocd.k8s.kecskemethy.org
+         │
+         ▼
+Router DNS: argocd.k8s.kecskemethy.org → 192.168.1.101  (local override)
          │
          ▼
 kube-vip ARP: 192.168.1.101 → Traefik pod (LoadBalancer service)
          │
          ▼
-Traefik: TLS termination (wildcard cert from cert-manager)
-         Host: argocd.k8s.yourdomain.com → argocd-server:80 (ClusterIP)
-         │
-         ▼
-ArgoCD pod
+Traefik → ArgoCD pod  (same path as above from here)
 ```
 
 ### kube-vip + Traefik relationship
@@ -318,7 +342,8 @@ To upgrade a component: bump `targetRevision` in `apps/<component>.yaml` and upd
 | Secrets | Sealed Secrets | Simple, no external dependency, safe to commit |
 | SSL challenge | Cloudflare DNS-01 | Clusters are LAN-only; HTTP-01 requires public access |
 | Cert scope | Wildcard per cluster | One cert covers all services; easier to manage |
-| External access | LAN-only for now | No Cloudflare Tunnel (can add later) |
+| External access (k8s) | Cloudflare Tunnel | No open ports, home IP hidden; see docs/cloudflare-tunnel.md |
+| External access (k3s) | LAN-only | Local dev cluster; not internet-facing |
 | GitOps location | `kube-gitops/` in this repo (not a separate repo) | Solo homelab: one repo is simpler; ansible-lint excludes the directory |
 | ArgoCD bootstrap | Ansible applies app-of-apps once | Clean handoff: Ansible bootstraps, ArgoCD self-manages after |
 
@@ -326,7 +351,7 @@ To upgrade a component: bump `targetRevision` in `apps/<component>.yaml` and upd
 
 ## Future Work / Not In Scope Yet
 
-- **Cloudflare Tunnel** — expose services externally without open ports
+- **Cloudflare Tunnel (k3s)** — add internet access to local dev cluster (k8s done)
 - **Envoy Gateway** — migrate k3s to Gateway API for learning; homelab to follow
 - **Longhorn** — distributed block storage already installed on homelab, wire into GitOps
 - **Monitoring stack** — Grafana + Prometheus via ArgoCD
