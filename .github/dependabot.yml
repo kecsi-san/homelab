@@ -1,16 +1,4 @@
 ---
+# Renovate handles all dependency updates — see renovate.json
 version: 2
-updates:
-  - package-ecosystem: github-actions
-    directory: /
-    schedule:
-      interval: weekly
-    commit-message:
-      prefix: "chore"
-
-  - package-ecosystem: pip
-    directory: /
-    schedule:
-      interval: weekly
-    commit-message:
-      prefix: "chore"
+updates: []

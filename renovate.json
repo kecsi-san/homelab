@@ -1,0 +1,28 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "argocd": {
+    "fileMatch": [
+      "kube-gitops/k8s/apps/.+\\.yaml",
+      "kube-gitops/k3s/apps/.+\\.yaml"
+    ]
+  },
+  "packageRules": [
+    {
+      "matchManagers": ["argocd"],
+      "groupName": "helm charts",
+      "commitMessagePrefix": "chore(helm):"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions",
+      "automerge": true,
+      "commitMessagePrefix": "chore(ci):"
+    },
+    {
+      "matchManagers": ["pip_requirements"],
+      "groupName": "Python dependencies",
+      "commitMessagePrefix": "chore(deps):"
+    }
+  ]
+}
