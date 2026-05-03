@@ -72,7 +72,7 @@ config:
             namespace: longhorn-system
             app: longhorn-manager
         - Traefik:
-            href: https://traefik.kecskemethy.org
+            href: https://traefik.kecskemethy.org/dashboard/
             description: Ingress controller
             icon: traefik.png
             namespace: traefik
