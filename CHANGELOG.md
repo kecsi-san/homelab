@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix: disable HTTP/3 on k8s Traefik — kube-vip LB is TCP-only, QUIC/UDP fails ([d78d954](https://github.com/kecsi-san/ansible-env-setup/commit/d78d954e0ad0f88e6843e17b5f56cf96290dfa6a) by Zoltan K).
 - fix: cloudflared metrics on 0.0.0.0 so liveness probe can reach it ([632050e](https://github.com/kecsi-san/ansible-env-setup/commit/632050eb3ddb6682cfb7a827bb25258c91fbffaf) by Zoltan K).
 - fix: update Traefik redirect syntax for chart v34 ([d583069](https://github.com/kecsi-san/ansible-env-setup/commit/d5830695bca94e92bcb3ee97fdeae273cb47528d) by Zoltan K).
 - fix: remove apex domain from wildcard cert — wildcard is sufficient ([13a9ebf](https://github.com/kecsi-san/ansible-env-setup/commit/13a9ebf49817521d9c3f6bb9b961765e589c3305) by Zoltan K).
