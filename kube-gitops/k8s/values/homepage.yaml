@@ -1,0 +1,75 @@
+---
+# Homepage values — k8s homelab dashboard
+enableRbac: true
+
+serviceAccount:
+  name: homepage
+  create: true
+
+ingress:
+  main:
+    enabled: false  # using Traefik IngressRoute instead
+
+config:
+  settings:
+    title: Homelab
+    theme: dark
+    color: slate
+    headerStyle: clean
+    layout:
+      Kubernetes:
+        style: row
+        columns: 3
+
+  widgets:
+    - greeting:
+        text: Homelab
+    - datetime:
+        text_size: xl
+        format:
+          dateStyle: short
+          timeStyle: short
+          hour12: false
+    - resources:
+        cpu: true
+        memory: true
+        disk: /
+    - kubernetes:
+        cluster:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+          label: k8s
+        nodes:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+
+  services:
+    - Kubernetes:
+        - ArgoCD:
+            href: https://argocd.kecskemethy.org
+            description: GitOps continuous delivery
+            icon: argocd.png
+            namespace: argocd
+            app: argocd-server
+        - Headlamp:
+            href: https://headlamp.kecskemethy.org
+            description: Kubernetes dashboard
+            icon: headlamp.png
+            namespace: kube-system
+            app: headlamp
+        - Longhorn:
+            href: https://longhorn.kecskemethy.org
+            description: Distributed block storage
+            icon: longhorn.png
+            namespace: longhorn-system
+            app: longhorn-manager
+        - Traefik:
+            href: https://traefik.kecskemethy.org
+            description: Ingress controller
+            icon: traefik.png
+            namespace: traefik
+            app: traefik
