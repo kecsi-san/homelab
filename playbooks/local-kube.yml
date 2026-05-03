@@ -10,3 +10,17 @@
       tags:
         - kube
         - kubernetes
+
+    - name: Install cloudflared
+      community.general.homebrew:
+        name: cloudflared
+        state: present
+      tags:
+        - cloudflared
+
+    - name: Install kind
+      community.general.homebrew:
+        name: kind
+        state: present
+      tags:
+        - kind

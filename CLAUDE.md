@@ -191,7 +191,7 @@ Tags enable selective role execution without running the full playbook:
 - `local-security.yml` tags: `sudo`, `apt-repos`, `security`, `checkov`
 - `local-dev.yml` tags: `vscode`, `go`, `dev`, `nodejs`, `rust`, `gh`
 - `local-cloud.yml` tags: `iac`, `terraform`, `iac-extra`, `cloud`, `aws`, `azure`, `gcp`
-- `local-kube.yml` tags: `kube`, `kubernetes`
+- `local-kube.yml` tags: `kube`, `kubernetes`, `cloudflared`, `kind`
 - `upgrade-local.yml` tags: `upgrade`, `apt`, `brew`, `uv`
 - `k8s-nodes.yml` tags: `update`, `ssh`, `hosts`, `banner`, `fonts`, `omp`, `fzf`, `gitconfig`, `hibernation`
 
