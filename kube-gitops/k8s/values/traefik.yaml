@@ -11,6 +11,9 @@ ports:
       entryPoint:
         to: websecure
         scheme: https
+  websecure:
+    http3:
+      enabled: false
 
 providers:
   kubernetesIngress:
