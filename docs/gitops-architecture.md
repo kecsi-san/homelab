@@ -1,6 +1,6 @@
-# GitOps Architecture — yourdomain.com Homelab
+# GitOps Architecture — kecskemethy.org Homelab
 
-This document describes the planned architecture for managing both Kubernetes clusters
+This document describes the architecture for managing both Kubernetes clusters
 using Ansible for infrastructure bootstrapping and ArgoCD for continuous GitOps delivery.
 
 ---
@@ -9,8 +9,8 @@ using Ansible for infrastructure bootstrapping and ArgoCD for continuous GitOps 
 
 | Cluster | Purpose | Nodes | Version |
 |---------|---------|-------|---------|
-| **homelab** (`k8s.yourdomain.com`) | Bare-metal HA cluster | 3 control-plane + 1 worker | k8s v1.33.7 (Kubespray) |
-| **local** (`k3s.yourdomain.com`) | Local dev / experimentation | 1 node (WSL2) | k3s v1.34.6 |
+| **homelab** | Bare-metal HA cluster | 3 control-plane + 1 worker | k8s v1.33.7 (Kubespray) |
+| **local** | Local dev / experimentation | 1 node (WSL2) | k3s v1.34.6 |
 
 Both clusters follow the same component model to keep configuration and skills transferable.
 
@@ -22,16 +22,15 @@ Both clusters follow the same component model to keep configuration and skills t
 ┌─────────────────────────────────────────────────────────────┐
 │  Layer 1 — Infrastructure (this repo: ansible-env-setup)    │
 │                                                             │
-│  post-k8s.yml → Traefik, Sealed Secrets, Headlamp (Helm)   │
-│               → ArgoCD app-of-apps bootstrap (pending)      │
+│  post-k8s.yml → Longhorn prereqs, kube-extra tools,         │
+│                 ArgoCD app-of-apps bootstrap                 │
 │                                                             │
 │  post-k3s.yml → ArgoCD (Helm)                              │
 │               → app-of-apps bootstrap (kubectl apply)       │
-│                 ArgoCD then installs Traefik, Sealed        │
-│                 Secrets, and Headlamp from kube-gitops/     │
+│                 ArgoCD then installs all apps from           │
+│                 kube-gitops/                                 │
 │                                                             │
-│  Re-run only for: cluster rebuilds, node changes,           │
-│  component version upgrades                                 │
+│  Re-run only for: cluster rebuilds, node changes            │
 └──────────────────────────────┬──────────────────────────────┘
                                │ ArgoCD watches GitOps repo
 ┌──────────────────────────────▼──────────────────────────────┐
@@ -53,31 +52,36 @@ ArgoCD owns everything running on top (continuous reconciliation).
 
 ## Component Inventory
 
-### Homelab (k8s.yourdomain.com)
+### Homelab (bare-metal, KUBECONFIG=~/.kube/k8s.yaml)
 
-| Component | Version | Installed by | Managed by |
-|-----------|---------|-------------|------------|
-| Kubernetes | v1.33.7 | Kubespray (`k8s.yml`) | Kubespray |
-| kube-vip | v0.8.9 | Kubespray | Kubespray |
-| Calico CNI | — | Kubespray | Kubespray |
-| ArgoCD | v2.14.5 | Kubespray addon (`addons.yml`) | ArgoCD (self-manages) |
-| cert-manager | v1.15.3 | Kubespray addon (`addons.yml`) | ArgoCD |
-| Traefik | latest stable | Ansible `post-k8s.yml` | ArgoCD |
-| Sealed Secrets | latest stable | Ansible `post-k8s.yml` | ArgoCD |
-| Headlamp | 0.40.0 | Ansible `post-k8s.yml` | ArgoCD |
+| Component | Installed by | Managed by |
+|-----------|-------------|------------|
+| Kubernetes v1.33.7 | Kubespray (`k8s.yml`) | Kubespray |
+| kube-vip v0.8.9 | Kubespray | Kubespray |
+| Calico CNI | Kubespray | Kubespray |
+| cert-manager v1.15.3 | Kubespray addon | — (Kubespray raw manifests) |
+| ArgoCD v2.14.5 | Kubespray addon | ArgoCD (self-manages) |
+| Traefik | Ansible bootstrap + ArgoCD | ArgoCD |
+| Sealed Secrets | Ansible bootstrap + ArgoCD | ArgoCD |
+| Headlamp | Ansible bootstrap + ArgoCD | ArgoCD |
+| Longhorn | Ansible (iSCSI prereqs) + ArgoCD | ArgoCD |
+| cloudflared | ArgoCD | ArgoCD |
+| external-dns | ArgoCD | ArgoCD |
+| Reloader | ArgoCD | ArgoCD |
 
-### Local k3s (k3s.yourdomain.com)
+### Local k3s (KUBECONFIG=~/.kube/k3s.yaml)
 
-| Component | Version | Installed by | Managed by |
-|-----------|---------|-------------|------------|
-| k3s | v1.34.6 | Ansible `k3s.yml` | Ansible |
-| ArgoCD | v2.13.1 | Ansible `post-k3s.yml` (`setup_argocd`) | ArgoCD (self-manages) |
-| Traefik | chart 34.4.1 | ArgoCD (`kube-gitops/k3s/apps/`) | ArgoCD |
-| Sealed Secrets | chart 2.16.1 | ArgoCD (`kube-gitops/k3s/apps/`) | ArgoCD |
-| Headlamp | chart 0.40.0 | ArgoCD (`kube-gitops/k3s/apps/`) | ArgoCD |
+| Component | Installed by | Managed by |
+|-----------|-------------|------------|
+| k3s v1.34.6 | Ansible (`k3s.yml`) | Ansible |
+| ArgoCD v2.13.1 | Ansible (`post-k3s.yml`) | ArgoCD (self-manages) |
+| Traefik | ArgoCD (`kube-gitops/k3s/apps/`) | ArgoCD |
+| Sealed Secrets | ArgoCD (`kube-gitops/k3s/apps/`) | ArgoCD |
+| Headlamp | ArgoCD (`kube-gitops/k3s/apps/`) | ArgoCD |
+| cert-manager | ArgoCD (`kube-gitops/k3s/apps/`) | ArgoCD |
 
-> **Note:** k3s ships Traefik built-in. It is disabled at install time (`k3s_disable_traefik: true`)
-> so our ArgoCD-managed instance is the only one running.
+> k3s ships Traefik built-in. It is disabled at install time (`k3s_disable_traefik: true`)
+> so the ArgoCD-managed instance is the only one running.
 
 ---
 
@@ -85,37 +89,61 @@ ArgoCD owns everything running on top (continuous reconciliation).
 
 | Cluster | Base domain | Wildcard cert covers |
 |---------|-------------|---------------------|
-| Homelab | `k8s.yourdomain.com` | `*.k8s.yourdomain.com` |
-| k3s local | `k3s.yourdomain.com` | `*.k3s.yourdomain.com` |
+| Homelab | `kecskemethy.org` | `*.kecskemethy.org` |
+| k3s local | `k3s.kecskemethy.org` | `*.k3s.kecskemethy.org` |
 
-### Planned service hostnames
+### Split-horizon DNS
 
-| Service | Homelab URL | k3s URL |
-|---------|------------|---------|
-| ArgoCD | `argocd.k8s.yourdomain.com` | `argocd.k3s.yourdomain.com` |
-| Headlamp | `headlamp.k8s.yourdomain.com` | `headlamp.k3s.yourdomain.com` |
-| Traefik dashboard | `traefik.k8s.yourdomain.com` | `traefik.k3s.yourdomain.com` |
+Traffic reaches the correct endpoint depending on the client's location:
 
-New services get a hostname in the appropriate subdomain — no new IPs needed.
+| Client | DNS resolver used | Resolves to | Path |
+|--------|------------------|-------------|------|
+| LAN (DoH off) | Router (`192.168.1.1`) | `192.168.1.101` | Direct to Traefik |
+| Internet | Cloudflare public DNS | Cloudflare proxy IPs | Via Cloudflare Tunnel |
 
-### DNS records required (Cloudflare)
-
-**Homelab (k8s) — internet-facing via Cloudflare Tunnel:**
-
+**Router DNS:** one wildcard entry covers all services automatically:
 ```
-CNAME  argocd.k8s.kecskemethy.org    →  <tunnel-id>.cfargotunnel.com  (proxied)
-CNAME  headlamp.k8s.kecskemethy.org  →  <tunnel-id>.cfargotunnel.com  (proxied)
-CNAME  longhorn.k8s.kecskemethy.org  →  <tunnel-id>.cfargotunnel.com  (proxied)
+*.kecskemethy.org  →  192.168.1.101   (Traefik LoadBalancer)
 ```
 
-LAN access uses router DNS overrides (A records → 192.168.1.101) and bypasses
-Cloudflare entirely.
-
-**k3s (local dev) — LAN only:**
-
+**Cloudflare DNS:** per-service CNAME records managed automatically by external-dns:
 ```
-A  *.k3s.kecskemethy.org  →  192.168.1.25  (router DNS, LAN only)
+CNAME  argocd.kecskemethy.org    →  9fa18953-8d82-424d-a8b5-9941940d4230.cfargotunnel.com  (proxied)
+CNAME  headlamp.kecskemethy.org  →  9fa18953-8d82-424d-a8b5-9941940d4230.cfargotunnel.com  (proxied)
+CNAME  longhorn.kecskemethy.org  →  9fa18953-8d82-424d-a8b5-9941940d4230.cfargotunnel.com  (proxied)
 ```
+
+New services only need an IngressRoute with the tunnel annotation — external-dns creates
+the Cloudflare record automatically within ~1 minute.
+
+**Windows/Firefox note:** disable DNS over HTTPS (DoH) in Firefox so the browser uses
+system DNS → router wildcard. With DoH enabled, Firefox bypasses the router and hits
+Cloudflare's edge, which can cause QUIC/HTTP3 caching issues on LAN.
+
+---
+
+## Adding a New Service
+
+1. Add an ArgoCD Application to `kube-gitops/k8s/apps/`
+2. Add Helm values to `kube-gitops/k8s/values/` if needed
+3. Add an IngressRoute to `kube-gitops/k8s/ingressroutes/` with the tunnel annotation:
+
+```yaml
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/target: "9fa18953-8d82-424d-a8b5-9941940d4230.cfargotunnel.com"
+spec:
+  entryPoints: [websecure]
+  routes:
+    - match: Host(`myapp.kecskemethy.org`)
+      services:
+        - name: myapp
+          port: 80
+  tls: {}
+```
+
+4. Commit and push → ArgoCD syncs the app, external-dns creates the DNS record.
+   No other DNS or certificate config needed.
 
 ---
 
@@ -131,86 +159,51 @@ DNS-01 proves domain ownership by creating a TXT record in Cloudflare via API to
 ```
 cert-manager  →  Cloudflare API (DNS-01 challenge)  →  Let's Encrypt
      ↓
-Wildcard certificate: *.k8s.yourdomain.com
+Wildcard cert: *.kecskemethy.org  (homelab)
+               *.k3s.kecskemethy.org  (local k3s)
      ↓
-Stored as Kubernetes Secret in each namespace that needs it
-     ↓
-Traefik serves the cert for all IngressRoute hosts
+Secret in traefik namespace → TLSStore default → all IngressRoutes get it automatically
 ```
 
-### cert-manager resources (managed by ArgoCD in GitOps repo)
-
-```yaml
-# ClusterIssuer — one per cluster
-kind: ClusterIssuer
-metadata:
-  name: letsencrypt-prod
-spec:
-  acme:
-    server: https://acme-v02.api.letsencrypt.org/directory
-    privateKeySecretRef:
-      name: letsencrypt-prod-account-key
-    solvers:
-      - dns01:
-          cloudflare:
-            apiTokenSecretRef:
-              name: cloudflare-api-token   # Sealed Secret
-              key: api-token
-
-# Certificate — wildcard per cluster
-kind: Certificate
-metadata:
-  name: wildcard-k8s-yourdomain-com
-  namespace: traefik   # Traefik reads it from here
-spec:
-  secretName: wildcard-k8s-yourdomain-com-tls
-  issuerRef:
-    name: letsencrypt-prod
-    kind: ClusterIssuer
-  dnsNames:
-    - "*.k8s.yourdomain.com"
-```
-
-### Cloudflare API token
-
-Scoped minimally — only the permissions cert-manager needs:
+### Cloudflare API token (scoped minimally)
 
 ```
 Zone → Zone → Read
 Zone → DNS  → Edit
+Scope: kecskemethy.org only
 ```
-Scope: specific zone `yourdomain.com` only.
 
-The token is stored as a **Sealed Secret** — encrypted with the cluster's public key,
-safe to commit to the GitOps repo. Never stored in plaintext.
+Stored as a **Sealed Secret** per cluster — encrypted with each cluster's public key,
+safe to commit to git. The same raw token needs to be sealed separately for each cluster
+because Sealed Secrets are cluster-specific.
 
 ---
 
 ## Secrets Management — Sealed Secrets
 
-[Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets) consists of:
-- A controller running in the cluster (holds the private key)
-- `kubeseal` CLI on the workstation (encrypts secrets with the cluster's public key)
+[Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets):
+- Controller runs in-cluster (holds the private key)
+- `kubeseal` CLI encrypts secrets with the cluster's public key on the workstation
 
 ### Workflow
 
 ```bash
-# 1. Create the raw secret (never committed)
-kubectl create secret generic cloudflare-api-token \
-  --from-literal=api-token=<your-token> \
-  --dry-run=client -o yaml > /tmp/cf-token.yaml
+# 1. Encrypt the secret (safe to commit)
+kubectl create secret generic my-secret \
+  --from-literal=key=value \
+  --dry-run=client -o yaml | \
+  kubeseal --kubeconfig ~/.kube/k8s.yaml \
+  --controller-name sealed-secrets \
+  --controller-namespace sealed-secrets \
+  --namespace target-namespace \
+  --name my-secret \
+  -o yaml > kube-gitops/k8s/myapp/my-secret-sealed.yaml
 
-# 2. Seal it (safe to commit)
-kubeseal --format yaml < /tmp/cf-token.yaml > clusters/homelab/cert-manager/cloudflare-api-token-sealed.yaml
-
-# 3. Commit the sealed secret to the GitOps repo
-# The controller decrypts it in-cluster — plaintext never leaves the machine
+# 2. Commit — the controller decrypts in-cluster, plaintext never leaves the machine
 ```
 
-### Important: sealed secrets are cluster-specific
-
-A secret sealed for homelab cannot be decrypted by k3s. Each cluster needs its own
-sealed version of shared secrets (Cloudflare token, etc.).
+**Important:** sealed secrets are cluster-specific. The k8s and k3s clusters each need
+their own sealed version of any shared secret (e.g. Cloudflare API token).
 
 ---
 
@@ -219,17 +212,17 @@ sealed version of shared secrets (Cloudflare token, etc.).
 ### Internet request (homelab, via Cloudflare Tunnel)
 
 ```
-Browser: https://argocd.k8s.kecskemethy.org
+Browser: https://argocd.kecskemethy.org
          │
          ▼
-Cloudflare edge  (CNAME → <tunnel-id>.cfargotunnel.com)
-         │  outbound tunnel
+Cloudflare edge  (CNAME → <tunnel-id>.cfargotunnel.com, proxied)
+         │  outbound tunnel (cloudflared initiates, no open ports needed)
          ▼
-cloudflared pod  (Deployment in cluster, namespace: cloudflared)
-         │  https://traefik.traefik.svc.cluster.local
+cloudflared pod  (namespace: cloudflared)
+         │  https://traefik.traefik.svc.cluster.local  (noTLSVerify: true)
          ▼
-Traefik: TLS termination (wildcard cert from cert-manager)
-         Host: argocd.k8s.kecskemethy.org → argocd-server:80 (ClusterIP)
+Traefik: TLS termination (wildcard cert *.kecskemethy.org from cert-manager)
+         Host: argocd.kecskemethy.org → argocd-server:80 (ClusterIP)
          │
          ▼
 ArgoCD pod
@@ -238,99 +231,90 @@ ArgoCD pod
 ### LAN request (homelab, direct)
 
 ```
-Browser: https://argocd.k8s.kecskemethy.org
+Browser: https://argocd.kecskemethy.org
          │
          ▼
-Router DNS: argocd.k8s.kecskemethy.org → 192.168.1.101  (local override)
+Router DNS wildcard: *.kecskemethy.org → 192.168.1.101
          │
          ▼
 kube-vip ARP: 192.168.1.101 → Traefik pod (LoadBalancer service)
          │
          ▼
-Traefik → ArgoCD pod  (same path as above from here)
+Traefik → ArgoCD pod  (same path from here)
 ```
 
-### kube-vip + Traefik relationship
-
-kube-vip and Traefik are complementary, not competing:
+### kube-vip + Traefik
 
 | Layer | Tool | Responsibility |
 |-------|------|---------------|
-| L4 — IP announcement | kube-vip | ARP-announces 192.168.1.101 on the LAN |
+| L4 — IP announcement | kube-vip | ARP-announces 192.168.1.101 on LAN |
 | L7 — HTTP routing + TLS | Traefik | Routes by hostname, terminates SSL |
-
-kube-vip configuration is unchanged — it simply announces one IP instead of many.
 
 ---
 
 ## IP Plan (Homelab)
 
-| IP | Role | Status |
-|----|------|--------|
-| 192.168.1.100 | kube-vip API VIP | Unchanged |
-| 192.168.1.101 | Traefik LoadBalancer | Reassigned from ArgoCD |
-| 192.168.1.102 | — | Free (was Headlamp) |
-
-### Migration order (zero-conflict cutover)
-
-```
-1. Deploy Traefik via Ansible (service type: ClusterIP initially)
-2. Patch ArgoCD service → ClusterIP  (releases .101)
-3. Patch Traefik service → LoadBalancer, annotation: kube-vip.io/loadbalancerIPs: 192.168.1.101
-4. Patch Headlamp service → ClusterIP  (releases .102)
-5. Apply ArgoCD app-of-apps → ArgoCD picks up IngressRoutes from GitOps repo
-6. Add DNS A records in Cloudflare: *.k8s.yourdomain.com → 192.168.1.101
-```
+| IP | Role |
+|----|------|
+| 192.168.1.100 | kube-vip API VIP |
+| 192.168.1.101 | Traefik LoadBalancer |
+| 192.168.1.102 | Free |
 
 ---
 
-## GitOps Directory Structure (kube-gitops/ in this repo)
-
-GitOps manifests live in `kube-gitops/` within this repo — no separate repository needed.
-ArgoCD uses the multi-source pattern: chart from Helm repo, values from this git repo.
+## GitOps Directory Structure
 
 ```
 kube-gitops/
-├── k8s/                                # Bare-metal homelab cluster
-│   ├── root.yaml                       # Bootstrap Application — applied once by Ansible
-│   ├── apps/                           # ArgoCD watches this directory
+├── k8s/                            # Bare-metal homelab cluster
+│   ├── root.yaml                   # Bootstrap Application — applied once by Ansible
+│   ├── apps/                       # ArgoCD watches this directory (app-of-apps)
 │   │   ├── traefik.yaml
-│   │   ├── longhorn.yaml
-│   │   ├── headlamp.yaml
 │   │   ├── sealed-secrets.yaml
-│   │   └── cert-manager.yaml
-│   └── values/                         # Helm values per app
-│       ├── traefik.yaml
-│       ├── longhorn.yaml
+│   │   ├── headlamp.yaml
+│   │   ├── longhorn.yaml
+│   │   ├── cert-manager-config.yaml
+│   │   ├── ingressroutes.yaml
+│   │   ├── cloudflared.yaml
+│   │   ├── external-dns.yaml
+│   │   ├── external-dns-config.yaml
+│   │   └── reloader.yaml
+│   ├── values/                     # Helm values per app
+│   │   ├── traefik.yaml
+│   │   ├── sealed-secrets.yaml
+│   │   ├── headlamp.yaml
+│   │   ├── longhorn.yaml
+│   │   └── external-dns.yaml
+│   ├── cert-manager/               # ClusterIssuer + Certificate + SealedSecret
+│   ├── cloudflared/                # Tunnel deployment + config + SealedSecret
+│   ├── external-dns/               # SealedSecret (Cloudflare token)
+│   └── ingressroutes/              # IngressRoute + TLSStore per service
+│       ├── tlsstore.yaml
+│       ├── argocd.yaml
 │       ├── headlamp.yaml
-│       ├── sealed-secrets.yaml
-│       └── cert-manager.yaml
-└── k3s/                                # Local dev cluster
+│       └── longhorn.yaml
+└── k3s/                            # Local dev cluster
     ├── root.yaml
-    ├── apps/
-    │   ├── traefik.yaml
-    │   ├── headlamp.yaml
-    │   └── sealed-secrets.yaml
-    └── values/
-        ├── traefik.yaml
-        ├── headlamp.yaml
-        └── sealed-secrets.yaml
+    ├── apps/                       # traefik, sealed-secrets, headlamp, cert-manager-config
+    ├── values/
+    ├── cert-manager/
+    └── ingressroutes/
 ```
 
-To upgrade a component: bump `targetRevision` in `apps/<component>.yaml` and update
-`values/<component>.yaml` if needed — one PR, ArgoCD applies it automatically.
+To add a new service: add files to `apps/`, `values/`, and `ingressroutes/` → commit → ArgoCD applies automatically.
 
 ---
 
-## Ansible Roles
+## Dependency Updates — Renovate
 
-| Role | Playbook | Status | Purpose |
-|------|---------|--------|---------|
-| `setup_traefik` | `post-k8s.yml` | ✅ Done | Install Traefik via Helm (homelab bootstrap) |
-| `setup_sealed-secrets` | `post-k8s.yml` | ✅ Done | Install Sealed Secrets controller via Helm (homelab bootstrap) |
-| `setup_headlamp` | `post-k8s.yml` | ✅ Done | Install Headlamp via Helm (homelab bootstrap) |
-| `setup_argocd` | `post-k3s.yml` | ✅ Done | Install ArgoCD via Helm; shows initial admin password |
-| `setup_argocd-apps` | `post-k3s.yml` ✅ / `post-k8s.yml` 🔲 | ✅ k3s done | Apply `kube-gitops/{k3s,k8s}/root.yaml` to hand off to ArgoCD |
+[Renovate](https://github.com/renovatebot/renovate) runs as a GitHub App and automatically
+opens PRs when Helm chart versions are updated:
+
+- **Helm charts** (`targetRevision` in ArgoCD Application YAMLs) — grouped PR, manual review
+- **GitHub Actions** — grouped PR, automerged
+- **Python dependencies** (`requirements*.txt`) — grouped PR, manual review
+
+Config: `renovate.json` at repo root.
 
 ---
 
@@ -338,21 +322,13 @@ To upgrade a component: bump `targetRevision` in `apps/<component>.yaml` and upd
 
 | Decision | Choice | Reason |
 |----------|--------|--------|
-| Ingress controller | Traefik | k3s-native, actively maintained, supports Ingress + Gateway API |
+| Ingress controller | Traefik | k3s-native, CRD-based IngressRoutes, active maintenance |
 | Secrets | Sealed Secrets | Simple, no external dependency, safe to commit |
 | SSL challenge | Cloudflare DNS-01 | Clusters are LAN-only; HTTP-01 requires public access |
-| Cert scope | Wildcard per cluster | One cert covers all services; easier to manage |
-| External access (k8s) | Cloudflare Tunnel | No open ports, home IP hidden; see docs/cloudflare-tunnel.md |
-| External access (k3s) | LAN-only | Local dev cluster; not internet-facing |
-| GitOps location | `kube-gitops/` in this repo (not a separate repo) | Solo homelab: one repo is simpler; ansible-lint excludes the directory |
-| ArgoCD bootstrap | Ansible applies app-of-apps once | Clean handoff: Ansible bootstraps, ArgoCD self-manages after |
-
----
-
-## Future Work / Not In Scope Yet
-
-- **Cloudflare Tunnel (k3s)** — add internet access to local dev cluster (k8s done)
-- **Envoy Gateway** — migrate k3s to Gateway API for learning; homelab to follow
-- **Longhorn** — distributed block storage already installed on homelab, wire into GitOps
-- **Monitoring stack** — Grafana + Prometheus via ArgoCD
-- **k8s-nodes.yml security parity** — `local-security.yml` equivalent for remote hosts
+| Cert scope | Wildcard per cluster | One cert covers all services automatically via TLSStore |
+| External access | Cloudflare Tunnel | No open ports, home IP hidden, outbound-only |
+| DNS automation | external-dns (traefik-proxy source) | Auto-creates Cloudflare records from IngressRoute annotations |
+| LAN DNS | Router wildcard `*.kecskemethy.org` | One entry covers all future services, no per-service config |
+| GitOps location | `kube-gitops/` in this repo | Solo homelab: one repo is simpler |
+| ArgoCD bootstrap | Ansible applies root app once | Clean handoff: Ansible bootstraps, ArgoCD self-manages after |
+| Dependency updates | Renovate (GitHub App) | Handles Helm charts which Dependabot cannot |
