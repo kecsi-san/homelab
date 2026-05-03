@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix: set HOMEPAGE_ALLOWED_HOSTS env var for host validation ([5cd8532](https://github.com/kecsi-san/ansible-env-setup/commit/5cd8532f5f970ccae93cff22427d353518743929) by Zoltan K).
 - fix: allow homepage.kecskemethy.org in Homepage host validation ([4c349a9](https://github.com/kecsi-san/ansible-env-setup/commit/4c349a91dfcf1d6b5a141e65f499ca304e8a029d) by Zoltan K).
 - fix: disable HTTP/3 on k8s Traefik — kube-vip LB is TCP-only, QUIC/UDP fails ([d78d954](https://github.com/kecsi-san/ansible-env-setup/commit/d78d954e0ad0f88e6843e17b5f56cf96290dfa6a) by Zoltan K).
 - fix: cloudflared metrics on 0.0.0.0 so liveness probe can reach it ([632050e](https://github.com/kecsi-san/ansible-env-setup/commit/632050eb3ddb6682cfb7a827bb25258c91fbffaf) by Zoltan K).
