@@ -6,6 +6,9 @@ serviceAccount:
   name: homepage
   create: true
 
+env:
+  HOMEPAGE_ALLOWED_HOSTS: homepage.kecskemethy.org
+
 ingress:
   main:
     enabled: false  # using Traefik IngressRoute instead
