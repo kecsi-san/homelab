@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-dashboard
+  namespace: traefik
+  # No external-dns annotation — LAN only, not exposed via Cloudflare Tunnel
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`traefik.kecskemethy.org`)
+      kind: Rule
+      services:
+        - name: api@internal
+          kind: TraefikService
+  tls: {}
