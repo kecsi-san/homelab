@@ -1,0 +1,14 @@
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: cloudflare-api-token
+  namespace: external-dns
+spec:
+  encryptedData:
+    # yamllint disable-line rule:line-length
+    api-token: AgAgX9AFuGN6rDsUtX8eDLRXIWHDUifam7eRC/EcOdVEuVNqrgjqFuqhsn+yyL4uU/vpOeSu2W4GAn/mmO5PXLATIxD3lLng2O+CF3wPNszWY5cowS1L1jcFd64xy9zDCerAXgh1CLBiYYBoLh78rBQBZ2uy8s4tH/PtcDc5/LxwuoXtM8nhRAU4OrEcfiRhfo/3iycNLuIHDpR5DWqjOzLru7b/MT34yH0GMzoPbldaIAZNIDnkEFj067uZIxiuENgU3EH5rW1I73HVNljGxvufziQW/rqImItg6shF7gteV9DppuZxBgpffnXQRfF/qtLGYpgI0sMF3qJPHdqrcumUOEq4Ehtu4sTibVq77wHvWB3FnNmFquQWorAuga4TyyzUvB1a17DvM8SG8gdJ9+KywWjMMochlT1gDrIeU/Isk3Bwqs8pvvz68juGZTsqRSnswY6+Dh4QASE7doAZaoREvoN2Z4DRssVi+i82OxIBpXnebAyNmGX4+tzJbvv88rXX8nMi2QruaiwXhQ5I6Yq8VjRdltniRyeKhp/39lKDPmq1JpvHFUh1buI/Fun6cOPXELaidsaQzOM/AvJxELL8MC1TTE/TZ76L1+zFUgsvvbQYgt/VMvYS33fqpIfjm99WLKiJKsfXEEvPgiE/s7pzSG37tbeZ0Jk92I8lXdV9YHplTHyreFR0sr5Ipif7XYyp9NrJUlaYVs3pgFtxbELzmrCK2iAT4Y67K7TodShevWGjl6zTwL8xPudk2DfzsL7X3ciayQ==
+  template:
+    metadata:
+      name: cloudflare-api-token
+      namespace: external-dns

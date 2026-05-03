@@ -1,0 +1,28 @@
+---
+# external-dns values — k8s (bare-metal, Cloudflare Tunnel)
+provider:
+  name: cloudflare
+
+sources:
+  - traefik-proxy
+
+env:
+  - name: CF_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: cloudflare-api-token
+        key: api-token
+
+# Unique ID for TXT ownership records — must not change after first deploy
+txtOwnerId: "k8s-homelab"
+
+# Only manage records in this zone
+domainFilters:
+  - kecskemethy.org
+
+# sync = delete records when IngressRoutes are removed
+policy: sync
+
+# Create proxied (orange-cloud) records so traffic flows through Cloudflare Tunnel
+extraArgs:
+  - --cloudflare-proxied

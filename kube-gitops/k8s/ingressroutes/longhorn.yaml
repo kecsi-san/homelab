@@ -4,6 +4,8 @@ kind: IngressRoute
 metadata:
   name: longhorn
   namespace: longhorn-system
+  annotations:
+    external-dns.alpha.kubernetes.io/target: "9fa18953-8d82-424d-a8b5-9941940d4230.cfargotunnel.com"
 spec:
   entryPoints:
     - websecure
