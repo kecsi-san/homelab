@@ -16,7 +16,7 @@ spec:
   sources:
     - repoURL: https://traefik.github.io/charts
       chart: traefik
-      targetRevision: "34.4.1"
+      targetRevision: "34.5.0"
       helm:
         valueFiles:
           - $values/kube-gitops/k3s/values/traefik.yaml
