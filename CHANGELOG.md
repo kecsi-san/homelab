@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(ci): pin renovatebot/github-action to v46.1.13 (no major tags published) ([b99a4e1](https://github.com/kecsi-san/ansible-env-setup/commit/b99a4e1ccb81aa6545982cbf75857d8a36c70e57) by Zoltan K).
 - fix(ci): correct renovatebot/github-action version to v46 ([aeb393f](https://github.com/kecsi-san/ansible-env-setup/commit/aeb393f9a6291ba04bad34742a897d6222d0f305) by Zoltan K).
 - fix: correct Traefik dashboard URL in Homepage to include /dashboard/ path ([0d4c135](https://github.com/kecsi-san/ansible-env-setup/commit/0d4c13528a0b2e9abc151cc839581d1d97031bf8) by Zoltan K).
 - fix: set HOMEPAGE_ALLOWED_HOSTS env var for host validation ([5cd8532](https://github.com/kecsi-san/ansible-env-setup/commit/5cd8532f5f970ccae93cff22427d353518743929) by Zoltan K).
