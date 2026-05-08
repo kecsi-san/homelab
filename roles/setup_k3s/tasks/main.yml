@@ -69,11 +69,12 @@
 
 - name: Create k3d cluster
   ansible.builtin.command:
-    cmd: >-
-      k3d cluster create {{ k3s_cluster_name }}
-      --agents {{ k3d_agents }}
-      --api-port {{ k3d_api_port }}
-      {{ '--k3s-arg --disable=traefik@server:*' if k3s_disable_traefik else '' }}
+    argv: >-
+      {{ ['k3d', 'cluster', 'create', k3s_cluster_name,
+          '--agents', k3d_agents | string,
+          '--api-port', k3d_api_port | string]
+        + (['--k3s-arg', '--disable=traefik@server:*'] if k3s_disable_traefik else [])
+        + k3d_port_mappings | map('regex_replace', '^(.+)$', '--port=\1') | list }}
   become: false
   changed_when: true
   when: ansible_system == 'Darwin' and k3d_cluster_check.rc != 0
