@@ -41,7 +41,7 @@ jobs:
 
       - name: Install Ansible collections
         if: steps.cache-collections.outputs.cache-hit != 'true'
-        run: ansible-galaxy collection install community.general ansible.posix kubernetes.core
+        run: ansible-galaxy collection install community.general ansible.posix kubernetes.core community.routeros
 
       - name: Create vault password file
         id: vault
