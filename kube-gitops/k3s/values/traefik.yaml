@@ -24,6 +24,11 @@ ports:
   metrics:
     port: 9101  # 9100 is taken by prometheus-node-exporter on the host
 
+podSecurityContext:
+  runAsUser: 0
+  runAsNonRoot: false
+  runAsGroup: 0
+
 securityContext:
   capabilities:
     drop: [ALL]
