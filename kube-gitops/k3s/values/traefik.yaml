@@ -4,11 +4,10 @@
 # listeners on 80/443. Required for WSL2 mirrored mode — klipper-lb uses
 # nftables DNAT (no real socket) which WSL2 does not forward to Windows.
 # ClusterIP removes the LoadBalancer service so klipper-lb does not conflict.
+hostNetwork: true
+
 service:
   type: ClusterIP
-
-deployment:
-  hostNetwork: true
 
 ports:
   web:
