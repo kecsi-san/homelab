@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(k8s): use cluster.local as internal DNS domain ([60b718b](https://github.com/kecsi-san/ansible-env-setup/commit/60b718b6d0ddc8f96323dbff79b72e2180073788) by Zoltan K).
 - fix(security): remove hardcoded email from ClusterIssuer manifests ([ddbd836](https://github.com/kecsi-san/ansible-env-setup/commit/ddbd836ba0eed0d04c0a42ff68c435b5adc58d87) by Zoltan K).
 - fix(uv): add netaddr to ansible-core tool extras (required by Kubespray) ([43613f3](https://github.com/kecsi-san/ansible-env-setup/commit/43613f39162d4279ab387fcd8c6e9febfc35eb62) by Zoltan K).
 - fix(uv): add ~/.local/bin to PATH via blockinfile instead of update-shell ([3af0dde](https://github.com/kecsi-san/ansible-env-setup/commit/3af0ddee4e8f8daee1a76445ff1344e0a59492b7) by Zoltan K).
