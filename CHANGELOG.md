@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(uv): add netaddr to ansible-core tool extras (required by Kubespray) ([43613f3](https://github.com/kecsi-san/ansible-env-setup/commit/43613f39162d4279ab387fcd8c6e9febfc35eb62) by Zoltan K).
 - fix(uv): add ~/.local/bin to PATH via blockinfile instead of update-shell ([3af0dde](https://github.com/kecsi-san/ansible-env-setup/commit/3af0ddee4e8f8daee1a76445ff1344e0a59492b7) by Zoltan K).
 - fix(uv): run uv tool update-shell to add ~/.local/bin to PATH ([ce31dd5](https://github.com/kecsi-san/ansible-env-setup/commit/ce31dd5baba7529640a79ebf7d3cae627c7f7802) by Zoltan K).
 - fix(uv): install ansible-core instead of ansible meta-package ([0cdd3cc](https://github.com/kecsi-san/ansible-env-setup/commit/0cdd3cc4d51bef6cbe86fa0cac79faa5ef83488c) by Zoltan K).
