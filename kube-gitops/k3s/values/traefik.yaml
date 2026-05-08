@@ -9,6 +9,9 @@ hostNetwork: true
 service:
   type: ClusterIP
 
+updateStrategy:
+  type: Recreate
+
 ports:
   web:
     port: 80
