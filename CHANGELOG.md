@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(uv): run uv tool update-shell to add ~/.local/bin to PATH ([ce31dd5](https://github.com/kecsi-san/ansible-env-setup/commit/ce31dd5baba7529640a79ebf7d3cae627c7f7802) by Zoltan K).
 - fix(uv): install ansible-core instead of ansible meta-package ([0cdd3cc](https://github.com/kecsi-san/ansible-env-setup/commit/0cdd3cc4d51bef6cbe86fa0cac79faa5ef83488c) by Zoltan K).
 - fix(uv): pin ansible to >=11,<12 for Kubespray 2.31 compatibility ([78203ee](https://github.com/kecsi-san/ansible-env-setup/commit/78203eea705efc91596f8bedec84c17f72385fe0) by Zoltan K).
 - fix(k3s): run Traefik as root for privileged port binding on WSL2 ([1163d10](https://github.com/kecsi-san/ansible-env-setup/commit/1163d109190966455a0a112dea4750ff15e8af6e) by Zoltan K).
