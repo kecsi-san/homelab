@@ -29,11 +29,13 @@
   changed_when: false
   when: uv_pip_packages | length > 0
 
-- name: Add uv tool bin dir to PATH
-  ansible.builtin.command:
-    cmd: "{{ uv_bin }} tool update-shell"
+- name: Add uv tool bin dir to PATH in ~/.bashrc
+  ansible.builtin.blockinfile:
+    dest: "{{ ansible_env.HOME }}/.bashrc"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: uv tools PATH"
+    block: |
+      export PATH="{{ ansible_env.HOME }}/.local/bin:$PATH"
   become: false
-  changed_when: false
 
 - name: Add devops venv auto-activation to ~/.bashrc
   ansible.builtin.blockinfile:
