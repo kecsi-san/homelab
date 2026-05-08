@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-dashboard
+  namespace: traefik
+  # No external-dns annotation — k3s is LAN only, dashboard has no auth
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`traefik.k3s.kecskemethy.org`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
+      kind: Rule
+      services:
+        - name: api@internal
+          kind: TraefikService
+  tls: {}
