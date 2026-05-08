@@ -9,7 +9,7 @@ using Ansible for infrastructure bootstrapping and ArgoCD for continuous GitOps 
 
 | Cluster | Purpose | Nodes | Version |
 |---------|---------|-------|---------|
-| **homelab** | Bare-metal HA cluster | 3 control-plane + 1 worker | k8s v1.33.7 (Kubespray) |
+| **homelab** | Bare-metal HA cluster | 3 control-plane + 1 worker | k8s v1.35.4 (Kubespray release-2.31) |
 | **local** | Local dev / experimentation | 1 node (WSL2) | k3s v1.34.6 |
 
 Both clusters follow the same component model to keep configuration and skills transferable.
@@ -56,9 +56,9 @@ ArgoCD owns everything running on top (continuous reconciliation).
 
 | Component | Installed by | Managed by |
 |-----------|-------------|------------|
-| Kubernetes v1.33.7 | Kubespray (`k8s.yml`) | Kubespray |
+| Kubernetes v1.35.4 | Kubespray (`k8s.yml`) | Kubespray |
 | kube-vip v0.8.9 | Kubespray | Kubespray |
-| Calico CNI | Kubespray | Kubespray |
+| Cilium CNI | Kubespray | Kubespray |
 | cert-manager v1.15.3 | Kubespray addon | — (Kubespray raw manifests) |
 | ArgoCD v2.14.5 | Kubespray addon | ArgoCD (self-manages) |
 | Traefik | Ansible bootstrap + ArgoCD | ArgoCD |
@@ -82,6 +82,25 @@ ArgoCD owns everything running on top (continuous reconciliation).
 
 > k3s ships Traefik built-in. It is disabled at install time (`k3s_disable_traefik: true`)
 > so the ArgoCD-managed instance is the only one running.
+
+---
+
+## App Comparison — k3s vs k8s
+
+| App | k3s | k8s | Notes |
+|-----|-----|-----|-------|
+| traefik | ✅ | ✅ | k3s: hostNetwork+ClusterIP (WSL2); k8s: LoadBalancer .101 |
+| cert-manager | ✅ | ✅ | DNS-01 via Cloudflare on both |
+| cert-manager-config | ✅ | ✅ | Separate SealedSecret per cluster |
+| sealed-secrets | ✅ | ✅ | Each cluster has its own key |
+| headlamp | ✅ | ✅ | |
+| homepage | ✅ | ✅ | Different values per cluster |
+| ingressroutes | ✅ | ✅ | k3s: `*.k3s.kecskemethy.org`; k8s: `*.kecskemethy.org` |
+| reloader | ✅ | ✅ | |
+| cloudflared | ❌ | ✅ | k3s is LAN-only, no internet exposure needed |
+| external-dns | ❌ | ✅ | No Cloudflare tunnel on k3s, no public DNS records needed |
+| longhorn | ❌ | ✅ | Single-node k3s uses local-path provisioner instead |
+| argocd | bootstrap only | bootstrap only | Installed via Ansible, not self-managed by ArgoCD |
 
 ---
 
@@ -272,6 +291,7 @@ kube-gitops/
 │   │   ├── traefik.yaml
 │   │   ├── sealed-secrets.yaml
 │   │   ├── headlamp.yaml
+│   │   ├── homepage.yaml
 │   │   ├── longhorn.yaml
 │   │   ├── cert-manager-config.yaml
 │   │   ├── ingressroutes.yaml
@@ -295,10 +315,11 @@ kube-gitops/
 │       └── longhorn.yaml
 └── k3s/                            # Local dev cluster
     ├── root.yaml
-    ├── apps/                       # traefik, sealed-secrets, headlamp, cert-manager-config
+    ├── apps/                       # traefik, sealed-secrets, headlamp, homepage,
+    │                               # cert-manager, cert-manager-config, reloader
     ├── values/
     ├── cert-manager/
-    └── ingressroutes/
+    └── ingressroutes/              # argocd, headlamp, homepage, traefik-dashboard, tlsstore
 ```
 
 To add a new service: add files to `apps/`, `values/`, and `ingressroutes/` → commit → ArgoCD applies automatically.
