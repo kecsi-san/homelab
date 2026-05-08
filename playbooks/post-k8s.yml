@@ -1,4 +1,37 @@
 ---
+- name: Copy kubeconfig to local workstation
+  hosts: localhost
+  connection: local
+  become: false
+  tasks:
+    - name: Ensure ~/.kube directory exists
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.kube"
+        state: directory
+        mode: '0700'
+
+    - name: Copy kubeconfig from Kubespray artifacts
+      ansible.builtin.copy:
+        src: "{{ inventory_dir }}/artifacts/admin.conf"
+        dest: "{{ ansible_env.HOME }}/.kube/k8s.yaml"
+        mode: '0600'
+
+    - name: Point kubeconfig at kube-vip API VIP
+      ansible.builtin.replace:
+        path: "{{ ansible_env.HOME }}/.kube/k8s.yaml"
+        regexp: 'server: https://127\.0\.0\.1:6443'
+        replace: "server: https://{{ kube_vip_address }}:6443"
+
+    - name: Add k8s kubeconfig to KUBECONFIG in ~/.bashrc
+      ansible.builtin.blockinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK — k8s kubeconfig"
+        block: |
+          export KUBECONFIG="${KUBECONFIG:+${KUBECONFIG}:}{{ ansible_env.HOME }}/.kube/k8s.yaml"
+        create: false
+      tags:
+        - kubeconfig
+
 - name: Post-cluster setup — homelab (k8s)
   hosts: kube
   become: false
