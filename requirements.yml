@@ -11,3 +11,4 @@ collections:
   - name: https://github.com/kubernetes-sigs/kubespray
     type: git
     version: release-2.31
+  - name: community.routeros

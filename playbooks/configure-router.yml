@@ -1,0 +1,10 @@
+---
+- name: Configure MikroTik router DNS records
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+
+  roles:
+    - role: configure_mikrotik-dns
+      tags: mikrotik-dns

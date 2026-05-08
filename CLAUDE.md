@@ -52,6 +52,9 @@ ansible-playbook playbooks/post-k8s.yml
 # Post-k3s setup (Traefik, Sealed Secrets, ArgoCD)
 ansible-playbook playbooks/post-k3s.yml
 
+# Configure MikroTik router DNS records
+ansible-playbook playbooks/configure-router.yml
+
 # OS upgrades on all kube group hosts
 ansible-playbook playbooks/upgrade.yml
 
@@ -87,6 +90,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 - `pre-k8s.yml` — runs after `prerequisite.yml` and before `k8s.yml`; prepares nodes (etckeeper)
 - `post-k8s.yml` — runs after Kubernetes cluster is up; installs cluster-level tools (Longhorn, kube-extra, Traefik, Sealed Secrets, Headlamp)
 - `post-k3s.yml` — runs after k3s install; installs ArgoCD then bootstraps GitOps (ArgoCD manages Traefik, Sealed Secrets, Headlamp via kube-gitops/k3s/)
+- `configure-router.yml` — localhost only; upserts static DNS records on MikroTik router via `configure_mikrotik-dns` role
 - `upgrade.yml` — OS package upgrades across all kube hosts
 
 **Playbook naming convention:**
@@ -106,6 +110,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | Role | Purpose |
 |------|---------|
 | `configure_etc-hosts` | Manages `/etc/hosts` with kube group IPs and domain names |
+| `configure_mikrotik-dns` | Upserts static DNS records on MikroTik router via `community.routeros` API; manages API VIP + wildcard ingress entries |
 | `configure_fzf` | Adds fzf initialization to `~/.bashrc` (idempotent) |
 | `configure_git` | Copies `~/.gitconfig` from static file |
 | `configure_oh-my-posh` | Installs Pluto OMP theme; adds init block to `~/.bashrc` |

@@ -1,0 +1,20 @@
+---
+# MikroTik router connection — set in secrets.yml
+# mikrotik_host: "192.168.1.1"
+# mikrotik_user: "ansible"
+# mikrotik_password: "changeme"
+
+mikrotik_dns_ttl: "5m"
+
+mikrotik_dns_records:
+  # Kubernetes API VIP
+  - name: "api.k8s.{{ domain_name }}"
+    address: "{{ kube_vip_address }}"
+
+  # k8s cluster wildcard (Traefik ingress)
+  - name: "*.k8s.{{ domain_name }}"
+    address: "{{ kube_vip_address }}"
+
+  # k3s cluster wildcard (Traefik ingress)
+  - name: "*.k3s.{{ domain_name }}"
+    address: "{{ k3s_traefik_ip | default('') }}"
