@@ -4,7 +4,10 @@
 
 - name: Install uv CLI tools
   ansible.builtin.command:
-    cmd: "{{ uv_bin }} tool install --python {{ python_version }} {{ item.name }}{% for e in item.extras | default([]) %} --with {{ e }}{% endfor %}"
+    argv: >-
+      {{ [uv_bin, 'tool', 'install', '--python', python_version | string,
+          item.name + (item.version | default(''))]
+        + (item.extras | default([]) | map('regex_replace', '^(.+)$', '--with=\1') | list) }}
   loop: "{{ uv_tools }}"
   loop_control:
     label: "{{ item.name }}"

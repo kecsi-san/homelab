@@ -10,6 +10,7 @@ uv_venv_autoactivate: true
 # CLI tools installed in isolated environments via `uv tool install`.
 uv_tools:
   - name: ansible
+    version: ">=11,<12"
   - name: ansible-lint
   - name: checkov
   - name: git-changelog
