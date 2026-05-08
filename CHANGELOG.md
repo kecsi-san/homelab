@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(k3s): add hostPort to Traefik for WSL2 mirrored mode ([1d28d72](https://github.com/kecsi-san/ansible-env-setup/commit/1d28d7240941064026bf7cb04cbfeb9e9e29b315) by Zoltan K).
 - fix(ci): pass RENOVATE_REPOSITORIES so self-hosted Renovate finds the repo ([dc43e9c](https://github.com/kecsi-san/ansible-env-setup/commit/dc43e9c565cdf6ddbfbda86efb33677b2e2a34c2) by Zoltan K).
 - fix(ci): pin renovatebot/github-action to v46.1.13 (no major tags published) ([b99a4e1](https://github.com/kecsi-san/ansible-env-setup/commit/b99a4e1ccb81aa6545982cbf75857d8a36c70e57) by Zoltan K).
 - fix(ci): correct renovatebot/github-action version to v46 ([aeb393f](https://github.com/kecsi-san/ansible-env-setup/commit/aeb393f9a6291ba04bad34742a897d6222d0f305) by Zoltan K).
