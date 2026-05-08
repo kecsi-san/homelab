@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(k3s): bind Traefik to ports 80/443 with NET_BIND_SERVICE for hostNetwork ([63d6c12](https://github.com/kecsi-san/ansible-env-setup/commit/63d6c12bac6713f8ebc56cc795941196cd7cb076) by Zoltan K).
 - fix(k3s): change Traefik metrics port to 9101 (9100 taken by node-exporter) ([4c15b51](https://github.com/kecsi-san/ansible-env-setup/commit/4c15b519812d0e350cc64e292572df7f8e99a228) by Zoltan K).
 - fix(k3s): correct hostNetwork to top-level key in Traefik values ([62d0238](https://github.com/kecsi-san/ansible-env-setup/commit/62d023880c8e92880a7e414073818c59c4864912) by Zoltan K).
 - fix(k3s): use hostNetwork+ClusterIP for Traefik on WSL2 mirrored mode ([0a60570](https://github.com/kecsi-san/ansible-env-setup/commit/0a60570a4dc7a6e357ac0d75c63ac96d36f5864d) by Zoltan K).
