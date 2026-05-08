@@ -1,19 +1,21 @@
 ---
 # Traefik values — k3s (local dev)
-# k3s servicelb uses nftables DNAT (no real listener) — WSL2 mirrored mode
-# requires hostPort to create actual listeners so Windows forwards packets to WSL2.
+# hostNetwork: true puts Traefik in the host network namespace, creating real
+# listeners on 80/443. Required for WSL2 mirrored mode — klipper-lb uses
+# nftables DNAT (no real socket) which WSL2 does not forward to Windows.
+# ClusterIP removes the LoadBalancer service so klipper-lb does not conflict.
 service:
-  type: LoadBalancer
+  type: ClusterIP
+
+deployment:
+  hostNetwork: true
 
 ports:
   web:
-    hostPort: 80
     redirections:
       entryPoint:
         to: websecure
         scheme: https
-  websecure:
-    hostPort: 443
 
 providers:
   kubernetesIngress:
