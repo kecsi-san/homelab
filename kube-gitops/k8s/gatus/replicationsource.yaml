@@ -1,0 +1,22 @@
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: gatus-backup
+  namespace: gatus
+spec:
+  sourcePVC: gatus
+  trigger:
+    schedule: "0 3 * * *"
+  restic:
+    pruneIntervalDays: 14
+    repository: volsync-restic-secret
+    retain:
+      hourly: 6
+      daily: 7
+      weekly: 4
+      monthly: 3
+    copyMethod: Snapshot
+    volumeSnapshotClassName: longhorn
+    storageClassName: longhorn
+    accessModes: [ReadWriteOnce]

@@ -1,0 +1,5 @@
+---
+restic_rest_server_version: "0.14.0"
+restic_rest_server_listen: ":8000"
+restic_rest_server_path: /backups/restic-repos
+restic_rest_server_binary: /usr/local/bin/rest-server

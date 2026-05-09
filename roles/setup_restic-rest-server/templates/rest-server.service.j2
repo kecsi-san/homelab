@@ -1,0 +1,15 @@
+[Unit]
+Description=Restic REST Server
+After=network.target local-fs.target
+
+[Service]
+Type=simple
+ExecStart={{ restic_rest_server_binary }} \
+  --path {{ restic_rest_server_path }} \
+  --listen {{ restic_rest_server_listen }} \
+  --no-auth
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

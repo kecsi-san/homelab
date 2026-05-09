@@ -1,0 +1,22 @@
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: ntfy-backup
+  namespace: ntfy
+spec:
+  sourcePVC: ntfy-data
+  trigger:
+    schedule: "0 2 * * *"
+  restic:
+    pruneIntervalDays: 14
+    repository: volsync-restic-secret
+    retain:
+      hourly: 6
+      daily: 7
+      weekly: 4
+      monthly: 3
+    copyMethod: Snapshot
+    volumeSnapshotClassName: longhorn
+    storageClassName: longhorn
+    accessModes: [ReadWriteOnce]

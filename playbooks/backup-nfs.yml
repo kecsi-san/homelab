@@ -1,7 +1,8 @@
 ---
-# Sets up a 100G NFS backup share on hppd600g6.
-# Creates an LV from the existing VG, formats it ext4, mounts at /backups,
-# and exports it via NFS to the local network (192.168.1.0/25).
+# Sets up backup infrastructure on hppd600g6:
+#   - 100G LV from existing VG, formatted ext4, mounted at /backups
+#   - NFS export to 192.168.1.0/25
+#   - Restic REST server (systemd) storing repos in /backups/restic-repos
 #
 # Usage:
 #   ansible-playbook playbooks/backup-nfs.yml
@@ -13,3 +14,5 @@
   roles:
     - role: setup_nfs-backup
       tags: [nfs-backup]
+    - role: setup_restic-rest-server
+      tags: [restic-rest-server]
