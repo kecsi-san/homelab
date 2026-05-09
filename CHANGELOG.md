@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(volsync): ignore terminatingReplicas field missing from ArgoCD schema ([8a1c5fe](https://github.com/kecsi-san/ansible-env-setup/commit/8a1c5fecdedbde84790ccac80971f782a84aa1d9) by Zoltan K).
 - fix(gatus): use strategy.type Recreate for RWO PVC compatibility ([54dde1f](https://github.com/kecsi-san/ansible-env-setup/commit/54dde1f90d5ffc4c59669f973771b339e5c61414) by Zoltan K).
 - fix(garage): add explicit command entrypoint for garage binary ([3c86caa](https://github.com/kecsi-san/ansible-env-setup/commit/3c86caa598c60c60f1674fdda6a83c7150e6dd9a) by Zoltan K).
 - fix: correct garage config path, volsync CRD schema, gatus recreate strategy ([1702195](https://github.com/kecsi-san/ansible-env-setup/commit/170219595bf0ec58c73bb16c1328fff36315106b) by Zoltan K).
