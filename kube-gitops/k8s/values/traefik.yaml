@@ -18,14 +18,6 @@ ports:
       respondingTimeouts:
         idleTimeout: "20s"
 
-# Force HTTP/1.1 only — prevents Firefox from coalescing all *.kecskemethy.org
-# into a single H2 connection. H2 coalescing + ArgoCD SSE means an ArgoCD pod
-# restart stales the shared connection for every other service too.
-tlsOptions:
-  default:
-    alpnProtocols:
-      - "http/1.1"
-
 providers:
   kubernetesIngress:
     enabled: true
