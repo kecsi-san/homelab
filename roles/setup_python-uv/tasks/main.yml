@@ -5,7 +5,7 @@
 - name: Install uv CLI tools
   ansible.builtin.command:
     argv: >-
-      {{ [uv_bin, 'tool', 'install', '--python', python_version | string,
+      {{ [uv_bin, 'tool', 'install', '--force', '--python', python_version | string,
           item.name + (item.version | default(''))]
         + (item.extras | default([]) | map('regex_replace', '^(.+)$', '--with=\1') | list) }}
   loop: "{{ uv_tools }}"

@@ -13,6 +13,7 @@ uv_tools:
     version: ">=2.18,<2.19"
     extras:
       - netaddr
+      - librouteros
   - name: ansible-lint
   - name: checkov
   - name: git-changelog
