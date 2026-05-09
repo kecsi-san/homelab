@@ -14,9 +14,6 @@ ports:
   websecure:
     http3:
       enabled: false
-    transport:
-      respondingTimeouts:
-        idleTimeout: "20s"
 
 providers:
   kubernetesIngress:

@@ -15,4 +15,5 @@ spec:
       services:
         - name: gatus
           port: 80
-  tls: {}
+  tls:
+    secretName: gatus-tls

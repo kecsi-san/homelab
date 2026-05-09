@@ -15,4 +15,5 @@ spec:
       services:
         - name: ntfy
           port: 80
-  tls: {}
+  tls:
+    secretName: ntfy-tls

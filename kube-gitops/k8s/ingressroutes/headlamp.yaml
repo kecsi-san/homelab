@@ -15,4 +15,5 @@ spec:
       services:
         - name: headlamp
           port: 80
-  tls: {}
+  tls:
+    secretName: headlamp-tls
