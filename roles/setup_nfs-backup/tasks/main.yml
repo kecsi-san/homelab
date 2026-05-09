@@ -1,0 +1,66 @@
+---
+- name: Install LVM tools and NFS server
+  ansible.builtin.apt:
+    name:
+      - lvm2
+      - nfs-kernel-server
+    state: present
+    update_cache: true
+  become: true
+  tags: [nfs-backup]
+
+- name: Create backup logical volume
+  community.general.lvol:
+    vg: "{{ nfs_backup_vg }}"
+    lv: "{{ nfs_backup_lv }}"
+    size: "{{ nfs_backup_size }}"
+    state: present
+  become: true
+  tags: [nfs-backup]
+
+- name: Format backup volume with ext4
+  community.general.filesystem:
+    fstype: ext4
+    dev: "/dev/{{ nfs_backup_vg }}/{{ nfs_backup_lv }}"
+    state: present
+  become: true
+  tags: [nfs-backup]
+
+- name: Create mount point
+  ansible.builtin.file:
+    path: "{{ nfs_backup_mount }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+  tags: [nfs-backup]
+
+- name: Mount backup volume persistently
+  ansible.posix.mount:
+    path: "{{ nfs_backup_mount }}"
+    src: "/dev/{{ nfs_backup_vg }}/{{ nfs_backup_lv }}"
+    fstype: ext4
+    opts: defaults
+    state: mounted
+  become: true
+  tags: [nfs-backup]
+
+- name: Configure NFS exports
+  ansible.builtin.template:
+    src: exports.j2
+    dest: /etc/exports
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: reload nfs exports
+  tags: [nfs-backup]
+
+- name: Enable and start NFS server
+  ansible.builtin.service:
+    name: nfs-kernel-server
+    state: started
+    enabled: true
+  become: true
+  tags: [nfs-backup]

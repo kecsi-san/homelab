@@ -1,0 +1,7 @@
+---
+nfs_backup_vg: "{{ inventory_hostname }}-vg"
+nfs_backup_lv: backup
+nfs_backup_size: 100g
+nfs_backup_mount: /backups
+nfs_backup_network: "192.168.1.0/25"
+nfs_backup_export_options: "rw,sync,no_subtree_check,no_root_squash"

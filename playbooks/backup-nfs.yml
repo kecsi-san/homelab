@@ -1,0 +1,15 @@
+---
+# Sets up a 100G NFS backup share on hppd600g6.
+# Creates an LV from the existing VG, formats it ext4, mounts at /backups,
+# and exports it via NFS to the local network (192.168.1.0/25).
+#
+# Usage:
+#   ansible-playbook playbooks/backup-nfs.yml
+
+- name: Set up NFS backup storage
+  hosts: hppd600g6
+  become: false
+
+  roles:
+    - role: setup_nfs-backup
+      tags: [nfs-backup]

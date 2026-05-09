@@ -117,6 +117,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 - `post-k3s.yml` — runs after k3s install; installs ArgoCD then bootstraps GitOps (ArgoCD manages Traefik, Sealed Secrets, Headlamp via kube-gitops/k3s/)
 - `configure-router.yml` — localhost only; upserts static DNS records on MikroTik router via `configure_mikrotik-dns` role; **must run before `k8s.yml`** so kubeadm can resolve the API VIP hostname (`api.k8s.<domain>`) during cluster init
 - `upgrade.yml` — OS package upgrades across all kube hosts
+- `backup-nfs.yml` — targets hppd600g6; carves 100G LV from existing VG, formats ext4, mounts at /backups, exports via NFS to 192.168.1.0/25
 
 **Playbook naming convention:**
 - Lowercase, hyphens only (no underscores), `.yml` extension
@@ -157,6 +158,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | `setup_headlamp` | Installs Headlamp Kubernetes dashboard via Helm; captures manual homelab install; flips service to ClusterIP |
 | `setup_argocd` | Installs ArgoCD via Helm (argo-helm chart); sets insecure mode for Traefik TLS termination; displays initial admin password |
 | `setup_argocd-apps` | Applies `kube-gitops/{k3s,k8s}/root.yaml` once; ArgoCD self-manages all child apps after bootstrap |
+| `setup_nfs-backup` | Carves LV from existing VG, formats ext4, mounts at `/backups`, installs + configures nfs-kernel-server; used by `backup-nfs.yml` targeting hppd600g6 |
 | `setup_go-dev-tools` | go, gopls, golangci-lint via Homebrew; optional: delve, goreleaser, ko, air |
 | `setup_nodejs-dev-tools` | node, pnpm via Homebrew; optional brew + npm global packages |
 | `setup_rust-dev-tools` | rustup + stable toolchain (rustc, cargo, rustfmt, clippy); optional cargo tools |
