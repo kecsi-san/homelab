@@ -141,6 +141,9 @@ inventory/group_vars/all/secrets.yml
 credentials/
 /ssh-bastion.conf
 
+# Kubespray-generated kubeconfig (contains cluster credentials)
+inventory/artifacts/
+
 # =============================================================================
 # Project / misc
 # =============================================================================
