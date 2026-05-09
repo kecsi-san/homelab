@@ -22,5 +22,5 @@ mikrotik_dns_records:
     match_subdomain: true
 
   # NFS backup server (hppd600g6)
-  - name: "backup.kinet.local"
+  - name: "backups.kinet.local"
     address: "192.168.1.52"
