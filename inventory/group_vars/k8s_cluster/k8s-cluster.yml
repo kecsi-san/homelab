@@ -65,10 +65,12 @@ credentials_dir: "{{ inventory_dir }}/credentials"
 # Choose network plugin (cilium, calico, kube-ovn or flannel. Use cni for generic cni plugin)
 # Can also be set to 'cloud', which lets the cloud provider setup appropriate routing
 kube_network_plugin: cilium
-cilium_kube_proxy_replacement: strict
+cilium_kube_proxy_replacement: "true"
 cilium_enable_hubble: true
 cilium_hubble_install: true
 cilium_hubble_relay: true
+# Cilium init containers run as root; /opt/cni/bin must be root-owned so they can write to it
+cni_bin_owner: root
 
 # Setting multi_networking to true will install Multus: https://github.com/k8snetworkplumbingwg/multus-cni
 kube_network_plugin_multus: false
