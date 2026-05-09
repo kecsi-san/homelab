@@ -117,7 +117,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 - `post-k3s.yml` — runs after k3s install; installs ArgoCD then bootstraps GitOps (ArgoCD manages Traefik, Sealed Secrets, Headlamp via kube-gitops/k3s/)
 - `configure-router.yml` — localhost only; upserts static DNS records on MikroTik router via `configure_mikrotik-dns` role; **must run before `k8s.yml`** so kubeadm can resolve the API VIP hostname (`api.k8s.<domain>`) during cluster init
 - `upgrade.yml` — OS package upgrades across all kube hosts
-- `backup-nfs.yml` — targets hppd600g6; carves 100G LV from existing VG, formats ext4, mounts at /backups, exports via NFS to 192.168.1.0/25
+- `backup-nfs.yml` — targets hppd600g6; carves 100G LV from existing VG, formats ext4, mounts at `/backups`, exports via NFS to 192.168.1.0/25, installs restic REST server as a systemd service storing repos in `/backups/restic-repos/`
 
 **Playbook naming convention:**
 - Lowercase, hyphens only (no underscores), `.yml` extension
@@ -159,6 +159,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | `setup_argocd` | Installs ArgoCD via Helm (argo-helm chart); sets insecure mode for Traefik TLS termination; displays initial admin password |
 | `setup_argocd-apps` | Applies `kube-gitops/{k3s,k8s}/root.yaml` once; ArgoCD self-manages all child apps after bootstrap |
 | `setup_nfs-backup` | Carves LV from existing VG, formats ext4, mounts at `/backups`, installs + configures nfs-kernel-server; used by `backup-nfs.yml` targeting hppd600g6 |
+| `setup_restic-rest-server` | Downloads restic REST server binary from GitHub releases, installs to `/usr/local/bin`, runs as systemd service on `:8000` storing repos in `/backups/restic-repos/`; `--no-auth` (LAN-only); used by `backup-nfs.yml` |
 | `setup_go-dev-tools` | go, gopls, golangci-lint via Homebrew; optional: delve, goreleaser, ko, air |
 | `setup_nodejs-dev-tools` | node, pnpm via Homebrew; optional brew + npm global packages |
 | `setup_rust-dev-tools` | rustup + stable toolchain (rustc, cargo, rustfmt, clippy); optional cargo tools |
@@ -244,3 +245,46 @@ Two strategies, two different targets:
 - macOS: k3s via k3d (k3s in Docker) installed through Homebrew — requires Docker Desktop or OrbStack
 - Kubeconfig written to `~/.kube/k3s.yaml` and appended to `KUBECONFIG` in `~/.bashrc`
 - Managed by `setup_k3s` role; playbooks: `k3s.yml` (install), `reset-k3s.yml` (uninstall)
+
+### GitOps App Stack (k8s cluster, `kube-gitops/k8s/`)
+
+ArgoCD manages all apps via app-of-apps pattern. Root app: `kube-gitops/k8s/root.yaml`.
+
+| App | Namespace | Source | Purpose |
+|-----|-----------|--------|---------|
+| traefik | traefik | Helm (traefik) + values file | Ingress controller; LoadBalancer IP 192.168.1.101 via kube-vip |
+| sealed-secrets | sealed-secrets | Helm (sealed-secrets) | Encrypts secrets safe to commit; key backup at `~/sealed-secrets-key-backup.yaml` |
+| headlamp | headlamp | Helm (headlamp) | Kubernetes dashboard |
+| argocd | argocd | Helm (argo-helm) | GitOps controller; insecure mode (Traefik terminates TLS) |
+| longhorn | longhorn-system | Helm (longhorn) | Distributed block storage; default StorageClass |
+| ntfy | ntfy | Raw manifests (`kube-gitops/k8s/ntfy/`) | Push notification server; auth `deny-all`; `homelab` admin user |
+| gatus | gatus | Helm (twin/gatus) + values + SealedSecrets dir | Uptime monitoring for 6 services; ntfy alerting |
+| garage | garage | Raw manifests (`kube-gitops/k8s/garage/`) | S3-compatible object storage (Garage v2); `volsync-backups` bucket |
+| volsync | volsync-system | Helm (backube/volsync) | PVC backup operator |
+| volsync-config | volsync-system | Raw manifests (`kube-gitops/k8s/volsync-config/`) | Longhorn VolumeSnapshotClass |
+
+**VolSync backup architecture:**
+- Restic REST server runs on hppd600g6 (192.168.1.52:8000) — external to k8s, data on 100G LV at `/backups/restic-repos/`
+- DNS alias: `backups.kinet.local` → 192.168.1.52
+- ntfy PVC (`ntfy/ntfy-data`) → backed up daily 02:00 → `rest:http://192.168.1.52:8000/ntfy`
+- gatus PVC (`gatus/gatus`) → backed up daily 03:00 → `rest:http://192.168.1.52:8000/gatus`
+- `copyMethod: Clone` (Longhorn CSI clone; Snapshot requires Longhorn backup target which is not configured)
+- Retention: 6 hourly, 7 daily, 4 weekly, 3 monthly; prune every 14 days
+- Restic credentials stored as SealedSecrets per namespace (`volsync-restic-secret`)
+
+**SealedSecrets workflow:**
+```bash
+# Always seal against the k8s cluster context, not the default (k3s) context
+kubectl create secret generic my-secret --namespace my-ns \
+  --from-literal=KEY=value --dry-run=client -o yaml | \
+  kubeseal --format yaml \
+    --context "kubernetes-admin-cluster.local@cluster.local" \
+    --controller-name sealed-secrets \
+    --controller-namespace sealed-secrets > sealedsecret.yaml
+# Add yamllint disable-line comments before long encrypted data lines
+```
+
+**Traefik TLS notes:**
+- HTTP/2 disabled via `tlsOptions.default.alpnProtocols: [http/1.1]` — prevents Firefox H2 connection coalescing across all `*.kecskemethy.org` services
+- ArgoCD runs in insecure mode; Traefik terminates TLS via IngressRoute + cert-manager wildcard cert
+- `respondingTimeouts.idleTimeout: 20s` on websecure entrypoint
