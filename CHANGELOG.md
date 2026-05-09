@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(k3s): rename kubeconfig context to admin@k3s automatically ([bc34fa1](https://github.com/kecsi-san/ansible-env-setup/commit/bc34fa17f1a907c77918bc7eef5c86ea170565ed) by Zoltan K).
 - fix(post-k8s): rename kubeconfig context to admin@k8s automatically ([c741b7f](https://github.com/kecsi-san/ansible-env-setup/commit/c741b7f4b50251abfef2bed843d8325582fe4adb) by Zoltan K).
 - fix(volsync): switch copyMethod from Snapshot to Clone ([c0fda78](https://github.com/kecsi-san/ansible-env-setup/commit/c0fda78b4661e47d1104ab6c665b5067eadecb1f) by Zoltan K).
 - fix(volsync): regenerate restic sealed secrets cleanly (no manual copy-paste) ([0d2563a](https://github.com/kecsi-san/ansible-env-setup/commit/0d2563aed89b489d1112bac3dc036691f33c51c1) by Zoltan K).
