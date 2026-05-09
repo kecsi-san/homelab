@@ -22,6 +22,16 @@
         regexp: 'server: https://127\.0\.0\.1:6443'
         replace: "server: https://{{ kube_vip_address }}:6443"
 
+    - name: Rename kubeconfig context to admin@k8s
+      ansible.builtin.command:
+        cmd: >
+          kubectl config rename-context
+          kubernetes-admin-cluster.local@cluster.local admin@k8s
+          --kubeconfig {{ ansible_env.HOME }}/.kube/k8s.yaml
+      register: rename_ctx
+      changed_when: rename_ctx.rc == 0
+      failed_when: rename_ctx.rc != 0 and 'already exists' not in rename_ctx.stderr
+
     - name: Add k8s kubeconfig to KUBECONFIG in ~/.bashrc
       ansible.builtin.blockinfile:
         path: "{{ ansible_env.HOME }}/.bashrc"

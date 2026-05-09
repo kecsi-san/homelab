@@ -278,7 +278,7 @@ ArgoCD manages all apps via app-of-apps pattern. Root app: `kube-gitops/k8s/root
 kubectl create secret generic my-secret --namespace my-ns \
   --from-literal=KEY=value --dry-run=client -o yaml | \
   kubeseal --format yaml \
-    --context "kubernetes-admin-cluster.local@cluster.local" \
+    --context "admin@k8s" \
     --controller-name sealed-secrets \
     --controller-namespace sealed-secrets > sealedsecret.yaml
 # Add yamllint disable-line comments before long encrypted data lines
