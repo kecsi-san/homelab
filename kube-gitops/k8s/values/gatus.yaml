@@ -75,6 +75,9 @@ config:
       alerts:
         - type: ntfy
 
+deploymentStrategy:
+  type: Recreate
+
 persistence:
   enabled: true
   storageClassName: longhorn
