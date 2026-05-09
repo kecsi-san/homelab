@@ -66,6 +66,16 @@ ansible-playbook playbooks/upgrade.yml
 #   post-k8s.yml    ~2 min
 #   Total          ~27 min
 
+# Full cluster rebuild runbook:
+#   1. ansible-playbook playbooks/configure-router.yml   # ensure DNS resolves before kubeadm
+#   2. ansible-playbook playbooks/reset-k8s.yml
+#   3. ansible-playbook -b playbooks/k8s.yml
+#   4. ansible-playbook playbooks/post-k8s.yml
+#   5. kubectl apply -f ~/sealed-secrets-key-backup.yaml  # restore encryption key
+#      kubectl rollout restart deployment sealed-secrets -n sealed-secrets
+#      # ArgoCD will reconcile; any stuck pods (ContainerCreating) need a rollout restart
+#      # once their SealedSecrets are decrypted
+
 # Run only specific roles using tags
 ansible-playbook --ask-become-pass -t ssh,sudo playbooks/prerequisite.yml
 ansible-playbook -t minimal,brew playbooks/local-core.yml
