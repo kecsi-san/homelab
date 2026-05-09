@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(longhorn): disable pre-upgrade hook for ArgoCD fresh install ([75f0834](https://github.com/kecsi-san/ansible-env-setup/commit/75f083462a46cae42941c1eb9890a42a357640bd) by Zoltan K).
 - fix(k8s): fix Cilium CNI for reliable automated cluster rebuild ([2be1065](https://github.com/kecsi-san/ansible-env-setup/commit/2be1065552608c544e39b20337d34d2d32893b7a) by Zoltan K).
 - fix(router): fix mikrotik-dns playbook and role for first-run reliability ([533f0fd](https://github.com/kecsi-san/ansible-env-setup/commit/533f0fd5dcd1c4779ef4fe3d8e9bf3df25ec9114) by Zoltan K).
 - fix(k8s): use cluster.local as internal DNS domain ([60b718b](https://github.com/kecsi-san/ansible-env-setup/commit/60b718b6d0ddc8f96323dbff79b72e2180073788) by Zoltan K).
