@@ -32,6 +32,37 @@
       tags:
         - kubeconfig
 
+- name: Configure ArgoCD for Traefik ingress
+  hosts: localhost
+  connection: local
+  become: false
+  tasks:
+    - name: Set ArgoCD server to insecure mode (TLS terminated by Traefik)
+      ansible.builtin.command: >
+        kubectl --kubeconfig {{ ansible_env.HOME }}/.kube/k8s.yaml
+        patch configmap argocd-cmd-params-cm -n argocd
+        --type merge -p '{"data":{"server.insecure":"true"}}'
+      register: argocd_patch
+      changed_when: "'patched' in argocd_patch.stdout"
+      tags:
+        - argocd
+
+    - name: Restart ArgoCD server to apply insecure mode
+      ansible.builtin.command: >
+        kubectl --kubeconfig {{ ansible_env.HOME }}/.kube/k8s.yaml
+        rollout restart deployment argocd-server -n argocd
+      when: argocd_patch.changed
+      tags:
+        - argocd
+
+    - name: Wait for ArgoCD server rollout
+      ansible.builtin.command: >
+        kubectl --kubeconfig {{ ansible_env.HOME }}/.kube/k8s.yaml
+        rollout status deployment argocd-server -n argocd --timeout=120s
+      when: argocd_patch.changed
+      tags:
+        - argocd
+
 - name: Post-cluster setup — homelab (k8s)
   hosts: kube
   become: false
