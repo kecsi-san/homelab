@@ -1,6 +1,10 @@
 ---
 # Longhorn values — k8s (bare-metal)
-# No overrides from the Ansible role; using chart defaults.
 # Common customisations to add here:
 #   defaultSettings.defaultReplicaCount: 2   # default is 3; reduce for small clusters
 #   persistence.defaultClassReplicaCount: 2
+
+# ArgoCD uses `helm upgrade --install` which triggers pre-upgrade hooks even on
+# fresh installs. The pre-upgrade job fails because Longhorn CRDs don't exist yet.
+preUpgradeChecker:
+  jobEnabled: false
