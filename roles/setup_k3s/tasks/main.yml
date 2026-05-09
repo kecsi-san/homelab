@@ -99,6 +99,18 @@
     mode: '0600'
   when: ansible_system == 'Darwin'
 
+# ── Common: normalise context name ───────────────────────────────────────────
+- name: Rename kubeconfig context to admin@k3s
+  ansible.builtin.command:
+    cmd: >
+      kubectl config rename-context
+      {{ 'default' if ansible_system == 'Linux' else 'k3d-' + k3s_cluster_name }}
+      admin@k3s
+      --kubeconfig {{ k3s_kubeconfig_path }}
+  register: rename_k3s_ctx
+  changed_when: rename_k3s_ctx.rc == 0
+  failed_when: rename_k3s_ctx.rc != 0 and 'already exists' not in rename_k3s_ctx.stderr
+
 # ── Common: shell integration ─────────────────────────────────────────────────
 - name: Add k3s kubeconfig to PATH in ~/.bashrc
   ansible.builtin.blockinfile:
