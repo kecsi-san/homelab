@@ -8,18 +8,10 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
-  sources:
-    # OCI chart — must be registered as a Helm repo in ArgoCD if it fails:
-    #   argocd repo add oci://codeberg.org/wrenix/helm-charts --type helm --enable-oci
-    - repoURL: oci://codeberg.org/wrenix/helm-charts
-      chart: ntfy
-      targetRevision: "0.5.15"
-      helm:
-        valueFiles:
-          - $values/kube-gitops/k8s/values/ntfy.yaml
-    - repoURL: https://github.com/kecsi-san/ansible-env-setup.git
-      targetRevision: HEAD
-      ref: values
+  source:
+    repoURL: https://github.com/kecsi-san/ansible-env-setup.git
+    targetRevision: HEAD
+    path: kube-gitops/k8s/ntfy
   destination:
     server: https://kubernetes.default.svc
     namespace: ntfy

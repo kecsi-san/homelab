@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ntfy-config
+  namespace: ntfy
+data:
+  server.yml: |
+    base-url: "https://ntfy.kecskemethy.org"
+    listen-http: ":80"
+    auth-file: /data/user.db
+    auth-default-access: read-write
+    cache-file: /data/cache.db
+    cache-duration: 12h
+    attachment-cache-dir: /data/attachments
