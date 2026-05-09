@@ -53,6 +53,7 @@ spec:
       containers:
         - name: garage
           image: dxflrs/garage:v2.3.0
+          command: ["/garage"]
           args: ["-c", "/etc/garage/garage.toml", "server"]
           ports:
             - name: s3
