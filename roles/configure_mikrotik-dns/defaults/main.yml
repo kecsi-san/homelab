@@ -20,3 +20,7 @@ mikrotik_dns_records:
   - name: "k3s.{{ domain_name }}"
     address: "{{ k3s_traefik_ip | default('') }}"
     match_subdomain: true
+
+  # NFS backup server (hppd600g6)
+  - name: "backup.kinet.local"
+    address: "192.168.1.52"
