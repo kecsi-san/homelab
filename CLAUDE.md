@@ -262,12 +262,14 @@ ArgoCD manages all apps via app-of-apps pattern. Root app: `kube-gitops/k8s/root
 | garage | garage | Raw manifests (`kube-gitops/k8s/garage/`) | S3-compatible object storage (Garage v2); `volsync-backups` bucket |
 | volsync | volsync-system | Helm (backube/volsync) | PVC backup operator |
 | volsync-config | volsync-system | Raw manifests (`kube-gitops/k8s/volsync-config/`) | Longhorn VolumeSnapshotClass |
+| mealie | mealie | Raw manifests (`kube-gitops/k8s/mealie/`) | Self-hosted recipe manager; SQLite; default login changeme@example.com / MyPassword |
 
 **VolSync backup architecture:**
 - Restic REST server runs on hppd600g6 (192.168.1.52:8000) — external to k8s, data on 100G LV at `/backups/restic-repos/`
 - DNS alias: `backups.kinet.local` → 192.168.1.52
 - ntfy PVC (`ntfy/ntfy-data`) → backed up daily 02:00 → `rest:http://192.168.1.52:8000/ntfy`
 - gatus PVC (`gatus/gatus`) → backed up daily 03:00 → `rest:http://192.168.1.52:8000/gatus`
+- mealie PVC (`mealie/mealie-data`) → backed up daily 04:00 → `rest:http://192.168.1.52:8000/mealie`
 - `copyMethod: Clone` (Longhorn CSI clone; Snapshot requires Longhorn backup target which is not configured)
 - Retention: 6 hourly, 7 daily, 4 weekly, 3 monthly; prune every 14 days
 - Restic credentials stored as SealedSecrets per namespace (`volsync-restic-secret`)

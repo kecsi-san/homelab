@@ -1,0 +1,21 @@
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: mealie-backup
+  namespace: mealie
+spec:
+  sourcePVC: mealie-data
+  trigger:
+    schedule: "0 4 * * *"
+  restic:
+    pruneIntervalDays: 14
+    repository: volsync-restic-secret
+    retain:
+      hourly: 6
+      daily: 7
+      weekly: 4
+      monthly: 3
+    copyMethod: Clone
+    storageClassName: longhorn
+    accessModes: [ReadWriteOnce]

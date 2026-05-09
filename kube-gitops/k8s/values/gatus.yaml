@@ -66,6 +66,15 @@ config:
       alerts:
         - type: ntfy
 
+    - name: Mealie
+      url: https://mealie.kecskemethy.org
+      interval: 1m
+      conditions:
+        - "[STATUS] == 200"
+        - "[CERTIFICATE_EXPIRATION] > 48h"
+      alerts:
+        - type: ntfy
+
     - name: ntfy
       url: https://ntfy.kecskemethy.org
       interval: 1m
