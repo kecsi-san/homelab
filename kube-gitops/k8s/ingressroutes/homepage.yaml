@@ -15,5 +15,4 @@ spec:
       services:
         - name: homepage
           port: 3000
-  tls:
-    secretName: homepage-tls
+  tls: {}
