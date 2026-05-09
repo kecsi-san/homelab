@@ -243,7 +243,7 @@ Two strategies, two different targets:
 **k3s — single-node local dev cluster (localhost)**
 - Linux (WSL2): native k3s via official installer script (`get.k3s.io`)
 - macOS: k3s via k3d (k3s in Docker) installed through Homebrew — requires Docker Desktop or OrbStack
-- Kubeconfig written to `~/.kube/k3s.yaml` and appended to `KUBECONFIG` in `~/.bashrc`
+- Kubeconfig written to `~/.kube/k3s.yaml` and appended to `KUBECONFIG` in `~/.bashrc`; context renamed to `admin@k3s` automatically (Linux: from `default`; macOS: from `k3d-<cluster_name>`)
 - Managed by `setup_k3s` role; playbooks: `k3s.yml` (install), `reset-k3s.yml` (uninstall)
 
 ### GitOps App Stack (k8s cluster, `kube-gitops/k8s/`)
@@ -274,7 +274,7 @@ ArgoCD manages all apps via app-of-apps pattern. Root app: `kube-gitops/k8s/root
 
 **SealedSecrets workflow:**
 ```bash
-# Always seal against the k8s cluster context, not the default (k3s) context
+# Always seal against the k8s cluster context (admin@k8s), not the k3s context (admin@k3s)
 kubectl create secret generic my-secret --namespace my-ns \
   --from-literal=KEY=value --dry-run=client -o yaml | \
   kubeseal --format yaml \
