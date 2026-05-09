@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(python-uv): add librouteros to ansible-core extras; use --force on install ([ac869e4](https://github.com/kecsi-san/ansible-env-setup/commit/ac869e4ccc5f23fdad893829b8743c1d9290b19a) by Zoltan K).
 - fix(dns): rename backup.kinet.local → backups.kinet.local ([689f37e](https://github.com/kecsi-san/ansible-env-setup/commit/689f37e984ff9d0bec589f59126ba611b1c4d0e2) by Zoltan K).
 - fix(traefik): disable HTTP/2 to prevent Firefox H2 connection coalescing ([dd62c98](https://github.com/kecsi-san/ansible-env-setup/commit/dd62c982d59a3100ac16d04e10259eefc2f58537) by Zoltan K).
 - fix(volsync): remove ServerSideApply to use lenient diff path ([6368b66](https://github.com/kecsi-san/ansible-env-setup/commit/6368b665f95c4a2a9bc6c8a6dc99f82d12ee1943) by Zoltan K).
