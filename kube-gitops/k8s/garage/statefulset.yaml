@@ -1,0 +1,79 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: garage
+  namespace: garage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: garage
+  serviceName: garage
+  template:
+    metadata:
+      labels:
+        app: garage
+    spec:
+      initContainers:
+        - name: config
+          image: busybox:1.37
+          command: [sh, -c]
+          args:
+            - |
+              cat > /etc/garage/garage.toml <<EOF
+              metadata_dir = "/var/lib/garage/meta"
+              data_dir = "/var/lib/garage/data"
+              db_engine = "sqlite"
+              replication_factor = 1
+              rpc_bind_addr = "[::]:3901"
+              rpc_public_addr = "garage.garage.svc.cluster.local:3901"
+              rpc_secret = "${GARAGE_RPC_SECRET}"
+              [s3_api]
+              api_bind_addr = "[::]:3900"
+              s3_region = "garage"
+              [admin]
+              api_bind_addr = "0.0.0.0:3903"
+              admin_token = "${GARAGE_ADMIN_TOKEN}"
+              EOF
+          env:
+            - name: GARAGE_RPC_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: garage-secrets
+                  key: rpc-secret
+            - name: GARAGE_ADMIN_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: garage-secrets
+                  key: admin-token
+          volumeMounts:
+            - name: garage-config
+              mountPath: /etc/garage
+      containers:
+        - name: garage
+          image: dxflrs/garage:v2.3.0
+          ports:
+            - name: s3
+              containerPort: 3900
+            - name: rpc
+              containerPort: 3901
+            - name: admin
+              containerPort: 3903
+          volumeMounts:
+            - name: garage-config
+              mountPath: /etc/garage
+            - name: garage-data
+              mountPath: /var/lib/garage
+      volumes:
+        - name: garage-config
+          emptyDir: {}
+  volumeClaimTemplates:
+    - metadata:
+        name: garage-data
+      spec:
+        accessModes: [ReadWriteOnce]
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 10Gi
