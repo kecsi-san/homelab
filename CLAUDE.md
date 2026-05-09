@@ -60,6 +60,12 @@ ansible-playbook playbooks/configure-router.yml
 # OS upgrades on all kube group hosts
 ansible-playbook playbooks/upgrade.yml
 
+# Typical full cluster rebuild timing (4-node homelab: 3 CP + 1 worker, Kubespray 2.31 + Cilium 1.18.5):
+#   reset-k8s.yml   ~4 min
+#   k8s.yml        ~21 min
+#   post-k8s.yml    ~2 min
+#   Total          ~27 min
+
 # Run only specific roles using tags
 ansible-playbook --ask-become-pass -t ssh,sudo playbooks/prerequisite.yml
 ansible-playbook -t minimal,brew playbooks/local-core.yml
