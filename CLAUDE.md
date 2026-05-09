@@ -70,7 +70,7 @@ ansible-playbook playbooks/upgrade.yml
 #   1. ansible-playbook playbooks/configure-router.yml   # ensure DNS resolves before kubeadm
 #   2. ansible-playbook playbooks/reset-k8s.yml
 #   3. ansible-playbook -b playbooks/k8s.yml
-#   4. ansible-playbook playbooks/post-k8s.yml
+#   4. ansible-playbook playbooks/post-k8s.yml           # patches ArgoCD insecure mode automatically
 #   5. kubectl apply -f ~/sealed-secrets-key-backup.yaml  # restore encryption key
 #      kubectl rollout restart deployment sealed-secrets -n sealed-secrets
 #      # ArgoCD will reconcile; any stuck pods (ContainerCreating) need a rollout restart
