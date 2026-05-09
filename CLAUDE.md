@@ -136,7 +136,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | Role | Purpose |
 |------|---------|
 | `configure_etc-hosts` | Manages `/etc/hosts` with kube group IPs and domain names |
-| `configure_mikrotik-dns` | Upserts static DNS records on MikroTik router via `community.routeros` API; manages API VIP + wildcard ingress entries |
+| `configure_mikrotik-dns` | Upserts static DNS records on MikroTik router via `community.routeros` API; manages API VIP (`api.k8s.<domain>`), k3s wildcard, and NFS alias |
 | `configure_fzf` | Adds fzf initialization to `~/.bashrc` (idempotent) |
 | `configure_git` | Copies `~/.gitconfig` from static file |
 | `configure_oh-my-posh` | Installs Pluto OMP theme; adds init block to `~/.bashrc` |
@@ -255,7 +255,7 @@ ArgoCD manages all apps via app-of-apps pattern. Root app: `kube-gitops/k8s/root
 | traefik | traefik | Helm (traefik) + values file | Ingress controller; LoadBalancer IP 192.168.1.101 via kube-vip |
 | sealed-secrets | sealed-secrets | Helm (sealed-secrets) | Encrypts secrets safe to commit; key backup at `~/sealed-secrets-key-backup.yaml` |
 | headlamp | headlamp | Helm (headlamp) | Kubernetes dashboard |
-| argocd | argocd | Helm (argo-helm) | GitOps controller; insecure mode (Traefik terminates TLS) |
+| argocd | argocd | Helm (argo-helm) | GitOps controller; insecure mode (Cloudflare terminates TLS) |
 | longhorn | longhorn-system | Helm (longhorn) | Distributed block storage; default StorageClass |
 | ntfy | ntfy | Raw manifests (`kube-gitops/k8s/ntfy/`) | Push notification server; auth `deny-all`; `homelab` admin user |
 | gatus | gatus | Helm (twin/gatus) + values + SealedSecrets dir | Uptime monitoring for 6 services; ntfy alerting |
@@ -286,7 +286,9 @@ kubectl create secret generic my-secret --namespace my-ns \
 # Add yamllint disable-line comments before long encrypted data lines
 ```
 
-**Traefik TLS notes:**
-- HTTP/2 disabled via `tlsOptions.default.alpnProtocols: [http/1.1]` — prevents Firefox H2 connection coalescing across all `*.kecskemethy.org` services
-- ArgoCD runs in insecure mode; Traefik terminates TLS via IngressRoute + cert-manager wildcard cert
-- `respondingTimeouts.idleTimeout: 20s` on websecure entrypoint
+**Traffic and TLS architecture:**
+- All `*.kecskemethy.org` traffic routes via Cloudflare Tunnel — browser connects to Cloudflare edge (HTTPS/TLS handled there), tunnel forwards to cloudflared pod, which connects to Traefik via `https://traefik.traefik.svc.cluster.local` with `noTLSVerify: true`
+- No cert-manager, no Let's Encrypt — Cloudflare's Universal SSL cert is what browsers see
+- MikroTik has no wildcard DNS override for `*.kecskemethy.org`; local and external clients both resolve via Cloudflare public DNS
+- ArgoCD runs in insecure mode; Cloudflare terminates TLS (not Traefik)
+- IngressRoutes use `tls: {}` (Traefik self-signed; irrelevant since cloudflared ignores cert validity)
