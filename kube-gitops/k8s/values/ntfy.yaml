@@ -1,0 +1,20 @@
+---
+# ntfy values — push notification server
+ntfy:
+  baseURL: "https://ntfy.kecskemethy.org"
+  auth:
+    file: /data/user.db
+    defaultAccess: read-write  # tighten after: ntfy user add <user> --role=admin
+  cache:
+    file: /data/cache.db
+    duration: "12h"
+  attachment:
+    cacheDir: /data/attachments
+
+persistence:
+  enabled: true
+  storageClass: longhorn
+  size: 1Gi
+
+ingress:
+  enabled: false

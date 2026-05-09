@@ -77,3 +77,16 @@ config:
             icon: traefik.png
             namespace: traefik
             app: traefik
+    - Monitoring:
+        - Gatus:
+            href: https://gatus.kecskemethy.org
+            description: Uptime monitoring
+            icon: gatus.png
+            namespace: gatus
+            app: gatus
+        - ntfy:
+            href: https://ntfy.kecskemethy.org
+            description: Push notifications
+            icon: ntfy.png
+            namespace: ntfy
+            app: ntfy

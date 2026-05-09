@@ -1,0 +1,79 @@
+---
+# Gatus values — uptime monitoring
+config:
+  alerting:
+    ntfy:
+      url: "https://ntfy.kecskemethy.org"
+      topic: homelab-alerts
+      priority: 3
+      default-alert:
+        enabled: true
+        failure-threshold: 3
+        success-threshold: 2
+        send-on-resolved: true
+
+  endpoints:
+    - name: Homepage
+      url: https://homepage.kecskemethy.org
+      interval: 1m
+      conditions:
+        - "[STATUS] == 200"
+        - "[CERTIFICATE_EXPIRATION] > 48h"
+      alerts:
+        - type: ntfy
+
+    - name: ArgoCD
+      url: https://argocd.kecskemethy.org
+      interval: 1m
+      conditions:
+        - "[STATUS] == 200"
+        - "[CERTIFICATE_EXPIRATION] > 48h"
+      alerts:
+        - type: ntfy
+
+    - name: Headlamp
+      url: https://headlamp.kecskemethy.org
+      interval: 1m
+      conditions:
+        - "[STATUS] == 200"
+        - "[CERTIFICATE_EXPIRATION] > 48h"
+      alerts:
+        - type: ntfy
+
+    - name: Longhorn
+      url: https://longhorn.kecskemethy.org
+      interval: 1m
+      conditions:
+        - "[STATUS] == 200"
+        - "[CERTIFICATE_EXPIRATION] > 48h"
+      alerts:
+        - type: ntfy
+
+    - name: Traefik
+      url: https://traefik.kecskemethy.org/dashboard/
+      interval: 1m
+      conditions:
+        - "[STATUS] == 200"
+        - "[CERTIFICATE_EXPIRATION] > 48h"
+      alerts:
+        - type: ntfy
+
+    - name: ntfy
+      url: https://ntfy.kecskemethy.org
+      interval: 1m
+      conditions:
+        - "[STATUS] == 200"
+        - "[CERTIFICATE_EXPIRATION] > 48h"
+      alerts:
+        - type: ntfy
+
+persistence:
+  enabled: true
+  storageClassName: longhorn
+  size: 200Mi
+
+ingress:
+  enabled: false
+
+service:
+  type: ClusterIP
