@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(traefik): set 20s idle connection timeout to prevent stale H2 connections ([fba1e13](https://github.com/kecsi-san/ansible-env-setup/commit/fba1e13579860e3241104ceaadbd60baabbf340a) by Zoltan K).
 - fix(argocd): patch insecure mode in post-k8s.yml after Kubespray install ([7257c13](https://github.com/kecsi-san/ansible-env-setup/commit/7257c13132b645e57551162d3f0bf817e21deb88) by Zoltan K).
 - fix(longhorn): disable pre-upgrade hook for ArgoCD fresh install ([75f0834](https://github.com/kecsi-san/ansible-env-setup/commit/75f083462a46cae42941c1eb9890a42a357640bd) by Zoltan K).
 - fix(k8s): fix Cilium CNI for reliable automated cluster rebuild ([2be1065](https://github.com/kecsi-san/ansible-env-setup/commit/2be1065552608c544e39b20337d34d2d32893b7a) by Zoltan K).
