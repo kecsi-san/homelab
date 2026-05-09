@@ -75,6 +75,13 @@ ansible-playbook playbooks/upgrade.yml
 #      kubectl rollout restart deployment sealed-secrets -n sealed-secrets
 #      # ArgoCD will reconcile; any stuck pods (ContainerCreating) need a rollout restart
 #      # once their SealedSecrets are decrypted
+#   6. Firefox HSTS: after rebuild, delete SiteSecurityServiceState.bin from Firefox profile
+#      folder (about:support → Open Profile Folder) to clear stale HSTS state
+#   7. Verify Longhorn storage:
+#      kubectl run longhorn-test --image=busybox --restart=Never \
+#        --overrides='{"spec":{"volumes":[{"name":"data","persistentVolumeClaim":{"claimName":"longhorn-test"}}],"containers":[{"name":"longhorn-test","image":"busybox","command":["/bin/sh","-c","echo ok>/data/test && cat /data/test"],"volumeMounts":[{"name":"data","mountPath":"/data"}]}]}}' \
+#        -- /bin/sh -c 'echo ok'
+#      # easier: kubectl apply the PVC + pod manifest, check logs, then delete both
 
 # Run only specific roles using tags
 ansible-playbook --ask-become-pass -t ssh,sudo playbooks/prerequisite.yml
