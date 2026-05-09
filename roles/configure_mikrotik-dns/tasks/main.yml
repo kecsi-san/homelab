@@ -1,5 +1,5 @@
 ---
-- name: Ensure MikroTik static DNS records are present
+- name: Update existing MikroTik static DNS records
   community.routeros.api_find_and_modify:
     hostname: "{{ mikrotik_host }}"
     username: "{{ mikrotik_user }}"
@@ -11,10 +11,30 @@
       address: "{{ item.address }}"
       ttl: "{{ mikrotik_dns_ttl }}"
       disabled: "false"
+      match-subdomain: "{{ 'true' if item.match_subdomain | default(false) else 'false' }}"
     require_matches_min: 0
     require_matches_max: 1
-    create_if_not_exists: true
   loop: "{{ mikrotik_dns_records }}"
   when: item.address | length > 0
+  register: dns_update
   loop_control:
     label: "{{ item.name }} → {{ item.address }}"
+
+- name: Add missing MikroTik static DNS records
+  community.routeros.api:
+    hostname: "{{ mikrotik_host }}"
+    username: "{{ mikrotik_user }}"
+    password: "{{ mikrotik_password }}"
+    path: ip dns static
+    add: >-
+      name={{ item.item.name }}
+      address={{ item.item.address }}
+      ttl={{ mikrotik_dns_ttl }}
+      match-subdomain={{ 'yes' if item.item.match_subdomain | default(false) else 'no' }}
+      disabled=no
+  loop: "{{ dns_update.results }}"
+  when:
+    - not (item.skipped | default(false))
+    - item.match_count | default(0) == 0
+  loop_control:
+    label: "{{ item.item.name }} → {{ item.item.address }}"

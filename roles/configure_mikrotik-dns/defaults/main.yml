@@ -7,14 +7,16 @@
 mikrotik_dns_ttl: "5m"
 
 mikrotik_dns_records:
-  # Kubernetes API VIP
+  # Kubernetes API VIP — exact name record
   - name: "api.k8s.{{ domain_name }}"
     address: "{{ kube_vip_address }}"
 
-  # k8s cluster wildcard (Traefik ingress)
-  - name: "*.k8s.{{ domain_name }}"
-    address: "{{ kube_vip_address }}"
+  # k8s cluster wildcard (Traefik ingress) — RouterOS match-subdomain format
+  - name: "k8s.{{ domain_name }}"
+    address: "{{ k8s_traefik_ip | default('') }}"
+    match_subdomain: true
 
-  # k3s cluster wildcard (Traefik ingress)
-  - name: "*.k3s.{{ domain_name }}"
+  # k3s cluster wildcard (Traefik ingress) — RouterOS match-subdomain format
+  - name: "k3s.{{ domain_name }}"
     address: "{{ k3s_traefik_ip | default('') }}"
+    match_subdomain: true

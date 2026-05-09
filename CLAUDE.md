@@ -53,6 +53,8 @@ ansible-playbook playbooks/post-k8s.yml
 ansible-playbook playbooks/post-k3s.yml
 
 # Configure MikroTik router DNS records
+# Run BEFORE k8s.yml — api.k8s.<domain> must resolve to kube-vip before kubeadm init
+# Also run after changing Traefik LB IPs or domain config
 ansible-playbook playbooks/configure-router.yml
 
 # OS upgrades on all kube group hosts
@@ -90,7 +92,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 - `pre-k8s.yml` — runs after `prerequisite.yml` and before `k8s.yml`; prepares nodes (etckeeper)
 - `post-k8s.yml` — runs after Kubernetes cluster is up; installs cluster-level tools (Longhorn, kube-extra, Traefik, Sealed Secrets, Headlamp)
 - `post-k3s.yml` — runs after k3s install; installs ArgoCD then bootstraps GitOps (ArgoCD manages Traefik, Sealed Secrets, Headlamp via kube-gitops/k3s/)
-- `configure-router.yml` — localhost only; upserts static DNS records on MikroTik router via `configure_mikrotik-dns` role
+- `configure-router.yml` — localhost only; upserts static DNS records on MikroTik router via `configure_mikrotik-dns` role; **must run before `k8s.yml`** so kubeadm can resolve the API VIP hostname (`api.k8s.<domain>`) during cluster init
 - `upgrade.yml` — OS package upgrades across all kube hosts
 
 **Playbook naming convention:**
