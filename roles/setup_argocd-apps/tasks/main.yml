@@ -18,6 +18,43 @@
   changed_when: true
   tags: argocd-apps
 
+- name: Write wrenix OCI Helm repository secret for ArgoCD
+  ansible.builtin.copy:
+    content: |
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: wrenix-helm-charts
+        namespace: argocd
+        labels:
+          argocd.argoproj.io/secret-type: repository
+      stringData:
+        type: helm
+        url: oci://codeberg.org/wrenix/helm-charts
+        enableOCI: "true"
+    dest: /tmp/argocd-repo-wrenix.yaml
+    mode: '0600'
+  delegate_to: localhost
+  run_once: true
+  become: false
+  when: argocd_apps_cluster_type == 'k8s'
+  tags: argocd-apps
+
+- name: Apply wrenix OCI Helm repository to ArgoCD
+  ansible.builtin.command:
+    cmd: kubectl apply -f /tmp/argocd-repo-wrenix.yaml
+  environment:
+    KUBECONFIG: "{{ argocd_apps_kubeconfig | replace('~', ansible_env.HOME) }}"
+  delegate_to: localhost
+  run_once: true
+  become: false
+  register: kubectl_apply_repo
+  changed_when: >-
+    'created' in kubectl_apply_repo.stdout or
+    'configured' in kubectl_apply_repo.stdout
+  when: argocd_apps_cluster_type == 'k8s'
+  tags: argocd-apps
+
 - name: Apply ArgoCD root Application
   ansible.builtin.command:
     cmd: >-
