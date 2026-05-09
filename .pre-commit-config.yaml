@@ -11,4 +11,12 @@ repos:
         types: [yaml]
         args: [--strict]
 
+      - id: update-changelog
+        name: Update CHANGELOG.md
+        entry: scripts/update-changelog.sh
+        language: script
+        stages: [pre-push]
+        pass_filenames: false
+        always_run: true
+
       # ansible-lint runs in CI (GitHub Actions) — too slow for pre-commit (~70s)
