@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(garage): add explicit command entrypoint for garage binary ([3c86caa](https://github.com/kecsi-san/ansible-env-setup/commit/3c86caa598c60c60f1674fdda6a83c7150e6dd9a) by Zoltan K).
 - fix: correct garage config path, volsync CRD schema, gatus recreate strategy ([1702195](https://github.com/kecsi-san/ansible-env-setup/commit/170219595bf0ec58c73bb16c1328fff36315106b) by Zoltan K).
 - fix(traefik): set 20s idle connection timeout to prevent stale H2 connections ([fba1e13](https://github.com/kecsi-san/ansible-env-setup/commit/fba1e13579860e3241104ceaadbd60baabbf340a) by Zoltan K).
 - fix(argocd): patch insecure mode in post-k8s.yml after Kubespray install ([7257c13](https://github.com/kecsi-san/ansible-env-setup/commit/7257c13132b645e57551162d3f0bf817e21deb88) by Zoltan K).
