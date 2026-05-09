@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(traefik): disable HTTP/2 to prevent Firefox H2 connection coalescing ([dd62c98](https://github.com/kecsi-san/ansible-env-setup/commit/dd62c982d59a3100ac16d04e10259eefc2f58537) by Zoltan K).
 - fix(volsync): remove ServerSideApply to use lenient diff path ([6368b66](https://github.com/kecsi-san/ansible-env-setup/commit/6368b665f95c4a2a9bc6c8a6dc99f82d12ee1943) by Zoltan K).
 - fix(volsync): ignore terminatingReplicas field missing from ArgoCD schema ([8a1c5fe](https://github.com/kecsi-san/ansible-env-setup/commit/8a1c5fecdedbde84790ccac80971f782a84aa1d9) by Zoltan K).
 - fix(gatus): use strategy.type Recreate for RWO PVC compatibility ([54dde1f](https://github.com/kecsi-san/ansible-env-setup/commit/54dde1f90d5ffc4c59669f973771b339e5c61414) by Zoltan K).
