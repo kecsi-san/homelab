@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(volsync): reseal restic secrets against k8s cluster (not k3s) ([098423c](https://github.com/kecsi-san/ansible-env-setup/commit/098423cde574410761e846ca33b4f6ae55970254) by Zoltan K).
 - fix(python-uv): add librouteros to ansible-core extras; use --force on install ([ac869e4](https://github.com/kecsi-san/ansible-env-setup/commit/ac869e4ccc5f23fdad893829b8743c1d9290b19a) by Zoltan K).
 - fix(dns): rename backup.kinet.local → backups.kinet.local ([689f37e](https://github.com/kecsi-san/ansible-env-setup/commit/689f37e984ff9d0bec589f59126ba611b1c4d0e2) by Zoltan K).
 - fix(traefik): disable HTTP/2 to prevent Firefox H2 connection coalescing ([dd62c98](https://github.com/kecsi-san/ansible-env-setup/commit/dd62c982d59a3100ac16d04e10259eefc2f58537) by Zoltan K).
