@@ -9,7 +9,7 @@ data:
     base-url: "https://ntfy.kecskemethy.org"
     listen-http: ":80"
     auth-file: /data/user.db
-    auth-default-access: read-write
+    auth-default-access: deny-all
     cache-file: /data/cache.db
     cache-duration: 12h
     attachment-cache-dir: /data/attachments

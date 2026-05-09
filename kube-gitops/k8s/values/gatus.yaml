@@ -1,11 +1,19 @@
 ---
 # Gatus values — uptime monitoring
+env:
+  - name: NTFY_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: gatus-ntfy-token
+        key: token
+
 config:
   alerting:
     ntfy:
       url: "https://ntfy.kecskemethy.org"
       topic: homelab-alerts
       priority: 3
+      token: "$NTFY_TOKEN"
       default-alert:
         enabled: true
         failure-threshold: 3

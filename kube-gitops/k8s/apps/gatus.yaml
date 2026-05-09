@@ -18,6 +18,9 @@ spec:
     - repoURL: https://github.com/kecsi-san/ansible-env-setup.git
       targetRevision: HEAD
       ref: values
+    - repoURL: https://github.com/kecsi-san/ansible-env-setup.git
+      targetRevision: HEAD
+      path: kube-gitops/k8s/gatus
   destination:
     server: https://kubernetes.default.svc
     namespace: gatus
