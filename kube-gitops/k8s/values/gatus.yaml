@@ -75,7 +75,7 @@ config:
       alerts:
         - type: ntfy
 
-deploymentStrategy:
+strategy:
   type: Recreate
 
 persistence:
