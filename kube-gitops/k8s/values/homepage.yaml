@@ -24,6 +24,12 @@ config:
       Kubernetes:
         style: row
         columns: 3
+      Monitoring:
+        style: row
+        columns: 3
+      Apps:
+        style: row
+        columns: 3
 
   widgets:
     - greeting:
@@ -56,7 +62,7 @@ config:
         - ArgoCD:
             href: https://argocd.kecskemethy.org
             description: GitOps continuous delivery
-            icon: argocd.png
+            icon: argo-cd.png
             namespace: argocd
             app: argocd-server
         - Headlamp:
@@ -67,13 +73,13 @@ config:
             app: headlamp
         - Longhorn:
             href: https://longhorn.kecskemethy.org
-            description: Distributed block storage
+            description: Distributed block storage — LAN only
             icon: longhorn.png
             namespace: longhorn-system
             app: longhorn-manager
         - Traefik:
             href: https://traefik.kecskemethy.org/dashboard/
-            description: Ingress controller
+            description: Ingress controller — LAN only
             icon: traefik.png
             namespace: traefik
             app: traefik
@@ -90,3 +96,10 @@ config:
             icon: ntfy.png
             namespace: ntfy
             app: ntfy
+    - Apps:
+        - Mealie:
+            href: https://mealie.kecskemethy.org
+            description: Recipe manager
+            icon: mealie.png
+            namespace: mealie
+            app: mealie
