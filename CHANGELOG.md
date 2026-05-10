@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(docs): push Headlamp label below icon with leading newlines ([c78ae98](https://github.com/kecsi-san/ansible-env-setup/commit/c78ae982df4296d79a9be4f95a79878f56ce5468) by Zoltan K).
 - fix(docs): resize headlamp icon to 85% (350x435) by resizing the PNG ([90d78dc](https://github.com/kecsi-san/ansible-env-setup/commit/90d78dc5f84ea6714053a6819066d496117eebb7) by Zoltan K).
 - fix(docs): scale Headlamp icon to 85% ([6f239e1](https://github.com/kecsi-san/ansible-env-setup/commit/6f239e1030a37915edfa1aadf199a75855b5be08) by Zoltan K).
 - fix(docs): move GitHub node to right side of diagram ([ce70394](https://github.com/kecsi-san/ansible-env-setup/commit/ce70394258363f5f1680f8af32650bb19c46738c) by Zoltan K).
