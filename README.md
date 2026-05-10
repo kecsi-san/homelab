@@ -14,9 +14,9 @@ Ansible automation for setting up and maintaining developer/DevOps environments 
 
 | Guide | Description |
 |-------|-------------|
-| [Dev/DevOps Workstation](docs/workflow-devenv.md) | Set up a local workstation — macOS or Debian/WSL2 |
-| [Local k3s Cluster](docs/workflow-k3s.md) | Single-node k3s cluster for local development (WSL2 + macOS) |
-| [4-Node Homelab Cluster](docs/workflow-k8s-homelab.md) | Bare-metal HA cluster, GitOps stack, Cloudflare Tunnel |
+| [Dev/DevOps Workstation](docs/devenv.md) | Set up a local workstation — macOS or Debian/WSL2 |
+| [Local k3s Cluster](docs/k3s.md) | Single-node k3s cluster for local development (WSL2 + macOS) |
+| [4-Node Homelab Cluster](docs/k8s-homelab.md) | Bare-metal HA cluster, GitOps stack, Cloudflare Tunnel |
 
 ## Reference
 
