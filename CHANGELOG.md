@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(docs): fix custom icon path + force Nodes cluster above sub-clusters ([bbc8ef7](https://github.com/kecsi-san/ansible-env-setup/commit/bbc8ef786e8764ce08191c393d653a29efeac2d3) by Zoltan K).
 - fix(longhorn): add dataLocality best-effort + WaitForFirstConsumer ([0f37e81](https://github.com/kecsi-san/ansible-env-setup/commit/0f37e81380a4c2ce3dfb33103e8f0a80112eed17) by Zoltan K).
 - fix(mikrotik-dns): replace k8s subdomain wildcard with domain-level wildcard ([89240bf](https://github.com/kecsi-san/ansible-env-setup/commit/89240bf19f672a368154bc541708f80b1a955610) by Zoltan K).
 - fix(lint): capitalize handler names to satisfy name[casing] rule ([1293de2](https://github.com/kecsi-san/ansible-env-setup/commit/1293de2ee47346eb7d3fb00f1f810cfd480328ca) by Zoltan K).
