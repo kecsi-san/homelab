@@ -5,16 +5,18 @@ Output: docs/homelab-architecture.png
 """
 
 from diagrams import Diagram, Cluster, Edge
+from diagrams.custom import Custom
 from diagrams.generic.network import VPN
 from diagrams.k8s.infra import Node
 from diagrams.onprem.certificates import CertManager, LetsEncrypt
 from diagrams.onprem.compute import Server
 from diagrams.onprem.gitops import ArgoCD
-from diagrams.onprem.monitoring import Grafana
 from diagrams.onprem.network import Internet, Traefik
 from diagrams.onprem.storage import Ceph
 from diagrams.onprem.vcs import Github
 from diagrams.saas.cdn import Cloudflare
+
+ICONS = "docs/icons"
 
 graph_attr = {
     "fontsize": "20",
@@ -61,27 +63,27 @@ with Diagram(
                 traefik = Traefik("Traefik\nIngress Controller")
                 cloudflared = VPN("cloudflared\n(QUIC tunnel)")
 
-            with Cluster("Services"):
-                homepage = Server("Homepage")
-                argocd = ArgoCD("ArgoCD")
-                headlamp = Server("Headlamp")
-                gatus = Grafana("Gatus\n(uptime monitoring)")
-                ntfy = Server("ntfy\n(push + email alerts)")
-                mealie = Server("Mealie\n(recipes)")
-
-            with Cluster("LAN-Only Services"):
-                longhorn_ui = Server("Longhorn UI")
-                traefik_dash = Traefik("Traefik Dashboard")
+            with Cluster("Platform"):
+                certmgr = CertManager("cert-manager\n(per-service LE certs)")
+                argocd_ctrl = ArgoCD("ArgoCD\n(app-of-apps GitOps)")
+                sealed = Server("Sealed Secrets")
 
             with Cluster("Storage & Backup"):
                 longhorn = Ceph("Longhorn\n(distributed block)")
                 volsync = Server("VolSync\n(PVC snapshots)")
                 restic = Server("Restic REST Server\nhppd600g6:8000")
 
-            with Cluster("Platform"):
-                certmgr = CertManager("cert-manager\n(per-service LE certs)")
-                argocd_ctrl = ArgoCD("ArgoCD\n(app-of-apps GitOps)")
-                sealed = Server("Sealed Secrets")
+            with Cluster("Services"):
+                homepage = Server("Homepage")
+                argocd = ArgoCD("ArgoCD")
+                headlamp = Custom("Headlamp", f"{ICONS}/headlamp.png")
+                gatus = Custom("Gatus\n(uptime monitoring)", f"{ICONS}/gatus.png")
+                ntfy = Custom("ntfy\n(push + email alerts)", f"{ICONS}/ntfy.png")
+                mealie = Custom("Mealie\n(recipes)", f"{ICONS}/mealie.png")
+
+            with Cluster("LAN-Only Services"):
+                longhorn_ui = Server("Longhorn UI")
+                traefik_dash = Traefik("Traefik Dashboard")
 
     # --- Traffic flows ---
     # LAN path
@@ -104,5 +106,3 @@ with Diagram(
 
     # Storage
     longhorn >> Edge(label="snapshot") >> volsync >> Edge(label="restic backup") >> restic
-
-    # Nodes host everything (implicit, shown via cluster grouping)
