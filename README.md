@@ -5,6 +5,8 @@
 [![License](https://img.shields.io/github/license/kecsi-san/ansible-env-setup)](LICENSE)
 ![GitHub last commit](https://img.shields.io/github/last-commit/kecsi-san/ansible-env-setup)
 ![GitHub repo size](https://img.shields.io/github/repo-size/kecsi-san/ansible-env-setup)
+[![Renovate](https://img.shields.io/badge/renovate-enabled-brightgreen?logo=renovatebot)](https://renovatebot.com)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://pre-commit.com)
 
 Ansible automation for setting up and maintaining developer and DevOps environments. Uses a modular **LEGO approach**: each role is self-contained and independently runnable via tags.
 
