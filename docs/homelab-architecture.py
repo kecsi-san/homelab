@@ -93,6 +93,9 @@ with Diagram(
             cp1 >> Edge(style="invis") >> certmgr
             cp1 >> Edge(style="invis") >> longhorn
 
+    # Pull GitHub to the right, near Let's Encrypt
+    le >> Edge(style="invis") >> github
+
     # --- Traffic flows ---
     # LAN path
     edge_browser >> router >> kubevip >> traefik
