@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <small>[Compare with latest](https://github.com/kecsi-san/ansible-env-setup/compare/v0.1.0...HEAD)</small>
 
+### Fixed
+
+- fix(kube-gitops): restore real domain in operational manifests ([156bc68](https://github.com/kecsi-san/ansible-env-setup/commit/156bc68257b91f6bfc1c1b0abe77056aa5f3e301) by Zoltan K).
+
 <!-- insertion marker -->
 ## [v0.1.0](https://github.com/kecsi-san/ansible-env-setup/releases/tag/v0.1.0) - 2026-05-10
 
