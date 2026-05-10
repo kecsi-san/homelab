@@ -1,12 +1,15 @@
 ---
 # Gatus values — uptime monitoring
+deployment:
+  strategy: Recreate
+
 env:
-  - name: NTFY_TOKEN
+  NTFY_TOKEN:
     valueFrom:
       secretKeyRef:
         name: gatus-ntfy-token
         key: token
-  - name: ALERT_EMAIL
+  ALERT_EMAIL:
     valueFrom:
       secretKeyRef:
         name: gatus-alert-email
