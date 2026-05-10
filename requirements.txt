@@ -6,7 +6,7 @@ jmespath==1.1.0
 # Needed for ansible.utils.ipaddr
 netaddr==1.3.0
 # Needed for community.routeros collection
-librouteros==3.2.1
+librouteros==4.0.1
 # ansible-galaxy
 distlib==0.4.0
 # CHANGELOG generation (used by pre-push hook)
