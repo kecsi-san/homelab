@@ -39,8 +39,8 @@
     mode: "0644"
   become: true
   notify:
-    - reload systemd
-    - restart rest-server
+    - Reload systemd
+    - Restart rest-server
   tags: [restic-rest-server]
 
 - name: Enable and start restic rest-server

@@ -54,7 +54,7 @@
     group: root
     mode: "0644"
   become: true
-  notify: reload nfs exports
+  notify: Reload nfs exports
   tags: [nfs-backup]
 
 - name: Enable and start NFS server
