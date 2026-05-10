@@ -40,7 +40,7 @@ with Diagram(
     graph_attr=graph_attr,
     node_attr=node_attr,
 ):
-    github = Github("ansible-env-setup\n(GitOps repo)")
+    github = Github("homelab\n(GitOps repo)")
     le = LetsEncrypt("Let's Encrypt\n(DNS01 via CF API)")
 
     with Cluster("Client — Win11 Desktop"):

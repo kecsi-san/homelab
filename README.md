@@ -1,10 +1,10 @@
 # Automated Environment Setup Using Ansible
 
-[![GitHub Tag](https://img.shields.io/github/v/tag/kecsi-san/ansible-env-setup)](https://github.com/kecsi-san/ansible-env-setup/releases)
-[![Lint](https://github.com/kecsi-san/ansible-env-setup/actions/workflows/lint.yml/badge.svg)](https://github.com/kecsi-san/ansible-env-setup/actions/workflows/lint.yml)
-[![License](https://img.shields.io/github/license/kecsi-san/ansible-env-setup)](LICENSE)
-![GitHub last commit](https://img.shields.io/github/last-commit/kecsi-san/ansible-env-setup)
-![GitHub repo size](https://img.shields.io/github/repo-size/kecsi-san/ansible-env-setup)
+[![GitHub Tag](https://img.shields.io/github/v/tag/kecsi-san/homelab)](https://github.com/kecsi-san/homelab/releases)
+[![Lint](https://github.com/kecsi-san/homelab/actions/workflows/lint.yml/badge.svg)](https://github.com/kecsi-san/homelab/actions/workflows/lint.yml)
+[![License](https://img.shields.io/github/license/kecsi-san/homelab)](LICENSE)
+![GitHub last commit](https://img.shields.io/github/last-commit/kecsi-san/homelab)
+![GitHub repo size](https://img.shields.io/github/repo-size/kecsi-san/homelab)
 [![Renovate](https://img.shields.io/badge/renovate-enabled-brightgreen?logo=renovatebot)](https://renovatebot.com)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://pre-commit.com)
 

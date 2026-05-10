@@ -9,7 +9,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/kecsi-san/ansible-env-setup.git
+    repoURL: https://github.com/kecsi-san/homelab.git
     targetRevision: HEAD
     path: kube-gitops/k8s/garage
   destination:

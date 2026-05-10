@@ -15,7 +15,7 @@ spec:
       helm:
         valueFiles:
           - $values/kube-gitops/k3s/values/headlamp.yaml
-    - repoURL: https://github.com/kecsi-san/ansible-env-setup.git
+    - repoURL: https://github.com/kecsi-san/homelab.git
       targetRevision: HEAD
       ref: values
   destination:
