@@ -8,7 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 <!-- insertion marker -->
 ## Unreleased
 
-<small>[Compare with latest](https://github.com/kecsi-san/ansible-env-setup/compare/c22df6e9f9d59fa012e41442e65b424006cff498...HEAD)</small>
+<small>[Compare with latest](https://github.com/kecsi-san/ansible-env-setup/compare/v0.1.0...HEAD)</small>
+
+<!-- insertion marker -->
+## [v0.1.0](https://github.com/kecsi-san/ansible-env-setup/releases/tag/v0.1.0) - 2026-05-10
+
+<small>[Compare with first commit](https://github.com/kecsi-san/ansible-env-setup/compare/c22df6e9f9d59fa012e41442e65b424006cff498...v0.1.0)</small>
 
 ### Fixed
 
@@ -93,4 +98,3 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - fix: install mkdocs (not mkdocs-material) as uv tool ([60801d9](https://github.com/kecsi-san/ansible-env-setup/commit/60801d9bee5c5fdd3dd00e9f309e9758b3401342) by Zoltan K).
 - fix: switch playbooks from roles: to import_role for correct tag filtering ([4076d92](https://github.com/kecsi-san/ansible-env-setup/commit/4076d922f9927af7f4e9a27180fba9a9056878c5) by Zoltan K).
 
-<!-- insertion marker -->
