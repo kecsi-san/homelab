@@ -4,6 +4,8 @@ Run: source ~/.venv/devops/bin/activate && python3 docs/homelab-architecture.py
 Output: docs/homelab-architecture.png
 """
 
+from pathlib import Path
+
 from diagrams import Diagram, Cluster, Edge
 from diagrams.custom import Custom
 from diagrams.generic.network import VPN
@@ -11,12 +13,13 @@ from diagrams.k8s.infra import Node
 from diagrams.onprem.certificates import CertManager, LetsEncrypt
 from diagrams.onprem.compute import Server
 from diagrams.onprem.gitops import ArgoCD
-from diagrams.onprem.network import Internet, Traefik
+from diagrams.onprem.network import Traefik
 from diagrams.onprem.storage import Ceph
 from diagrams.onprem.vcs import Github
 from diagrams.saas.cdn import Cloudflare
 
-ICONS = "docs/icons"
+# Resolve icons relative to this script file — works regardless of working dir
+ICONS = Path(__file__).parent / "icons"
 
 graph_attr = {
     "fontsize": "20",
@@ -76,14 +79,19 @@ with Diagram(
             with Cluster("Services"):
                 homepage = Server("Homepage")
                 argocd = ArgoCD("ArgoCD")
-                headlamp = Custom("Headlamp", f"{ICONS}/headlamp.png")
-                gatus = Custom("Gatus\n(uptime monitoring)", f"{ICONS}/gatus.png")
-                ntfy = Custom("ntfy\n(push + email alerts)", f"{ICONS}/ntfy.png")
-                mealie = Custom("Mealie\n(recipes)", f"{ICONS}/mealie.png")
+                headlamp = Custom("Headlamp", str(ICONS / "headlamp.png"))
+                gatus = Custom("Gatus\n(uptime monitoring)", str(ICONS / "gatus.png"))
+                ntfy = Custom("ntfy\n(push + email alerts)", str(ICONS / "ntfy.png"))
+                mealie = Custom("Mealie\n(recipes)", str(ICONS / "mealie.png"))
 
             with Cluster("LAN-Only Services"):
                 longhorn_ui = Server("Longhorn UI")
                 traefik_dash = Traefik("Traefik Dashboard")
+
+            # Force Nodes above the other sub-clusters via invisible edges
+            cp1 >> Edge(style="invis") >> kubevip
+            cp1 >> Edge(style="invis") >> certmgr
+            cp1 >> Edge(style="invis") >> longhorn
 
     # --- Traffic flows ---
     # LAN path
