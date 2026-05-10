@@ -79,7 +79,7 @@ with Diagram(
             with Cluster("Services"):
                 homepage = Server("Homepage")
                 argocd = ArgoCD("ArgoCD")
-                headlamp = Custom("Headlamp", str(ICONS / "headlamp.png"), height="1.615", width="1.615")
+                headlamp = Custom("Headlamp", str(ICONS / "headlamp.png"))
                 gatus = Custom("Gatus\n(uptime monitoring)", str(ICONS / "gatus.png"))
                 ntfy = Custom("ntfy\n(push + email alerts)", str(ICONS / "ntfy.png"))
                 mealie = Custom("Mealie\n(recipes)", str(ICONS / "mealie.png"))
