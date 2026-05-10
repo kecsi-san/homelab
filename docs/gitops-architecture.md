@@ -3,6 +3,8 @@
 This document describes the architecture for managing both Kubernetes clusters
 using Ansible for infrastructure bootstrapping and ArgoCD for continuous GitOps delivery.
 
+![Homelab Architecture](homelab-architecture.png)
+
 ---
 
 ## Clusters

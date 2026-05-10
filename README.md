@@ -6,6 +6,12 @@ Supports two scenarios:
 - **Local workstation** setup (localhost) — tested on **macOS** and **Debian 13 under WSL2** (Windows)
 - **Distributed Kubernetes cluster** on bare-metal hosts (via Kubespray) — tested on **Debian 13 nodes**
 
+## Architecture
+
+![Homelab Architecture](docs/homelab-architecture.png)
+
+> Regenerate: `source ~/.venv/devops/bin/activate && python3 docs/homelab-architecture.py`
+
 ## Documentation
 
 | Guide | Description |
