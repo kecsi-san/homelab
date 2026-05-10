@@ -18,6 +18,12 @@ spec:
         - name: ntfy
           image: binwiederhier/ntfy:v2.22.0
           args: ["serve"]
+          env:
+            - name: NTFY_SMTP_SENDER_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: ntfy-smtp-secret
+                  key: smtp-password
           ports:
             - containerPort: 80
           volumeMounts:

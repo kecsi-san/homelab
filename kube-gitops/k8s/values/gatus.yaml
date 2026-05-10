@@ -14,6 +14,7 @@ config:
       topic: homelab-alerts
       priority: 3
       token: "$NTFY_TOKEN"
+      email: "kecskemethy@gmail.com"
       default-alert:
         enabled: true
         failure-threshold: 3

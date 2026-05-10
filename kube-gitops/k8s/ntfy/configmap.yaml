@@ -13,3 +13,6 @@ data:
     cache-file: /data/cache.db
     cache-duration: 12h
     attachment-cache-dir: /data/attachments
+    smtp-sender-addr: "smtp.gmail.com:587"
+    smtp-sender-from: "kecskemethy@gmail.com"
+    smtp-sender-user: "kecskemethy@gmail.com"
