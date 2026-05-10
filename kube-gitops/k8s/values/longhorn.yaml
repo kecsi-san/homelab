@@ -8,3 +8,13 @@
 # fresh installs. The pre-upgrade job fails because Longhorn CRDs don't exist yet.
 preUpgradeChecker:
   jobEnabled: false
+
+defaultSettings:
+  # Keep a replica on the same node as the workload — prevents cross-node
+  # detach/reattach races when a pod reschedules to a different node
+  defaultDataLocality: best-effort
+
+persistence:
+  # Delay PVC binding until a pod is scheduled so new volumes land on the
+  # correct node from the start (only affects newly created PVCs)
+  volumeBindingMode: WaitForFirstConsumer
