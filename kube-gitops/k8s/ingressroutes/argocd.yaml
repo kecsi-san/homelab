@@ -10,7 +10,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`argocd.<your-domain.tld>`)
+    - match: Host(`argocd.kecskemethy.org`)
       kind: Rule
       services:
         - name: argocd-server

@@ -7,7 +7,7 @@ metadata:
 spec:
   secretName: wildcard-k3s-tls
   dnsNames:
-    - "*.k3s.<your-domain.tld>"
+    - "*.k3s.kecskemethy.org"
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer

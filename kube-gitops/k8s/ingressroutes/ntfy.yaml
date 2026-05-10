@@ -10,7 +10,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`ntfy.<your-domain.tld>`)
+    - match: Host(`ntfy.kecskemethy.org`)
       kind: Rule
       services:
         - name: ntfy

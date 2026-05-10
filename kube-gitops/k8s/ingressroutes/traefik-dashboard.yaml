@@ -9,7 +9,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`traefik.<your-domain.tld>`)
+    - match: Host(`traefik.kecskemethy.org`)
       kind: Rule
       services:
         - name: api@internal

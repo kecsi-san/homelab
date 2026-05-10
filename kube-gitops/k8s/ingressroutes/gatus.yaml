@@ -10,7 +10,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`gatus.<your-domain.tld>`)
+    - match: Host(`gatus.kecskemethy.org`)
       kind: Rule
       services:
         - name: gatus

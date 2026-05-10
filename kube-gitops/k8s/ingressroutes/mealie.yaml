@@ -10,7 +10,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`mealie.<your-domain.tld>`)
+    - match: Host(`mealie.kecskemethy.org`)
       kind: Rule
       services:
         - name: mealie

@@ -10,7 +10,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`headlamp.<your-domain.tld>`)
+    - match: Host(`headlamp.kecskemethy.org`)
       kind: Rule
       services:
         - name: headlamp

@@ -7,7 +7,7 @@ metadata:
 spec:
   secretName: argocd-tls
   dnsNames:
-    - "argocd.<your-domain.tld>"
+    - "argocd.kecskemethy.org"
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer

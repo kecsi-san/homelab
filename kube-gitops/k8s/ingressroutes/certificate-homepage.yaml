@@ -7,7 +7,7 @@ metadata:
 spec:
   secretName: homepage-tls
   dnsNames:
-    - "homepage.<your-domain.tld>"
+    - "homepage.kecskemethy.org"
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer

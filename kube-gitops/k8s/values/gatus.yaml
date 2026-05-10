@@ -15,7 +15,7 @@ env:
 config:
   alerting:
     ntfy:
-      url: "https://ntfy.<your-domain.tld>"
+      url: "https://ntfy.kecskemethy.org"
       topic: homelab-alerts
       priority: 3
       token: "$NTFY_TOKEN"
@@ -28,7 +28,7 @@ config:
 
   endpoints:
     - name: Homepage
-      url: https://homepage.<your-domain.tld>
+      url: https://homepage.kecskemethy.org
       interval: 1m
       conditions:
         - "[STATUS] == 200"
@@ -37,7 +37,7 @@ config:
         - type: ntfy
 
     - name: ArgoCD
-      url: https://argocd.<your-domain.tld>
+      url: https://argocd.kecskemethy.org
       interval: 1m
       conditions:
         - "[STATUS] == 200"
@@ -46,7 +46,7 @@ config:
         - type: ntfy
 
     - name: Headlamp
-      url: https://headlamp.<your-domain.tld>
+      url: https://headlamp.kecskemethy.org
       interval: 1m
       conditions:
         - "[STATUS] == 200"
@@ -55,7 +55,7 @@ config:
         - type: ntfy
 
     - name: Longhorn
-      url: https://longhorn.<your-domain.tld>
+      url: https://longhorn.kecskemethy.org
       interval: 1m
       conditions:
         - "[STATUS] == 200"
@@ -64,7 +64,7 @@ config:
         - type: ntfy
 
     - name: Traefik
-      url: https://traefik.<your-domain.tld>/dashboard/
+      url: https://traefik.kecskemethy.org/dashboard/
       interval: 1m
       conditions:
         - "[STATUS] == 200"
@@ -73,7 +73,7 @@ config:
         - type: ntfy
 
     - name: Mealie
-      url: https://mealie.<your-domain.tld>
+      url: https://mealie.kecskemethy.org
       interval: 1m
       conditions:
         - "[STATUS] == 200"
@@ -82,7 +82,7 @@ config:
         - type: ntfy
 
     - name: ntfy
-      url: https://ntfy.<your-domain.tld>
+      url: https://ntfy.kecskemethy.org
       interval: 1m
       conditions:
         - "[STATUS] == 200"

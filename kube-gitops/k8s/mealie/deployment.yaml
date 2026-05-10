@@ -23,7 +23,7 @@ spec:
             - containerPort: 9000
           env:
             - name: BASE_URL
-              value: "https://mealie.<your-domain.tld>"
+              value: "https://mealie.kecskemethy.org"
             - name: ALLOW_SIGNUP
               value: "false"
             - name: TZ
