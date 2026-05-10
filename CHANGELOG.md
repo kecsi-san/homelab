@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(gatus): correct env format to dict and set Recreate strategy ([537cbe8](https://github.com/kecsi-san/ansible-env-setup/commit/537cbe80974917a0a260c9bde8f7c6f0dbfe9219) by Zoltan K).
 - fix(kube-gitops): restore real domain in operational manifests ([156bc68](https://github.com/kecsi-san/ansible-env-setup/commit/156bc68257b91f6bfc1c1b0abe77056aa5f3e301) by Zoltan K).
 
 <!-- insertion marker -->
