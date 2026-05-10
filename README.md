@@ -1,5 +1,11 @@
 # Automated Environment Setup Using Ansible
 
+[![GitHub Tag](https://img.shields.io/github/v/tag/kecsi-san/ansible-env-setup)](https://github.com/kecsi-san/ansible-env-setup/releases)
+[![Lint](https://github.com/kecsi-san/ansible-env-setup/actions/workflows/lint.yml/badge.svg)](https://github.com/kecsi-san/ansible-env-setup/actions/workflows/lint.yml)
+[![License](https://img.shields.io/github/license/kecsi-san/ansible-env-setup)](LICENSE)
+![GitHub last commit](https://img.shields.io/github/last-commit/kecsi-san/ansible-env-setup)
+![GitHub repo size](https://img.shields.io/github/repo-size/kecsi-san/ansible-env-setup)
+
 Ansible automation for setting up and maintaining developer and DevOps environments. Uses a modular **LEGO approach**: each role is self-contained and independently runnable via tags.
 
 Supports two scenarios:
