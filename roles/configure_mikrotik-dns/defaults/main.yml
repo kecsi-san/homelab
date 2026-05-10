@@ -11,8 +11,8 @@ mikrotik_dns_records:
   - name: "api.k8s.{{ domain_name }}"
     address: "{{ kube_vip_address }}"
 
-  # k8s cluster wildcard (Traefik ingress) — RouterOS match-subdomain format
-  - name: "k8s.{{ domain_name }}"
+  # k8s services wildcard (*.kecskemethy.org → Traefik) — RouterOS match-subdomain format
+  - name: "{{ domain_name }}"
     address: "{{ k8s_traefik_ip | default('') }}"
     match_subdomain: true
 
