@@ -1,0 +1,18 @@
+---
+# Non-sensitive infrastructure values — safe to commit.
+# Sensitive values (credentials, email, SSH user) are in secrets.yml (gitignored).
+
+domain_name: "kecskemethy.org"
+
+upstream_dns_servers:
+  - "192.168.1.1"
+
+kube_vip_address: "192.168.1.100"
+kube_vip_interface: "eno1"
+
+kube_control_plane_host: "hppd600g6"
+
+mikrotik_host: "192.168.1.1"
+
+k8s_traefik_ip: "192.168.1.101"
+k3s_traefik_ip: "192.168.1.25"

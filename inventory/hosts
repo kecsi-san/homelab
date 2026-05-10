@@ -1,0 +1,38 @@
+hped800g5 ansible_host=192.168.1.18 ip=192.168.1.18
+hped800g61 ansible_host=192.168.1.36 ip=192.168.1.36
+hped800g62 ansible_host=192.168.1.34 ip=192.168.1.34
+hppd600g6 ansible_host=192.168.1.52 ip=192.168.1.52
+api.k8s ansible_host=192.168.1.100 ip=192.168.1.100
+
+[local]
+127.0.0.1  ansible_connection=local
+
+
+[kube]
+hped800g5  # 32g RAM, i5-9500T 6 cores
+hped800g61 # 16g RAM, i5-10500T 12 cores
+hped800g62 # 24g RAM, i5-10500T 12 cores
+hppd600g6  # 32g RAM, i5-10500T 12 cores
+
+[kube_control_plane]
+hppd600g6
+hped800g5
+hped800g62
+
+[etcd]
+hped800g5
+hppd600g6
+hped800g62
+
+[kube_node]
+hped800g5
+hped800g61
+hped800g62
+hppd600g6
+
+[calico_rr]
+
+[k8s_cluster:children]
+kube_control_plane
+kube_node
+calico_rr
