@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(lint): capitalize handler names to satisfy name[casing] rule ([1293de2](https://github.com/kecsi-san/ansible-env-setup/commit/1293de2ee47346eb7d3fb00f1f810cfd480328ca) by Zoltan K).
 - fix(tls): replace wildcard cert with per-service certs, remove idleTimeout ([4ea0c6f](https://github.com/kecsi-san/ansible-env-setup/commit/4ea0c6f0f09ffd99db2b6701785376d0c6d4fe63) by Zoltan K).
 - fix(k3s): rename kubeconfig context to admin@k3s automatically ([bc34fa1](https://github.com/kecsi-san/ansible-env-setup/commit/bc34fa17f1a907c77918bc7eef5c86ea170565ed) by Zoltan K).
 - fix(post-k8s): rename kubeconfig context to admin@k8s automatically ([c741b7f](https://github.com/kecsi-san/ansible-env-setup/commit/c741b7f4b50251abfef2bed843d8325582fe4adb) by Zoltan K).
