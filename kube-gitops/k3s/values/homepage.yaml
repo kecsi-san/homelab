@@ -7,7 +7,7 @@ serviceAccount:
   create: true
 
 env:
-  HOMEPAGE_ALLOWED_HOSTS: homepage.k3s.kecskemethy.org
+  HOMEPAGE_ALLOWED_HOSTS: homepage.k3s.<your-domain.tld>
 
 ingress:
   main:
@@ -16,7 +16,7 @@ ingress:
 config:
   settings:
     title: k3s
-    allowedHosts: homepage.k3s.kecskemethy.org
+    allowedHosts: homepage.k3s.<your-domain.tld>
     theme: dark
     color: slate
     headerStyle: clean
@@ -54,19 +54,19 @@ config:
   services:
     - Kubernetes:
         - ArgoCD:
-            href: https://argocd.k3s.kecskemethy.org
+            href: https://argocd.k3s.<your-domain.tld>
             description: GitOps continuous delivery
             icon: argocd.png
             namespace: argocd
             app: argocd-server
         - Headlamp:
-            href: https://headlamp.k3s.kecskemethy.org
+            href: https://headlamp.k3s.<your-domain.tld>
             description: Kubernetes dashboard
             icon: headlamp.png
             namespace: kube-system
             app: headlamp
         - Traefik:
-            href: https://traefik.k3s.kecskemethy.org/dashboard/
+            href: https://traefik.k3s.<your-domain.tld>/dashboard/
             description: Ingress controller
             icon: traefik.png
             namespace: traefik

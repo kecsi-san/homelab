@@ -7,7 +7,7 @@ metadata:
 spec:
   secretName: ntfy-tls
   dnsNames:
-    - "ntfy.kecskemethy.org"
+    - "ntfy.<your-domain.tld>"
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer

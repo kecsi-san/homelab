@@ -9,7 +9,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`longhorn.kecskemethy.org`)
+    - match: Host(`longhorn.<your-domain.tld>`)
       kind: Rule
       services:
         - name: longhorn-frontend

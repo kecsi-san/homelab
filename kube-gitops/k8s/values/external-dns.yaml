@@ -18,7 +18,7 @@ txtOwnerId: "k8s-homelab"
 
 # Only manage records in this zone
 domainFilters:
-  - kecskemethy.org
+  - <your-domain.tld>
 
 # sync = delete records when IngressRoutes are removed
 policy: sync

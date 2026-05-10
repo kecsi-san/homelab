@@ -6,7 +6,7 @@ metadata:
   namespace: ntfy
 data:
   server.yml: |
-    base-url: "https://ntfy.kecskemethy.org"
+    base-url: "https://ntfy.<your-domain.tld>"
     listen-http: ":80"
     auth-file: /data/user.db
     auth-default-access: deny-all

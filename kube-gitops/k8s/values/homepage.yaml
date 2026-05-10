@@ -7,7 +7,7 @@ serviceAccount:
   create: true
 
 env:
-  HOMEPAGE_ALLOWED_HOSTS: homepage.kecskemethy.org
+  HOMEPAGE_ALLOWED_HOSTS: homepage.<your-domain.tld>
 
 ingress:
   main:
@@ -16,7 +16,7 @@ ingress:
 config:
   settings:
     title: Homelab
-    allowedHosts: homepage.kecskemethy.org
+    allowedHosts: homepage.<your-domain.tld>
     theme: dark
     color: slate
     headerStyle: clean
@@ -60,45 +60,45 @@ config:
   services:
     - Kubernetes:
         - ArgoCD:
-            href: https://argocd.kecskemethy.org
+            href: https://argocd.<your-domain.tld>
             description: GitOps continuous delivery
             icon: argo-cd.png
             namespace: argocd
             app: argocd-server
         - Headlamp:
-            href: https://headlamp.kecskemethy.org
+            href: https://headlamp.<your-domain.tld>
             description: Kubernetes dashboard
             icon: headlamp.png
             namespace: kube-system
             app: headlamp
         - Longhorn:
-            href: https://longhorn.kecskemethy.org
+            href: https://longhorn.<your-domain.tld>
             description: Distributed block storage — LAN only
             icon: longhorn.png
             namespace: longhorn-system
             app: longhorn-manager
         - Traefik:
-            href: https://traefik.kecskemethy.org/dashboard/
+            href: https://traefik.<your-domain.tld>/dashboard/
             description: Ingress controller — LAN only
             icon: traefik.png
             namespace: traefik
             app: traefik
     - Monitoring:
         - Gatus:
-            href: https://gatus.kecskemethy.org
+            href: https://gatus.<your-domain.tld>
             description: Uptime monitoring
             icon: gatus.png
             namespace: gatus
             app: gatus
         - ntfy:
-            href: https://ntfy.kecskemethy.org
+            href: https://ntfy.<your-domain.tld>
             description: Push notifications
             icon: ntfy.png
             namespace: ntfy
             app: ntfy
     - Apps:
         - Mealie:
-            href: https://mealie.kecskemethy.org
+            href: https://mealie.<your-domain.tld>
             description: Recipe manager
             icon: mealie.png
             namespace: mealie

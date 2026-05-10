@@ -22,7 +22,7 @@ k3d_agents: 0
 k3d_api_port: 6443
 
 # Port mappings from localhost → k3d load balancer (required for browser access)
-# k3d exposes these on 127.0.0.1; add *.k3s.kecskemethy.org → 127.0.0.1 to /etc/hosts
+# k3d exposes these on 127.0.0.1; add *.k3s.<your-domain.tld> → 127.0.0.1 to /etc/hosts
 k3d_port_mappings:
   - "80:80@loadbalancer"
   - "443:443@loadbalancer"

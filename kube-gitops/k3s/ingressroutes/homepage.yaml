@@ -9,7 +9,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`homepage.k3s.kecskemethy.org`)
+    - match: Host(`homepage.k3s.<your-domain.tld>`)
       kind: Rule
       services:
         - name: homepage
