@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(docs): scale Headlamp icon to 85% ([6f239e1](https://github.com/kecsi-san/ansible-env-setup/commit/6f239e1030a37915edfa1aadf199a75855b5be08) by Zoltan K).
 - fix(docs): move GitHub node to right side of diagram ([ce70394](https://github.com/kecsi-san/ansible-env-setup/commit/ce70394258363f5f1680f8af32650bb19c46738c) by Zoltan K).
 - fix(docs): fix custom icon path + force Nodes cluster above sub-clusters ([bbc8ef7](https://github.com/kecsi-san/ansible-env-setup/commit/bbc8ef786e8764ce08191c393d653a29efeac2d3) by Zoltan K).
 - fix(longhorn): add dataLocality best-effort + WaitForFirstConsumer ([0f37e81](https://github.com/kecsi-san/ansible-env-setup/commit/0f37e81380a4c2ce3dfb33103e8f0a80112eed17) by Zoltan K).
