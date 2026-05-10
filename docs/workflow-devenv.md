@@ -1,53 +1,49 @@
-# Local Workstation Setup
+# Workflow: Dev / DevOps Workstation Setup
 
-Ansible automation for setting up a local developer/DevOps workstation. Targets `localhost` and supports both **macOS** and **Debian/Ubuntu under WSL2** (Windows).
+Ansible automation for setting up a local developer or DevOps workstation.
+Targets `localhost` and supports both **macOS** and **Debian/Ubuntu under WSL2** (Windows).
+
+---
 
 ## Prerequisites
 
 ```bash
+# Install Ansible dependencies
 pip install -r requirements.txt
 ansible-galaxy install -r requirements.yml
 
-cp inventory/hosts.example inventory/hosts
+# Copy and fill in secrets
 cp inventory/group_vars/all/secrets.yml.example inventory/group_vars/all/secrets.yml
 ```
 
-Edit `secrets.yml` to set `admin_user`, `admin_email`, `domain_name`, and other vaulted values.
+Edit `secrets.yml` to set `admin_user`, `ansible_ssh_user`, `acme_email`, and MikroTik credentials.
 
-## Tool Management Philosophy
+---
 
-| Method | macOS | Linux | When to use |
-|--------|-------|-------|-------------|
-| **APT** | — | ✓ | System-level, rarely changing packages; well-maintained in Debian repos |
-| **Homebrew** | ✓ (formula + cask) | ✓ (Linuxbrew, formula) | Frequently updated tools; tools not in APT or lagging upstream |
-| **uv** | ✓ | ✓ | Python CLI tools and library packages |
+## Playbook Sequence
 
-> Rule of thumb: APT for system stability (Linux), Homebrew for freshness and macOS-native installs, uv for the Python ecosystem.
-
-## Playbooks
-
-Run playbooks in this order. Each is independently runnable — skip what you don't need.
+Run in order. Each playbook is independently re-runnable — skip what you don't need.
 
 ### 1. Core system — `local-core.yml`
 
-Foundation for everything else. Run this first.
+Foundation for everything else. Always run this first.
 
 ```bash
 ansible-playbook playbooks/local-core.yml
 ```
 
-| What | macOS | Linux |
-|------|-------|-------|
-| Package manager | Homebrew (pre-installed or via Cask) | APT + Linuxbrew |
+| What | macOS | Linux (WSL2) |
+|------|-------|-------------|
+| Package manager | Homebrew | APT + Linuxbrew |
 | Container runtime | Colima + Docker CLI | Docker CE via APT |
 | Desktop apps | Firefox, Thunderbird, AppCleaner (Cask) | Firefox, Thunderbird (APT) |
-| Base packages | brew: fzf, gcc, git-delta, go-task, just, oh-my-posh, pre-commit, python@3.12, uv, yq | APT base + compression packages |
+| Base packages | fzf, gcc, git-delta, go-task, just, oh-my-posh, pre-commit, python@3.12, uv, yq | APT base + compression packages |
 | Network tools | Homebrew | APT |
 | Python tooling | uv: ansible, black, ruff, pytest, mkdocs, checkov, and more | same |
 
 **Tags:** `brew`, `apt-repos`, `docker`, `apps`, `minimal`, `network`, `python`, `uv`
 
-### 2. Security — `local-security.yml`
+### 2. Security hardening — `local-security.yml`
 
 ```bash
 ansible-playbook playbooks/local-security.yml
@@ -105,6 +101,8 @@ ansible-playbook playbooks/personalise.yml
 
 Installs Nerd Fonts, Oh My Posh shell prompt, sets user profile picture, uploads wallpapers (Linux).
 
+---
+
 ## Running Specific Roles via Tags
 
 ```bash
@@ -127,10 +125,12 @@ ansible-playbook --check playbooks/local-core.yml
 ansible-playbook --syntax-check playbooks/local-core.yml
 ```
 
+---
+
 ## macOS Notes
 
-- **Homebrew** must be installed before running `local-core.yml` (or install it manually first via `brew.sh`)
-- **Colima** is used as the Docker runtime instead of Docker Desktop — started automatically at login (`colima_autostart: true` in `local.yml`)
+- **Homebrew** must be installed before running `local-core.yml` (install manually via `brew.sh` if not present)
+- **Colima** is used as the Docker runtime instead of Docker Desktop — started automatically at login (`colima_autostart: true` in `group_vars/local.yml`)
 - **Python interpreter** is pinned to `/usr/bin/python3` (Xcode CLT) in `group_vars/local.yml` to avoid compatibility issues with Homebrew Python versions
 - **Bash completions** for docker, colima, and kube tools are wired into `~/.bash_profile` via `bash-completion@2`
 
@@ -138,4 +138,4 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 
 - Linuxbrew is installed at `/home/linuxbrew/.linuxbrew/`
 - Docker CE is installed via the official APT repo (not Docker Desktop)
-- VS Code runs on Windows — the extension install step in `setup_vscode` may not work as expected under WSL2 (disabled by default in `local-dev.yml`)
+- VS Code runs on Windows — the extension install step in `setup_vscode` may not work under WSL2 (disabled by default in `local-dev.yml`)

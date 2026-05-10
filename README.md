@@ -8,27 +8,24 @@
 [![Renovate](https://img.shields.io/badge/renovate-enabled-brightgreen?logo=renovatebot)](https://renovatebot.com)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://pre-commit.com)
 
-Ansible automation for setting up and maintaining developer and DevOps environments. Uses a modular **LEGO approach**: each role is self-contained and independently runnable via tags.
+Ansible automation for setting up and maintaining developer/DevOps environments and a bare-metal Kubernetes homelab. Uses a modular **LEGO approach**: each role is self-contained and independently runnable via tags.
 
-Supports two scenarios:
-- **Local workstation** setup (localhost) — tested on **macOS** and **Debian 13 under WSL2** (Windows)
-- **Distributed Kubernetes cluster** on bare-metal hosts (via Kubespray) — tested on **Debian 13 nodes**
-
-## Architecture
-
-![Homelab Architecture](docs/homelab-architecture.png)
-
-> Regenerate: `source ~/.venv/devops/bin/activate && python3 docs/homelab-architecture.py`
-
-## Documentation
+## Workflows
 
 | Guide | Description |
 |-------|-------------|
-| [Local Setup](docs/local-setup.md) | Local workstation installation — playbooks, tags, macOS/Linux differences |
-| [Kubernetes Setup](docs/kube-setup.md) | Bare-metal cluster (Kubespray) and local dev cluster (k3s) |
-| [Roles Reference](docs/roles.md) | Role naming conventions, structure, and full role inventory |
-| [CI/CD](docs/ci-cd.md) | CI pipeline, linting, and release automation |
-| [GitOps Architecture](docs/gitops-architecture.md) | GitOps design and ArgoCD integration |
+| [Dev/DevOps Workstation](docs/workflow-devenv.md) | Set up a local workstation — macOS or Debian/WSL2 |
+| [Local k3s Cluster](docs/workflow-k3s.md) | Single-node k3s cluster for local development (WSL2 + macOS) |
+| [4-Node Homelab Cluster](docs/workflow-k8s-homelab.md) | Bare-metal HA cluster, GitOps stack, Cloudflare Tunnel |
+
+## Reference
+
+| Guide | Description |
+|-------|-------------|
+| [Roles](docs/roles.md) | Role naming conventions, structure, and full role inventory |
+| [CI/CD](docs/ci-cd.md) | CI pipeline, linting, pre-commit hooks, and changelog automation |
+
+---
 
 ## Tool Management Philosophy
 
@@ -38,7 +35,9 @@ Supports two scenarios:
 | **Homebrew** | ✓ formula + cask | ✓ Linuxbrew formula | Frequently updated tools; tools not in APT or lagging upstream |
 | **uv** | ✓ | ✓ | Python CLI tools and library packages |
 
-> Rule of thumb: APT for system stability (Linux), Homebrew for freshness and macOS-native installs, uv for the Python ecosystem.
+> APT for system stability (Linux), Homebrew for freshness and macOS-native installs, uv for the Python ecosystem.
+
+---
 
 ## Prerequisites
 
@@ -46,9 +45,11 @@ Supports two scenarios:
 pip install -r requirements.txt
 ansible-galaxy install -r requirements.yml
 
-cp inventory/hosts.example inventory/hosts
 cp inventory/group_vars/all/secrets.yml.example inventory/group_vars/all/secrets.yml
+# Edit secrets.yml — see the workflow guides for what each field does
 ```
+
+---
 
 ## Quick Start
 
@@ -62,18 +63,23 @@ ansible-playbook playbooks/local-kube.yml       # kube tools: kubectl, helm, arg
 ansible-playbook playbooks/upgrade-local.yml    # upgrade brew + uv packages
 ```
 
-→ Full guide: [docs/local-setup.md](docs/local-setup.md)
-
-### Kubernetes cluster
+### Local k3s cluster
 
 ```bash
-ansible-playbook --ask-become-pass playbooks/prerequisite.yml   # SSH + sudo setup
-ansible-playbook playbooks/k8s-nodes.yml                        # node configuration
-ansible-playbook -b playbooks/k8s.yml                           # Kubespray cluster install
-ansible-playbook playbooks/post-k8s.yml                         # Longhorn, Traefik, ArgoCD
+ansible-playbook playbooks/k3s.yml
+ansible-playbook playbooks/post-k3s.yml
 ```
 
-→ Full guide: [docs/kube-setup.md](docs/kube-setup.md)
+### Bare-metal homelab cluster
+
+```bash
+ansible-playbook playbooks/configure-router.yml          # DNS — run before k8s.yml
+ansible-playbook --ask-become-pass playbooks/prerequisite.yml
+ansible-playbook playbooks/k8s-nodes.yml
+ansible-playbook playbooks/pre-k8s.yml
+ansible-playbook -b playbooks/k8s.yml
+ansible-playbook playbooks/post-k8s.yml
+```
 
 ### Run specific roles with tags
 
@@ -82,11 +88,4 @@ ansible-playbook -t brew,docker playbooks/local-core.yml
 ansible-playbook -t nodejs playbooks/local-dev.yml
 ansible-playbook -t terraform,aws playbooks/local-cloud.yml
 ansible-playbook --ask-become-pass -t ssh,sudo playbooks/prerequisite.yml
-```
-
-### Dry run
-
-```bash
-ansible-playbook --check playbooks/local-core.yml
-ansible-playbook --syntax-check playbooks/local-core.yml
 ```
