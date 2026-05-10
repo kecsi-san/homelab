@@ -286,9 +286,9 @@ kubectl create secret generic my-secret --namespace my-ns \
 # Add yamllint disable-line comments before long encrypted data lines
 ```
 
-**Traffic and TLS architecture:**
-- All `*.kecskemethy.org` traffic routes via Cloudflare Tunnel — browser connects to Cloudflare edge (HTTPS/TLS handled there), tunnel forwards to cloudflared pod, which connects to Traefik via `https://traefik.traefik.svc.cluster.local` with `noTLSVerify: true`
-- No cert-manager, no Let's Encrypt — Cloudflare's Universal SSL cert is what browsers see
-- MikroTik has no wildcard DNS override for `*.kecskemethy.org`; local and external clients both resolve via Cloudflare public DNS
-- ArgoCD runs in insecure mode; Cloudflare terminates TLS (not Traefik)
-- IngressRoutes use `tls: {}` (Traefik self-signed; irrelevant since cloudflared ignores cert validity)
+**Traffic and TLS architecture (dual-path):**
+- **LAN path (Edge browser):** MikroTik wildcard DNS `*.kecskemethy.org` → 192.168.1.101 (Traefik); cert-manager issues per-service Let's Encrypt certs via DNS01 (Cloudflare API token); IngressRoutes reference `<service>-tls` secrets; no H2 coalescing since each service has its own cert
+- **Cloudflare path (Firefox + WARP):** Cloudflare WARP routes traffic through Cloudflare edge → cloudflared pod → Traefik via `https://traefik.traefik.svc.cluster.local` with `noTLSVerify: true`; Cloudflare's Universal SSL cert is what the browser sees
+- cert-manager: installed via ArgoCD app (`cert-manager-config.yaml`); ClusterIssuer uses DNS01 challenge with `cloudflare-api-token` SealedSecret in `cert-manager` namespace
+- ArgoCD runs in insecure mode; TLS terminated at Traefik (LAN) or Cloudflare edge (WARP)
+- MikroTik wildcard DNS entry for `kecskemethy.org` (match-subdomain) defined in `configure_mikrotik-dns` defaults; run `configure-router.yml` after any IP/domain changes

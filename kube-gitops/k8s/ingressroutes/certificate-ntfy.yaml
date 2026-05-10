@@ -1,0 +1,13 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ntfy-tls
+  namespace: ntfy
+spec:
+  secretName: ntfy-tls
+  dnsNames:
+    - "ntfy.kecskemethy.org"
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
