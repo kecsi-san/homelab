@@ -6,6 +6,11 @@ env:
       secretKeyRef:
         name: gatus-ntfy-token
         key: token
+  - name: ALERT_EMAIL
+    valueFrom:
+      secretKeyRef:
+        name: gatus-alert-email
+        key: email
 
 config:
   alerting:
@@ -14,7 +19,7 @@ config:
       topic: homelab-alerts
       priority: 3
       token: "$NTFY_TOKEN"
-      email: "kecskemethy@gmail.com"
+      email: "$ALERT_EMAIL"
       default-alert:
         enabled: true
         failure-threshold: 3

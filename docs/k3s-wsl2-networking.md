@@ -160,7 +160,7 @@ podSecurityContext:
 
 ## Problem 5 — Windows cannot reach WSL2 via its own LAN IP
 
-Even with all the above fixes, `homepage.k3s.kecskemethy.org` still fails in
+Even with all the above fixes, `homepage.k3s.<your-domain.tld>` still fails in
 Firefox on the Windows host. Other LAN devices (phone, other laptops) work fine.
 
 **Root cause:** When Windows connects to `192.168.1.25` (its own LAN IP),
@@ -185,10 +185,10 @@ Test-NetConnection -ComputerName localhost -Port 443
 Add entries to `C:\Windows\System32\drivers\etc\hosts` (as Administrator):
 
 ```
-127.0.0.1 homepage.k3s.kecskemethy.org
-127.0.0.1 argocd.k3s.kecskemethy.org
-127.0.0.1 headlamp.k3s.kecskemethy.org
-127.0.0.1 traefik.k3s.kecskemethy.org
+127.0.0.1 homepage.k3s.<your-domain.tld>
+127.0.0.1 argocd.k3s.<your-domain.tld>
+127.0.0.1 headlamp.k3s.<your-domain.tld>
+127.0.0.1 traefik.k3s.<your-domain.tld>
 ```
 
 MikroTik DNS continues to return `192.168.1.25` for all other LAN devices, which
@@ -198,10 +198,10 @@ works correctly. The Windows hosts file overrides only the local machine.
 `Resolve-DnsName` to verify hosts file entries are applied:
 
 ```powershell
-ping -n 1 homepage.k3s.kecskemethy.org
+ping -n 1 homepage.k3s.<your-domain.tld>
 # Reply from 127.0.0.1  ← correct
 
-Resolve-DnsName homepage.k3s.kecskemethy.org
+Resolve-DnsName homepage.k3s.<your-domain.tld>
 # IPAddress: 127.0.0.1  ← correct
 ```
 
@@ -223,10 +223,10 @@ Clear it at `about:networking#dns` → **Clear DNS Cache**.
 ### MikroTik wildcard DNS entry
 
 ```
-/ip dns static add name="*.k3s.kecskemethy.org" address=192.168.1.25 ttl=5m
+/ip dns static add name="*.k3s.<your-domain.tld>" address=192.168.1.25 ttl=5m
 ```
 
-This takes priority over the existing `*.kecskemethy.org → 192.168.1.101` entry
+This takes priority over the existing `*.<your-domain.tld> → 192.168.1.101` entry
 because it is more specific.
 
 ---
@@ -238,16 +238,16 @@ because it is more specific.
 ss -tlnp | grep -E ":80 |:443 "
 
 # 2. Does Traefik respond from within WSL2?
-curl -sk -o /dev/null -w "%{http_code}" -H "Host: homepage.k3s.kecskemethy.org" https://127.0.0.1/
+curl -sk -o /dev/null -w "%{http_code}" -H "Host: homepage.k3s.<your-domain.tld>" https://127.0.0.1/
 
 # 3. Is it reachable from another LAN device? (use a k8s node as proxy)
-ssh hped800g5 "curl -sk --resolve 'homepage.k3s.kecskemethy.org:443:192.168.1.25' \
-  -o /dev/null -w '%{http_code}' https://homepage.k3s.kecskemethy.org/"
+ssh hped800g5 "curl -sk --resolve 'homepage.k3s.<your-domain.tld>:443:192.168.1.25' \
+  -o /dev/null -w '%{http_code}' https://homepage.k3s.<your-domain.tld>/"
 
 # 4. Does Windows DNS see 127.0.0.1? (not nslookup — that bypasses hosts file)
 # Run in PowerShell:
-# ping -n 1 homepage.k3s.kecskemethy.org
-# Resolve-DnsName homepage.k3s.kecskemethy.org
+# ping -n 1 homepage.k3s.<your-domain.tld>
+# Resolve-DnsName homepage.k3s.<your-domain.tld>
 
 # 5. Firefox DNS cache stale? Clear at about:networking#dns
 ```

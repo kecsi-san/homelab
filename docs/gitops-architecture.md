@@ -1,4 +1,4 @@
-# GitOps Architecture — kecskemethy.org Homelab
+# GitOps Architecture — <your-domain.tld> Homelab
 
 This document describes the architecture for managing both Kubernetes clusters
 using Ansible for infrastructure bootstrapping and ArgoCD for continuous GitOps delivery.
@@ -97,7 +97,7 @@ ArgoCD owns everything running on top (continuous reconciliation).
 | sealed-secrets | ✅ | ✅ | Each cluster has its own key |
 | headlamp | ✅ | ✅ | |
 | homepage | ✅ | ✅ | Different values per cluster |
-| ingressroutes | ✅ | ✅ | k3s: `*.k3s.kecskemethy.org`; k8s: `*.kecskemethy.org` |
+| ingressroutes | ✅ | ✅ | k3s: `*.k3s.<your-domain.tld>`; k8s: `*.<your-domain.tld>` |
 | reloader | ✅ | ✅ | |
 | cloudflared | ❌ | ✅ | k3s is LAN-only, no internet exposure needed |
 | external-dns | ❌ | ✅ | No Cloudflare tunnel on k3s, no public DNS records needed |
@@ -110,8 +110,8 @@ ArgoCD owns everything running on top (continuous reconciliation).
 
 | Cluster | Base domain | Wildcard cert covers |
 |---------|-------------|---------------------|
-| Homelab | `kecskemethy.org` | `*.kecskemethy.org` |
-| k3s local | `k3s.kecskemethy.org` | `*.k3s.kecskemethy.org` |
+| Homelab | `<your-domain.tld>` | `*.<your-domain.tld>` |
+| k3s local | `k3s.<your-domain.tld>` | `*.k3s.<your-domain.tld>` |
 
 ### Split-horizon DNS
 
@@ -124,14 +124,14 @@ Traffic reaches the correct endpoint depending on the client's location:
 
 **Router DNS:** one wildcard entry covers all services automatically:
 ```
-*.kecskemethy.org  →  192.168.1.101   (Traefik LoadBalancer)
+*.<your-domain.tld>  →  192.168.1.101   (Traefik LoadBalancer)
 ```
 
 **Cloudflare DNS:** per-service CNAME records managed automatically by external-dns:
 ```
-CNAME  argocd.kecskemethy.org    →  9fa18953-8d82-424d-a8b5-9941940d4230.cfargotunnel.com  (proxied)
-CNAME  headlamp.kecskemethy.org  →  9fa18953-8d82-424d-a8b5-9941940d4230.cfargotunnel.com  (proxied)
-CNAME  longhorn.kecskemethy.org  →  9fa18953-8d82-424d-a8b5-9941940d4230.cfargotunnel.com  (proxied)
+CNAME  argocd.<your-domain.tld>    →  9fa18953-8d82-424d-a8b5-9941940d4230.cfargotunnel.com  (proxied)
+CNAME  headlamp.<your-domain.tld>  →  9fa18953-8d82-424d-a8b5-9941940d4230.cfargotunnel.com  (proxied)
+CNAME  longhorn.<your-domain.tld>  →  9fa18953-8d82-424d-a8b5-9941940d4230.cfargotunnel.com  (proxied)
 ```
 
 New services only need an IngressRoute with the tunnel annotation — external-dns creates
@@ -156,7 +156,7 @@ metadata:
 spec:
   entryPoints: [websecure]
   routes:
-    - match: Host(`myapp.kecskemethy.org`)
+    - match: Host(`myapp.<your-domain.tld>`)
       services:
         - name: myapp
           port: 80
@@ -180,8 +180,8 @@ DNS-01 proves domain ownership by creating a TXT record in Cloudflare via API to
 ```
 cert-manager  →  Cloudflare API (DNS-01 challenge)  →  Let's Encrypt
      ↓
-Wildcard cert: *.kecskemethy.org  (homelab)
-               *.k3s.kecskemethy.org  (local k3s)
+Wildcard cert: *.<your-domain.tld>  (homelab)
+               *.k3s.<your-domain.tld>  (local k3s)
      ↓
 Secret in traefik namespace → TLSStore default → all IngressRoutes get it automatically
 ```
@@ -191,7 +191,7 @@ Secret in traefik namespace → TLSStore default → all IngressRoutes get it au
 ```
 Zone → Zone → Read
 Zone → DNS  → Edit
-Scope: kecskemethy.org only
+Scope: <your-domain.tld> only
 ```
 
 Stored as a **Sealed Secret** per cluster — encrypted with each cluster's public key,
@@ -233,7 +233,7 @@ their own sealed version of any shared secret (e.g. Cloudflare API token).
 ### Internet request (homelab, via Cloudflare Tunnel)
 
 ```
-Browser: https://argocd.kecskemethy.org
+Browser: https://argocd.<your-domain.tld>
          │
          ▼
 Cloudflare edge  (CNAME → <tunnel-id>.cfargotunnel.com, proxied)
@@ -242,8 +242,8 @@ Cloudflare edge  (CNAME → <tunnel-id>.cfargotunnel.com, proxied)
 cloudflared pod  (namespace: cloudflared)
          │  https://traefik.traefik.svc.cluster.local  (noTLSVerify: true)
          ▼
-Traefik: TLS termination (wildcard cert *.kecskemethy.org from cert-manager)
-         Host: argocd.kecskemethy.org → argocd-server:80 (ClusterIP)
+Traefik: TLS termination (wildcard cert *.<your-domain.tld> from cert-manager)
+         Host: argocd.<your-domain.tld> → argocd-server:80 (ClusterIP)
          │
          ▼
 ArgoCD pod
@@ -252,10 +252,10 @@ ArgoCD pod
 ### LAN request (homelab, direct)
 
 ```
-Browser: https://argocd.kecskemethy.org
+Browser: https://argocd.<your-domain.tld>
          │
          ▼
-Router DNS wildcard: *.kecskemethy.org → 192.168.1.101
+Router DNS wildcard: *.<your-domain.tld> → 192.168.1.101
          │
          ▼
 kube-vip ARP: 192.168.1.101 → Traefik pod (LoadBalancer service)
@@ -351,7 +351,7 @@ Config: `renovate.json` at repo root.
 | Cert scope | Wildcard per cluster | One cert covers all services automatically via TLSStore |
 | External access | Cloudflare Tunnel | No open ports, home IP hidden, outbound-only |
 | DNS automation | external-dns (traefik-proxy source) | Auto-creates Cloudflare records from IngressRoute annotations |
-| LAN DNS | Router wildcard `*.kecskemethy.org` | One entry covers all future services, no per-service config |
+| LAN DNS | Router wildcard `*.<your-domain.tld>` | One entry covers all future services, no per-service config |
 | GitOps location | `kube-gitops/` in this repo | Solo homelab: one repo is simpler |
 | ArgoCD bootstrap | Ansible applies root app once | Clean handoff: Ansible bootstraps, ArgoCD self-manages after |
 | Dependency updates | Renovate (GitHub App) | Handles Helm charts which Dependabot cannot |

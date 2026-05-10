@@ -12,7 +12,7 @@ outbound-only connection to Cloudflare's edge; all inbound traffic flows through
 Internet browser
       │
       ▼
-Cloudflare edge  (DNS: argocd.k8s.kecskemethy.org → <tunnel-id>.cfargotunnel.com)
+Cloudflare edge  (DNS: argocd.k8s.<your-domain.tld> → <tunnel-id>.cfargotunnel.com)
       │  encrypted tunnel (outbound from cluster)
       ▼
 cloudflared pod (Deployment, 2 replicas, namespace: cloudflared)
@@ -31,7 +31,7 @@ LAN access is unchanged — router DNS overrides resolve directly to Traefik's I
 
 ## Prerequisites
 
-- Cloudflare account managing the `kecskemethy.org` zone
+- Cloudflare account managing the `<your-domain.tld>` zone
 - `cloudflared` CLI installed locally
 - `kubeseal` CLI installed locally
 - Sealed Secrets controller running in the target cluster
@@ -53,7 +53,7 @@ brew install cloudflare/cloudflare/cloudflared
 cloudflared tunnel login
 ```
 
-This opens a browser. Select the zone (`kecskemethy.org`). A certificate is saved to
+This opens a browser. Select the zone (`<your-domain.tld>`). A certificate is saved to
 `~/.cloudflared/cert.pem` — this authorises the CLI to create tunnels in that zone.
 
 ### 2. Create the tunnel
@@ -109,18 +109,18 @@ ArgoCD picks up the change and deploys the `cloudflared` Deployment automaticall
 Either via CLI (requires `cloudflared tunnel login` to have run):
 
 ```bash
-cloudflared tunnel route dns k8s-homelab argocd.k8s.kecskemethy.org
-cloudflared tunnel route dns k8s-homelab headlamp.k8s.kecskemethy.org
-cloudflared tunnel route dns k8s-homelab longhorn.k8s.kecskemethy.org
+cloudflared tunnel route dns k8s-homelab argocd.k8s.<your-domain.tld>
+cloudflared tunnel route dns k8s-homelab headlamp.k8s.<your-domain.tld>
+cloudflared tunnel route dns k8s-homelab longhorn.k8s.<your-domain.tld>
 ```
 
 Or manually in the Cloudflare dashboard — add a CNAME record for each hostname:
 
 | Name | Type | Target | Proxy |
 |------|------|--------|-------|
-| `argocd.k8s.kecskemethy.org` | CNAME | `<tunnel-id>.cfargotunnel.com` | ✅ Proxied |
-| `headlamp.k8s.kecskemethy.org` | CNAME | `<tunnel-id>.cfargotunnel.com` | ✅ Proxied |
-| `longhorn.k8s.kecskemethy.org` | CNAME | `<tunnel-id>.cfargotunnel.com` | ✅ Proxied |
+| `argocd.k8s.<your-domain.tld>` | CNAME | `<tunnel-id>.cfargotunnel.com` | ✅ Proxied |
+| `headlamp.k8s.<your-domain.tld>` | CNAME | `<tunnel-id>.cfargotunnel.com` | ✅ Proxied |
+| `longhorn.k8s.<your-domain.tld>` | CNAME | `<tunnel-id>.cfargotunnel.com` | ✅ Proxied |
 
 The proxy (orange cloud) must be **on** — traffic routes through Cloudflare's edge.
 
@@ -137,7 +137,7 @@ All resources except the sealed credentials are static and already in the repo.
 | `kube-gitops/k8s/cloudflared/cloudflare-tunnel-credentials-sealed.yaml` | SealedSecret (cluster-specific) |
 | `kube-gitops/k8s/apps/cloudflared.yaml` | ArgoCD Application (auto-picked by root app-of-apps) |
 
-The routing config (`config.yaml`) sends all `*.k8s.kecskemethy.org` traffic to
+The routing config (`config.yaml`) sends all `*.k8s.<your-domain.tld>` traffic to
 Traefik's HTTPS endpoint (`traefik.traefik.svc.cluster.local:443`) with
 `noTLSVerify: true` — the cert CN is the wildcard domain, not the internal service
 name, so hostname verification is skipped while the connection remains encrypted.
@@ -167,7 +167,7 @@ connections to different Cloudflare PoPs for redundancy.
 Test from outside the LAN (e.g., mobile data):
 
 ```bash
-curl -sv https://argocd.k8s.kecskemethy.org/ 2>&1 | grep -E "< HTTP|issuer"
+curl -sv https://argocd.k8s.<your-domain.tld>/ 2>&1 | grep -E "< HTTP|issuer"
 ```
 
 ---

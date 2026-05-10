@@ -51,7 +51,7 @@ with Diagram(
         cf_edge = Cloudflare("Edge\nUniversal SSL")
 
     with Cluster("LAN — 192.168.1.0/24"):
-        router = Server("MikroTik Router\n*.kecskemethy.org\n→ 192.168.1.101")
+        router = Server("MikroTik Router\n*.<your-domain.tld>\n→ 192.168.1.101")
 
         with Cluster("k8s Cluster  ·  Kubespray 2.31  ·  k8s 1.35"):
 
