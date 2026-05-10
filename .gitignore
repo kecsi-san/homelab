@@ -160,3 +160,4 @@ todo.md*
 # =============================================================================
 # Local Claude Code settings (machine-specific)
 .claude
+docs/homelab-architecture.png
