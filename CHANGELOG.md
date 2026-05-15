@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(forgejo): update admin SealedSecret username from admin to kecsi ([bf773f9](https://github.com/kecsi-san/homelab/commit/bf773f9e91f0eda009a1493cd2ca44d4d647142c) by Zoltan K).
 - fix(forgejo): use GITEA__ env vars for config, mount PVC at /var/lib/gitea ([800ffed](https://github.com/kecsi-san/homelab/commit/800ffed289c6014824414137b25fca9367137625) by Zoltan K).
 - fix(forgejo): split image registry from repository to prevent Gitea chart prepending default registry ([7c0ac01](https://github.com/kecsi-san/homelab/commit/7c0ac014b61061b0505763248b452e647ce823ca) by Zoltan K).
 - fix(cnpg): reduce postgres PVC size from 10Gi to 2Gi ([036389b](https://github.com/kecsi-san/homelab/commit/036389b265154607508b1139af1fe641c1c59b1a) by Zoltan K).
