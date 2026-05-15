@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(homepage): correct Glance logo URL (docs/logo.png not docs/images/logo.png) ([f2de1bf](https://github.com/kecsi-san/homelab/commit/f2de1bff89e21fcf7b4cd62f2b4f6c47ecd66b6d) by Zoltan K).
 - fix(secrets): add yamllint disable-line comments to SealedSecret encrypted data ([2f506cf](https://github.com/kecsi-san/homelab/commit/2f506cfd8f96e135a6b28142e3c32a11e2eac986) by Zoltan K).
 - fix(volsync): add RespectIgnoreDifferences to fix terminatingReplicas schema error ([7fc28e1](https://github.com/kecsi-san/homelab/commit/7fc28e1d826eabe10c09602263d3aa7b079bcaf4) by Zoltan K).
 - fix(gatus): correct env format to dict and set Recreate strategy ([537cbe8](https://github.com/kecsi-san/homelab/commit/537cbe80974917a0a260c9bde8f7c6f0dbfe9219) by Zoltan K).
