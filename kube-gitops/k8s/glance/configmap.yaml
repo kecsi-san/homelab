@@ -39,6 +39,25 @@ data:
               - type: hacker-news
                 limit: 20
                 collapse-after: 5
+              - type: custom-api
+                title: GitHub Trending
+                cache: 24h
+                url: "https://api.ossinsight.io/v1/trends/repos/?period=past_week&language=All"
+                template: |
+                  <ul class="list list-gap-10 collapsible-container" data-collapse-after="5">
+                    {{ range .JSON.Array "data.rows" }}
+                      <li>
+                        <a class="color-primary-if-not-visited" href="https://github.com/{{ .String "repo_name" }}">{{ .String "repo_name" }}</a>
+                        <ul class="list-horizontal-text">
+                          <li class="color-highlight">{{ .String "primary_language" }}</li>
+                          <li>★ {{ .Int "stars" }}</li>
+                          <li>⑂ {{ .Int "forks" }}</li>
+                          <li>↩ {{ .Int "pull_requests" }}</li>
+                        </ul>
+                        <p class="color-subdue" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ .String "description" }}</p>
+                      </li>
+                    {{ end }}
+                  </ul>
           - size: small
             widgets:
               - type: reddit
