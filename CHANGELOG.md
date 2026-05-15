@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(cnpg): reduce postgres PVC size from 10Gi to 2Gi ([036389b](https://github.com/kecsi-san/homelab/commit/036389b265154607508b1139af1fe641c1c59b1a) by Zoltan K).
 - fix(cnpg): add username key to forgejo-db-credentials SealedSecret in postgres ns ([0118228](https://github.com/kecsi-san/homelab/commit/0118228ea8c00a2b278164b5e9e34f4ee9e3d770) by Zoltan K).
 - fix(cnpg): add RespectIgnoreDifferences to fix terminatingReplicas schema error ([e87009d](https://github.com/kecsi-san/homelab/commit/e87009d7838ac78377ff51978ad973698470c136) by Zoltan K).
 - fix(cnpg): add ServerSideApply to resolve oversized CRD annotation ([2123f77](https://github.com/kecsi-san/homelab/commit/2123f77b70069c0dc2a2909b054ebec8db536724) by Zoltan K).
