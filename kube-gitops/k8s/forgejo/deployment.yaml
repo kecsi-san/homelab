@@ -1,0 +1,92 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forgejo
+  namespace: forgejo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: forgejo
+  template:
+    metadata:
+      labels:
+        app: forgejo
+    spec:
+      securityContext:
+        fsGroup: 1000
+      initContainers:
+        - name: init-directories
+          image: codeberg.org/forgejo/forgejo:10-rootless
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              mkdir -p /data/forgejo/conf /data/git/.ssh /tmp/forgejo
+              chmod 700 /data/git/.ssh
+              if [ ! -f /data/forgejo/conf/app.ini ]; then
+                cp /etc/forgejo/app.ini /data/forgejo/conf/app.ini
+              fi
+          securityContext:
+            runAsUser: 1000
+          volumeMounts:
+            - name: config
+              mountPath: /etc/forgejo
+            - name: data
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
+      containers:
+        - name: forgejo
+          image: codeberg.org/forgejo/forgejo:10-rootless
+          ports:
+            - name: http
+              containerPort: 3000
+            - name: ssh
+              containerPort: 2222
+          env:
+            - name: FORGEJO__database__PASSWD
+              valueFrom:
+                secretKeyRef:
+                  name: forgejo-db-credentials
+                  key: password
+            - name: FORGEJO__security__SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: forgejo-secret-key
+                  key: secret-key
+            - name: FORGEJO__security__INTERNAL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: forgejo-secret-key
+                  key: internal-token
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 100m
+            limits:
+              memory: 512Mi
+              cpu: "1"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+      volumes:
+        - name: config
+          configMap:
+            name: forgejo-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: forgejo-data
+        - name: tmp
+          emptyDir: {}

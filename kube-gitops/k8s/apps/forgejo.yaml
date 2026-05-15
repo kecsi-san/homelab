@@ -8,19 +8,10 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
-  sources:
-    - repoURL: https://dl.gitea.com/charts/
-      chart: gitea
-      targetRevision: "12.6.0"
-      helm:
-        valueFiles:
-          - $values/kube-gitops/k8s/values/forgejo.yaml
-    - repoURL: https://github.com/kecsi-san/homelab.git
-      targetRevision: HEAD
-      ref: values
-    - repoURL: https://github.com/kecsi-san/homelab.git
-      targetRevision: HEAD
-      path: kube-gitops/k8s/forgejo
+  source:
+    repoURL: https://github.com/kecsi-san/homelab.git
+    targetRevision: HEAD
+    path: kube-gitops/k8s/forgejo
   destination:
     server: https://kubernetes.default.svc
     namespace: forgejo
