@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(cnpg): add RespectIgnoreDifferences to fix terminatingReplicas schema error ([e87009d](https://github.com/kecsi-san/homelab/commit/e87009d7838ac78377ff51978ad973698470c136) by Zoltan K).
 - fix(cnpg): add ServerSideApply to resolve oversized CRD annotation ([2123f77](https://github.com/kecsi-san/homelab/commit/2123f77b70069c0dc2a2909b054ebec8db536724) by Zoltan K).
 - fix(homepage): remove background blur to improve image visibility ([7a76f81](https://github.com/kecsi-san/homelab/commit/7a76f81e6b65ff1b8110dc7f9d4c03eb9e0fe7e7) by Zoltan K).
 - fix(homepage): correct Glance logo URL (docs/logo.png not docs/images/logo.png) ([f2de1bf](https://github.com/kecsi-san/homelab/commit/f2de1bff89e21fcf7b4cd62f2b4f6c47ecd66b6d) by Zoltan K).
