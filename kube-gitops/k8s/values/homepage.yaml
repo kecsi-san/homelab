@@ -115,7 +115,7 @@ config:
         - Glance:
             href: https://glance.kecskemethy.org
             description: Personal feed dashboard
-            icon: https://raw.githubusercontent.com/glanceapp/glance/main/docs/images/logo.png
+            icon: https://raw.githubusercontent.com/glanceapp/glance/main/docs/logo.png
             namespace: glance
             app: glance
     - Platform:
