@@ -20,6 +20,8 @@ data:
                 hour-format: 24h
               - type: markets
                 markets:
+                  - symbol: EPAM
+                    name: EPAM Systems
                   - symbol: AAPL
                     name: Apple
                   - symbol: MSFT
@@ -36,6 +38,9 @@ data:
             widgets:
               - type: hacker-news
                 limit: 20
+                collapse-after: 5
+              - type: github-trending-repositories
+                limit: 10
                 collapse-after: 5
           - size: small
             widgets:
