@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(secrets): add yamllint disable-line comments to SealedSecret encrypted data ([2f506cf](https://github.com/kecsi-san/homelab/commit/2f506cfd8f96e135a6b28142e3c32a11e2eac986) by Zoltan K).
 - fix(volsync): add RespectIgnoreDifferences to fix terminatingReplicas schema error ([7fc28e1](https://github.com/kecsi-san/homelab/commit/7fc28e1d826eabe10c09602263d3aa7b079bcaf4) by Zoltan K).
 - fix(gatus): correct env format to dict and set Recreate strategy ([537cbe8](https://github.com/kecsi-san/homelab/commit/537cbe80974917a0a260c9bde8f7c6f0dbfe9219) by Zoltan K).
 - fix(kube-gitops): restore real domain in operational manifests ([156bc68](https://github.com/kecsi-san/homelab/commit/156bc68257b91f6bfc1c1b0abe77056aa5f3e301) by Zoltan K).
