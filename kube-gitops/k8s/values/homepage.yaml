@@ -20,6 +20,12 @@ config:
     theme: dark
     color: slate
     headerStyle: clean
+    background:
+      image: https://raw.githubusercontent.com/kecsi-san/homelab/main/kube-gitops/k8s/homepage/moon-space-art-bg.jpg
+      blur: sm
+      saturate: 50
+      brightness: 50
+      opacity: 50
     layout:
       Kubernetes:
         style: row
