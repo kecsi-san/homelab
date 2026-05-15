@@ -14,16 +14,17 @@ Ansible automation for setting up and maintaining developer/DevOps environments 
 
 | Guide | Description |
 |-------|-------------|
-| [Dev/DevOps Workstation](docs/devenv.md) | Set up a local workstation — macOS or Debian/WSL2 |
-| [Local k3s Cluster](docs/k3s.md) | Single-node k3s cluster for local development (WSL2 + macOS) |
-| [4-Node Homelab Cluster](docs/k8s-homelab.md) | Bare-metal HA cluster, GitOps stack, Cloudflare Tunnel |
+| [Dev/DevOps Workstation](docs/ansible/devenv.md) | Set up a local workstation — macOS or Debian/WSL2 |
+| [Local k3s Cluster](docs/ansible/k3s.md) | Single-node k3s cluster for local development (WSL2 + macOS) |
+| [4-Node Homelab Cluster](docs/ansible/k8s-homelab.md) | Bare-metal HA cluster, GitOps stack, Cloudflare Tunnel |
 
 ## Reference
 
 | Guide | Description |
 |-------|-------------|
-| [Roles](docs/roles.md) | Role naming conventions, structure, and full role inventory |
-| [CI/CD](docs/ci-cd.md) | CI pipeline, linting, pre-commit hooks, and changelog automation |
+| [Roles](docs/ansible/roles.md) | Role naming conventions, structure, and full role inventory |
+| [CI/CD](docs/ansible/ci-cd.md) | CI pipeline, linting, pre-commit hooks, and changelog automation |
+| [All docs](docs/README.md) | Full documentation index |
 
 ---
 
