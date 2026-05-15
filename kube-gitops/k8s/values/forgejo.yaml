@@ -1,0 +1,71 @@
+---
+# Forgejo deployed via Gitea Helm chart 12.6.0 with Forgejo image override.
+# Pin the image tag once a stable version is confirmed working.
+
+image:
+  repository: codeberg.org/forgejo/forgejo
+  tag: "10"
+  rootless: true
+
+service:
+  http:
+    type: ClusterIP
+    port: 3000
+  ssh:
+    type: ClusterIP
+    port: 22
+
+ingress:
+  enabled: false  # Traefik IngressRoute used instead
+
+persistence:
+  enabled: true
+  create: true
+  storageClass: longhorn
+  size: 20Gi
+
+valkey-cluster:
+  enabled: false
+
+valkey:
+  enabled: false
+
+postgresql:
+  enabled: false
+
+postgresql-ha:
+  enabled: false
+
+gitea:
+  admin:
+    existingSecret: forgejo-admin-credentials
+
+  config:
+    APP_NAME: Forgejo
+    server:
+      DOMAIN: forgejo.kecskemethy.org
+      ROOT_URL: "https://forgejo.kecskemethy.org/"
+      SSH_DOMAIN: forgejo.kecskemethy.org
+      OFFLINE_MODE: "false"
+    database:
+      DB_TYPE: postgres
+      HOST: "postgres-rw.postgres.svc.cluster.local:5432"
+      NAME: forgejo
+      USER: forgejo
+    session:
+      PROVIDER: db
+    cache:
+      ADAPTER: memory
+    queue:
+      TYPE: level
+    repository:
+      DEFAULT_BRANCH: main
+    service:
+      DISABLE_REGISTRATION: "true"
+
+  additionalConfigFromEnvs:
+    - name: GITEA__DATABASE__PASSWD
+      valueFrom:
+        secretKeyRef:
+          name: forgejo-db-credentials
+          key: password

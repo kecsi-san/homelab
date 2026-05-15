@@ -36,6 +36,9 @@ config:
       Apps:
         style: row
         columns: 3
+      Platform:
+        style: row
+        columns: 3
 
   widgets:
     - greeting:
@@ -115,3 +118,10 @@ config:
             icon: https://raw.githubusercontent.com/glanceapp/glance/main/docs/images/logo.png
             namespace: glance
             app: glance
+    - Platform:
+        - Forgejo:
+            href: https://forgejo.kecskemethy.org
+            description: Git server · OCI registry · CI
+            icon: forgejo.png
+            namespace: forgejo
+            app: forgejo
