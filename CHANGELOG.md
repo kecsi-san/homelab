@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(k3s/homepage): add Forgejo to Platform section, fix ArgoCD icon ([6fd0abe](https://github.com/kecsi-san/homelab/commit/6fd0abea32e33db2ebde35b3de26c2bdf799aad9) by Zoltan K).
 - fix(forgejo): update admin SealedSecret username from admin to kecsi ([bf773f9](https://github.com/kecsi-san/homelab/commit/bf773f9e91f0eda009a1493cd2ca44d4d647142c) by Zoltan K).
 - fix(forgejo): use GITEA__ env vars for config, mount PVC at /var/lib/gitea ([800ffed](https://github.com/kecsi-san/homelab/commit/800ffed289c6014824414137b25fca9367137625) by Zoltan K).
 - fix(forgejo): split image registry from repository to prevent Gitea chart prepending default registry ([7c0ac01](https://github.com/kecsi-san/homelab/commit/7c0ac014b61061b0505763248b452e647ce823ca) by Zoltan K).
