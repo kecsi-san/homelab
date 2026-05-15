@@ -23,7 +23,7 @@ spec:
 
   storage:
     storageClass: longhorn
-    size: 10Gi
+    size: 2Gi
 
   resources:
     requests:
