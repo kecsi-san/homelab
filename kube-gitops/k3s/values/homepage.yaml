@@ -24,6 +24,9 @@ config:
       Kubernetes:
         style: row
         columns: 3
+      Platform:
+        style: row
+        columns: 3
 
   widgets:
     - greeting:
@@ -56,7 +59,7 @@ config:
         - ArgoCD:
             href: https://argocd.k3s.kecskemethy.org
             description: GitOps continuous delivery
-            icon: argocd.png
+            icon: argo-cd.png
             namespace: argocd
             app: argocd-server
         - Headlamp:
@@ -71,3 +74,10 @@ config:
             icon: traefik.png
             namespace: traefik
             app: traefik
+    - Platform:
+        - Forgejo:
+            href: https://forgejo.k3s.kecskemethy.org
+            description: Git server · OCI registry · CI
+            icon: forgejo.png
+            namespace: forgejo
+            app: forgejo
