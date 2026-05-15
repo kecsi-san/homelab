@@ -109,3 +109,9 @@ config:
             icon: mealie.png
             namespace: mealie
             app: mealie
+        - Glance:
+            href: https://glance.kecskemethy.org
+            description: Personal feed dashboard
+            icon: https://raw.githubusercontent.com/glanceapp/glance/main/docs/images/logo.png
+            namespace: glance
+            app: glance

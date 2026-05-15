@@ -1,0 +1,13 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: glance-tls
+  namespace: glance
+spec:
+  secretName: glance-tls
+  dnsNames:
+    - "glance.kecskemethy.org"
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer

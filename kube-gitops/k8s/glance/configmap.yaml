@@ -1,0 +1,56 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: glance-config
+  namespace: glance
+data:
+  glance.yml: |
+    server:
+      port: 8080
+
+    pages:
+      - name: Home
+        columns:
+          - size: small
+            widgets:
+              - type: weather
+                location: Budapest, Hungary
+                units: metric
+                hour-format: 24h
+              - type: markets
+                markets:
+                  - symbol: AAPL
+                    name: Apple
+                  - symbol: MSFT
+                    name: Microsoft
+                  - symbol: NVDA
+                    name: NVIDIA
+                  - symbol: GOOGL
+                    name: Google
+                  - symbol: BTC-USD
+                    name: Bitcoin
+                  - symbol: ETH-USD
+                    name: Ethereum
+          - size: full
+            widgets:
+              - type: hacker-news
+                limit: 20
+                collapse-after: 5
+          - size: small
+            widgets:
+              - type: reddit
+                subreddit: homelab
+                limit: 10
+                collapse-after: 5
+                show-thumbnails: true
+              - type: reddit
+                subreddit: selfhosted
+                limit: 8
+                collapse-after: 5
+                show-thumbnails: true
+              - type: reddit
+                subreddit: kubernetes
+                limit: 6
+                collapse-after: 3
+                show-thumbnails: false
