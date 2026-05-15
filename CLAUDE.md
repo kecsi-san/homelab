@@ -257,6 +257,9 @@ ArgoCD manages all apps via app-of-apps pattern. Root app: `kube-gitops/k8s/root
 | headlamp | headlamp | Helm (headlamp) | Kubernetes dashboard |
 | argocd | argocd | Helm (argo-helm) | GitOps controller; insecure mode (Cloudflare terminates TLS) |
 | longhorn | longhorn-system | Helm (longhorn) | Distributed block storage; default StorageClass |
+| cnpg | cnpg-system | Helm (cloudnative-pg) | PostgreSQL operator; `ServerSideApply=true` required (CRDs exceed 262 KB apply limit); `ignoreDifferences` on terminatingReplicas |
+| cnpg-cluster | postgres | Raw manifests (`kube-gitops/k8s/cnpg/`) | 3-instance PostgreSQL cluster; 2Gi Longhorn PVCs; bootstrap DB `forgejo` owned by `forgejo` |
+| forgejo | forgejo | Raw manifests (`kube-gitops/k8s/forgejo/`) | Git server + OCI registry + CI; rootless image; configured via `GITEA__` env vars; admin user `kecsi` (not `admin` — reserved) |
 | ntfy | ntfy | Raw manifests (`kube-gitops/k8s/ntfy/`) | Push notification server; auth `deny-all`; `homelab` admin user |
 | gatus | gatus | Helm (twin/gatus) + values + SealedSecrets dir | Uptime monitoring for 6 services; ntfy alerting |
 | garage | garage | Raw manifests (`kube-gitops/k8s/garage/`) | S3-compatible object storage (Garage v2); `volsync-backups` bucket |
@@ -292,3 +295,38 @@ kubectl create secret generic my-secret --namespace my-ns \
 - cert-manager: installed via ArgoCD app (`cert-manager-config.yaml`); ClusterIssuer uses DNS01 challenge with `cloudflare-api-token` SealedSecret in `cert-manager` namespace
 - ArgoCD runs in insecure mode; TLS terminated at Traefik (LAN) or Cloudflare edge (WARP)
 - MikroTik wildcard DNS entry for `<your-domain.tld>` (match-subdomain) defined in `configure_mikrotik-dns` defaults; run `configure-router.yml` after any IP/domain changes
+
+### GitOps App Stack (k3s cluster, `kube-gitops/k3s/`)
+
+ArgoCD manages all apps via app-of-apps pattern. Root app: `kube-gitops/k3s/root.yaml`.
+
+| App | Namespace | Source | Purpose |
+|-----|-----------|--------|---------|
+| traefik | traefik | Helm (traefik) + values file | Ingress controller; `tls: {}` IngressRoutes (k3s default TLS store) |
+| sealed-secrets | sealed-secrets | Helm (sealed-secrets) | Secrets encryption; **re-seal against `admin@k3s` context** |
+| headlamp | kube-system | Helm (headlamp) | Kubernetes dashboard |
+| argocd | argocd | Helm (argo-helm) | GitOps controller; insecure mode |
+| homepage | homepage | Helm (jameswynn/homepage) + values file | Start page (`kube-gitops/k3s/values/homepage.yaml`) |
+| cert-manager | cert-manager | Helm (cert-manager) + config manifests | Let's Encrypt DNS01 certs via Cloudflare |
+| reloader | reloader | Helm (stakater/reloader) | Rolls pods on ConfigMap/Secret change |
+| cnpg | cnpg-system | Helm (cloudnative-pg) | PostgreSQL operator; same `ServerSideApply=true` + `ignoreDifferences` fixes as k8s |
+| cnpg-cluster | postgres | Raw manifests (`kube-gitops/k3s/cnpg/`) | Single-instance PostgreSQL; `local-path` storage; 2Gi PVC |
+| forgejo | forgejo | Raw manifests (`kube-gitops/k3s/forgejo/`) | Git server; same rootless image + `GITEA__` env var pattern as k8s; domain `forgejo.k3s.kecskemethy.org` |
+
+**k3s vs k8s differences:**
+- Storage class: `local-path` (not Longhorn) — single node, no replication
+- CNPG: `instances: 1` (single node)
+- IngressRoutes: `tls: {}` (k3s default TLS store, no per-cert secret reference)
+- No VolSync backups, no Garage, no ntfy/gatus/mealie on k3s — dev/IDP stack only
+- SealedSecrets sealed with `--context admin@k3s`; incompatible with k8s-sealed secrets
+
+**SealedSecrets workflow (k3s):**
+```bash
+kubectl create secret generic my-secret --namespace my-ns \
+  --from-literal=KEY=value --dry-run=client -o yaml | \
+  kubeseal --format yaml \
+    --context "admin@k3s" \
+    --controller-name sealed-secrets \
+    --controller-namespace sealed-secrets > sealedsecret.yaml
+# Add yamllint disable-line comments before long encrypted data lines
+```
