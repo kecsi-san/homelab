@@ -12,8 +12,8 @@ Deploy a minimal IDP to **k3s** and the same minimal IDP **plus Backstage** to *
 
 | Component | Tool | Layer | Status |
 |---|---|---|---|
-| Shared database | CloudNativePG | Infrastructure | Planned |
-| Git server + OCI registry + CI | Forgejo | Platform | Planned |
+| Shared database | CloudNativePG | Infrastructure | Done |
+| Git server + OCI registry + CI | Forgejo | Platform | Done |
 | CI runners | Forgejo Actions | Platform | Planned |
 | SSO / Identity Provider | Authentik | Platform | Planned |
 | Documentation / wiki | Docmost | Platform | Planned |
