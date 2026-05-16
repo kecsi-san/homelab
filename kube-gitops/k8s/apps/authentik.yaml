@@ -1,0 +1,33 @@
+---
+# Deploy after cnpg-cluster app is Healthy — authentik DB must exist first.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: authentik
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    - repoURL: https://charts.goauthentik.io
+      chart: authentik
+      targetRevision: "2024.12.3"
+      helm:
+        valueFiles:
+          - $values/kube-gitops/k8s/values/authentik.yaml
+    - repoURL: https://github.com/kecsi-san/homelab.git
+      targetRevision: HEAD
+      ref: values
+    - repoURL: https://github.com/kecsi-san/homelab.git
+      targetRevision: HEAD
+      path: kube-gitops/k8s/authentik
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: authentik
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

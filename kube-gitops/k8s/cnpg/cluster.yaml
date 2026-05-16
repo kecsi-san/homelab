@@ -21,6 +21,14 @@ spec:
       secret:
         name: forgejo-db-credentials
 
+  managed:
+    roles:
+      - name: authentik
+        ensure: present
+        login: true
+        passwordSecret:
+          name: authentik-db-credentials
+
   storage:
     storageClass: longhorn
     size: 2Gi
