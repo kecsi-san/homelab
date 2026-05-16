@@ -1,0 +1,11 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: docmost
+  namespace: postgres
+spec:
+  name: docmost
+  owner: docmost
+  cluster:
+    name: postgres

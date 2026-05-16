@@ -28,6 +28,11 @@ spec:
         login: true
         passwordSecret:
           name: authentik-db-credentials
+      - name: docmost
+        ensure: present
+        login: true
+        passwordSecret:
+          name: docmost-db-credentials
 
   storage:
     storageClass: longhorn

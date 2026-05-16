@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docmost
+  namespace: docmost
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docmost
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: docmost
+    spec:
+      containers:
+        - name: docmost
+          image: docmost/docmost:0.80.2
+          ports:
+            - containerPort: 3000
+          env:
+            - name: APP_URL
+              value: "https://docmost.kecskemethy.org"
+            - name: REDIS_URL
+              value: "redis://docmost-redis:6379"
+            - name: APP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: docmost-app
+                  key: APP_SECRET
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: docmost-app
+                  key: DATABASE_URL
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 1Gi
+              cpu: "1"
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: docmost-data
