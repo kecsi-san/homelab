@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(forgejo): disable remember-me to prevent silent re-login after sign-out ([1d3c960](https://github.com/kecsi-san/homelab/commit/1d3c96068dd92a9e2cf97f5c2c31afdf0c7eae93) by Zoltan K).
 - fix(authentik/forgejo): add invalidation_flow to blueprint, fix job app.ini path ([cf86e85](https://github.com/kecsi-san/homelab/commit/cf86e85d63995a8a154183820c5baf5e98325e9a) by Zoltan K).
 - fix(configure_ntp): switch from ntpd to chrony (Debian 13 removed ntp package) ([a3a53c3](https://github.com/kecsi-san/homelab/commit/a3a53c3abe1de34c80c4d885d7a87cc8cc818b7f) by Zoltan K).
 - fix(k8s/authentik): replace bundled Redis with standalone official image ([20c68d9](https://github.com/kecsi-san/homelab/commit/20c68d92672757ea64d0cc758d332098ae374365) by Zoltan K).
