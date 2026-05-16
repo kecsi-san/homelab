@@ -1,6 +1,6 @@
 # Authentik User Management
 
-Authentik is the IDP for the k8s cluster. Users created here get SSO access to all
+Authentik is the identity provider (IdP) for the k8s cluster. Users created here get SSO access to all
 connected apps (Forgejo, and future services).
 
 ## Create a user
