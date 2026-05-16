@@ -4,13 +4,15 @@ kind: IngressRoute
 metadata:
   name: longhorn
   namespace: longhorn-system
-  # No external-dns annotation — LAN only, not exposed via Cloudflare Tunnel
 spec:
   entryPoints:
     - websecure
   routes:
     - match: Host(`longhorn.kecskemethy.org`)
       kind: Rule
+      middlewares:
+        - name: authentik-forwardauth
+          namespace: traefik
       services:
         - name: longhorn-frontend
           port: 80
