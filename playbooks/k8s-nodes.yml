@@ -194,6 +194,14 @@
         - hibernation
         - server
 
+    - name: Configure NTP
+      ansible.builtin.import_role:
+        name: configure_ntp
+      become: true
+      tags:
+        - ntp
+        - server
+
     - name: Setup minimal packages
       ansible.builtin.import_role:
         name: setup_minimal

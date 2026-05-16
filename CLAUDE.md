@@ -138,6 +138,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | `configure_etc-hosts` | Manages `/etc/hosts` with kube group IPs and domain names |
 | `configure_mikrotik-dns` | Upserts static DNS records on MikroTik router via `community.routeros` API; manages API VIP (`api.k8s.<domain>`), k3s wildcard, and NFS alias |
 | `configure_fzf` | Adds fzf initialization to `~/.bashrc` (idempotent) |
+| `configure_ntp` | Disables systemd-timesyncd; installs ntpd; configures MikroTik router as primary NTP + pool.ntp.org fallback; wired into `k8s-nodes.yml` with `ntp` tag |
 | `configure_git` | Copies `~/.gitconfig` from static file |
 | `configure_oh-my-posh` | Installs Pluto OMP theme; adds init block to `~/.bashrc` |
 | `configure_ssh` | Deploys SSH authorized key for `ansible_ssh_user` |
@@ -226,7 +227,7 @@ Tags enable selective role execution without running the full playbook:
 - `local-cloud.yml` tags: `iac`, `terraform`, `iac-extra`, `cloud`, `aws`, `azure`, `gcp`
 - `local-kube.yml` tags: `kube`, `kubernetes`, `cloudflared`, `kind`
 - `upgrade-local.yml` tags: `upgrade`, `apt`, `brew`, `uv`
-- `k8s-nodes.yml` tags: `update`, `ssh`, `hosts`, `banner`, `fonts`, `omp`, `fzf`, `gitconfig`, `hibernation`
+- `k8s-nodes.yml` tags: `update`, `ssh`, `hosts`, `banner`, `fonts`, `omp`, `fzf`, `gitconfig`, `hibernation`, `ntp`
 
 Always tag new roles consistently so users can run them individually.
 

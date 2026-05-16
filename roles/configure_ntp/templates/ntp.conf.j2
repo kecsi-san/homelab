@@ -1,0 +1,17 @@
+# Managed by Ansible — configure_ntp role
+driftfile /var/lib/ntp/ntp.drift
+logfile /var/log/ntpd.log
+
+# LAN router — primary (prefer keeps this as source unless it diverges badly)
+server {{ ntp_primary_server }} iburst prefer
+
+# Public fallback servers
+{% for server in ntp_fallback_servers %}
+server {{ server }} iburst
+{% endfor %}
+
+# Access control — deny everything by default, allow local queries
+restrict default kod notrap nomodify nopeer noquery limited
+restrict 127.0.0.1
+restrict ::1
+restrict {{ ntp_primary_server }} nomodify notrap noquery

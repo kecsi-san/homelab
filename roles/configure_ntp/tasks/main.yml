@@ -1,0 +1,32 @@
+---
+- name: Stop and disable systemd-timesyncd
+  ansible.builtin.service:
+    name: systemd-timesyncd
+    state: stopped
+    enabled: false
+  become: true
+  failed_when: false
+
+- name: Install ntp package
+  ansible.builtin.apt:
+    name: ntp
+    state: present
+    update_cache: false
+  become: true
+
+- name: Deploy ntp.conf
+  ansible.builtin.template:
+    src: ntp.conf.j2
+    dest: /etc/ntp.conf
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Restart ntpd
+
+- name: Ensure ntpd is started and enabled
+  ansible.builtin.service:
+    name: ntp
+    state: started
+    enabled: true
+  become: true

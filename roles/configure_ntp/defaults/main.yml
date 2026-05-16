@@ -1,0 +1,9 @@
+---
+# Primary NTP server — LAN router preferred for lowest latency
+ntp_primary_server: "192.168.1.1"
+
+# Public fallback servers used when the router is unreachable
+ntp_fallback_servers:
+  - "0.pool.ntp.org"
+  - "1.pool.ntp.org"
+  - "2.pool.ntp.org"
