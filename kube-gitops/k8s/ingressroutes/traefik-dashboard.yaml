@@ -4,13 +4,15 @@ kind: IngressRoute
 metadata:
   name: traefik-dashboard
   namespace: traefik
-  # No external-dns annotation — LAN only, not exposed via Cloudflare Tunnel
 spec:
   entryPoints:
     - websecure
   routes:
     - match: Host(`traefik.kecskemethy.org`)
       kind: Rule
+      middlewares:
+        - name: authentik-forwardauth
+          namespace: traefik
       services:
         - name: api@internal
           kind: TraefikService

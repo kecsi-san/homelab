@@ -76,6 +76,44 @@ data:
           meta_description: Distributed block storage dashboard
           policy_engine_mode: any
 
+  traefik-dashboard.yaml: |
+    version: 1
+    metadata:
+      name: Traefik Dashboard Proxy Application
+      labels:
+        blueprints.goauthentik.io/description: Traefik dashboard forwardAuth
+        blueprints.goauthentik.io/instantiate: "true"
+    entries:
+      - model: authentik_providers_proxy.proxyprovider
+        state: present
+        identifiers:
+          name: Traefik
+        attrs:
+          name: Traefik
+          authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+          invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+          mode: forward_single
+          external_host: https://traefik.kecskemethy.org/
+
+      - model: authentik_core.application
+        state: present
+        identifiers:
+          slug: traefik
+        attrs:
+          name: Traefik
+          slug: traefik
+          provider: !Find [authentik_providers_proxy.proxyprovider, [name, Traefik]]
+          meta_description: Ingress controller dashboard
+          policy_engine_mode: any
+
+  zzz-outpost.yaml: |
+    version: 1
+    metadata:
+      name: Embedded Outpost Providers
+      labels:
+        blueprints.goauthentik.io/description: Assigns all proxy providers to the embedded outpost
+        blueprints.goauthentik.io/instantiate: "true"
+    entries:
       - model: authentik_outposts.outpost
         state: present
         identifiers:
@@ -83,3 +121,4 @@ data:
         attrs:
           providers:
             - !Find [authentik_providers_proxy.proxyprovider, [name, Longhorn]]
+            - !Find [authentik_providers_proxy.proxyprovider, [name, Traefik]]
