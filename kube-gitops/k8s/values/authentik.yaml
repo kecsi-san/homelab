@@ -8,6 +8,13 @@ postgresql:
 redis:
   enabled: false
 
+global:
+  deploymentStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+
 server:
   env:
     - name: AUTHENTIK_POSTGRESQL__HOST
