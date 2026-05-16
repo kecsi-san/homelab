@@ -16,7 +16,7 @@ Deploy a minimal IDP to **k3s** and the same minimal IDP **plus Backstage** to *
 | Git server + OCI registry + CI | Forgejo | Platform | ✅ Done | ✅ Done |
 | SSO / Identity Provider | Authentik | Platform | ✅ Done | Planned |
 | CI runners | Forgejo Actions | Platform | Planned | Planned |
-| Documentation / wiki | Docmost | Platform | Planned | Planned |
+| Documentation / wiki | Outline | Platform | ✅ Done | Planned |
 | Code analysis (SAST) | Semgrep OSS (CI step) | Quality | Planned | Planned |
 | Vulnerability scanning | Trivy (CI step) | Quality | Planned | Planned |
 
@@ -54,6 +54,18 @@ k8s only — after minimal IDP is stable:
 ---
 
 ## Achievements Log
+
+### 2026-05-16 — Outline wiki deployed with Authentik OIDC (k8s)
+
+- **Docmost dropped** — OIDC/SSO is an EE (paid) feature; not suitable for homelab
+- **Outline 1.7.1** deployed: Deployment (Recreate), Service, PVC (5Gi Longhorn),
+  standalone `redis:7-alpine`, SealedSecrets (SECRET_KEY, UTILS_SECRET, DATABASE_URL,
+  OIDC_CLIENT_SECRET)
+- **CNPG**: `outline` managed role + `Database` CR; Docmost equivalents removed
+- **Authentik blueprint** (`outline.yaml`): OAuth2 provider (`client_id: outline`,
+  `issuer_mode: global`, redirect `https://outline.kecskemethy.org/auth/oidc.callback`)
+  + application; blueprint applied via `ak apply_blueprint` after push
+- **Login confirmed**: Authentik OIDC login working; first login creates Outline user
 
 ### 2026-05-15 — k8s Authentik deployed and integrated
 
