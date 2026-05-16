@@ -70,6 +70,24 @@ k8s only — after minimal IDP is stable:
   (`sub_mode: user_username` — Authentik username maps to Forgejo username on first login)
 - **User management runbook** at `docs/IDP/user-management.md`
 
+### 2026-05-16 — Authentik forwardAuth + Headlamp OIDC (k8s)
+
+- **Longhorn UI** protected with Authentik `forwardAuth` middleware
+  - Proxy provider + application added to blueprint (`longhorn.yaml`)
+  - `zzz-outpost.yaml` blueprint assigns provider to the embedded outpost
+  - Traefik IngressRoute references `authentik-forward-auth` middleware
+- **Headlamp OIDC provider** configured in blueprint (`headlamp.yaml`)
+  - `sub_mode: user_username`, `issuer_mode: per_provider`
+  - kube-apiserver OIDC flags aligned: `--oidc-issuer-url`, `--oidc-client-id=headlamp`,
+    `--oidc-username-claim=preferred_username`
+  - ClusterRoleBinding (`headlamp-oidc-kecsi`) grants `cluster-admin` to OIDC user `kecsi`
+  - Token lifetimes extended: `access_token_validity: hours=24`, `refresh_token_validity: days=30`
+    (default 60 min caused silent session expiry with no refresh token)
+  - **⚠ TODO**: Headlamp shows "no permissions" for all resources after OIDC login —
+    root cause unresolved (token forwarding to kube-apiserver not confirmed); debug deferred
+- **Traefik dashboard** protected with Authentik `forwardAuth` middleware
+  - Proxy provider + application added to blueprint (`traefik-dashboard.yaml`)
+
 ### 2026-05-16 — Forgejo fixes
 
 - **`Recreate` rollout strategy** added to Forgejo deployment — LevelDB queue at
@@ -84,6 +102,29 @@ k8s only — after minimal IDP is stable:
 - **`configure_ntp` Ansible role** replaced ntpd with chrony (Debian 13 dropped the
   `ntp` package); MikroTik router as primary NTP, pool.ntp.org as fallback
 - Wired into `k8s-nodes.yml` (tag: `ntp`) and `local-core.yml` (Linux only)
+
+---
+
+## Deferred / TODO
+
+### Headlamp OIDC permissions (k8s)
+
+All config verified correct — kube-apiserver flags, Authentik provider, ClusterRoleBinding —
+but Headlamp shows "no permissions" after OIDC login. Likely Headlamp is not forwarding the
+OIDC ID token to kube-apiserver (falling through to anonymous).
+
+Next debug steps when revisiting:
+1. Enable kube-apiserver audit logging to confirm what username the apiserver sees for
+   Headlamp's requests
+2. Add `offline_access` to `OIDC_SCOPES` in `headlamp-oidc` SealedSecret (re-seal required)
+   to enable refresh token flow
+3. Check whether Headlamp `-in-cluster` + OIDC mode correctly substitutes the user token
+   instead of the in-cluster SA token for API calls
+
+### ArgoCD OIDC (k8s)
+
+Wire ArgoCD to Authentik as an OIDC provider (similar to Headlamp). Skipped until
+Headlamp OIDC is confirmed working.
 
 ---
 
