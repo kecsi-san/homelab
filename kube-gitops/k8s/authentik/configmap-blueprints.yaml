@@ -105,6 +105,8 @@ data:
           sub_mode: user_username
           issuer_mode: per_provider
           signing_key: !Find [authentik_crypto.certificatekeypair, [name, "authentik Self-signed Certificate"]]
+          access_token_validity: "hours=24"
+          refresh_token_validity: "days=30"
 
       - model: authentik_core.application
         state: present
