@@ -23,7 +23,16 @@ spec:
             - -c
             - |
               set -e
-              mkdir -p /tmp/forgejo-work
+              mkdir -p /var/lib/gitea/custom/conf
+              {
+                printf '[security]\nINSTALL_LOCK = true\n'
+                printf 'SECRET_KEY = %s\n' "$GITEA__security__SECRET_KEY"
+                printf 'INTERNAL_TOKEN = %s\n' "$GITEA__security__INTERNAL_TOKEN"
+                printf '[database]\nDB_TYPE = postgres\n'
+                printf 'HOST = %s\nNAME = %s\nUSER = %s\nPASSWD = %s\n' \
+                  "$GITEA__database__HOST" "$GITEA__database__NAME" \
+                  "$GITEA__database__USER" "$GITEA__database__PASSWD"
+              } > /var/lib/gitea/custom/conf/app.ini
               if forgejo admin auth list 2>/dev/null | grep -q "authentik"; then
                 echo "Authentik OAuth2 source already configured"
                 exit 0
@@ -37,8 +46,6 @@ spec:
                 --scopes "openid profile email"
               echo "Authentik OAuth2 source registered successfully"
           env:
-            - name: GITEA_WORK_DIR
-              value: /tmp/forgejo-work
             - name: GITEA__database__DB_TYPE
               value: postgres
             - name: GITEA__database__HOST
