@@ -125,3 +125,9 @@ config:
             icon: forgejo.png
             namespace: forgejo
             app: forgejo
+        - Authentik:
+            href: https://authentik.kecskemethy.org
+            description: Identity provider · SSO
+            icon: authentik.png
+            namespace: authentik
+            app: authentik-server
