@@ -4,6 +4,7 @@ kind: IngressRoute
 metadata:
   name: longhorn
   namespace: longhorn-system
+  # No external-dns annotation — LAN only, not exposed via Cloudflare Tunnel
 spec:
   entryPoints:
     - websecure
