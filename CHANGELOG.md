@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(k8s/authentik): override Redis image registry to registry.bitnami.com ([4fb3cd6](https://github.com/kecsi-san/homelab/commit/4fb3cd6e83356cdd15618a22b416905c1391d942) by Zoltan K).
 - fix(k3s/homepage): add Forgejo to Platform section, fix ArgoCD icon ([6fd0abe](https://github.com/kecsi-san/homelab/commit/6fd0abea32e33db2ebde35b3de26c2bdf799aad9) by Zoltan K).
 - fix(forgejo): update admin SealedSecret username from admin to kecsi ([bf773f9](https://github.com/kecsi-san/homelab/commit/bf773f9e91f0eda009a1493cd2ca44d4d647142c) by Zoltan K).
 - fix(forgejo): use GITEA__ env vars for config, mount PVC at /var/lib/gitea ([800ffed](https://github.com/kecsi-san/homelab/commit/800ffed289c6014824414137b25fca9367137625) by Zoltan K).
