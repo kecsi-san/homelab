@@ -6,9 +6,7 @@ postgresql:
   enabled: false
 
 redis:
-  enabled: true
-  image:
-    registry: registry.bitnami.com
+  enabled: false
 
 server:
   env:
