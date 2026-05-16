@@ -10,15 +10,15 @@ Deploy a minimal IDP to **k3s** and the same minimal IDP **plus Backstage** to *
 
 ### Minimal IDP — both clusters (k3s + k8s)
 
-| Component | Tool | Layer | Status |
-|---|---|---|---|
-| Shared database | CloudNativePG | Infrastructure | Done |
-| Git server + OCI registry + CI | Forgejo | Platform | Done |
-| CI runners | Forgejo Actions | Platform | Planned |
-| SSO / Identity Provider | Authentik | Platform | Planned |
-| Documentation / wiki | Docmost | Platform | Planned |
-| Code analysis (SAST) | Semgrep OSS (CI step) | Quality | Planned |
-| Vulnerability scanning | Trivy (CI step) | Quality | Planned |
+| Component | Tool | Layer | k8s | k3s |
+|---|---|---|---|---|
+| Shared database | CloudNativePG | Infrastructure | ✅ Done | ✅ Done |
+| Git server + OCI registry + CI | Forgejo | Platform | ✅ Done | ✅ Done |
+| SSO / Identity Provider | Authentik | Platform | ✅ Done | Planned |
+| CI runners | Forgejo Actions | Platform | Planned | Planned |
+| Documentation / wiki | Docmost | Platform | Planned | Planned |
+| Code analysis (SAST) | Semgrep OSS (CI step) | Quality | Planned | Planned |
+| Vulnerability scanning | Trivy (CI step) | Quality | Planned | Planned |
 
 ### k8s only — additions on top of minimal
 
@@ -53,14 +53,49 @@ k8s only — after minimal IDP is stable:
 
 ---
 
+## Achievements Log
+
+### 2026-05-15 — k8s Authentik deployed and integrated
+
+- **Authentik 2026.2.3** deployed on k8s with standalone `redis:7-alpine`
+  (Bitnami images removed from Docker Hub; official redis image used instead)
+- **CNPG managed role** for `authentik` user + `Database` CR for `authentik` DB
+- **Blueprint** (`kube-gitops/k8s/authentik/configmap-blueprints.yaml`) creates Forgejo
+  OAuth2 provider + application in Authentik automatically on worker startup
+  - Required `invalidation_flow` field (added in Authentik 2026.x)
+- **PostSync job** (`kube-gitops/k8s/forgejo/job-register-authentik.yaml`) registers
+  the Authentik auth source in Forgejo's DB after each ArgoCD sync; idempotent
+  - Writes minimal `app.ini` to `/var/lib/gitea/custom/conf/` (image GITEA_CUSTOM default)
+- **Forgejo `kecsi` admin** account linked to Authentik `kecsi` user via OAuth2
+  (`sub_mode: user_username` — Authentik username maps to Forgejo username on first login)
+- **User management runbook** at `docs/IDP/user-management.md`
+
+### 2026-05-16 — Forgejo fixes
+
+- **`Recreate` rollout strategy** added to Forgejo deployment — LevelDB queue at
+  `/var/lib/gitea/queues/common` can only be locked by one process; `RollingUpdate`
+  caused `CrashLoopBackOff` in the new pod during rollout
+- **`ENABLE_REMEMBER_ME=false`** — browser `fetch()` does not flush `Set-Cookie`
+  headers before navigation fires; long-term `gitea_incredible` token survived sign-out
+  and silently recreated the session
+
+### 2026-05-15 — NTP / chrony
+
+- **`configure_ntp` Ansible role** replaced ntpd with chrony (Debian 13 dropped the
+  `ntp` package); MikroTik router as primary NTP, pool.ntp.org as fallback
+- Wired into `k8s-nodes.yml` (tag: `ntp`) and `local-core.yml` (Linux only)
+
+---
+
 ## Integration Notes
 
 - Forgejo LFS → backed by existing Garage S3 (`forgejo` bucket)
-- Authentik outpost → Traefik `forwardAuth` middleware; no oauth2-proxy needed
-- All stateful services (Forgejo data, Authentik PG, Docmost PG, Vault Raft) → VolSync daily backup to restic REST server at `backups.kinet.local`
+- Authentik → Traefik `forwardAuth` middleware for future apps (not yet wired)
+- All stateful services (Forgejo data, Authentik PG, Docmost PG) → VolSync daily
+  backup to restic REST server at `backups.kinet.local` (Forgejo VolSync: planned)
 - All credentials → SealedSecrets (`kubeseal --context admin@k8s`)
-- Authentik 2026.2.x memory regression known — pin to `2025.12.x` until upstream fix
 
 ## Reference
 
 - [Component research and comparisons](research.md)
+- [User management runbook](user-management.md)

@@ -138,7 +138,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | `configure_etc-hosts` | Manages `/etc/hosts` with kube group IPs and domain names |
 | `configure_mikrotik-dns` | Upserts static DNS records on MikroTik router via `community.routeros` API; manages API VIP (`api.k8s.<domain>`), k3s wildcard, and NFS alias |
 | `configure_fzf` | Adds fzf initialization to `~/.bashrc` (idempotent) |
-| `configure_ntp` | Disables systemd-timesyncd; installs ntpd; configures MikroTik router as primary NTP + pool.ntp.org fallback; wired into `k8s-nodes.yml` with `ntp` tag |
+| `configure_ntp` | Disables systemd-timesyncd; installs chrony (Debian 13 dropped ntpd); configures MikroTik router as primary NTP + pool.ntp.org fallback; wired into `k8s-nodes.yml` and `local-core.yml` (Linux only) with `ntp` tag |
 | `configure_git` | Copies `~/.gitconfig` from static file |
 | `configure_oh-my-posh` | Installs Pluto OMP theme; adds init block to `~/.bashrc` |
 | `configure_ssh` | Deploys SSH authorized key for `ansible_ssh_user` |
@@ -259,8 +259,9 @@ ArgoCD manages all apps via app-of-apps pattern. Root app: `kube-gitops/k8s/root
 | argocd | argocd | Helm (argo-helm) | GitOps controller; insecure mode (Cloudflare terminates TLS) |
 | longhorn | longhorn-system | Helm (longhorn) | Distributed block storage; default StorageClass |
 | cnpg | cnpg-system | Helm (cloudnative-pg) | PostgreSQL operator; `ServerSideApply=true` required (CRDs exceed 262 KB apply limit); `ignoreDifferences` on terminatingReplicas |
-| cnpg-cluster | postgres | Raw manifests (`kube-gitops/k8s/cnpg/`) | 3-instance PostgreSQL cluster; 2Gi Longhorn PVCs; bootstrap DB `forgejo` owned by `forgejo` |
-| forgejo | forgejo | Raw manifests (`kube-gitops/k8s/forgejo/`) | Git server + OCI registry + CI; rootless image; configured via `GITEA__` env vars; admin user `kecsi` (not `admin` — reserved) |
+| cnpg-cluster | postgres | Raw manifests (`kube-gitops/k8s/cnpg/`) | 3-instance PostgreSQL cluster; 2Gi Longhorn PVCs; bootstrap DB `forgejo` owned by `forgejo`; `authentik` DB + role via CNPG managed roles |
+| forgejo | forgejo | Raw manifests (`kube-gitops/k8s/forgejo/`) | Git server + OCI registry + CI; rootless image; `GITEA__` env vars; admin user `kecsi`; `Recreate` rollout strategy (LevelDB queue lock); `ENABLE_REMEMBER_ME=false` |
+| authentik | authentik | Helm (charts.goauthentik.io) 2026.2.3 + raw manifests (`kube-gitops/k8s/authentik/`) | SSO/IDP; standalone redis:7-alpine; Forgejo OAuth2 provider via Blueprint; PostSync job registers Forgejo auth source; `sub_mode: user_username` |
 | ntfy | ntfy | Raw manifests (`kube-gitops/k8s/ntfy/`) | Push notification server; auth `deny-all`; `homelab` admin user |
 | gatus | gatus | Helm (twin/gatus) + values + SealedSecrets dir | Uptime monitoring for 6 services; ntfy alerting |
 | garage | garage | Raw manifests (`kube-gitops/k8s/garage/`) | S3-compatible object storage (Garage v2); `volsync-backups` bucket |
@@ -290,6 +291,13 @@ kubectl create secret generic my-secret --namespace my-ns \
 # Add yamllint disable-line comments before long encrypted data lines
 ```
 
+**Authentik operational notes:**
+- Blueprint discovery is periodic — after ConfigMap changes, restart the worker pod or run: `kubectl exec -n authentik deployment/authentik-worker -- ak apply_blueprint /blueprints/custom/forgejo.yaml`
+- Blueprints require `invalidation_flow` field (added in 2026.x): `!Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]`
+- Create users via ak shell: see `docs/IDP/user-management.md`; no `create_user` CLI command exists
+- `akadmin` is the bootstrap admin; use it only for IDP management, not day-to-day logins
+- Bitnami Redis removed from Docker Hub — use standalone `redis:7-alpine` deployment named `authentik-redis-master`
+
 **Traffic and TLS architecture (dual-path):**
 - **LAN path (Edge browser):** MikroTik wildcard DNS `*.<your-domain.tld>` → 192.168.1.101 (Traefik); cert-manager issues per-service Let's Encrypt certs via DNS01 (Cloudflare API token); IngressRoutes reference `<service>-tls` secrets; no H2 coalescing since each service has its own cert
 - **Cloudflare path (Firefox + WARP):** Cloudflare WARP routes traffic through Cloudflare edge → cloudflared pod → Traefik via `https://traefik.traefik.svc.cluster.local` with `noTLSVerify: true`; Cloudflare's Universal SSL cert is what the browser sees
@@ -313,6 +321,7 @@ ArgoCD manages all apps via app-of-apps pattern. Root app: `kube-gitops/k3s/root
 | cnpg | cnpg-system | Helm (cloudnative-pg) | PostgreSQL operator; same `ServerSideApply=true` + `ignoreDifferences` fixes as k8s |
 | cnpg-cluster | postgres | Raw manifests (`kube-gitops/k3s/cnpg/`) | Single-instance PostgreSQL; `local-path` storage; 2Gi PVC |
 | forgejo | forgejo | Raw manifests (`kube-gitops/k3s/forgejo/`) | Git server; same rootless image + `GITEA__` env var pattern as k8s; domain `forgejo.k3s.kecskemethy.org` |
+| authentik | authentik | Planned | SSO/IDP; to be synced from k8s stack |
 
 **k3s vs k8s differences:**
 - Storage class: `local-path` (not Longhorn) — single node, no replication
