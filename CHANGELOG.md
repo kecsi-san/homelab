@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(k8s/traefik): enable allowCrossNamespace for cross-ns middleware refs ([b1f2f01](https://github.com/kecsi-san/homelab/commit/b1f2f01f2ab86f612f3a382e8260f71d4f0e47bc) by Zoltan K).
 - fix(forgejo): use Recreate rollout strategy to avoid LevelDB queue lock ([a5e1902](https://github.com/kecsi-san/homelab/commit/a5e19025366657b04c6e206708ccc54822a5719e) by Zoltan K).
 - fix(forgejo): disable remember-me to prevent silent re-login after sign-out ([1d3c960](https://github.com/kecsi-san/homelab/commit/1d3c96068dd92a9e2cf97f5c2c31afdf0c7eae93) by Zoltan K).
 - fix(authentik/forgejo): add invalidation_flow to blueprint, fix job app.ini path ([cf86e85](https://github.com/kecsi-san/homelab/commit/cf86e85d63995a8a154183820c5baf5e98325e9a) by Zoltan K).
