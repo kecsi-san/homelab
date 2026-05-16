@@ -131,3 +131,9 @@ config:
             icon: authentik.png
             namespace: authentik
             app: authentik-server
+        - Docmost:
+            href: https://docmost.kecskemethy.org
+            description: Wiki · documentation
+            icon: docmost.png
+            namespace: docmost
+            app: docmost
