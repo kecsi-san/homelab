@@ -45,6 +45,11 @@ server:
         secretKeyRef:
           name: authentik-forgejo-oauth2
           key: client-secret
+    - name: HEADLAMP_OAUTH2_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: authentik-headlamp-oauth2
+          key: client-secret
   volumes:
     - name: blueprints-custom
       configMap:
@@ -98,6 +103,11 @@ worker:
       valueFrom:
         secretKeyRef:
           name: authentik-forgejo-oauth2
+          key: client-secret
+    - name: HEADLAMP_OAUTH2_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: authentik-headlamp-oauth2
           key: client-secret
   volumes:
     - name: blueprints-custom

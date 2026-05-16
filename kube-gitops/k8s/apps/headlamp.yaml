@@ -18,6 +18,9 @@ spec:
     - repoURL: https://github.com/kecsi-san/homelab.git
       targetRevision: HEAD
       ref: values
+    - repoURL: https://github.com/kecsi-san/homelab.git
+      targetRevision: HEAD
+      path: kube-gitops/k8s/headlamp
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system

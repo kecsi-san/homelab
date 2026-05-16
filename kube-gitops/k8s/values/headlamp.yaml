@@ -3,3 +3,11 @@
 # ClusterIP so Traefik routes to it via IngressRoute.
 service:
   type: ClusterIP
+
+config:
+  oidc:
+    secret:
+      create: false
+    externalSecret:
+      enabled: true
+      name: headlamp-oidc
