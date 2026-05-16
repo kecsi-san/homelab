@@ -66,6 +66,8 @@ spec:
               value: "bleve"
             - name: GITEA__service__DISABLE_REGISTRATION
               value: "true"
+            - name: GITEA__service__ENABLE_REMEMBER_ME
+              value: "false"
             - name: GITEA__security__INSTALL_LOCK
               value: "true"
             - name: GITEA__security__SECRET_KEY
