@@ -175,6 +175,14 @@
       tags:
         - network
 
+    - name: Configure NTP
+      ansible.builtin.import_role:
+        name: configure_ntp
+      become: true
+      when: ansible_system == 'Linux'
+      tags:
+        - ntp
+
     - name: Setup Python uv packages
       ansible.builtin.import_role:
         name: setup_python-uv

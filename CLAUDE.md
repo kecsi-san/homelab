@@ -221,7 +221,7 @@ roles/<role-name>/
 ### Tagging
 
 Tags enable selective role execution without running the full playbook:
-- `local-core.yml` tags: `brew`, `apt-repos`, `docker`, `apps`, `minimal`, `network`, `python`, `uv`
+- `local-core.yml` tags: `brew`, `apt-repos`, `docker`, `apps`, `minimal`, `network`, `ntp`, `python`, `uv`
 - `local-security.yml` tags: `sudo`, `apt-repos`, `security`, `checkov`
 - `local-dev.yml` tags: `vscode`, `go`, `dev`, `nodejs`, `rust`, `gh`
 - `local-cloud.yml` tags: `iac`, `terraform`, `iac-extra`, `cloud`, `aws`, `azure`, `gcp`
