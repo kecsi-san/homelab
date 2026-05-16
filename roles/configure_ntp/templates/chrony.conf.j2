@@ -1,0 +1,17 @@
+# Managed by Ansible — configure_ntp role
+driftfile /var/lib/chrony/chrony.drift
+logdir /var/log/chrony
+
+# LAN router — preferred primary (low latency, always available on LAN)
+server {{ ntp_primary_server }} iburst prefer
+
+# Public fallback servers
+{% for server in ntp_fallback_servers %}
+server {{ server }} iburst
+{% endfor %}
+
+# Step the clock if offset > 1s during the first 3 updates, slew-only after
+makestep 1.0 3
+
+# Sync hardware RTC periodically
+rtcsync

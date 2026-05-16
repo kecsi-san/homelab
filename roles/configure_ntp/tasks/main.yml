@@ -7,26 +7,26 @@
   become: true
   failed_when: false
 
-- name: Install ntp package
+- name: Install chrony
   ansible.builtin.apt:
-    name: ntp
+    name: chrony
     state: present
     update_cache: false
   become: true
 
-- name: Deploy ntp.conf
+- name: Deploy chrony.conf
   ansible.builtin.template:
-    src: ntp.conf.j2
-    dest: /etc/ntp.conf
+    src: chrony.conf.j2
+    dest: /etc/chrony/chrony.conf
     owner: root
     group: root
     mode: "0644"
   become: true
-  notify: Restart ntpd
+  notify: Restart chrony
 
-- name: Ensure ntpd is started and enabled
+- name: Ensure chrony is started and enabled
   ansible.builtin.service:
-    name: ntp
+    name: chrony
     state: started
     enabled: true
   become: true
