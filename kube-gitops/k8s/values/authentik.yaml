@@ -40,6 +40,18 @@ server:
         secretKeyRef:
           name: authentik-credentials
           key: bootstrap-email
+    - name: FORGEJO_OAUTH2_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: authentik-forgejo-oauth2
+          key: client-secret
+  volumes:
+    - name: blueprints-custom
+      configMap:
+        name: authentik-blueprints
+  volumeMounts:
+    - name: blueprints-custom
+      mountPath: /blueprints/custom
   resources:
     requests:
       memory: 512Mi
@@ -82,6 +94,18 @@ worker:
         secretKeyRef:
           name: authentik-credentials
           key: bootstrap-email
+    - name: FORGEJO_OAUTH2_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: authentik-forgejo-oauth2
+          key: client-secret
+  volumes:
+    - name: blueprints-custom
+      configMap:
+        name: authentik-blueprints
+  volumeMounts:
+    - name: blueprints-custom
+      mountPath: /blueprints/custom
   resources:
     requests:
       memory: 512Mi
