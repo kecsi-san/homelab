@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(configure_ntp): switch from ntpd to chrony (Debian 13 removed ntp package) ([a3a53c3](https://github.com/kecsi-san/homelab/commit/a3a53c3abe1de34c80c4d885d7a87cc8cc818b7f) by Zoltan K).
 - fix(k8s/authentik): replace bundled Redis with standalone official image ([20c68d9](https://github.com/kecsi-san/homelab/commit/20c68d92672757ea64d0cc758d332098ae374365) by Zoltan K).
 - fix(k8s/authentik): override Redis image registry to registry.bitnami.com ([4fb3cd6](https://github.com/kecsi-san/homelab/commit/4fb3cd6e83356cdd15618a22b416905c1391d942) by Zoltan K).
 - fix(k3s/homepage): add Forgejo to Platform section, fix ArgoCD icon ([6fd0abe](https://github.com/kecsi-san/homelab/commit/6fd0abea32e33db2ebde35b3de26c2bdf799aad9) by Zoltan K).
