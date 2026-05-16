@@ -1,0 +1,88 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: outline
+  namespace: outline
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: outline
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: outline
+    spec:
+      containers:
+        - name: outline
+          image: outlinewiki/outline:1.7.1
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: URL
+              value: "https://outline.kecskemethy.org"
+            - name: PORT
+              value: "3000"
+            - name: REDIS_URL
+              value: "redis://outline-redis:6379"
+            - name: FILE_STORAGE
+              value: local
+            - name: FILE_STORAGE_LOCAL_ROOT_DIR
+              value: /var/lib/outline/data
+            - name: FORCE_HTTPS
+              value: "false"
+            - name: OIDC_CLIENT_ID
+              value: outline
+            - name: OIDC_AUTH_URI
+              value: "https://authentik.kecskemethy.org/application/o/authorize/"
+            - name: OIDC_TOKEN_URI
+              value: "https://authentik.kecskemethy.org/application/o/token/"
+            - name: OIDC_USERINFO_URI
+              value: "https://authentik.kecskemethy.org/application/o/userinfo/"
+            - name: OIDC_LOGOUT_URI
+              value: "https://authentik.kecskemethy.org/application/o/outline/end-session/"
+            - name: OIDC_USERNAME_CLAIM
+              value: preferred_username
+            - name: OIDC_DISPLAY_NAME
+              value: Authentik
+            - name: OIDC_SCOPES
+              value: "openid profile email"
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: outline-app
+                  key: SECRET_KEY
+            - name: UTILS_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: outline-app
+                  key: UTILS_SECRET
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: outline-app
+                  key: DATABASE_URL
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: outline-app
+                  key: OIDC_CLIENT_SECRET
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/outline/data
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 1Gi
+              cpu: "1"
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: outline-data

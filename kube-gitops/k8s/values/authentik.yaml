@@ -57,6 +57,11 @@ server:
         secretKeyRef:
           name: authentik-headlamp-oauth2
           key: client-secret
+    - name: OUTLINE_OAUTH2_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: authentik-outline-oauth2
+          key: client-secret
   volumes:
     - name: blueprints-custom
       configMap:
@@ -115,6 +120,11 @@ worker:
       valueFrom:
         secretKeyRef:
           name: authentik-headlamp-oauth2
+          key: client-secret
+    - name: OUTLINE_OAUTH2_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: authentik-outline-oauth2
           key: client-secret
   volumes:
     - name: blueprints-custom

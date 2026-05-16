@@ -2,18 +2,18 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: docmost
-  namespace: docmost
+  name: outline
+  namespace: outline
   annotations:
     external-dns.alpha.kubernetes.io/target: "9fa18953-8d82-424d-a8b5-9941940d4230.cfargotunnel.com"
 spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`docmost.kecskemethy.org`)
+    - match: Host(`outline.kecskemethy.org`)
       kind: Rule
       services:
-        - name: docmost
+        - name: outline
           port: 3000
   tls:
-    secretName: docmost-tls
+    secretName: outline-tls

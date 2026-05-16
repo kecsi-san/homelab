@@ -2,8 +2,8 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: docmost-data
-  namespace: docmost
+  name: outline-data
+  namespace: outline
 spec:
   accessModes:
     - ReadWriteOnce

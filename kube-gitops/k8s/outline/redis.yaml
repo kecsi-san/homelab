@@ -2,17 +2,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: docmost-redis
-  namespace: docmost
+  name: outline-redis
+  namespace: outline
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: docmost-redis
+      app: outline-redis
   template:
     metadata:
       labels:
-        app: docmost-redis
+        app: outline-redis
     spec:
       containers:
         - name: redis
@@ -30,11 +30,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: docmost-redis
-  namespace: docmost
+  name: outline-redis
+  namespace: outline
 spec:
   selector:
-    app: docmost-redis
+    app: outline-redis
   ports:
     - port: 6379
       targetPort: 6379

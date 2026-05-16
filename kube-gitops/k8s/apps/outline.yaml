@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: docmost
+  name: outline
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -11,10 +11,10 @@ spec:
   source:
     repoURL: https://github.com/kecsi-san/homelab.git
     targetRevision: HEAD
-    path: kube-gitops/k8s/docmost
+    path: kube-gitops/k8s/outline
   destination:
     server: https://kubernetes.default.svc
-    namespace: docmost
+    namespace: outline
   syncPolicy:
     automated:
       prune: true

@@ -2,10 +2,10 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Database
 metadata:
-  name: docmost
+  name: outline
   namespace: postgres
 spec:
-  name: docmost
-  owner: docmost
+  name: outline
+  owner: outline
   cluster:
     name: postgres
