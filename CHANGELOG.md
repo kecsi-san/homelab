@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(forgejo-runner): use tcp://localhost:2375 for DinD socket ([208bca6](https://github.com/kecsi-san/homelab/commit/208bca607e54498e3f89f8489890702cfebef042) by Zoltan K).
 - fix(forgejo-runner): use github.com repo URL in ArgoCD app ([786cebc](https://github.com/kecsi-san/homelab/commit/786cebc70b8dadeb03c6c98a2a0938de6bbb308e) by Zoltan K).
 - fix(k8s/authentik): use per_provider issuer_mode for Headlamp OIDC ([4c2cc27](https://github.com/kecsi-san/homelab/commit/4c2cc2764d68397bd0425ffe17d04123aa67aea4) by Zoltan K).
 - fix(k8s/traefik): disable kubernetesIngress provider ([18e6ee0](https://github.com/kecsi-san/homelab/commit/18e6ee0b2a21dc40c46910ade3417ed582692480) by Zoltan K).
