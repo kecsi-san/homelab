@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(forgejo-runner): use github.com repo URL in ArgoCD app ([786cebc](https://github.com/kecsi-san/homelab/commit/786cebc70b8dadeb03c6c98a2a0938de6bbb308e) by Zoltan K).
 - fix(k8s/authentik): use per_provider issuer_mode for Headlamp OIDC ([4c2cc27](https://github.com/kecsi-san/homelab/commit/4c2cc2764d68397bd0425ffe17d04123aa67aea4) by Zoltan K).
 - fix(k8s/traefik): disable kubernetesIngress provider ([18e6ee0](https://github.com/kecsi-san/homelab/commit/18e6ee0b2a21dc40c46910ade3417ed582692480) by Zoltan K).
 - fix(k8s/traefik): enable allowCrossNamespace for cross-ns middleware refs ([b1f2f01](https://github.com/kecsi-san/homelab/commit/b1f2f01f2ab86f612f3a382e8260f71d4f0e47bc) by Zoltan K).
