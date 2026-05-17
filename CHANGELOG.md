@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(forgejo-runner): persist runner data on Longhorn PVC ([e2979cf](https://github.com/kecsi-san/homelab/commit/e2979cfe5fa181b790cc4ab45e9507b73676ec53) by Zoltan K).
 - fix(forgejo-runner): use wget to wait for DinD instead of docker CLI ([c17aaa0](https://github.com/kecsi-san/homelab/commit/c17aaa0e5de76583f0eb0293647bbb2b029aeb07) by Zoltan K).
 - fix(forgejo-runner): use tcp://localhost:2375 for DinD socket ([208bca6](https://github.com/kecsi-san/homelab/commit/208bca607e54498e3f89f8489890702cfebef042) by Zoltan K).
 - fix(forgejo-runner): use github.com repo URL in ArgoCD app ([786cebc](https://github.com/kecsi-san/homelab/commit/786cebc70b8dadeb03c6c98a2a0938de6bbb308e) by Zoltan K).
