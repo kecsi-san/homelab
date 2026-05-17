@@ -1,3 +1,13 @@
+---
+title: "Homelab Dashboard Comparison"
+type: research
+status: stable
+scope: [general]
+created: 2026-05-15
+updated: 2026-05-15
+tags: [dashboard, kubernetes, comparison]
+---
+
 # Homelab Dashboard Comparison
 
 Comparison of self-hosted dashboard options evaluated against the current homelab stack

@@ -1,3 +1,13 @@
+---
+title: "Authentik User Management"
+type: how-to
+status: stable
+scope: [k8s, k3s]
+created: 2026-05-16
+updated: 2026-05-16
+tags: [authentik, users, sso, idp, runbook]
+---
+
 # Authentik User Management
 
 Authentik is the identity provider (IdP) for the k8s cluster. Users created here get SSO access to all

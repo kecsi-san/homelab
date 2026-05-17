@@ -1,3 +1,13 @@
+---
+title: "IDP Status"
+type: reference
+status: stable
+scope: [k8s, k3s]
+created: 2026-05-15
+updated: 2026-05-17
+tags: [idp, status, components]
+---
+
 # IDP Status
 
 ## Decision

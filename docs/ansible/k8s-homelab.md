@@ -1,3 +1,13 @@
+---
+title: "Workflow: 4-Node Bare-Metal Homelab Cluster"
+type: how-to
+status: stable
+scope: [k8s, ansible]
+created: 2026-05-10
+updated: 2026-05-15
+tags: [kubernetes, kubespray, bare-metal, ansible, setup]
+---
+
 # Workflow: 4-Node Bare-Metal Homelab Cluster
 
 Full walkthrough for building and maintaining the bare-metal HA Kubernetes cluster

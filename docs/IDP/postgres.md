@@ -1,3 +1,13 @@
+---
+title: "PostgreSQL Access (CNPG)"
+type: how-to
+status: stable
+scope: [k8s]
+created: 2026-05-16
+updated: 2026-05-16
+tags: [postgresql, cnpg, database, runbook]
+---
+
 # PostgreSQL Access (CNPG)
 
 CNPG manages a 3-instance PostgreSQL 17 cluster (`postgres`) in the `postgres` namespace.

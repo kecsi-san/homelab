@@ -1,3 +1,13 @@
+---
+title: "Workflow: Local k3s Cluster (WSL2 / macOS)"
+type: how-to
+status: stable
+scope: [k3s, ansible]
+created: 2026-05-10
+updated: 2026-05-15
+tags: [k3s, wsl2, macos, ansible, setup]
+---
+
 # Workflow: Local k3s Cluster (WSL2 / macOS)
 
 Single-node Kubernetes cluster on localhost for local development and GitOps experimentation.

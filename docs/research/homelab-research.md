@@ -1,3 +1,13 @@
+---
+title: "Homelab Kubernetes Research"
+type: research
+status: stable
+scope: [general]
+created: 2026-05-04
+updated: 2026-05-15
+tags: [homelab, kubernetes, apps, survey]
+---
+
 # Homelab Kubernetes Research
 
 Survey of popular homelab Kubernetes GitHub repositories (≥100 stars), covering what the community deploys at the platform and application layers.

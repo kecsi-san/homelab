@@ -1,3 +1,13 @@
+---
+title: "CI/CD"
+type: how-to
+status: stable
+scope: [ansible]
+created: 2026-04-26
+updated: 2026-05-15
+tags: [ansible, ci-cd, automation]
+---
+
 # CI/CD
 
 ## Overview

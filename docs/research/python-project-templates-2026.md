@@ -1,3 +1,13 @@
+---
+title: "Modern Python Project Templates for 2025–2026"
+type: research
+status: stable
+scope: [general]
+created: 2026-05-17
+updated: 2026-05-17
+tags: [python, uv, templates, ci, tooling]
+---
+
 # Modern Python Project Templates for 2025–2026
 
 **Scope:** Six actively maintained Python project templates evaluated for homelab and internal

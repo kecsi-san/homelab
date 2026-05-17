@@ -1,11 +1,26 @@
+---
+title: "Documentation Index"
+type: reference
+status: stable
+scope: [general]
+created: 2026-05-15
+updated: 2026-05-17
+tags: [index, navigation]
+---
+
 # Documentation Index
+
+See [STANDARDS.md](STANDARDS.md) for the documentation standard, front-matter spec, and
+Diátaxis type definitions used across all docs.
 
 ## IDP
 
 | Doc | Description |
 |-----|-------------|
 | [Status](IDP/status.md) | IDP component decisions, deployment targets, and build order |
-| [Research](IDP/research.md) | Component comparisons and recommendations (Forgejo, Authentik, Docmost, etc.) |
+| [Research](IDP/research.md) | Component comparisons and recommendations (Forgejo, Authentik, Outline, etc.) |
+| [PostgreSQL Access](IDP/postgres.md) | CNPG cluster access, connection runbook, common commands |
+| [User Management](IDP/user-management.md) | Creating and managing users in Authentik |
 
 ## Ansible Workflows
 
@@ -25,6 +40,13 @@
 | [App Candidates](research/app-candidates.md) | Self-hosted app candidates evaluated for the homelab |
 | [Homelab Research](research/homelab-research.md) | General homelab component research notes |
 | [Cilium Migration Plan](research/rebuild_cilium_migration_plan.md) | Kubespray rebuild and Cilium CNI migration plan |
+| [Python Project Templates 2026](research/python-project-templates-2026.md) | uv-based Python project template comparison and recommendation |
+
+## Architecture Decisions
+
+| Doc | Description |
+|-----|-------------|
+| *(none yet — add to `docs/adr/` using MADR format from STANDARDS.md)* | |
 
 ## Homelab
 

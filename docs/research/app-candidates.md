@@ -1,3 +1,13 @@
+---
+title: "Homelab App Candidates"
+type: research
+status: stable
+scope: [general]
+created: 2026-05-08
+updated: 2026-05-15
+tags: [apps, homelab, shortlist]
+---
+
 # Homelab App Candidates
 
 Shortlist of apps to consider adding. Distilled from `homelab-research.md` (survey of 31 repos, Round 1 + Round 2).

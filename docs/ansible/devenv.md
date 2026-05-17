@@ -1,3 +1,13 @@
+---
+title: "Workflow: Dev / DevOps Workstation Setup"
+type: how-to
+status: stable
+scope: [ansible]
+created: 2026-04-27
+updated: 2026-05-15
+tags: [ansible, workstation, setup, devenv]
+---
+
 # Workflow: Dev / DevOps Workstation Setup
 
 Ansible automation for setting up a local developer or DevOps workstation.

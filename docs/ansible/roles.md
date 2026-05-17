@@ -1,3 +1,13 @@
+---
+title: "Ansible Roles Reference"
+type: reference
+status: stable
+scope: [ansible]
+created: 2026-03-30
+updated: 2026-05-15
+tags: [ansible, roles, reference]
+---
+
 # Roles
 
 Status legend: ✅ Done | 🔧 Implemented (not wired) | 🚧 Incomplete | 📋 Planned

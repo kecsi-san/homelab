@@ -1,3 +1,13 @@
+---
+title: "Internal Developer Platform — Component Research"
+type: research
+status: stable
+scope: [k8s, k3s]
+created: 2026-05-15
+updated: 2026-05-15
+tags: [idp, forgejo, authentik, wiki, comparison]
+---
+
 # Internal Developer Platform — Component Research
 
 Research for building a full self-hosted IDP on this homelab stack.

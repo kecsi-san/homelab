@@ -1,3 +1,13 @@
+---
+title: "k8s Full Rebuild + Cilium CNI Migration Plan"
+type: how-to
+status: stable
+scope: [k8s]
+created: 2026-05-04
+updated: 2026-05-15
+tags: [kubernetes, cilium, cni, rebuild, migration]
+---
+
 # k8s Full Rebuild + Cilium CNI Migration Plan
 
 Full cluster rebuild replacing Calico with Cilium CNI, with optional Kubernetes version upgrade. Recorded 2026-05-04.
