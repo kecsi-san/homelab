@@ -17,12 +17,13 @@ spec:
       initContainers:
         - name: register
           image: code.forgejo.org/forgejo/runner:12.10.1
+          workingDir: /data
           command:
             - sh
             - -c
             - |
               [ -f /data/.runner ] && echo "already registered, skipping" && exit 0
-              cd /data && forgejo-runner register --no-interactive \
+              forgejo-runner register --no-interactive \
                 --instance "https://forgejo.kecskemethy.org" \
                 --token "$RUNNER_TOKEN" \
                 --name "k8s-runner" \
