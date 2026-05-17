@@ -86,7 +86,8 @@ spec:
               cpu: "2"
       volumes:
         - name: runner-data
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: forgejo-runner-data
         - name: runner-config
           configMap:
             name: forgejo-runner-config
