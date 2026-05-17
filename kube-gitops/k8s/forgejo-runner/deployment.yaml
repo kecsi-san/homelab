@@ -42,13 +42,17 @@ spec:
         - name: runner
           image: code.forgejo.org/forgejo/runner:12.10.1
           command:
-            - forgejo-runner
-            - daemon
-            - --config
-            - /config/config.yml
+            - sh
+            - -c
+            - |
+              until docker info > /dev/null 2>&1; do
+                echo "waiting for docker daemon..."
+                sleep 2
+              done
+              exec forgejo-runner daemon --config /config/config.yml
           env:
             - name: DOCKER_HOST
-              value: unix:///var/run/docker.sock
+              value: tcp://localhost:2375
           volumeMounts:
             - name: runner-data
               mountPath: /data
