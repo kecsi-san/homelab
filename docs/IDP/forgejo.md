@@ -5,7 +5,7 @@ status: stable
 scope: [k8s]
 created: 2026-05-17
 updated: 2026-05-17
-tags: [forgejo, git, ci-cd, oci-registry, tea-cli, runners]
+tags: [forgejo, git, ci-cd, oci-registry, tea-cli, runners, mirrors]
 ---
 
 # Forgejo — Operational Guide
@@ -225,11 +225,42 @@ URL: `https://argocd.kecskemethy.org/api/webhook`
 
 ---
 
+## Forgejo Organisations
+
+| Org | Purpose |
+|-----|---------|
+| `homelab` | Shared templates and internal tools used across projects |
+| `mirrors` | Read-only mirrors of upstream GitHub Actions for offline CI use |
+| `kecsi` | Personal repositories and experiments |
+
+### mirrors org — Action Mirrors
+
+Forgejo Actions workflows reference actions via full URL
+(`https://forgejo.kecskemethy.org/mirrors/<name>@<ref>`) instead of the GitHub
+shorthand (`actions/checkout@v4`). Each mirror is a Forgejo-managed periodic sync
+from the upstream GitHub repo.
+
+| Mirror repo | Upstream GitHub source | Used for |
+|-------------|------------------------|----------|
+| `mirrors/checkout` | `actions/checkout` | Repo checkout in every workflow |
+| `mirrors/cache` | `actions/cache` | Dependency caching (pre-commit, uv) |
+| `mirrors/setup-python` | `actions/setup-python` | Python version management |
+| `mirrors/setup-uv` | `astral-sh/setup-uv` | uv installation + cache |
+| `mirrors/upload-artifact` | `actions/upload-artifact` | Artifact passing between jobs |
+| `mirrors/download-artifact` | `actions/download-artifact` | Artifact passing between jobs |
+| `mirrors/codecov-action` | `codecov/codecov-action` | Coverage upload (available but not wired) |
+
+To add a new mirror: Forgejo UI → `+` → Migrate repository → Git → paste GitHub URL →
+set owner to `mirrors` → enable "This repository will be a mirror".
+
+---
+
 ## Planned
 
-- **Semgrep OSS + Trivy** — as CI pipeline steps in `.forgejo/workflows/ci.yml`
-  (zero idle RAM; runs in pipeline pods); see `docs/IDP/ci-pipelines.md` (planned)
+- **SSH access** — Forgejo SSH (port 22) not yet exposed; needs a separate TCP
+  LoadBalancer service or Traefik TCP entrypoint; currently using HTTPS + credential store
+- **Semgrep OSS + Trivy** — as CI pipeline steps; see [CI Pipelines](ci-pipelines.md)
 - **CD pipeline** — push-to-main triggers ArgoCD sync via webhook; covered once
-  the first Python project template is in use
+  the first Python project is in use
 - **Forgejo LFS → Garage S3** — `forgejo` bucket on the existing Garage instance;
   avoids large file storage on Longhorn PVC

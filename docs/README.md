@@ -25,7 +25,7 @@ rationale live in [Research → IDP Components](research/idp-components.md).
 | [User Management](IDP/user-management.md) | Creating and managing users in Authentik |
 | [Forgejo](IDP/forgejo.md) | tea CLI setup, OCI registry, CI runners, admin tasks |
 | [Outline](IDP/outline.md) | Documentation strategy: what goes in Outline vs Git; operational notes |
-| CI Pipelines | *(planned)* Semgrep + Trivy in Forgejo Actions; CI workflow patterns |
+| [CI Pipelines](IDP/ci-pipelines.md) | Forgejo Actions setup; Python template adaptation; Semgrep + Trivy (planned) |
 | CD Pipelines | *(planned)* Push-to-main → ArgoCD sync; deployment workflow for Python apps |
 | Backstage | *(planned)* Service catalog — after minimal IDP is stable on k8s |
 
