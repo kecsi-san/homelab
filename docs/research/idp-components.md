@@ -4,7 +4,7 @@ type: research
 status: stable
 scope: [k8s, k3s]
 created: 2026-05-15
-updated: 2026-05-15
+updated: 2026-05-17
 tags: [idp, forgejo, authentik, wiki, comparison]
 ---
 

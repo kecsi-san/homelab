@@ -54,7 +54,7 @@ Both clusters follow the same sequence for the minimal IDP:
 1. **CloudNativePG** — shared PostgreSQL cluster; everything stateful depends on it
 2. **Forgejo** — git + OCI registry + Actions runner; foundations for all pipelines
 3. **Authentik** — SSO; wire Forgejo OIDC on install; gates all subsequent UIs
-4. **Docmost** — wiki; shares PostgreSQL with Authentik, gains OIDC from Authentik
+4. **Outline** — wiki; shares PostgreSQL with Authentik, gains OIDC from Authentik
 5. **Semgrep + Trivy** — add as Forgejo Actions pipeline steps; zero new services
 
 k8s only — after minimal IDP is stable:
@@ -172,5 +172,5 @@ Headlamp OIDC is confirmed working.
 
 ## Reference
 
-- [Component research and comparisons](research.md)
+- [Component research and comparisons](../research/idp-components.md)
 - [User management runbook](user-management.md)

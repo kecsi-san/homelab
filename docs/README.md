@@ -15,12 +15,19 @@ Diátaxis type definitions used across all docs.
 
 ## IDP
 
+Operational documentation for deployed IDP services. Component comparisons and selection
+rationale live in [Research → IDP Components](research/idp-components.md).
+
 | Doc | Description |
 |-----|-------------|
-| [Status](IDP/status.md) | IDP component decisions, deployment targets, and build order |
-| [Research](IDP/research.md) | Component comparisons and recommendations (Forgejo, Authentik, Outline, etc.) |
+| [Status](IDP/status.md) | IDP component plan, deployment targets, build order, and achievements log |
 | [PostgreSQL Access](IDP/postgres.md) | CNPG cluster access, connection runbook, common commands |
 | [User Management](IDP/user-management.md) | Creating and managing users in Authentik |
+| [Forgejo](IDP/forgejo.md) | tea CLI setup, OCI registry, CI runners, admin tasks |
+| [Outline](IDP/outline.md) | Documentation strategy: what goes in Outline vs Git; operational notes |
+| CI Pipelines | *(planned)* Semgrep + Trivy in Forgejo Actions; CI workflow patterns |
+| CD Pipelines | *(planned)* Push-to-main → ArgoCD sync; deployment workflow for Python apps |
+| Backstage | *(planned)* Service catalog — after minimal IDP is stable on k8s |
 
 ## Ansible Workflows
 
@@ -36,11 +43,12 @@ Diátaxis type definitions used across all docs.
 
 | Doc | Description |
 |-----|-------------|
+| [IDP Components](research/idp-components.md) | Component comparisons: Forgejo, Authentik, Outline, CNPG, SealedSecrets, etc. |
 | [Dashboard Comparison](research/dashboard-comparison.md) | Homepage vs Glance vs Homarr vs Dashy vs Hajimari |
 | [App Candidates](research/app-candidates.md) | Self-hosted app candidates evaluated for the homelab |
 | [Homelab Research](research/homelab-research.md) | General homelab component research notes |
 | [Cilium Migration Plan](research/rebuild_cilium_migration_plan.md) | Kubespray rebuild and Cilium CNI migration plan |
-| [Python Project Templates 2026](research/python-project-templates-2026.md) | uv-based Python project template comparison and recommendation |
+| [Python Project Templates 2026](research/python-project-templates-2026.md) | uv-based Python project template comparison and recommendation (7 templates) |
 
 ## Architecture Decisions
 
