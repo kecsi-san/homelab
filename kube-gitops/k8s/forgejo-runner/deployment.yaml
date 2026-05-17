@@ -45,7 +45,7 @@ spec:
             - sh
             - -c
             - |
-              until docker info > /dev/null 2>&1; do
+              until wget -qO- http://localhost:2375/_ping 2>/dev/null | grep -q OK; do
                 echo "waiting for docker daemon..."
                 sleep 2
               done
