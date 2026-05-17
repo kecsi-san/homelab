@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(forgejo-runner): set workingDir /data on init container ([cd64ac3](https://github.com/kecsi-san/homelab/commit/cd64ac3b50d8d707c29227a10b71d8049ad9dc84) by Zoltan K).
 - fix(forgejo-runner): cd /data before register to write .runner to PVC ([f27f1f0](https://github.com/kecsi-san/homelab/commit/f27f1f000cc5eb1e9ab91c7bb13656108900b379) by Zoltan K).
 - fix(forgejo-runner): persist runner data on Longhorn PVC ([e2979cf](https://github.com/kecsi-san/homelab/commit/e2979cfe5fa181b790cc4ab45e9507b73676ec53) by Zoltan K).
 - fix(forgejo-runner): use wget to wait for DinD instead of docker CLI ([c17aaa0](https://github.com/kecsi-san/homelab/commit/c17aaa0e5de76583f0eb0293647bbb2b029aeb07) by Zoltan K).
