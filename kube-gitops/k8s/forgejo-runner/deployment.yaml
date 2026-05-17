@@ -22,7 +22,7 @@ spec:
             - -c
             - |
               [ -f /data/.runner ] && echo "already registered, skipping" && exit 0
-              forgejo-runner register --no-interactive \
+              cd /data && forgejo-runner register --no-interactive \
                 --instance "https://forgejo.kecskemethy.org" \
                 --token "$RUNNER_TOKEN" \
                 --name "k8s-runner" \
