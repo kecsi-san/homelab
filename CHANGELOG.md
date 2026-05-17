@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(forgejo): increase memory limit 512Mi → 1Gi to prevent OOMKill ([b1a2583](https://github.com/kecsi-san/homelab/commit/b1a25836ee3184d66086ab40b8310438bc349781) by Zoltan K).
 - fix(forgejo-runner): chmod /data before register to fix PVC permissions ([1eb8cf8](https://github.com/kecsi-san/homelab/commit/1eb8cf8d4bd4a64e921d4eab75c89a1829fc291a) by Zoltan K).
 - fix(forgejo-runner): set workingDir /data on init container ([cd64ac3](https://github.com/kecsi-san/homelab/commit/cd64ac3b50d8d707c29227a10b71d8049ad9dc84) by Zoltan K).
 - fix(forgejo-runner): cd /data before register to write .runner to PVC ([f27f1f0](https://github.com/kecsi-san/homelab/commit/f27f1f000cc5eb1e9ab91c7bb13656108900b379) by Zoltan K).
