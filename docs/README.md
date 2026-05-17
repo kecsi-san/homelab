@@ -46,7 +46,19 @@ Diátaxis type definitions used across all docs.
 
 | Doc | Description |
 |-----|-------------|
-| *(none yet — add to `docs/adr/` using MADR format from STANDARDS.md)* | |
+| [001 — Dual Cluster Topology](adr/001-dual-cluster-topology.md) | k8s (bare-metal HA) + k3s (local dev) dual cluster rationale |
+| [002 — Kubespray as Provisioner](adr/002-kubespray-as-provisioner.md) | Kubespray vs kubeadm, k0s, RKE2, Talos for cluster provisioning |
+| [003 — Cilium CNI Migration](adr/003-cilium-cni-migration.md) | Cilium eBPF + Hubble, migrated from Calico |
+| [004 — Longhorn Storage](adr/004-longhorn-storage.md) | Longhorn distributed block storage vs NFS/OpenEBS/Rook-Ceph |
+| [005 — Traefik Ingress](adr/005-traefik-ingress.md) | Traefik v3 with forwardAuth + cert-manager vs nginx/HAProxy/Istio |
+| [006 — ArgoCD GitOps](adr/006-argocd-gitops.md) | ArgoCD app-of-apps pattern vs Flux/Fleet |
+| [007 — CloudNativePG](adr/007-cloudnative-pg.md) | CNPG operator for PostgreSQL vs standalone/Zalando/CrunchyData |
+| [008 — SealedSecrets](adr/008-sealed-secrets.md) | SealedSecrets for GitOps-safe secrets vs Vault/ESO/SOPS+AGE |
+| [009 — Authentik IdP](adr/009-authentik-idp.md) | Authentik as SSO/OIDC IdP vs Keycloak/Kanidm/Zitadel/Authelia |
+| [010 — Forgejo Git Server](adr/010-forgejo-git-server.md) | Forgejo as self-hosted Git + OCI registry + CI vs GitLab/Gitea |
+| [011 — Outline Wiki](adr/011-outline-wiki.md) | Outline over Docmost (OIDC gated behind EE) for team wiki |
+| [012 — Cloudflare Tunnel](adr/012-cloudflare-tunnel.md) | Cloudflare Tunnel + WARP vs port forwarding/Tailscale/WireGuard |
+| [013 — Forgejo Actions Runner](adr/013-forgejo-actions-runner.md) | DinD sidecar runner pattern vs host Docker/k8s executor/Podman |
 
 ## Homelab
 

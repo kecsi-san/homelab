@@ -10,7 +10,7 @@ tags: [python, uv, templates, ci, tooling]
 
 # Modern Python Project Templates for 2025–2026
 
-**Scope:** Six actively maintained Python project templates evaluated for homelab and internal
+**Scope:** Seven actively maintained Python project templates evaluated for homelab and internal
 tooling use, with background on the tool choices that underpin them.
 Research conducted May 2026 against live repositories.
 
@@ -25,9 +25,10 @@ Research conducted May 2026 against live repositories.
 5. [Template 4: python-boilerplate (smarlhens)](#template-4-python-boilerplate-smarlhens)
 6. [Template 5: python-project-generator (sanders41)](#template-5-python-project-generator-sanders41)
 7. [Template 6: python-project-template (a1d4r)](#template-6-python-project-template-a1d4r)
-8. [Tool Debates](#tool-debates)
-9. [Decision Matrix](#decision-matrix)
-10. [Recommendation for Homelab / Internal Tooling on Forgejo CI](#recommendation-for-homelab--internal-tooling-on-forgejo-ci)
+8. [Template 7: python-uv (a5chin)](#template-7-python-uv-a5chin)
+9. [Tool Debates](#tool-debates)
+10. [Decision Matrix](#decision-matrix)
+11. [Recommendation for Homelab / Internal Tooling on Forgejo CI](#recommendation-for-homelab--internal-tooling-on-forgejo-ci)
 
 ---
 
@@ -632,6 +633,123 @@ heavily and wanting the most comprehensive ruff ruleset.
 
 ---
 
+## Template 7: python-uv (a5chin)
+
+**Repository:** <https://github.com/a5chin/python-uv>
+**Maintainer:** a5chin
+**Stars:** 369 | **Forks:** 21 | **Last push:** 2025-11-20
+**License:** MIT
+**Template engine:** None (direct clone / Use this template button)
+
+### Description and Philosophy
+
+A focused, opinionated template with a distinctive **Dev Container + GHCR image
+publishing** angle. Rather than abstracting over CI or docs, it makes one strong bet:
+the development environment is a fully specified container that can be rebuilt from
+scratch on any machine, and that same container image is pushed to GitHub Container
+Registry as part of CI.
+
+The target audience is developers who want a reproducible, container-first development
+environment — not just a reproducible build, but a reproducible *workspace*.
+
+### Tool Stack
+
+| Concern | Tool | Notes |
+|---|---|---|
+| Package manager | uv | |
+| Linter | ruff | |
+| Formatter | ruff format | |
+| Type checker | ty | Astral's pre-alpha type checker (as of May 2026) |
+| Test framework | pytest | |
+| Dev environment | VS Code Dev Container | Core differentiator; `.devcontainer/` fully specified |
+| Container registry | GHCR (GitHub Container Registry) | CI publishes the dev container image |
+| CI | GitHub Actions | Build + push to GHCR; lint + test workflow |
+| Target Python | 3.14 | Tracks Python's development branch |
+
+### Project Structure
+
+```
+python-uv/
+├── .devcontainer/
+│   ├── devcontainer.json
+│   └── Dockerfile
+├── .github/
+│   └── workflows/
+│       ├── ci.yml         (lint + test)
+│       └── docker.yml     (build + push to GHCR)
+├── src/
+│   └── <package>/
+├── tests/
+├── pyproject.toml
+├── uv.lock
+└── Makefile
+```
+
+### Distinctive Features
+
+**Dev Container as first-class citizen:** The `.devcontainer/` setup is more than a
+convenience — it is the official development environment. The `devcontainer.json`
+specifies VS Code extensions, settings, and post-create commands so every contributor
+gets an identical environment without local tool installation.
+
+**GHCR publishing workflow:** `docker.yml` builds the dev container image and pushes it
+to `ghcr.io/<owner>/<repo>`. This means the CI image is versioned alongside the code and
+can be pulled by any collaborator without building locally. Unusual to find in a small
+template; typically a feature of enterprise CI setups.
+
+**ty as type checker:** Adopts Astral's `ty` before it reaches stable release. Demonstrates
+confidence in the Astral ecosystem but introduces risk for production code (ty alpha is known
+to miss some complex type patterns).
+
+**Python 3.14 target:** Tracks CPython's development branch. Progressive for exploration;
+risky for anything requiring stability.
+
+### Caveats
+
+- **No scaffolding / prompts**: the template is cloned as-is; there is no Cookiecutter or
+  Copier integration. Renaming `<package>` requires manual find-and-replace across files.
+- **ty is pre-stable (alpha as of May 2026)**: suitable for exploration; not yet recommended
+  as the sole type checker for production internal tooling.
+- **Python 3.14**: CPython 3.14 is in pre-release; dependencies may lack 3.14 wheels;
+  `uv python install 3.14` installs a pre-release binary. For stable homelab tooling,
+  pin to 3.12 or 3.13 after cloning.
+- **No update mechanism**: clone once; drift from upstream is manual.
+- **GCP dependency reference in README**: Some context in the docs assumes GCP tooling
+  (likely the author's professional context); not relevant to the homelab but easy to
+  remove.
+
+### Pros
+
+- Dev Container + GHCR publishing is a distinctive, production-quality CI pattern not
+  found in the other templates; directly applicable to homelab services running in k8s
+  (same image used for dev and deployment)
+- Clean src layout, uv, ruff — aligns with the recommended toolchain
+- Very low boilerplate: starter code is minimal; structure enforces good habits without
+  adding noise
+- Small and readable: easy to understand every file in the template
+
+### Cons
+
+- No scaffolding: find-and-replace setup is tedious compared to Cookiecutter/Copier generation
+- ty in alpha: type errors may be missed; switch to mypy or wait for ty stable for production
+- Python 3.14 target: needs downgrade for stable homelab use
+- Stars (369) significantly lower than cookiecutter-uv (1,294); less community support
+
+### Best Suited For
+
+Developers who want a **container-first development environment** and plan to publish the dev
+container image to a registry. The GHCR workflow is directly translatable to the Forgejo
+container registry with a one-line URL change. Pairs well with homelab projects where the
+dev container is also the deployment container (no separate Dockerfile needed).
+
+**Verdict for this homelab**: Worth adding as a reference / secondary pattern. The GHCR
+publishing workflow translates directly to Forgejo's built-in OCI registry
+(`forgejo.kecskemethy.org/<user>/<repo>`) — change the registry URL and swap GHCR login
+for Forgejo token auth. Not the primary recommendation because of the no-scaffolding
+friction and ty alpha risk, but the Dev Container + OCI publish pattern is worth borrowing.
+
+---
+
 ## Tool Debates
 
 ### uv vs pip / poetry / pipenv
@@ -667,7 +785,7 @@ ruff has effectively won. By 2025, the black+isort+flake8+pydocstyle+pyupgrade c
 The only reason to stay with black+isort: existing tooling deeply integrated with black's API
 or regulatory requirements mandating specific tool provenance.
 
-**All six templates** in this survey use ruff for both linting and formatting.
+**All seven templates** in this survey use ruff for both linting and formatting.
 
 ### mypy vs pyright vs ty in 2025–2026
 
@@ -719,27 +837,27 @@ internal projects need to adopt security fixes and tool updates from the templat
 
 ## Decision Matrix
 
-| | cookiecutter-uv | simple-modern-uv | copier-uv | python-boilerplate | python-project-generator | python-project-template |
-|---|---|---|---|---|---|---|
-| **Stars** | 1,294 | 278 | 148 | 85 | 28 | 23 |
-| **Template engine** | Cookiecutter | Copier | Copier | None (clone) | Custom (Rust) | Cookiecutter |
-| **Update mechanism** | No | Yes | Yes | No | No | No |
-| **Package manager** | uv | uv | uv | uv | uv/poetry/setuptools | uv |
-| **Build backend** | hatchling | hatchling + uv-dynamic-versioning | pdm-backend | uv_build | hatchling | None (app) |
-| **Type checker** | mypy or ty | BasedPyright | ty | mypy + ty (both) | mypy | mypy |
-| **Security scan** | No | No | No | bandit + CodeQL | No | safety |
-| **Task runner** | Makefile | Makefile (thin) | duty (Python) | None | None | Makefile (comprehensive) |
-| **Pre-commit** | Yes | No | No | Yes | No | Yes |
-| **Multi-Python CI** | Yes (3.10–3.14) | Yes (3.11–3.14) | Yes (3 OS × 3.10–3.14+dev) | No | Optional | No |
-| **Docs** | MkDocs/Zensical/none | Markdown only | Zensical | None | MkDocs optional | None |
-| **Docker** | Optional | No | No | Yes | FastAPI only | Yes + docker-compose |
-| **src layout** | Yes or flat | Yes (fixed) | Yes (fixed) | Yes (fixed) | Yes | No (flat, fixed) |
-| **GitLab/Forgejo CI** | No | No | No | No | No | Yes (GitLab CI) |
-| **Dynamic versioning** | No | Yes (git tags) | Yes (git tags) | No | No | No |
-| **Dep audit (deptry)** | Optional | No | No | No | No | Yes |
-| **API break detect** | No | No | Yes (griffe) | No | No | No |
-| **Beginner friendly** | High | Medium | Low | Medium | Medium | Medium |
-| **Last push** | 2026-05-16 | 2026-02-19 | 2026-03-05 | 2026-05-15 | 2026-05-15 | 2026-04-05 |
+| | cookiecutter-uv | simple-modern-uv | copier-uv | python-boilerplate | python-project-generator | python-project-template | python-uv (a5chin) |
+|---|---|---|---|---|---|---|---|
+| **Stars** | 1,294 | 278 | 148 | 85 | 28 | 23 | 369 |
+| **Template engine** | Cookiecutter | Copier | Copier | None (clone) | Custom (Rust) | Cookiecutter | None (clone) |
+| **Update mechanism** | No | Yes | Yes | No | No | No | No |
+| **Package manager** | uv | uv | uv | uv | uv/poetry/setuptools | uv | uv |
+| **Build backend** | hatchling | hatchling + uv-dynamic-versioning | pdm-backend | uv_build | hatchling | None (app) | hatchling |
+| **Type checker** | mypy or ty | BasedPyright | ty | mypy + ty (both) | mypy | mypy | ty (alpha) |
+| **Security scan** | No | No | No | bandit + CodeQL | No | safety | No |
+| **Task runner** | Makefile | Makefile (thin) | duty (Python) | None | None | Makefile (comprehensive) | Makefile |
+| **Pre-commit** | Yes | No | No | Yes | No | Yes | No |
+| **Multi-Python CI** | Yes (3.10–3.14) | Yes (3.11–3.14) | Yes (3 OS × 3.10–3.14+dev) | No | Optional | No | No (3.14 only) |
+| **Docs** | MkDocs/Zensical/none | Markdown only | Zensical | None | MkDocs optional | None | None |
+| **Docker** | Optional | No | No | Yes | FastAPI only | Yes + docker-compose | Dev Container + GHCR |
+| **src layout** | Yes or flat | Yes (fixed) | Yes (fixed) | Yes (fixed) | Yes | No (flat, fixed) | Yes (fixed) |
+| **GitLab/Forgejo CI** | No | No | No | No | No | Yes (GitLab CI) | No |
+| **Dynamic versioning** | No | Yes (git tags) | Yes (git tags) | No | No | No | No |
+| **Dep audit (deptry)** | Optional | No | No | No | No | Yes | No |
+| **API break detect** | No | No | Yes (griffe) | No | No | No | No |
+| **Beginner friendly** | High | Medium | Low | Medium | Medium | Medium | Medium |
+| **Last push** | 2026-05-16 | 2026-02-19 | 2026-03-05 | 2026-05-15 | 2026-05-15 | 2026-04-05 | 2025-11-20 |
 
 ---
 
@@ -809,6 +927,7 @@ and the Renovate configuration, are worth borrowing directly.
 | copier-uv (pawamoy) | duty + griffe + pdm-backend overkill for internal apps |
 | python-project-generator | Requires Rust install; no Forgejo CI; no update path |
 | python-project-template (a1d4r) | Flat layout; no licence; safety CVE data concerns |
+| python-uv (a5chin) | No scaffolding (manual rename); ty in alpha; Python 3.14 target needs downgrading — **use as reference for Dev Container + GHCR pattern, not as primary template** |
 
 ### Suggested toolchain for new homelab projects in 2026
 
