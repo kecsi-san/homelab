@@ -24,3 +24,15 @@ mikrotik_dns_records:
   # NFS backup server (hppd600g6)
   - name: "backups.kinet.local"
     address: "192.168.1.52"
+
+# AAAA (IPv6) override records — point wildcard domains to loopback so browsers
+# prefer IPv4 (A records) over Cloudflare's public AAAA proxy addresses on LAN.
+# Without these, Happy Eyeballs selects Cloudflare IPv6 → QUIC fails on LAN.
+mikrotik_dns6_records:
+  - name: "{{ domain_name }}"
+    address: "::1"
+    match_subdomain: true
+
+  - name: "k3s.{{ domain_name }}"
+    address: "::1"
+    match_subdomain: true
