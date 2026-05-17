@@ -7,7 +7,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://forgejo.kecskemethy.org/kecsi/homelab.git
+    repoURL: https://github.com/kecsi-san/homelab.git
     targetRevision: HEAD
     path: kube-gitops/k8s/forgejo-runner
   destination:
