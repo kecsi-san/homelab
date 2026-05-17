@@ -15,7 +15,7 @@ Deploy a minimal IDP to **k3s** and the same minimal IDP **plus Backstage** to *
 | Shared database | CloudNativePG | Infrastructure | ✅ Done | ✅ Done |
 | Git server + OCI registry + CI | Forgejo | Platform | ✅ Done | ✅ Done |
 | SSO / Identity Provider | Authentik | Platform | ✅ Done | Planned |
-| CI runners | Forgejo Actions | Platform | Planned | Planned |
+| CI runners | Forgejo Actions | Platform | ✅ Done | Planned |
 | Documentation / wiki | Outline | Platform | ✅ Done | Planned |
 | Code analysis (SAST) | Semgrep OSS (CI step) | Quality | Planned | Planned |
 | Vulnerability scanning | Trivy (CI step) | Quality | Planned | Planned |
@@ -54,6 +54,18 @@ k8s only — after minimal IDP is stable:
 ---
 
 ## Achievements Log
+
+### 2026-05-17 — Forgejo Actions runner deployed (k8s)
+
+- **act_runner v12.10.1** deployed in `forgejo-runner` namespace
+- **DinD sidecar** (`docker:27-dind`): runner executes workflow steps in
+  Docker containers; `DOCKER_HOST=tcp://localhost:2375`; `privileged: true` on DinD only
+- **Instance-level runner**: picks up jobs from any repo on the Forgejo instance
+- **Labels**: `ubuntu-latest` + `self-hosted` → default container `node:20-bookworm`
+- **Capacity**: 2 concurrent jobs per replica
+- **PVC** (`1Gi Longhorn`): `.runner` registration file persists across pod restarts
+  (init-data container `chmod 777 /data` + register init container; `workingDir: /data`)
+- **Registration token**: SealedSecret in `forgejo-runner` namespace
 
 ### 2026-05-16 — Outline wiki deployed with Authentik OIDC (k8s)
 
