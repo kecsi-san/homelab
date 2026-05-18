@@ -19,5 +19,5 @@ data:
     container:
       network: bridge
       privileged: false
-      options: ""
+      options: "-v /var/run/docker.sock:/var/run/docker.sock"
       workdir_parent: /data/workspaces
