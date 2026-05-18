@@ -165,6 +165,14 @@
       tags:
         - minimal
 
+    - name: Configure /etc/hosts
+      ansible.builtin.import_role:
+        name: configure_etc-hosts
+      become: true
+      when: ansible_system == 'Linux'
+      tags:
+        - hosts
+
     - name: Setup network tools
       ansible.builtin.import_role:
         name: setup_network-tools

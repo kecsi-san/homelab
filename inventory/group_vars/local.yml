@@ -42,3 +42,17 @@ ansible_ssh_pub_key_file: "id_ed25519.pub"
 etckeeper: true
 linuxbrew: true
 linuxbrew_use_installer: true
+
+# Override k8s service domains to bypass loopback (k3s Traefik on WSL2 answers [::1]:443
+# with the wrong cert when MikroTik AAAA wildcard resolves *.kecskemethy.org to ::1)
+extra_hosts:
+  - { ip: "{{ k8s_traefik_ip }}", name: "forgejo.{{ domain_name }}" }
+  - { ip: "{{ k8s_traefik_ip }}", name: "argocd.{{ domain_name }}" }
+  - { ip: "{{ k8s_traefik_ip }}", name: "headlamp.{{ domain_name }}" }
+  - { ip: "{{ k8s_traefik_ip }}", name: "authentik.{{ domain_name }}" }
+  - { ip: "{{ k8s_traefik_ip }}", name: "outline.{{ domain_name }}" }
+  - { ip: "{{ k8s_traefik_ip }}", name: "homepage.{{ domain_name }}" }
+  - { ip: "{{ k8s_traefik_ip }}", name: "longhorn.{{ domain_name }}" }
+  - { ip: "{{ k8s_traefik_ip }}", name: "ntfy.{{ domain_name }}" }
+  - { ip: "{{ k8s_traefik_ip }}", name: "gatus.{{ domain_name }}" }
+  - { ip: "{{ k8s_traefik_ip }}", name: "mealie.{{ domain_name }}" }

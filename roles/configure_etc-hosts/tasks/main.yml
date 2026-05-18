@@ -11,3 +11,16 @@
   tags:
     - hosts
     - configure-etc-hosts
+
+- name: Add extra static hosts into /etc/hosts
+  ansible.builtin.lineinfile:
+    dest: /etc/hosts
+    regexp: "^{{ item.ip }}\\s+{{ item.name }}$"
+    line: "{{ item.ip }} {{ item.name }}"
+    state: present
+  loop: "{{ extra_hosts | default([]) }}"
+  when: ansible_system == 'Linux'
+  become: true
+  tags:
+    - hosts
+    - configure-etc-hosts
