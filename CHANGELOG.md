@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(ci): use host network + TCP Docker host for job containers ([f957652](https://github.com/kecsi-san/homelab/commit/f957652165b7d35e4d3b97915b72171519230470) by Zoltan K).
 - fix(backstage): use schema-based plugin division to avoid createdb permission ([3f0f78b](https://github.com/kecsi-san/homelab/commit/3f0f78bcfbf04fba5b00b11f8547897bb6919e8d) by Zoltan K).
 - fix(dns): use ::1 for k3s AAAA wildcard, fd42::1 for k8s only ([0ce04ee](https://github.com/kecsi-san/homelab/commit/0ce04ee57d9e4f4ae315ba016d8df996fc6818dd) by Zoltan K).
 - fix(dns): use RouterOS type field to distinguish A/AAAA records; migrate ::1 to fd42::1 ([3991226](https://github.com/kecsi-san/homelab/commit/3991226710a342bb91dc3623ee94023b8b60b663) by Zoltan K).
