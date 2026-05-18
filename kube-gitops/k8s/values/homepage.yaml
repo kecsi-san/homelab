@@ -137,3 +137,9 @@ config:
             icon: outline.png
             namespace: outline
             app: outline
+        - Backstage:
+            href: https://backstage.kecskemethy.org
+            description: Developer portal · service catalog
+            icon: backstage.png
+            namespace: backstage
+            app: backstage
