@@ -26,11 +26,13 @@ backstage:
         credentials: true
       database:
         client: pg
+        pluginDivisionMode: schema
         connection:
           host: ${POSTGRES_HOST}
           port: ${POSTGRES_PORT}
           user: ${POSTGRES_USER}
           password: ${POSTGRES_PASSWORD}
+          database: backstage
 
     auth:
       environment: production
