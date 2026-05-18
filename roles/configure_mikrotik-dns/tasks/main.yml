@@ -7,6 +7,7 @@
     path: ip dns static
     find:
       name: "{{ item.name }}"
+      type: A
     values:
       address: "{{ item.address }}"
       ttl: "{{ mikrotik_dns_ttl }}"
@@ -39,8 +40,25 @@
   loop_control:
     label: "{{ item.item.name }} → {{ item.item.address }}"
 
-# AAAA records use address in the find criteria to avoid matching A records with
-# the same wildcard name. RouterOS infers record type from address family.
+# One-time migration: ::1 broke WSL2 (k3s Traefik listens on loopback).
+# Find old records by name+old-address and update in-place; noop when gone.
+- name: Migrate ::1 AAAA records to fd42::1
+  community.routeros.api_find_and_modify:
+    hostname: "{{ mikrotik_host }}"
+    username: "{{ mikrotik_user }}"
+    password: "{{ mikrotik_password }}"
+    path: ip dns static
+    find:
+      name: "{{ item.name }}"
+      address: "::1"
+    values:
+      address: "fd42::1"
+    require_matches_min: 0
+    require_matches_max: 1
+  loop: "{{ mikrotik_dns6_records }}"
+  loop_control:
+    label: "migrate {{ item.name }} ::1 → fd42::1"
+
 - name: Update existing MikroTik static AAAA records
   community.routeros.api_find_and_modify:
     hostname: "{{ mikrotik_host }}"
@@ -49,7 +67,7 @@
     path: ip dns static
     find:
       name: "{{ item.name }}"
-      address: "{{ item.address }}"
+      type: AAAA
     values:
       address: "{{ item.address }}"
       ttl: "{{ mikrotik_dns_ttl }}"
