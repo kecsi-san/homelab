@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(dns): use ::1 for k3s AAAA wildcard, fd42::1 for k8s only ([623bcea](https://github.com/kecsi-san/homelab/commit/623bcea4c0e40675952d0e785d866bdb7433de42) by Zoltan K).
 - fix(dns): use RouterOS type field to distinguish A/AAAA records; migrate ::1 to fd42::1 ([3991226](https://github.com/kecsi-san/homelab/commit/3991226710a342bb91dc3623ee94023b8b60b663) by Zoltan K).
 - fix(dns): add wildcard AAAA overrides to block Cloudflare IPv6 on LAN ([e4a992f](https://github.com/kecsi-san/homelab/commit/e4a992f763c8b31f199220e2edd4bf105e4aa075) by Zoltan K).
 - fix(forgejo): increase memory limit 512Mi → 1Gi to prevent OOMKill ([b1a2583](https://github.com/kecsi-san/homelab/commit/b1a25836ee3184d66086ab40b8310438bc349781) by Zoltan K).
