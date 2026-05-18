@@ -1,0 +1,19 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: backstage
+  namespace: backstage
+  annotations:
+    external-dns.alpha.kubernetes.io/target: "9fa18953-8d82-424d-a8b5-9941940d4230.cfargotunnel.com"
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`backstage.kecskemethy.org`)
+      kind: Rule
+      services:
+        - name: backstage
+          port: 7007
+  tls:
+    secretName: backstage-tls

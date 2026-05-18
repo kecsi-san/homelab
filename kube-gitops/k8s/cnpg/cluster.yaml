@@ -33,6 +33,11 @@ spec:
         login: true
         passwordSecret:
           name: outline-db-credentials
+      - name: backstage
+        ensure: present
+        login: true
+        passwordSecret:
+          name: backstage-db-credentials
 
   storage:
     storageClass: longhorn

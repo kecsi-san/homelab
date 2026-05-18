@@ -1,0 +1,92 @@
+---
+# Backstage developer portal — k8s cluster
+# chart: https://backstage.github.io/charts  name: backstage  version: 2.7.0
+
+backstage:
+  image:
+    registry: ghcr.io
+    repository: backstage/backstage
+    tag: latest
+
+  appConfig:
+    app:
+      title: Homelab Backstage
+      baseUrl: https://backstage.kecskemethy.org
+      signInPage: oidc
+
+    backend:
+      baseUrl: https://backstage.kecskemethy.org
+      listen:
+        port: 7007
+      csp:
+        connect-src: ["'self'", 'http:', 'https:']
+      cors:
+        origin: https://backstage.kecskemethy.org
+        methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
+        credentials: true
+      database:
+        client: pg
+        connection:
+          host: ${POSTGRES_HOST}
+          port: ${POSTGRES_PORT}
+          user: ${POSTGRES_USER}
+          password: ${POSTGRES_PASSWORD}
+
+    auth:
+      environment: production
+      session:
+        secret: ${AUTH_SESSION_SECRET}
+      providers:
+        oidc:
+          production:
+            metadataUrl: https://authentik.kecskemethy.org/application/o/backstage/.well-known/openid-configuration
+            clientId: ${AUTH_OIDC_CLIENT_ID}
+            clientSecret: ${AUTH_OIDC_CLIENT_SECRET}
+            scope: openid profile email
+            prompt: auto
+            signIn:
+              resolvers:
+                - resolver: preferredUsernameMatchingUserEntityName
+                  dangerouslyAllowSignInWithoutUserInCatalog: true
+
+    catalog:
+      rules:
+        - allow: [Component, System, API, Resource, Location, User, Group]
+      locations: []
+
+    organization:
+      name: Homelab
+
+  extraEnvVars:
+    - name: POSTGRES_HOST
+      value: postgres-rw.postgres.svc.cluster.local
+    - name: POSTGRES_PORT
+      value: "5432"
+    - name: POSTGRES_USER
+      valueFrom:
+        secretKeyRef:
+          name: backstage-app
+          key: POSTGRES_USER
+    - name: POSTGRES_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: backstage-app
+          key: POSTGRES_PASSWORD
+    - name: AUTH_OIDC_CLIENT_ID
+      value: backstage
+    - name: AUTH_OIDC_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: backstage-app
+          key: AUTH_OIDC_CLIENT_SECRET
+    - name: AUTH_SESSION_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: backstage-app
+          key: AUTH_SESSION_SECRET
+
+postgresql:
+  enabled: false
+
+ingress:
+  enabled: false
