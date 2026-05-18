@@ -29,10 +29,12 @@ mikrotik_dns_records:
 # prefer IPv4 (A records) over Cloudflare's public AAAA proxy addresses on LAN.
 # Without these, Happy Eyeballs selects Cloudflare IPv6 → QUIC fails on LAN.
 mikrotik_dns6_records:
+  # fd42::1 (non-routable ULA) — k8s Traefik is remote; ::1 would hit k3s Traefik on WSL2 with wrong cert
   - name: "{{ domain_name }}"
     address: "fd42::1"
     match_subdomain: true
 
+  # ::1 (loopback) — k3s runs on WSL2; cert matches *.k3s.kecskemethy.org on both paths
   - name: "k3s.{{ domain_name }}"
-    address: "fd42::1"
+    address: "::1"
     match_subdomain: true
