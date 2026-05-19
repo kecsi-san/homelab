@@ -2,10 +2,13 @@
 # Backstage developer portal — k8s cluster
 # chart: https://backstage.github.io/charts  name: backstage  version: 2.7.0
 
+imagePullSecrets:
+  - name: forgejo-pull-secret
+
 backstage:
   image:
-    registry: ghcr.io
-    repository: backstage/backstage
+    registry: forgejo.kecskemethy.org
+    repository: kecsi/backstage
     tag: latest
 
   appConfig:
