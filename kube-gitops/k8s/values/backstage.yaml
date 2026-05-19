@@ -39,8 +39,21 @@ backstage:
           database: backstage
 
     auth:
+      environment: production
       session:
         secret: ${AUTH_SESSION_SECRET}
+      providers:
+        oidc:
+          production:
+            metadataUrl: ${AUTH_OIDC_METADATA_URL}
+            clientId: ${AUTH_OIDC_CLIENT_ID}
+            clientSecret: ${AUTH_OIDC_CLIENT_SECRET}
+            scope: openid profile email
+            prompt: auto
+            signIn:
+              resolvers:
+                - resolver: preferredUsernameMatchingUserEntityName
+                  dangerouslyAllowSignInWithoutUserInCatalog: true
 
     catalog:
       rules:
