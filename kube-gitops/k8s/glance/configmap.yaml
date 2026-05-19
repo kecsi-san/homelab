@@ -10,7 +10,7 @@ data:
       port: 8080
 
     pages:
-      - name: Home
+      - name: Homelab
         columns:
           - size: small
             widgets:
