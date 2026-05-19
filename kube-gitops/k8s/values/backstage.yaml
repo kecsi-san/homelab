@@ -15,8 +15,6 @@ backstage:
     app:
       title: Homelab Backstage
       baseUrl: https://backstage.kecskemethy.org
-      signIn:
-        providers: [oidc]
 
     backend:
       baseUrl: https://backstage.kecskemethy.org
