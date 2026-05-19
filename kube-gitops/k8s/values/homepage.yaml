@@ -53,18 +53,6 @@ config:
         cpu: true
         memory: true
         disk: /
-    - kubernetes:
-        cluster:
-          show: true
-          cpu: true
-          memory: true
-          showLabel: true
-          label: k8s
-        nodes:
-          show: true
-          cpu: true
-          memory: true
-          showLabel: true
 
   services:
     - Kubernetes:
@@ -140,6 +128,6 @@ config:
         - Backstage:
             href: https://backstage.kecskemethy.org
             description: Developer portal · service catalog
-            icon: backstage.png
+            icon: si-backstage
             namespace: backstage
             app: backstage
