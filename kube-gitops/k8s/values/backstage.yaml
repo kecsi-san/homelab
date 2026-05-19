@@ -12,7 +12,8 @@ backstage:
     app:
       title: Homelab Backstage
       baseUrl: https://backstage.kecskemethy.org
-      signInPage: oidc
+      signIn:
+        providers: [oidc]
 
     backend:
       baseUrl: https://backstage.kecskemethy.org
@@ -35,21 +36,8 @@ backstage:
           database: backstage
 
     auth:
-      environment: production
       session:
         secret: ${AUTH_SESSION_SECRET}
-      providers:
-        oidc:
-          production:
-            metadataUrl: https://authentik.kecskemethy.org/application/o/backstage/.well-known/openid-configuration
-            clientId: ${AUTH_OIDC_CLIENT_ID}
-            clientSecret: ${AUTH_OIDC_CLIENT_SECRET}
-            scope: openid profile email
-            prompt: auto
-            signIn:
-              resolvers:
-                - resolver: preferredUsernameMatchingUserEntityName
-                  dangerouslyAllowSignInWithoutUserInCatalog: true
 
     catalog:
       rules:
@@ -74,6 +62,8 @@ backstage:
         secretKeyRef:
           name: backstage-app
           key: POSTGRES_PASSWORD
+    - name: AUTH_OIDC_METADATA_URL
+      value: https://authentik.kecskemethy.org/application/o/backstage/.well-known/openid-configuration
     - name: AUTH_OIDC_CLIENT_ID
       value: backstage
     - name: AUTH_OIDC_CLIENT_SECRET
