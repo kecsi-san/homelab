@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(backstage): add auth.providers to Helm appConfig ([20893ba](https://github.com/kecsi-san/homelab/commit/20893ba7691f91ae85a51527782d057098df2bc2) by Zoltan K).
 - fix(homepage): remove broken kubernetes widget, fix backstage icon ([c029122](https://github.com/kecsi-san/homelab/commit/c02912256509a61230e257f1a07139c112a5580d) by Zoltan K).
 - fix(forgejo-runner): use Recreate strategy for RWO PVC ([9097d59](https://github.com/kecsi-san/homelab/commit/9097d598ffb817520dc806bc351a4cd9dfb282e6) by Zoltan K).
 - fix(backstage): move OIDC provider config into custom image app-config ([59fb2fa](https://github.com/kecsi-san/homelab/commit/59fb2fa6f835f9d0df210565848902d92892e856) by Zoltan K).
