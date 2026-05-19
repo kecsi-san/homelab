@@ -52,7 +52,7 @@ backstage:
             prompt: auto
             signIn:
               resolvers:
-                - resolver: preferredUsernameMatchingUserEntityName
+                - resolver: emailLocalPartMatchingUserEntityName
                   dangerouslyAllowSignInWithoutUserInCatalog: true
 
     catalog:
