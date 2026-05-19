@@ -15,7 +15,7 @@ ingress:
 
 config:
   settings:
-    title: Homelab
+    title: Homelab Homepage
     allowedHosts: homepage.kecskemethy.org
     theme: dark
     color: slate
