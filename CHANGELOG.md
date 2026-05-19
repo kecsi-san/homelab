@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(homepage): remove broken kubernetes widget, fix backstage icon ([c029122](https://github.com/kecsi-san/homelab/commit/c02912256509a61230e257f1a07139c112a5580d) by Zoltan K).
 - fix(forgejo-runner): use Recreate strategy for RWO PVC ([9097d59](https://github.com/kecsi-san/homelab/commit/9097d598ffb817520dc806bc351a4cd9dfb282e6) by Zoltan K).
 - fix(backstage): move OIDC provider config into custom image app-config ([59fb2fa](https://github.com/kecsi-san/homelab/commit/59fb2fa6f835f9d0df210565848902d92892e856) by Zoltan K).
 - fix(ci): use host network + TCP Docker host for job containers ([f957652](https://github.com/kecsi-san/homelab/commit/f957652165b7d35e4d3b97915b72171519230470) by Zoltan K).
