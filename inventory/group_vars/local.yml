@@ -36,6 +36,25 @@ git_user_email: !vault |
           6265663866316535650a333636626563383538636366653334306266643166333337613538656535
           66616636636637313833666531343933623332303838303263653864396436643831373363386463
           6130323963653737643935306264313365646637626366653866
+argocd_helm_values:
+  configs:
+    params:
+      server.insecure: "true"
+    cm:
+      oidc.config: |
+        name: Authentik
+        issuer: https://authentik.kecskemethy.org/application/o/argocd/
+        clientID: argocd
+        clientSecret: $argocd-oidc-secret:client-secret
+        requestedScopes:
+          - openid
+          - profile
+          - email
+    rbac:
+      policy.default: role:readonly
+      policy.csv: |
+        g, kecsi, role:admin
+
 ansible_python_interpreter: /usr/bin/python3
 ansible_ssh_user: "{{ admin_user }}"
 ansible_ssh_pub_key_file: "id_ed25519.pub"

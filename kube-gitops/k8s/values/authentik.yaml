@@ -67,6 +67,11 @@ server:
         secretKeyRef:
           name: authentik-backstage-oauth2
           key: client-secret
+    - name: ARGOCD_OAUTH2_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: authentik-argocd-oauth2
+          key: client-secret
   volumes:
     - name: blueprints-custom
       configMap:
@@ -135,6 +140,11 @@ worker:
       valueFrom:
         secretKeyRef:
           name: authentik-backstage-oauth2
+          key: client-secret
+    - name: ARGOCD_OAUTH2_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: authentik-argocd-oauth2
           key: client-secret
   volumes:
     - name: blueprints-custom
