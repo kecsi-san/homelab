@@ -21,7 +21,6 @@ Planned work, known issues, and ideas. Check here before starting a new session.
   1. Enable kube-apiserver audit logging to confirm authenticated username in token
   2. Add `offline_access` to OIDC_SCOPES in `headlamp-oidc` SealedSecret (re-seal required)
   3. Confirm whether Headlamp `-in-cluster` + OIDC mode substitutes user token for SA token
-- [ ] **ArgoCD OIDC** — wire ArgoCD to Authentik; blocked on Headlamp OIDC resolution first
 
 ## Big migrations
 
@@ -36,6 +35,7 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 
 ## Done (recent)
 
+- [x] ArgoCD Authentik OIDC sign-in + RBAC (`zoltan@kecskemethy.hu` → role:admin; default readonly)
 - [x] Backstage custom image built via Forgejo Actions CI, pushed to Forgejo OCI registry
 - [x] Backstage Authentik OIDC sign-in (ApiBlueprint + SignInPageBlueprint in new declarative frontend)
 - [x] Backstage root `/` → `/catalog` redirect
