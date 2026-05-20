@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(argocd): add required label to oidc secret ([e7ef810](https://github.com/kecsi-san/homelab/commit/e7ef810143b2868edb9488e23109163f64ea0247) by Zoltan K).
 - fix(argocd): set server.url so redirect URI uses https ([78b898a](https://github.com/kecsi-san/homelab/commit/78b898acb7080498d19e7908c421896f2c550057) by Zoltan K).
 - fix(argocd): use per_provider issuer mode in Authentik blueprint ([63a515a](https://github.com/kecsi-san/homelab/commit/63a515a152609241346fea774ec4dfbcf3b60542) by Zoltan K).
 - fix(argocd): manage oidc config via raw manifests ([6781568](https://github.com/kecsi-san/homelab/commit/6781568ba15bd61f3e41558e502eac15a2d1152c) by Zoltan K).
