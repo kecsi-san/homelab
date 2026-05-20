@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(argocd): use per_provider issuer mode in Authentik blueprint ([63a515a](https://github.com/kecsi-san/homelab/commit/63a515a152609241346fea774ec4dfbcf3b60542) by Zoltan K).
 - fix(argocd): manage oidc config via raw manifests ([6781568](https://github.com/kecsi-san/homelab/commit/6781568ba15bd61f3e41558e502eac15a2d1152c) by Zoltan K).
 - fix(backstage): remove scope option, use default OIDC scopes ([9d686aa](https://github.com/kecsi-san/homelab/commit/9d686aa2f1e69fe4c261b82b4a7a77ee1b8cd4d1) by Zoltan K).
 - fix(backstage): use emailLocalPartMatchingUserEntityName resolver ([ab1e1d8](https://github.com/kecsi-san/homelab/commit/ab1e1d88cd574dd863429e34739dcaa4817d4583) by Zoltan K).
