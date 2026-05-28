@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(traefik): move redirections under ports.web.http for chart v40 compatibility ([050c564](https://github.com/kecsi-san/homelab/commit/050c5644a2f09cc6b315ff7916836f01ecdc6f8c) by Zoltan K).
 - fix(argocd): use email as RBAC subject for admin role ([ad8dfaf](https://github.com/kecsi-san/homelab/commit/ad8dfafc7db7e40f6fd3cd601e01c0823f824e41) by Zoltan K).
 - fix(argocd): add required label to oidc secret ([e7ef810](https://github.com/kecsi-san/homelab/commit/e7ef810143b2868edb9488e23109163f64ea0247) by Zoltan K).
 - fix(argocd): set server.url so redirect URI uses https ([78b898a](https://github.com/kecsi-san/homelab/commit/78b898acb7080498d19e7908c421896f2c550057) by Zoltan K).
