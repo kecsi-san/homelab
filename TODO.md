@@ -51,7 +51,8 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 - [x] Traefik upgraded to v40 (chart 40.2.0 / Traefik 3.7.1) on both k8s and k3s; fixed breaking `ports.web.http.redirections` rename
 - [x] sealed-secrets upgraded to 2.18.6 on both clusters
 - [x] README updated: new title, platform stack table, repo description and topics refreshed
-- [x] ArgoCD Authentik OIDC sign-in + RBAC (`zoltan@kecskemethy.hu` → role:admin; default readonly)
+- [x] ArgoCD RBAC group-based verified: login via Authentik → homelab-admins group → role:admin
+- [x] ArgoCD Authentik OIDC sign-in + RBAC (initial email-based setup)
 - [x] Backstage custom image built via Forgejo Actions CI, pushed to Forgejo OCI registry
 - [x] Backstage Authentik OIDC sign-in (ApiBlueprint + SignInPageBlueprint in new declarative frontend)
 - [x] Backstage root `/` → `/catalog` redirect
