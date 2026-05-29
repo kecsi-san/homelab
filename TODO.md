@@ -5,7 +5,7 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 ## Active / Next up
 
 - [ ] **Forgejo SSH (port 22)** — all remotes still HTTPS; expose SSH via Traefik TCP entrypoint or NodePort
-- [ ] **Authentik on k3s** — k3s has no SSO yet; mirror k8s stack (2026.2.3 + blueprints + PostSync job)
+- [ ] **Authentik on k3s** — k3s has no SSO yet; mirror k8s stack (2026.5.0 + blueprints + PostSync job)
 - [ ] **Cloudflare ECH → Ansible** — ECH was disabled manually via API (`PATCH /zones/{id}/settings/ech`); add to Cloudflare playbook so a zone rebuild doesn't silently break LAN browsing
 - [ ] **Backstage Kubernetes plugin** — shows "Entity context is not available" as a standalone nav item; either configure it for catalog entities (requires annotations) or remove `kubernetesPlugin` from `App.tsx`
 - [ ] **Monitoring stack (kube-prometheus-stack)** — Prometheus + Grafana + AlertManager + node-exporter + kube-state-metrics via `prometheus-community/kube-prometheus-stack` Helm chart; k8s cluster only; Longhorn PVC for Prometheus storage (15-day retention default); AlertManager → ntfy webhook for alerts; Authentik forwardAuth on Grafana IngressRoute; Grafana dashboards: node overview, Longhorn, Traefik, ArgoCD. Note: VictoriaMetrics is a leaner alternative if memory becomes a concern; Garage (already deployed) is ready as a Thanos/VictoriaMetrics remote-write target if long-term retention is needed later.
@@ -39,6 +39,10 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 
 ## Done (recent)
 
+- [x] Authentik upgraded to 2026.5.0 on k8s; DB migration clean; OIDC providers verified working
+- [x] Traefik upgraded to v40 (chart 40.2.0 / Traefik 3.7.1) on both k8s and k3s; fixed breaking `ports.web.http.redirections` rename
+- [x] sealed-secrets upgraded to 2.18.6 on both clusters
+- [x] README updated: new title, platform stack table, repo description and topics refreshed
 - [x] ArgoCD Authentik OIDC sign-in + RBAC (`zoltan@kecskemethy.hu` → role:admin; default readonly)
 - [x] Backstage custom image built via Forgejo Actions CI, pushed to Forgejo OCI registry
 - [x] Backstage Authentik OIDC sign-in (ApiBlueprint + SignInPageBlueprint in new declarative frontend)
