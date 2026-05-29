@@ -1,4 +1,4 @@
-# Automated Environment Setup Using Ansible
+# Homelab Infrastructure as Code
 
 [![GitHub Tag](https://img.shields.io/github/v/tag/kecsi-san/homelab)](https://github.com/kecsi-san/homelab/releases)
 [![Lint](https://github.com/kecsi-san/homelab/actions/workflows/lint.yml/badge.svg)](https://github.com/kecsi-san/homelab/actions/workflows/lint.yml)
@@ -8,7 +8,25 @@
 [![Renovate](https://img.shields.io/badge/renovate-enabled-brightgreen?logo=renovatebot)](https://renovatebot.com)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://pre-commit.com)
 
-Ansible automation for setting up and maintaining developer/DevOps environments and a bare-metal Kubernetes homelab. Uses a modular **LEGO approach**: each role is self-contained and independently runnable via tags.
+Ansible automation for workstation setup and a bare-metal Kubernetes homelab. Uses a modular **LEGO approach**: each Ansible role is self-contained and independently runnable via tags. The cluster runs a self-hosted platform stack managed via GitOps (ArgoCD).
+
+## Platform Stack
+
+| Service | Purpose |
+|---------|---------|
+| [ArgoCD](https://argo-cd.readthedocs.io) | GitOps controller — manages all apps declaratively from this repo |
+| [Authentik](https://goauthentik.io) | SSO / Identity Provider — OIDC for all platform services |
+| [Forgejo](https://forgejo.org) | Self-hosted Git server, OCI registry, and CI runner |
+| [Backstage](https://backstage.io) | Internal developer portal — catalog, scaffolder, TechDocs |
+| [Traefik](https://traefik.io) | Ingress controller; dual-path: LAN (cert-manager + Let's Encrypt) + Cloudflare Tunnel |
+| [Longhorn](https://longhorn.io) | Distributed block storage across all 4 nodes |
+| [CloudNativePG](https://cloudnative-pg.io) | PostgreSQL operator (shared cluster for Forgejo, Authentik, Outline) |
+| [Outline](https://www.getoutline.com) | Self-hosted wiki / knowledge base |
+| [Mealie](https://mealie.io) | Self-hosted recipe manager |
+| [Gatus](https://gatus.io) | Uptime monitoring and status page |
+| [ntfy](https://ntfy.sh) | Push notification server; receives alerts from Gatus and VolSync |
+| [VolSync](https://volsync.readthedocs.io) | PVC backup operator — daily restic snapshots to a local NFS server |
+| [Garage](https://garagehq.deuxfleurs.fr) | S3-compatible object storage |
 
 ## Workflows
 
