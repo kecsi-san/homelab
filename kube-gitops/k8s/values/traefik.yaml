@@ -15,6 +15,12 @@ ports:
   websecure:
     http3:
       enabled: false
+  ssh:
+    port: 2022
+    expose:
+      default: true
+    exposedPort: 22
+    protocol: TCP
 
 providers:
   kubernetesIngress:
