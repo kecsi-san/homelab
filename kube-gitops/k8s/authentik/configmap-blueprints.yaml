@@ -5,6 +5,35 @@ metadata:
   name: authentik-blueprints
   namespace: authentik
 data:
+  aaa-groups.yaml: |
+    version: 1
+    metadata:
+      name: Homelab Groups and Scope Mappings
+      labels:
+        blueprints.goauthentik.io/description: Shared groups and OAuth2 scope mappings used across providers
+        blueprints.goauthentik.io/instantiate: "true"
+    entries:
+      - model: authentik_core.group
+        state: present
+        identifiers:
+          name: homelab-admins
+        attrs:
+          name: homelab-admins
+          users:
+            - !Find [authentik_core.user, [username, kecsi]]
+
+      - model: authentik_providers_oauth2.scopemapping
+        state: present
+        identifiers:
+          name: Groups
+        attrs:
+          name: Groups
+          scope_name: groups
+          expression: |
+            return {
+                "groups": [g.name for g in request.user.ak_groups.all()]
+            }
+
   forgejo.yaml: |
     version: 1
     metadata:
@@ -257,6 +286,7 @@ data:
             - !Find [authentik_providers_oauth2.scopemapping, [managed, "goauthentik.io/providers/oauth2/scope-openid"]]
             - !Find [authentik_providers_oauth2.scopemapping, [managed, "goauthentik.io/providers/oauth2/scope-profile"]]
             - !Find [authentik_providers_oauth2.scopemapping, [managed, "goauthentik.io/providers/oauth2/scope-email"]]
+            - !Find [authentik_providers_oauth2.scopemapping, [name, "Groups"]]
           sub_mode: user_username
           issuer_mode: per_provider
           signing_key: !Find [authentik_crypto.certificatekeypair, [name, "authentik Self-signed Certificate"]]

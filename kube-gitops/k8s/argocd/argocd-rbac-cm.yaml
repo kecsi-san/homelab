@@ -10,4 +10,4 @@ metadata:
 data:
   policy.default: role:readonly
   policy.csv: |
-    g, zoltan@kecskemethy.hu, role:admin
+    g, homelab-admins, role:admin
