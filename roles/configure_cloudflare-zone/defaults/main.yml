@@ -1,0 +1,7 @@
+---
+# Cloudflare API credentials — set in secrets.yml (gitignored)
+# cloudflare_api_token: "your-api-token"   # needs Zone:Settings:Edit scope
+# cloudflare_zone_id: "your-zone-id"
+
+# Zone settings to enforce
+cloudflare_ech_enabled: false
