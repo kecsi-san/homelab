@@ -4,7 +4,7 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 
 ## Active / Next up
 
-- [ ] **Forgejo SSH (port 22)** — all remotes still HTTPS; expose SSH via Traefik TCP entrypoint or NodePort
+- [x] **Forgejo SSH (port 22)** — Traefik TCP entrypoint (`ssh`, container 2022 → LB port 22); IngressRouteTCP with HostSNI(*); clone URL: `git@forgejo.kecskemethy.org:user/repo.git`
 - [ ] **Authentik on k3s** — k3s has no SSO yet; mirror k8s stack (2026.5.0 + blueprints + PostSync job)
 - [ ] **Cloudflare ECH → Ansible** — ECH was disabled manually via API (`PATCH /zones/{id}/settings/ech`); add to Cloudflare playbook so a zone rebuild doesn't silently break LAN browsing
 - [ ] **Backstage Kubernetes plugin** — shows "Entity context is not available" as a standalone nav item; either configure it for catalog entities (requires annotations) or remove `kubernetesPlugin` from `App.tsx`
