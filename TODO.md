@@ -40,7 +40,7 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 
 - [ ] **Outline VolSync backup** — add daily restic backup for `outline-data` PVC (same pattern as ntfy/gatus/mealie)
 - [ ] **Kustomize domain injection** — eliminate hardcoded `kecskemethy.org` and `192.168.1.101` from `kube-gitops/` manifests (IngressRoutes, certificates, deployments, Traefik values annotation); use Kustomize replacements or a common vars ConfigMap
-- [ ] **ArgoCD RBAC — switch to group-based** — replace `g, email@domain, role:admin` in `argocd-rbac-cm.yaml` with `g, homelab-admins, role:admin`; create `homelab-admins` group in Authentik and add user to it; removes personal email from committed manifest and is correct OIDC practice; also update Authentik blueprint to include `groups` in OIDC scope
+- [x] **ArgoCD RBAC — switch to group-based** — `homelab-admins` Authentik group + Groups scope mapping via `aaa-groups.yaml` blueprint; ArgoCD provider gets groups claim; `argocd-rbac-cm.yaml` uses `g, homelab-admins, role:admin`
 - [ ] **ArgoCD app repo URLs** — 40+ `repoURL: https://github.com/kecsi-san/homelab.git` hardcoded in ArgoCD app files (both k8s and k3s); parameterise so the repo is forkable without find-replace; options: Kustomize variable, or a bootstrap ConfigMap read by the root app
 - [ ] **macOS k3s port mapping** — k3d cluster missing `--port "80:80@loadbalancer" --port "443:443@loadbalancer"` flags
 - [ ] **macOS playbook review** — many roles behave differently on Darwin; consider a dedicated `local-mac.yml`
