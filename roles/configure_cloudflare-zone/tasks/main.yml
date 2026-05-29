@@ -1,0 +1,23 @@
+---
+- name: Get current ECH setting
+  uri:
+    url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/settings/ech"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ cloudflare_api_token }}"
+      Content-Type: "application/json"
+    status_code: 200
+  register: _cf_ech_current
+
+- name: Set ECH setting
+  uri:
+    url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/settings/ech"
+    method: PATCH
+    headers:
+      Authorization: "Bearer {{ cloudflare_api_token }}"
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      value: "{{ cloudflare_ech_enabled | ternary('on', 'off') }}"
+    status_code: 200
+  when: _cf_ech_current.json.result.value != (cloudflare_ech_enabled | ternary('on', 'off'))

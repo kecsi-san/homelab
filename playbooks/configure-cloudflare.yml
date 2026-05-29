@@ -1,0 +1,12 @@
+---
+- name: Configure Cloudflare zone settings
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: false
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+
+  roles:
+    - role: configure_cloudflare-zone
+      tags: cloudflare-zone
