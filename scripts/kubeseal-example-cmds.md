@@ -24,7 +24,7 @@ kubectl create secret generic authentik-credentials --namespace authentik \
   --from-literal=secret-key="$AUTHSECRETKEY" \
   --from-literal=postgresql-password="$AUTHDBPASS" \
   --from-literal=bootstrap-password="$AUTHADMINPASS" \
-  --from-literal=bootstrap-email=kecskemethy@gmail.com --dry-run=client -o yaml | \
+  --from-literal=bootstrap-email=admin@example.com --dry-run=client -o yaml | \
   kubeseal --format yaml \
     --context "admin@k8s" \
     --controller-name sealed-secrets \
