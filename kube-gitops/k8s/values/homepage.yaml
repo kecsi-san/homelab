@@ -81,6 +81,12 @@ config:
             namespace: traefik
             app: traefik
     - Monitoring:
+        - Grafana:
+            href: https://grafana.kecskemethy.org
+            description: Metrics and dashboards
+            icon: grafana.png
+            namespace: monitoring
+            app: grafana
         - Gatus:
             href: https://gatus.kecskemethy.org
             description: Uptime monitoring
