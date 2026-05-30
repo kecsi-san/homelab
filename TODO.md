@@ -8,9 +8,29 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 - [ ] **Authentik on k3s** — k3s has no SSO yet; mirror k8s stack (2026.5.0 + blueprints + PostSync job)
 - [x] **Cloudflare ECH → Ansible** — `configure_cloudflare-zone` role + `configure-cloudflare.yml` playbook; idempotent GET+PATCH; credentials via `secrets.yml` (`cloudflare_api_token`, `cloudflare_zone_id`)
 - [ ] **Backstage Kubernetes plugin** — shows "Entity context is not available" as a standalone nav item; either configure it for catalog entities (requires annotations) or remove `kubernetesPlugin` from `App.tsx`
-- [ ] **Monitoring stack (kube-prometheus-stack)** — Prometheus + Grafana + AlertManager + node-exporter + kube-state-metrics via `prometheus-community/kube-prometheus-stack` Helm chart; k8s cluster only; Longhorn PVC for Prometheus storage (15-day retention default); AlertManager → ntfy webhook for alerts; Authentik forwardAuth on Grafana IngressRoute; Grafana dashboards: node overview, Longhorn, Traefik, ArgoCD. Note: VictoriaMetrics is a leaner alternative if memory becomes a concern; Garage (already deployed) is ready as a Thanos/VictoriaMetrics remote-write target if long-term retention is needed later.
+- [ ] **Monitoring stack — seal OAuth2 secret** — generate a client secret, seal it for both namespaces:
+  ```bash
+  # 1. Generate a random client secret and note it
+  openssl rand -hex 32
+
+  # 2. Seal for Authentik namespace (worker uses !Env GRAFANA_OAUTH2_CLIENT_SECRET)
+  kubectl create secret generic authentik-grafana-oauth2 --namespace authentik \
+    --from-literal=client-secret=<generated-value> --dry-run=client -o yaml | \
+    kubeseal --format yaml --context "admin@k8s" \
+      --controller-name sealed-secrets --controller-namespace sealed-secrets \
+    > kube-gitops/k8s/authentik/sealedsecret-grafana-oauth2.yaml
+
+  # 3. Seal for monitoring namespace (Grafana reads GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET)
+  kubectl create secret generic grafana-oauth2-secret --namespace monitoring \
+    --from-literal=client-secret=<generated-value> --dry-run=client -o yaml | \
+    kubeseal --format yaml --context "admin@k8s" \
+      --controller-name sealed-secrets --controller-namespace sealed-secrets \
+    > kube-gitops/k8s/monitoring/sealedsecret-grafana-oauth2.yaml
+  ```
+- [ ] **Monitoring stack — AlertManager → ntfy** — deploy `ntfy-alertmanager` bridge pod; create ntfy access token for `homelab` user; configure AlertManager webhook receiver; update `kube-prometheus-stack` values `receivers` section
+- [ ] **Monitoring stack — additional dashboards** — add GrafanaDashboard CRDs for: Longhorn (official dashboard), Traefik (community ID 17347), ArgoCD (community ID 14584)
+- [x] **Monitoring stack (kube-prometheus-stack)** — deployed: KPS + grafana-operator + Grafana instance (Authentik OAuth2); Longhorn PVC 50Gi Prometheus + 5Gi AlertManager; node-exporter + kube-state-metrics; 3 dashboards (Node Exporter Full, K8s Overview, AlertManager); Grafana at grafana.kecskemethy.org
 - [ ] **Kromgo** — expose named Prometheus queries as HTTP endpoints for Homepage dashboard widgets (replaces broken Kubernetes metrics widget removed earlier); requires monitoring stack above; configure `config.yaml` with cluster CPU%, RAM%, pod count, node count
-- [ ] **grafana-operator** — replace KPS-bundled Grafana with grafana-operator for declarative `GrafanaDashboard` / `GrafanaDatasource` CRDs in Git; community standard in most-followed homelab repos (onedr0p, bjw-s, joryirving); adopt from the start to avoid migrating later; depends on monitoring stack above
 - [ ] **VictoriaLogs** — log aggregation (no log storage currently); single-binary replacement for Loki, significantly lower RAM, simpler to operate; community is moving away from Loki toward VictoriaLogs; deploy alongside kube-prometheus-stack; Fluent Bit or Grafana Alloy as log forwarder
 
 ## Projects / Repos
