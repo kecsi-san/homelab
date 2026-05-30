@@ -9,6 +9,22 @@ metadata:
     app.kubernetes.io/part-of: argocd
 data:
   url: https://argocd.kecskemethy.org
+  # terminatingReplicas added to workload status in Kubernetes 1.31+/1.35+;
+  # not in ArgoCD 2.14.5's embedded schema. knownTypeFields teaches ArgoCD
+  # the field so typed value construction doesn't fail.
+  resource.customizations.knownTypeFields.apps_Deployment: |
+    - field: "status.terminatingReplicas"
+      type: "integer"
+  resource.customizations.knownTypeFields.apps_ReplicaSet: |
+    - field: "status.terminatingReplicas"
+      type: "integer"
+  resource.customizations.knownTypeFields.apps_StatefulSet: |
+    - field: "status.terminatingReplicas"
+      type: "integer"
+  resource.customizations.knownTypeFields.apps_DaemonSet: |
+    - field: "status.terminatingReplicas"
+      type: "integer"
+  # ignoreDifferences strips these from config/live before diff comparison
   resource.customizations.ignoreDifferences.apps_Deployment: |
     jqPathExpressions:
       - .status.terminatingReplicas
@@ -23,12 +39,14 @@ data:
       - .status.terminatingReplicas
   resource.customizations.ignoreDifferences.monitoring.coreos.com_Prometheus: |
     jqPathExpressions:
+      - .spec.hostNetwork
       - .spec.enableOTLPReceiver
       - .spec.tsdb
       - .spec.otlpConfig
       - .status.terminatingReplicas
   resource.customizations.ignoreDifferences.monitoring.coreos.com_Alertmanager: |
     jqPathExpressions:
+      - .spec.hostNetwork
       - .spec.enableOTLPReceiver
       - .status.terminatingReplicas
   oidc.config: |
