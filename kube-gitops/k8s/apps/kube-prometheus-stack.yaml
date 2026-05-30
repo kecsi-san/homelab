@@ -23,11 +23,19 @@ spec:
     namespace: monitoring
   ignoreDifferences:
     - group: apps
-      kind: DaemonSet
+      kind: Deployment
+      jsonPointers:
+        - /status/terminatingReplicas
+    - group: apps
+      kind: ReplicaSet
       jsonPointers:
         - /status/terminatingReplicas
     - group: apps
       kind: StatefulSet
+      jsonPointers:
+        - /status/terminatingReplicas
+    - group: apps
+      kind: DaemonSet
       jsonPointers:
         - /status/terminatingReplicas
     - group: apiextensions.k8s.io
