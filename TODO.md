@@ -11,7 +11,7 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 - [x] **Monitoring stack — seal OAuth2 secret** — sealed for both namespaces; Grafana OAuth2 login verified working
 - [ ] **Monitoring stack — AlertManager → ntfy** — deploy `ntfy-alertmanager` bridge pod; create ntfy access token for `homelab` user; configure AlertManager webhook receiver; update `kube-prometheus-stack` values `receivers` section
 - [ ] **Monitoring stack — additional dashboards** — add GrafanaDashboard CRDs for: Longhorn (official dashboard), Traefik (community ID 17347), ArgoCD (community ID 14584)
-- [x] **Monitoring stack (kube-prometheus-stack)** — deployed: KPS + grafana-operator + Grafana instance (Authentik OAuth2); Longhorn PVC 50Gi Prometheus + 5Gi AlertManager; node-exporter + kube-state-metrics; 3 dashboards (Node Exporter Full, K8s Overview, AlertManager); Grafana at grafana.kecskemethy.org
+- [x] **Monitoring stack (kube-prometheus-stack)** — fully synced and healthy: KPS v86.1.0 + grafana-operator v5.23.0 + Grafana (Authentik OAuth2 login verified); Longhorn PVC 50Gi Prometheus + 5Gi AlertManager; static scrapes for 4-node Debian node_exporter; 3 dashboards; Grafana at grafana.kecskemethy.org
 - [ ] **Kromgo** — expose named Prometheus queries as HTTP endpoints for Homepage dashboard widgets (replaces broken Kubernetes metrics widget removed earlier); requires monitoring stack above; configure `config.yaml` with cluster CPU%, RAM%, pod count, node count
 - [ ] **VictoriaLogs** — log aggregation (no log storage currently); single-binary replacement for Loki, significantly lower RAM, simpler to operate; community is moving away from Loki toward VictoriaLogs; deploy alongside kube-prometheus-stack; Fluent Bit or Grafana Alloy as log forwarder
 
@@ -54,6 +54,8 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 - [x] sealed-secrets upgraded to 2.18.6 on both clusters
 - [x] README updated: new title, platform stack table, repo description and topics refreshed
 - [x] ArgoCD RBAC group-based verified: login via Authentik → homelab-admins group → role:admin
+- [x] ArgoCD Kubernetes 1.35 compat: `knownTypeFields` for `terminatingReplicas` on all workload types; `ignoreDifferences` for Prometheus/Alertmanager new spec fields (`hostNetwork`, `tsdb`, `otlp*`)
+- [x] Authentik 2026.5.0 `grant_types` change: new OAuth2 providers default to empty; must set `authorization_code`+`refresh_token` explicitly in blueprints
 - [x] ArgoCD Authentik OIDC sign-in + RBAC (initial email-based setup)
 - [x] Backstage custom image built via Forgejo Actions CI, pushed to Forgejo OCI registry
 - [x] Backstage Authentik OIDC sign-in (ApiBlueprint + SignInPageBlueprint in new declarative frontend)
