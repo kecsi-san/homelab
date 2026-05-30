@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(authentik+argocd): grant_types for Grafana; global terminatingReplicas ignore ([1786358](https://github.com/kecsi-san/homelab/commit/17863584fc5bbb754f56db97481e32284531cc6e) by Zoltan K).
 - fix(argocd): add global resource customizations for monitoring.coreos.com ([8338ff0](https://github.com/kecsi-san/homelab/commit/8338ff0799a67ca901335a91f9af7a6d7ad41259) by Zoltan K).
 - fix(monitoring): disable PKCE in Grafana OAuth2 config ([c090f4e](https://github.com/kecsi-san/homelab/commit/c090f4e20bc804ac7490257827eaed95681ea2c7) by Zoltan K).
 - fix(monitoring): restore ServerSideApply + add CRD ignoreDifferences for KPS ([c62334e](https://github.com/kecsi-san/homelab/commit/c62334ef6135de9013e951269e6cea6f26e1b6f4) by Zoltan K).
