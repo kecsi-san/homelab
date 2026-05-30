@@ -38,6 +38,7 @@ uv_pip_packages:
   - openai
   - pyhcl
   - PyJWT
+  - PyYAML
   - pyOpenSSL
   - python-jenkins
   - requests-mock
