@@ -75,3 +75,4 @@ extra_hosts:
   - { ip: "{{ k8s_traefik_ip }}", name: "ntfy.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "gatus.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "mealie.{{ domain_name }}" }
+  - { ip: "{{ k8s_traefik_ip }}", name: "grafana.{{ domain_name }}" }

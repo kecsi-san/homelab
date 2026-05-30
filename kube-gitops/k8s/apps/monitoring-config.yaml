@@ -1,0 +1,27 @@
+---
+# Grafana instance, datasource, and dashboards managed via grafana-operator CRDs.
+# Deploy after grafana-operator has synced (CRDs must exist first).
+# If this app fails on first sync with "no kind registered", terminate the operation
+# and re-sync — grafana-operator CRDs take a moment to register.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring-config
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/kecsi-san/homelab.git
+    targetRevision: HEAD
+    path: kube-gitops/k8s/monitoring
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

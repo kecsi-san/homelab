@@ -72,6 +72,12 @@ server:
         secretKeyRef:
           name: authentik-argocd-oauth2
           key: client-secret
+    - name: GRAFANA_OAUTH2_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: authentik-grafana-oauth2
+          key: client-secret
+          optional: true
   volumes:
     - name: blueprints-custom
       configMap:
@@ -146,6 +152,12 @@ worker:
         secretKeyRef:
           name: authentik-argocd-oauth2
           key: client-secret
+    - name: GRAFANA_OAUTH2_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: authentik-grafana-oauth2
+          key: client-secret
+          optional: true
   volumes:
     - name: blueprints-custom
       configMap:
