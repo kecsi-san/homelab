@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://grafana.github.io/helm-charts
     chart: grafana-operator
-    targetRevision: "5.7.0"
+    targetRevision: "5.23.0"
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
