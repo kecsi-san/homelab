@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(argocd): use knownTypeFields for terminatingReplicas; add hostNetwork ignore ([19734c7](https://github.com/kecsi-san/homelab/commit/19734c739b187b0d76e89c61ec8265a9fb4e9edd) by Zoltan K).
 - fix(argocd): add Deployment+ReplicaSet to terminatingReplicas ignoreDifferences ([d664770](https://github.com/kecsi-san/homelab/commit/d6647708e3aaa0085fe420f853cbf9291995776d) by Zoltan K).
 - fix(authentik+argocd): grant_types for Grafana; global terminatingReplicas ignore ([1786358](https://github.com/kecsi-san/homelab/commit/17863584fc5bbb754f56db97481e32284531cc6e) by Zoltan K).
 - fix(argocd): add global resource customizations for monitoring.coreos.com ([8338ff0](https://github.com/kecsi-san/homelab/commit/8338ff0799a67ca901335a91f9af7a6d7ad41259) by Zoltan K).
