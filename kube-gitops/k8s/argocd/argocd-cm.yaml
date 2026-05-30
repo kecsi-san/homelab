@@ -9,6 +9,12 @@ metadata:
     app.kubernetes.io/part-of: argocd
 data:
   url: https://argocd.kecskemethy.org
+  resource.customizations.ignoreDifferences.apps_StatefulSet: |
+    jqPathExpressions:
+      - .status.terminatingReplicas
+  resource.customizations.ignoreDifferences.apps_DaemonSet: |
+    jqPathExpressions:
+      - .status.terminatingReplicas
   resource.customizations.ignoreDifferences.monitoring.coreos.com_Prometheus: |
     jqPathExpressions:
       - .spec.enableOTLPReceiver
