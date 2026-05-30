@@ -32,7 +32,6 @@ spec:
       role_attribute_path: "contains(groups[*], 'homelab-admins') && 'Admin' || 'Viewer'"
       role_attribute_strict: "false"
       allow_assign_grafana_admin: "true"
-      use_pkce: "true"
     server:
       root_url: "https://grafana.kecskemethy.org"
   deployment:
