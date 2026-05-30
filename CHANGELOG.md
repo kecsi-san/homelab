@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(monitoring): disable PKCE in Grafana OAuth2 config ([c090f4e](https://github.com/kecsi-san/homelab/commit/c090f4e20bc804ac7490257827eaed95681ea2c7) by Zoltan K).
 - fix(monitoring): restore ServerSideApply + add CRD ignoreDifferences for KPS ([c62334e](https://github.com/kecsi-san/homelab/commit/c62334ef6135de9013e951269e6cea6f26e1b6f4) by Zoltan K).
 - fix(monitoring): add ignoreDifferences for terminatingReplicas on KPS ([a161da4](https://github.com/kecsi-san/homelab/commit/a161da4258ed9c6b18b28920fcaa378c8ab481dc) by Zoltan K).
 - fix(monitoring): remove ServerSideApply; fix node-exporter port conflict ([2162453](https://github.com/kecsi-san/homelab/commit/2162453d95f84895f88159f4164a30b8113c9b18) by Zoltan K).
