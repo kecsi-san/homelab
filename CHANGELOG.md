@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(monitoring): bump chart versions to latest available ([5825fc2](https://github.com/kecsi-san/homelab/commit/5825fc271083ab64dd30c4ff0ad4e33b4340ef5c) by Zoltan K).
 - fix+docs: redact real email from kubeseal example; add hardening TODOs ([03c1c4b](https://github.com/kecsi-san/homelab/commit/03c1c4b5eaeffaad8ec10fd6993189f00e81af97) by Zoltan K).
 - fix(traefik): move redirections under ports.web.http for chart v40 compatibility ([0caeeb2](https://github.com/kecsi-san/homelab/commit/0caeeb2786742985467b9617bd4fda2a7720ae48) by Zoltan K).
 - fix(argocd): use email as RBAC subject for admin role ([ad8dfaf](https://github.com/kecsi-san/homelab/commit/ad8dfafc7db7e40f6fd3cd601e01c0823f824e41) by Zoltan K).
