@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(monitoring): set serviceMonitorSelectorNilUsesHelmValues: false ([e5b5751](https://github.com/kecsi-san/homelab/commit/e5b575134510dad9a3bb16a6759b8acac314d493) by Zoltan K).
 - fix(monitoring): add Longhorn ServiceMonitor as raw manifest ([dc22232](https://github.com/kecsi-san/homelab/commit/dc22232a62a8f882df660215d794875546ccec30) by Zoltan K).
 - fix(monitoring): include name label in ntfy alert message body ([9272358](https://github.com/kecsi-san/homelab/commit/92723580e0c2416a936cec6d4e07eb0cfaf9c317) by Zoltan K).
 - fix(monitoring): fix non-ASCII x in ntfy title header; add PYTHONUNBUFFERED ([c0694ae](https://github.com/kecsi-san/homelab/commit/c0694aed3d973297cb62d8a2a98ca9e7a3439565) by Zoltan K).
