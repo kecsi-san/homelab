@@ -1,5 +1,5 @@
 ---
-# Node Exporter Full — per-node CPU, RAM, disk, network metrics
+# Node Exporter Full — per-node CPU, RAM, disk, network metrics (use instance variable to select node)
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:
@@ -12,6 +12,20 @@ spec:
   grafanaCom:
     id: 1860
     revision: 37
+---
+# Node Exporter — multi-server summary: all nodes in a single view
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: node-exporter-summary
+  namespace: monitoring
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  grafanaCom:
+    id: 11074
+    revision: 9
 ---
 # Kubernetes Cluster Overview — pod count, resource utilisation, PVC usage
 apiVersion: grafana.integreatly.org/v1beta1
@@ -40,3 +54,45 @@ spec:
   grafanaCom:
     id: 9578
     revision: 4
+---
+# Longhorn — distributed block storage health: volumes, replicas, nodes, disk usage
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: longhorn
+  namespace: monitoring
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  grafanaCom:
+    id: 13032
+    revision: 6
+---
+# Traefik — requests, latencies, error rates per service and router
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: traefik
+  namespace: monitoring
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  grafanaCom:
+    id: 17347
+    revision: 9
+---
+# ArgoCD — application sync status, health, controller queue depth
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: argocd
+  namespace: monitoring
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  grafanaCom:
+    id: 14584
+    revision: 1

@@ -40,6 +40,12 @@ api:
   dashboard: true
   insecure: false
 
+metrics:
+  prometheus:
+    entryPoint: metrics
+    serviceMonitor:
+      enabled: true
+
 logs:
   general:
     level: INFO
