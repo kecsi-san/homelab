@@ -23,3 +23,15 @@ resources:
   limits:
     memory: 512Mi
     cpu: "1"
+
+# Mount patched passport-openidconnect session state store that calls
+# req.session.save() explicitly so the OIDC state survives the redirect.
+volumes:
+  - name: session-fix
+    configMap:
+      name: wikijs-session-fix
+
+volumeMounts:
+  - name: session-fix
+    mountPath: /wiki/node_modules/passport-openidconnect/lib/state/session.js
+    subPath: session.js
