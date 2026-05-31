@@ -32,6 +32,7 @@ data:
 
             alertname = labels.get("alertname", "Unknown")
             namespace = labels.get("namespace", "")
+            name = labels.get("name", "")
             severity = labels.get("severity", "info")
             summary = annotations.get("summary", alertname)
             description = annotations.get("description", "")
@@ -44,6 +45,8 @@ data:
                 title += f" x{len(alerts)}"
 
             lines = [f"{icon} {summary}"]
+            if name:
+                lines.append(f"Name: {name}")
             if description:
                 lines.append(description)
             message = "\n".join(lines)
