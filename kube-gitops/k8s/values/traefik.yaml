@@ -45,6 +45,9 @@ metrics:
     entryPoint: metrics
     service:
       enabled: true
+      labels:
+        # Chart SM selector requires traefik-traefik but base label is traefik — add the expected value
+        app.kubernetes.io/instance: traefik-traefik
     serviceMonitor:
       enabled: true
 
