@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(monitoring): fix dashboards + Traefik metrics service ([ba73b91](https://github.com/kecsi-san/homelab/commit/ba73b918f4f50da0daad6628c5312bb25a2412f1) by Zoltan K).
 - fix(monitoring): set serviceMonitorSelectorNilUsesHelmValues: false ([e5b5751](https://github.com/kecsi-san/homelab/commit/e5b575134510dad9a3bb16a6759b8acac314d493) by Zoltan K).
 - fix(monitoring): add Longhorn ServiceMonitor as raw manifest ([dc22232](https://github.com/kecsi-san/homelab/commit/dc22232a62a8f882df660215d794875546ccec30) by Zoltan K).
 - fix(monitoring): include name label in ntfy alert message body ([9272358](https://github.com/kecsi-san/homelab/commit/92723580e0c2416a936cec6d4e07eb0cfaf9c317) by Zoltan K).
