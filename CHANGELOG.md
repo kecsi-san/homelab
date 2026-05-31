@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(monitoring): fix non-ASCII x in ntfy title header; add PYTHONUNBUFFERED ([c0694ae](https://github.com/kecsi-san/homelab/commit/c0694aed3d973297cb62d8a2a98ca9e7a3439565) by Zoltan K).
 - fix(argocd): use knownTypeFields for terminatingReplicas; add hostNetwork ignore ([19734c7](https://github.com/kecsi-san/homelab/commit/19734c739b187b0d76e89c61ec8265a9fb4e9edd) by Zoltan K).
 - fix(argocd): add Deployment+ReplicaSet to terminatingReplicas ignoreDifferences ([d664770](https://github.com/kecsi-san/homelab/commit/d6647708e3aaa0085fe420f853cbf9291995776d) by Zoltan K).
 - fix(authentik+argocd): grant_types for Grafana; global terminatingReplicas ignore ([1786358](https://github.com/kecsi-san/homelab/commit/17863584fc5bbb754f56db97481e32284531cc6e) by Zoltan K).
