@@ -17,9 +17,13 @@ kubeProxy:
 
 prometheus:
   prometheusSpec:
-    # Discover ServiceMonitors and PodMonitors from all namespaces
+    # Discover ServiceMonitors and PodMonitors from all namespaces.
+    # serviceMonitorSelectorNilUsesHelmValues must be false; otherwise KPS
+    # overrides any empty selector back to {matchLabels: {release: kube-prometheus-stack}}.
+    serviceMonitorSelectorNilUsesHelmValues: false
     serviceMonitorSelector: {}
     serviceMonitorNamespaceSelector: {}
+    podMonitorSelectorNilUsesHelmValues: false
     podMonitorSelector: {}
     podMonitorNamespaceSelector: {}
     retention: 15d
