@@ -244,7 +244,7 @@ data:
           client_secret: !Env WIKIJS_OAUTH2_CLIENT_SECRET
           redirect_uris:
             - matching_mode: strict
-              url: https://wiki.kecskemethy.org/login/oidc/callback
+              url: https://wiki.kecskemethy.org/login/9fa6141c-adf7-4dfa-8103-6a5a077496fa/callback
           property_mappings:
             - !Find [authentik_providers_oauth2.scopemapping, [managed, "goauthentik.io/providers/oauth2/scope-openid"]]
             - !Find [authentik_providers_oauth2.scopemapping, [managed, "goauthentik.io/providers/oauth2/scope-profile"]]
