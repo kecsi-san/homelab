@@ -43,6 +43,8 @@ api:
 metrics:
   prometheus:
     entryPoint: metrics
+    service:
+      enabled: true
     serviceMonitor:
       enabled: true
 

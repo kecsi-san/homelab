@@ -1,5 +1,5 @@
 ---
-# Node Exporter Full — per-node CPU, RAM, disk, network metrics (use instance variable to select node)
+# Node Exporter Full — per-node CPU, RAM, disk, network (use instance variable to select node)
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:
@@ -9,11 +9,14 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: "grafana"
+  datasources:
+    - datasourceName: Prometheus
+      inputName: DS_PROMETHEUS
   grafanaCom:
     id: 1860
     revision: 37
 ---
-# Node Exporter — multi-server summary: all nodes in a single view
+# Node Exporter Quickstart — multi-node summary: all nodes in one view, no origin_prometheus required
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:
@@ -23,11 +26,14 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: "grafana"
+  datasources:
+    - datasourceName: Prometheus
+      inputName: DS_PROMETHEUS
   grafanaCom:
-    id: 11074
-    revision: 9
+    id: 13978
+    revision: 2
 ---
-# Kubernetes Cluster Overview — pod count, resource utilisation, PVC usage
+# Kubernetes Cluster Monitoring — pods, deployments, resource usage via kube-state-metrics
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:
@@ -37,9 +43,12 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: "grafana"
+  datasources:
+    - datasourceName: Prometheus
+      inputName: DS_PROMETHEUS
   grafanaCom:
-    id: 7249
-    revision: 1
+    id: 315
+    revision: 3
 ---
 # Alertmanager Overview — alert counts, inhibitions, silences
 apiVersion: grafana.integreatly.org/v1beta1
@@ -51,6 +60,9 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: "grafana"
+  datasources:
+    - datasourceName: Prometheus
+      inputName: DS_PROMETHEUS
   grafanaCom:
     id: 9578
     revision: 4
@@ -65,6 +77,9 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: "grafana"
+  datasources:
+    - datasourceName: Prometheus
+      inputName: DS_PROMETHEUS
   grafanaCom:
     id: 13032
     revision: 6
@@ -79,6 +94,9 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: "grafana"
+  datasources:
+    - datasourceName: Prometheus
+      inputName: DS_PROMETHEUS
   grafanaCom:
     id: 17347
     revision: 9
@@ -93,6 +111,9 @@ spec:
   instanceSelector:
     matchLabels:
       dashboards: "grafana"
+  datasources:
+    - datasourceName: Prometheus
+      inputName: DS_PROMETHEUS
   grafanaCom:
     id: 14584
     revision: 1
