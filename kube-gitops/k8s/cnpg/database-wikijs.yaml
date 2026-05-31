@@ -2,10 +2,10 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Database
 metadata:
-  name: outline
+  name: wikijs
   namespace: postgres
 spec:
-  name: outline
-  owner: outline
+  name: wikijs
+  owner: wikijs
   cluster:
     name: postgres

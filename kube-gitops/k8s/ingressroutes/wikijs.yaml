@@ -2,18 +2,18 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: outline
-  namespace: outline
+  name: wikijs
+  namespace: wikijs
   annotations:
     external-dns.alpha.kubernetes.io/target: "9fa18953-8d82-424d-a8b5-9941940d4230.cfargotunnel.com"
 spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`outline.kecskemethy.org`)
+    - match: Host(`wiki.kecskemethy.org`)
       kind: Rule
       services:
-        - name: outline
-          port: 3000
+        - name: wikijs
+          port: 80
   tls:
-    secretName: outline-tls
+    secretName: wikijs-tls

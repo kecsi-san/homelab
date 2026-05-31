@@ -2,12 +2,12 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: outline-tls
-  namespace: outline
+  name: wikijs-tls
+  namespace: wikijs
 spec:
-  secretName: outline-tls
+  secretName: wikijs-tls
   dnsNames:
-    - "outline.kecskemethy.org"
+    - "wiki.kecskemethy.org"
   issuerRef:
     name: letsencrypt-prod
     kind: ClusterIssuer
