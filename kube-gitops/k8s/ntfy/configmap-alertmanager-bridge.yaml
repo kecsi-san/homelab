@@ -1,0 +1,74 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ntfy-alertmanager-config
+  namespace: ntfy
+data:
+  webhook.py: |
+    #!/usr/bin/env python3
+    """AlertManager webhook → ntfy bridge."""
+    import json
+    import os
+    import urllib.request
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+
+    NTFY_URL = os.environ["NTFY_URL"].rstrip("/")
+    NTFY_TOKEN = os.environ["NTFY_TOKEN"]
+    NTFY_TOPIC = os.environ.get("NTFY_TOPIC", "alertmanager")
+
+    PRIORITY = {"critical": "5", "warning": "3", "info": "2"}
+    EMOJI = {"firing": "🔥", "resolved": "✅"}
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_POST(self):
+            length = int(self.headers.get("Content-Length", 0))
+            body = json.loads(self.rfile.read(length))
+
+            status = body.get("status", "unknown")
+            labels = body.get("commonLabels", {})
+            annotations = body.get("commonAnnotations", {})
+            alerts = body.get("alerts", [])
+
+            alertname = labels.get("alertname", "Unknown")
+            namespace = labels.get("namespace", "")
+            severity = labels.get("severity", "info")
+            summary = annotations.get("summary", alertname)
+            description = annotations.get("description", "")
+
+            icon = EMOJI.get(status, "⚠️")
+            title = f"[{status.upper()}] {alertname}"
+            if namespace:
+                title += f" ({namespace})"
+            if len(alerts) > 1:
+                title += f" ×{len(alerts)}"
+
+            lines = [f"{icon} {summary}"]
+            if description:
+                lines.append(description)
+            message = "\n".join(lines)
+
+            req = urllib.request.Request(
+                f"{NTFY_URL}/{NTFY_TOPIC}",
+                data=message.encode(),
+                headers={
+                    "Authorization": f"Bearer {NTFY_TOKEN}",
+                    "X-Title": title,
+                    "X-Priority": PRIORITY.get(severity, "3"),
+                    "X-Tags": f"alertmanager,{severity},{status}",
+                },
+            )
+            try:
+                urllib.request.urlopen(req, timeout=5)
+            except Exception as exc:
+                print(f"ntfy send error: {exc}")
+
+            self.send_response(200)
+            self.end_headers()
+
+        def log_message(self, fmt, *args):  # noqa: suppress access logs
+            pass
+
+    if __name__ == "__main__":
+        print(f"AlertManager→ntfy bridge listening on :9095, topic={NTFY_TOPIC}")
+        HTTPServer(("", 9095), Handler).serve_forever()

@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ntfy-alertmanager
+  namespace: ntfy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ntfy-alertmanager
+  template:
+    metadata:
+      labels:
+        app: ntfy-alertmanager
+    spec:
+      containers:
+        - name: ntfy-alertmanager
+          image: python:3.12-alpine
+          command: [python, /scripts/webhook.py]
+          env:
+            - name: NTFY_URL
+              value: "http://ntfy.ntfy.svc.cluster.local"
+            - name: NTFY_TOPIC
+              value: "alertmanager"
+            - name: NTFY_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ntfy-alertmanager-token
+                  key: token
+          ports:
+            - containerPort: 9095
+          volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+      volumes:
+        - name: scripts
+          configMap:
+            name: ntfy-alertmanager-config
+            defaultMode: 493

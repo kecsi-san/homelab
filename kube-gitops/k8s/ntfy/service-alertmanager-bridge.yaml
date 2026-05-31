@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ntfy-alertmanager
+  namespace: ntfy
+spec:
+  type: ClusterIP
+  selector:
+    app: ntfy-alertmanager
+  ports:
+    - name: http
+      port: 9095
+      targetPort: 9095
