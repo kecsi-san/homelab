@@ -41,7 +41,7 @@ data:
             if namespace:
                 title += f" ({namespace})"
             if len(alerts) > 1:
-                title += f" ×{len(alerts)}"
+                title += f" x{len(alerts)}"
 
             lines = [f"{icon} {summary}"]
             if description:
