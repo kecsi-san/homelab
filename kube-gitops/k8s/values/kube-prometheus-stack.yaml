@@ -17,6 +17,11 @@ kubeProxy:
 
 prometheus:
   prometheusSpec:
+    # Discover ServiceMonitors and PodMonitors from all namespaces
+    serviceMonitorSelector: {}
+    serviceMonitorNamespaceSelector: {}
+    podMonitorSelector: {}
+    podMonitorNamespaceSelector: {}
     retention: 15d
     retentionSize: "45GB"
     scrapeInterval: "30s"
