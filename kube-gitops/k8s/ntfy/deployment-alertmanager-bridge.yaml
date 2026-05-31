@@ -19,6 +19,8 @@ spec:
           image: python:3.12-alpine
           command: [python, /scripts/webhook.py]
           env:
+            - name: PYTHONUNBUFFERED
+              value: "1"
             - name: NTFY_URL
               value: "http://ntfy.ntfy.svc.cluster.local"
             - name: NTFY_TOPIC
