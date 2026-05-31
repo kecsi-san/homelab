@@ -1,0 +1,19 @@
+---
+# Longhorn metrics — longhorn-backend exposes Prometheus metrics on port 9500 (named 'manager').
+# Placed here (monitoring namespace path) but targets longhorn-system; ArgoCD applies by metadata.namespace.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: longhorn
+  namespace: longhorn-system
+spec:
+  endpoints:
+    - port: manager
+      path: /metrics
+      interval: 30s
+  selector:
+    matchLabels:
+      app: longhorn-manager
+  namespaceSelector:
+    matchNames:
+      - longhorn-system

@@ -14,10 +14,6 @@ defaultSettings:
   # detach/reattach races when a pod reschedules to a different node
   defaultDataLocality: best-effort
 
-monitoring:
-  serviceMonitor:
-    enabled: true
-
 persistence:
   # Delay PVC binding until a pod is scheduled so new volumes land on the
   # correct node from the start (only affects newly created PVCs)
