@@ -28,11 +28,12 @@ spec:
         login: true
         passwordSecret:
           name: authentik-db-credentials
-      - name: outline
+      - name: wikijs
         ensure: present
         login: true
+        createDb: true
         passwordSecret:
-          name: outline-db-credentials
+          name: wikijs-db-credentials
       - name: backstage
         ensure: present
         login: true

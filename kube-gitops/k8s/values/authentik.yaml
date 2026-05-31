@@ -57,10 +57,10 @@ server:
         secretKeyRef:
           name: authentik-headlamp-oauth2
           key: client-secret
-    - name: OUTLINE_OAUTH2_CLIENT_SECRET
+    - name: WIKIJS_OAUTH2_CLIENT_SECRET
       valueFrom:
         secretKeyRef:
-          name: authentik-outline-oauth2
+          name: authentik-wikijs-oauth2
           key: client-secret
     - name: BACKSTAGE_OAUTH2_CLIENT_SECRET
       valueFrom:
@@ -137,10 +137,10 @@ worker:
         secretKeyRef:
           name: authentik-headlamp-oauth2
           key: client-secret
-    - name: OUTLINE_OAUTH2_CLIENT_SECRET
+    - name: WIKIJS_OAUTH2_CLIENT_SECRET
       valueFrom:
         secretKeyRef:
-          name: authentik-outline-oauth2
+          name: authentik-wikijs-oauth2
           key: client-secret
     - name: BACKSTAGE_OAUTH2_CLIENT_SECRET
       valueFrom:

@@ -1,0 +1,25 @@
+---
+# Wiki.js v2 — external PostgreSQL (CNPG), no bundled postgres
+postgresql:
+  enabled: false
+  postgresqlHost: postgres-rw.postgres.svc.cluster.local
+  postgresqlPort: 5432
+  postgresqlDatabase: wikijs
+  postgresqlUser: wikijs
+  existingSecret: wikijs-app
+  existingSecretKey: postgresql-password
+
+ingress:
+  enabled: false
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 50m
+  limits:
+    memory: 512Mi
+    cpu: "1"
