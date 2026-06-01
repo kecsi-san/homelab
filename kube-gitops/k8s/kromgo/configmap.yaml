@@ -6,7 +6,6 @@ metadata:
   namespace: monitoring
 data:
   config.yaml: |
-    prometheus_url: http://prometheus-operated.monitoring.svc.cluster.local:9090
     metrics:
       - name: cluster_node_count
         query: count(kube_node_info)
