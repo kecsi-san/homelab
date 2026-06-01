@@ -14,6 +14,9 @@ ingress:
     enabled: false  # using Traefik IngressRoute instead
 
 config:
+  kubernetes:
+    mode: cluster
+
   settings:
     title: Homepage - k3s local dev cluster
     allowedHosts: homepage.k3s.kecskemethy.org
