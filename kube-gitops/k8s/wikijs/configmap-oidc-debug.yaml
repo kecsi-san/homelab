@@ -19,6 +19,8 @@ data:
 
     const OpenIDConnectStrategy = require('passport-openidconnect').Strategy
 
+    console.log('[OIDC-DEBUG] authentication.js module loaded (patched version)')
+
     module.exports = {
       init (passport, conf) {
         passport.use(conf.key,
