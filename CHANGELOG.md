@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(homepage): remove unsupported display:compact from customapi widgets ([67f729e](https://github.com/kecsi-san/homelab/commit/67f729eb3ea3d0aeb96993813598e09a2acc79d5) by Zoltan K).
 - fix(k3s/homepage): enable Kubernetes cluster mode for widget ([7b0a544](https://github.com/kecsi-san/homelab/commit/7b0a54482d0048d1b23b5f4d00d1c644afa2183c) by Zoltan K).
 - fix(homepage): use internal service URL for Kromgo customapi widgets ([a7ae1f0](https://github.com/kecsi-san/homelab/commit/a7ae1f0971be857d64384638c92191848bc10e2b) by Zoltan K).
 - fix(k3s/forgejo): add Recreate strategy and hostAlias for Authentik ([9acb78c](https://github.com/kecsi-san/homelab/commit/9acb78c3b9de5f55bebd6565ee031b3909d0a084) by Zoltan K).
