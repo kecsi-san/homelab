@@ -24,3 +24,14 @@
   tags:
     - hosts
     - configure-etc-hosts
+
+- name: Remove stale 127.0.0.1 k3s entries from Windows hosts file
+  ansible.builtin.lineinfile:
+    dest: /mnt/c/Windows/System32/drivers/etc/hosts
+    regexp: "^127\\.0\\.0\\.1\\s+.*k3s"
+    state: absent
+  when: ansible_system == 'Linux'
+  become: false
+  tags:
+    - hosts
+    - configure-etc-hosts

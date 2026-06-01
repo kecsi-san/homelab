@@ -34,8 +34,5 @@ mikrotik_dns6_records:
   - name: "{{ domain_name }}"
     address: "::1"
     match_subdomain: true
-
-  # ::1 (loopback) — k3s runs on WSL2; cert matches *.k3s.kecskemethy.org on both paths
-  - name: "k3s.{{ domain_name }}"
-    address: "::1"
-    match_subdomain: true
+  # k3s.kecskemethy.org has no Cloudflare AAAA records (LAN-only, not proxied) so no AAAA
+  # override is needed — leaving it absent lets Happy Eyeballs use the A record directly.
