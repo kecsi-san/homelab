@@ -64,12 +64,16 @@ linuxbrew_use_installer: true
 
 # Override k8s service domains to bypass loopback (k3s Traefik on WSL2 answers [::1]:443
 # with the wrong cert when MikroTik AAAA wildcard resolves *.kecskemethy.org to ::1)
+retired_hosts_patterns:
+  - "^192\\.168\\.1\\.101\\s+outline\\..*$"
+  - "^192\\.168\\.1\\.101\\s+wikijs\\..*$"
+
 extra_hosts:
   - { ip: "{{ k8s_traefik_ip }}", name: "forgejo.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "argocd.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "headlamp.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "authentik.{{ domain_name }}" }
-  - { ip: "{{ k8s_traefik_ip }}", name: "wikijs.{{ domain_name }}" }
+  - { ip: "{{ k8s_traefik_ip }}", name: "wiki.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "homepage.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "longhorn.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "ntfy.{{ domain_name }}" }
@@ -79,4 +83,3 @@ extra_hosts:
   - { ip: "{{ k8s_traefik_ip }}", name: "backstage.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "glance.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "kromgo.{{ domain_name }}" }
-  - { ip: "{{ k8s_traefik_ip }}", name: "wiki.{{ domain_name }}" }
