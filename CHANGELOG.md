@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(kromgo): version bump, badges config ([6baee29](https://github.com/kecsi-san/homelab/commit/6baee2906d26170e5d01a137b16047a737b60bce) by Zoltan K).
+- fix(kromgo): bump image version, update reloader annotation ([ee656aa](https://github.com/kecsi-san/homelab/commit/ee656aa02bb0c10364bb77a3188c28a6de48a39d) by Zoltan K).
+- fix(kromgo): badges definition update and gallery enabled ([5f4d3ee](https://github.com/kecsi-san/homelab/commit/5f4d3ee553d0876d66fff8c8391377ff3c02c90f) by Zoltan K).
 - fix(k8s/homepage): switch Kromgo to openmetrics; fix app labels; add k8s widget ([e960d55](https://github.com/kecsi-san/homelab/commit/e960d55a87dbebf7b10d0d63b6ef143e619f885a) by Zoltan K).
 - fix(homepage): remove unsupported display:compact from customapi widgets ([67f729e](https://github.com/kecsi-san/homelab/commit/67f729eb3ea3d0aeb96993813598e09a2acc79d5) by Zoltan K).
 - fix(k3s/homepage): enable Kubernetes cluster mode for widget ([7b0a544](https://github.com/kecsi-san/homelab/commit/7b0a54482d0048d1b23b5f4d00d1c644afa2183c) by Zoltan K).
