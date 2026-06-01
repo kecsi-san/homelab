@@ -14,11 +14,11 @@ spec:
       labels:
         app: kromgo
       annotations:
-        configmap.reloader.stakater.com/reload: "kromgo-config"
+        reloader.stakater.com/auto: "true"
     spec:
       containers:
         - name: kromgo
-          image: ghcr.io/home-operations/kromgo:0.11.1
+          image: ghcr.io/home-operations/kromgo:0.12.0
           ports:
             - name: http
               containerPort: 8080
@@ -27,11 +27,11 @@ spec:
               value: http://prometheus-operated.monitoring.svc.cluster.local:9090
           volumeMounts:
             - name: config
-              mountPath: /kromgo/config.yaml
+              mountPath: /config/config.yaml
               subPath: config.yaml
           readinessProbe:
             httpGet:
-              path: /cluster_node_count
+              path: /badges/cluster_cpu_usage
               port: 8080
             initialDelaySeconds: 10
             periodSeconds: 30
