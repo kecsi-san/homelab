@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(kromgo): correct image to ghcr.io/kashalls/kromgo:0.3.1 ([408d679](https://github.com/kecsi-san/homelab/commit/408d679e1a7dfe53edd4ccf520ea26853459b30d) by Zoltan K).
 - fix(wikijs): remove debug patches, clean up OIDC login fix ([06fec93](https://github.com/kecsi-san/homelab/commit/06fec93677c6e1a2c59b4f92301038a269f83fa6) by Zoltan K).
 - fix(wikijs): change Authentik issuer_mode to per_provider ([8d3c161](https://github.com/kecsi-san/homelab/commit/8d3c16103129bdd1c1bb2f3a094ce51b8d570e10) by Zoltan K).
 - fix(wikijs): patch passport-openidconnect session state store ([2bd7c93](https://github.com/kecsi-san/homelab/commit/2bd7c9346d36782e2bd4a165aa54f818ed192cb6) by Zoltan K).
