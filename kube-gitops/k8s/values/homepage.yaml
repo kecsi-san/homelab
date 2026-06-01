@@ -14,6 +14,9 @@ ingress:
     enabled: false  # using Traefik IngressRoute instead
 
 config:
+  kubernetes:
+    mode: cluster
+
   settings:
     title: Homepage - k8s homelab dashboard
     allowedHosts: homepage.kecskemethy.org
@@ -53,6 +56,18 @@ config:
         cpu: true
         memory: true
         disk: /
+    - kubernetes:
+        cluster:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
+          label: k8s
+        nodes:
+          show: true
+          cpu: true
+          memory: true
+          showLabel: true
     - customapi:
         url: http://kromgo.monitoring.svc.cluster.local:8080/cluster_cpu_usage
 
