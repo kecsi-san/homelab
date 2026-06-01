@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(k3s/traefik): correct service type path to service.spec.type ([8f9354a](https://github.com/kecsi-san/homelab/commit/8f9354a9469371779824f3bf7c8806e13dff2e63) by Zoltan K).
 - fix(etc-hosts): add retired_hosts_patterns; fix wikijs→wiki domain ([3e24951](https://github.com/kecsi-san/homelab/commit/3e24951e23e8be8632875ac913613d6b9c92f1c8) by Zoltan K).
 - fix(dns): remove k3s AAAA override; fix Windows hosts and WSL2 extra_hosts ([1e38fdd](https://github.com/kecsi-san/homelab/commit/1e38fddeb98b0f220e09036601323b82c7bbbf4c) by Zoltan K).
 - fix(homepage): update Kromgo widget field from result to message ([0f5f413](https://github.com/kecsi-san/homelab/commit/0f5f413d871bb38987e7e88e52439090f878ba9c) by Zoltan K).
