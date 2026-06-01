@@ -16,6 +16,10 @@ spec:
     spec:
       securityContext:
         fsGroup: 1000
+      hostAliases:
+        - ip: "10.43.236.94"
+          hostnames:
+            - "authentik.k3s.kecskemethy.org"
       containers:
         - name: forgejo
           image: codeberg.org/forgejo/forgejo:10-rootless
