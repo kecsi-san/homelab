@@ -69,10 +69,14 @@ extra_hosts:
   - { ip: "{{ k8s_traefik_ip }}", name: "argocd.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "headlamp.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "authentik.{{ domain_name }}" }
-  - { ip: "{{ k8s_traefik_ip }}", name: "outline.{{ domain_name }}" }
+  - { ip: "{{ k8s_traefik_ip }}", name: "wikijs.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "homepage.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "longhorn.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "ntfy.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "gatus.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "mealie.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "grafana.{{ domain_name }}" }
+  - { ip: "{{ k8s_traefik_ip }}", name: "backstage.{{ domain_name }}" }
+  - { ip: "{{ k8s_traefik_ip }}", name: "glance.{{ domain_name }}" }
+  - { ip: "{{ k8s_traefik_ip }}", name: "kromgo.{{ domain_name }}" }
+  - { ip: "{{ k8s_traefik_ip }}", name: "wiki.{{ domain_name }}" }
