@@ -15,7 +15,7 @@ ingress:
 
 config:
   settings:
-    title: k3s
+    title: Homepage - k3s local dev cluster
     allowedHosts: homepage.k3s.kecskemethy.org
     theme: dark
     color: slate
@@ -30,7 +30,7 @@ config:
 
   widgets:
     - greeting:
-        text: k3s dev cluster
+        text: k3s local dev cluster
     - datetime:
         text_size: xl
         format:

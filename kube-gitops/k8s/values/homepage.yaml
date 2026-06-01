@@ -15,7 +15,7 @@ ingress:
 
 config:
   settings:
-    title: Homelab Homepage
+    title: Homepage - k8s homelab dashboard
     allowedHosts: homepage.kecskemethy.org
     theme: dark
     color: slate
@@ -42,7 +42,7 @@ config:
 
   widgets:
     - greeting:
-        text: Homelab
+        text: k8s homelab dashboard
     - datetime:
         text_size: xl
         format:
