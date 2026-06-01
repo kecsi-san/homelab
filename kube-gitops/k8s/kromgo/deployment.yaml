@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kromgo
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kromgo
+  template:
+    metadata:
+      labels:
+        app: kromgo
+    spec:
+      containers:
+        - name: kromgo
+          image: ghcr.io/mchestr/kromgo:v0.3.2
+          ports:
+            - name: http
+              containerPort: 8080
+          volumeMounts:
+            - name: config
+              mountPath: /app/config.yaml
+              subPath: config.yaml
+          readinessProbe:
+            httpGet:
+              path: /cluster_node_count
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          resources:
+            requests:
+              memory: 32Mi
+              cpu: 10m
+            limits:
+              memory: 64Mi
+              cpu: 100m
+      volumes:
+        - name: config
+          configMap:
+            name: kromgo-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kromgo
+  namespace: monitoring
+spec:
+  selector:
+    app: kromgo
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
