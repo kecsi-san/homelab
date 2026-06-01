@@ -13,6 +13,8 @@ spec:
     metadata:
       labels:
         app: kromgo
+      annotations:
+        configmap.reloader.stakater.com/reload: "kromgo-config"
     spec:
       containers:
         - name: kromgo
