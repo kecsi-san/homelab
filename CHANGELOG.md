@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(kromgo): pass PROMETHEUS_URL as env var; remove from config file ([d6634ec](https://github.com/kecsi-san/homelab/commit/d6634eccbd0643cc3a144d21794bcca90b3c66e4) by Zoltan K).
 - fix(kromgo): correct config mount path to /kromgo/config.yaml ([fe475b8](https://github.com/kecsi-san/homelab/commit/fe475b841c711ae1e1e0adcb52efe86ee4db10e8) by Zoltan K).
 - fix(kromgo): correct image to ghcr.io/kashalls/kromgo:0.3.1 ([408d679](https://github.com/kecsi-san/homelab/commit/408d679e1a7dfe53edd4ccf520ea26853459b30d) by Zoltan K).
 - fix(wikijs): remove debug patches, clean up OIDC login fix ([06fec93](https://github.com/kecsi-san/homelab/commit/06fec93677c6e1a2c59b4f92301038a269f83fa6) by Zoltan K).
