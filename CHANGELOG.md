@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(homepage): update Kromgo widget field from result to message ([0f5f413](https://github.com/kecsi-san/homelab/commit/0f5f413d871bb38987e7e88e52439090f878ba9c) by Zoltan K).
 - fix(kromgo): upgrade to home-operations/kromgo:0.11.1 with correct config format ([6a6d019](https://github.com/kecsi-san/homelab/commit/6a6d019686523f2d2366d6839a6b6eb73d74696a) by Zoltan K).
 - fix(kromgo): restore prometheus_url in config.yaml ([a20ed42](https://github.com/kecsi-san/homelab/commit/a20ed426d64f579921f36dad0b30643d1915c8cc) by Zoltan K).
 - fix(kromgo): pass PROMETHEUS_URL as env var; remove from config file ([d6634ec](https://github.com/kecsi-san/homelab/commit/d6634eccbd0643cc3a144d21794bcca90b3c66e4) by Zoltan K).
