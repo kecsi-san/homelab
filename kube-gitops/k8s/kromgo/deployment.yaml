@@ -22,7 +22,7 @@ spec:
               containerPort: 8080
           volumeMounts:
             - name: config
-              mountPath: /app/config.yaml
+              mountPath: /kromgo/config.yaml
               subPath: config.yaml
           readinessProbe:
             httpGet:
