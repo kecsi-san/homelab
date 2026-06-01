@@ -253,7 +253,7 @@ data:
             - authorization_code
             - refresh_token
           sub_mode: user_username
-          issuer_mode: global
+          issuer_mode: per_provider
           signing_key: !Find [authentik_crypto.certificatekeypair, [name, "authentik Self-signed Certificate"]]
 
       - model: authentik_core.application
