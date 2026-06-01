@@ -35,7 +35,6 @@ data:
 
       req.session.save(function(err) {
         if (err) { return cb(err); }
-        console.log('[SESSION-DEBUG] store: saved state handle=' + handle + ' to sid=' + req.session.id);
         cb(null, handle);
       });
     };
@@ -44,16 +43,12 @@ data:
       if (!req.session) { return cb(new Error('OpenID Connect requires session support. Did you forget to use `express-session` middleware?')); }
 
       var key = this._key;
-      console.log('[SESSION-DEBUG] verify called: sid=' + req.session.id + ' handle=' + handle + ' hasKey=' + !!req.session[key]);
       if (!req.session[key]) {
-        console.log('[SESSION-DEBUG] no state key in session — fail');
         return cb(null, false, { message: 'Unable to verify authorization request state.' });
       }
 
       var state = req.session[key].state;
-      console.log('[SESSION-DEBUG] state in session: ' + JSON.stringify(state));
       if (!state) {
-        console.log('[SESSION-DEBUG] state key exists but state is empty — fail');
         return cb(null, false, { message: 'Unable to verify authorization request state.' });
       }
 
@@ -63,7 +58,6 @@ data:
       }
 
       if (state.handle !== handle) {
-        console.log('[SESSION-DEBUG] handle mismatch: expected=' + state.handle + ' got=' + handle);
         return cb(null, false, { message: 'Invalid authorization request state.' });
       }
 

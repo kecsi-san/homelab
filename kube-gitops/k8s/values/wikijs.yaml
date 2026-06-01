@@ -30,14 +30,8 @@ volumes:
   - name: session-fix
     configMap:
       name: wikijs-session-fix
-  - name: oidc-debug
-    configMap:
-      name: wikijs-oidc-debug
 
 volumeMounts:
   - name: session-fix
     mountPath: /wiki/node_modules/passport-openidconnect/lib/state/session.js
     subPath: session.js
-  - name: oidc-debug
-    mountPath: /wiki/server/modules/authentication/oidc/authentication.js
-    subPath: authentication.js
