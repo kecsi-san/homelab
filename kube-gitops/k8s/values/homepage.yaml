@@ -54,28 +54,28 @@ config:
         memory: true
         disk: /
     - customapi:
-        url: https://kromgo.kecskemethy.org/cluster_cpu_usage
+        url: http://kromgo.monitoring.svc.cluster.local:8080/cluster_cpu_usage
         display: compact
         mappings:
           - field: message
             label: CPU
             format: text
     - customapi:
-        url: https://kromgo.kecskemethy.org/cluster_memory_usage
+        url: http://kromgo.monitoring.svc.cluster.local:8080/cluster_memory_usage
         display: compact
         mappings:
           - field: message
             label: MEM
             format: text
     - customapi:
-        url: https://kromgo.kecskemethy.org/cluster_pod_count
+        url: http://kromgo.monitoring.svc.cluster.local:8080/cluster_pod_count
         display: compact
         mappings:
           - field: message
             label: Pods
             format: text
     - customapi:
-        url: https://kromgo.kecskemethy.org/cluster_node_count
+        url: http://kromgo.monitoring.svc.cluster.local:8080/cluster_node_count
         display: compact
         mappings:
           - field: message
