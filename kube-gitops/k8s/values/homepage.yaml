@@ -68,34 +68,36 @@ config:
           cpu: true
           memory: true
           showLabel: true
-    - customapi:
-        url: http://kromgo.monitoring.svc.cluster.local:8080/cluster_cpu_usage
-
-        mappings:
-          - field: message
-            label: CPU
-            format: text
-    - customapi:
-        url: http://kromgo.monitoring.svc.cluster.local:8080/cluster_memory_usage
-
-        mappings:
-          - field: message
-            label: MEM
-            format: text
-    - customapi:
-        url: http://kromgo.monitoring.svc.cluster.local:8080/cluster_pod_count
-
-        mappings:
-          - field: message
-            label: Pods
-            format: text
-    - customapi:
-        url: http://kromgo.monitoring.svc.cluster.local:8080/cluster_node_count
-
-        mappings:
-          - field: message
-            label: Nodes
-            format: text
+    - openmetrics:
+        url: http://prometheus-operated.monitoring.svc.cluster.local:9090
+        provider: prometheus
+        query: count(kube_node_info)
+        label: Nodes
+        format:
+          type: number
+    - openmetrics:
+        url: http://prometheus-operated.monitoring.svc.cluster.local:9090
+        provider: prometheus
+        query: count(kube_pod_info{node!=""})
+        label: Pods
+        format:
+          type: number
+    - openmetrics:
+        url: http://prometheus-operated.monitoring.svc.cluster.local:9090
+        provider: prometheus
+        query: round(sum(irate(node_cpu_seconds_total{mode!="idle"}[5m])) / scalar(sum(kube_node_status_capacity{resource="cpu"})) * 100, 1)
+        label: CPU
+        format:
+          type: number
+          suffix: "%"
+    - openmetrics:
+        url: http://prometheus-operated.monitoring.svc.cluster.local:9090
+        provider: prometheus
+        query: round((1 - sum(node_memory_MemAvailable_bytes) / sum(node_memory_MemTotal_bytes)) * 100, 1)
+        label: MEM
+        format:
+          type: number
+          suffix: "%"
 
   services:
     - Kubernetes:
@@ -167,13 +169,13 @@ config:
             description: Identity provider · SSO
             icon: authentik.png
             namespace: authentik
-            app: authentik-server
+            app: authentik
         - Wiki.js:
             href: https://wiki.kecskemethy.org
             description: Wiki · documentation
             icon: wikijs.png
             namespace: wikijs
-            app: wikijs
+            app: wiki
         - Backstage:
             href: https://backstage.kecskemethy.org
             description: Developer portal · service catalog
