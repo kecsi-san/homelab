@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(k3s/forgejo): add Recreate strategy and hostAlias for Authentik ([9acb78c](https://github.com/kecsi-san/homelab/commit/9acb78c3b9de5f55bebd6565ee031b3909d0a084) by Zoltan K).
 - fix(k3s/forgejo): add hostAlias for authentik.k3s.kecskemethy.org ([cd823e9](https://github.com/kecsi-san/homelab/commit/cd823e9126c2e2fa470b22c539f0f5ca8c822f52) by Zoltan K).
 - fix(k3s/traefik): correct service type path to service.spec.type ([8f9354a](https://github.com/kecsi-san/homelab/commit/8f9354a9469371779824f3bf7c8806e13dff2e63) by Zoltan K).
 - fix(etc-hosts): add retired_hosts_patterns; fix wikijs→wiki domain ([3e24951](https://github.com/kecsi-san/homelab/commit/3e24951e23e8be8632875ac913613d6b9c92f1c8) by Zoltan K).
