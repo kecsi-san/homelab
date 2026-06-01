@@ -57,28 +57,28 @@ config:
         url: https://kromgo.kecskemethy.org/cluster_cpu_usage
         display: compact
         mappings:
-          - field: result
+          - field: message
             label: CPU
             format: text
     - customapi:
         url: https://kromgo.kecskemethy.org/cluster_memory_usage
         display: compact
         mappings:
-          - field: result
+          - field: message
             label: MEM
             format: text
     - customapi:
         url: https://kromgo.kecskemethy.org/cluster_pod_count
         display: compact
         mappings:
-          - field: result
+          - field: message
             label: Pods
             format: text
     - customapi:
         url: https://kromgo.kecskemethy.org/cluster_node_count
         display: compact
         mappings:
-          - field: result
+          - field: message
             label: Nodes
             format: text
 
