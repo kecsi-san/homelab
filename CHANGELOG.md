@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(wikijs): change Authentik issuer_mode to per_provider ([8d3c161](https://github.com/kecsi-san/homelab/commit/8d3c16103129bdd1c1bb2f3a094ce51b8d570e10) by Zoltan K).
 - fix(wikijs): patch passport-openidconnect session state store ([2bd7c93](https://github.com/kecsi-san/homelab/commit/2bd7c9346d36782e2bd4a165aa54f818ed192cb6) by Zoltan K).
 - fix(wiki): correct Authentik redirect_uri to Wiki.js UUID-based callback ([8d1cc33](https://github.com/kecsi-san/homelab/commit/8d1cc3354d943d6e04c2920a255b4b1b94fdc119) by Zoltan K).
 - fix(monitoring): replace Traefik chart ServiceMonitor with raw one ([7dba74e](https://github.com/kecsi-san/homelab/commit/7dba74eac6c41b47a4aa96785d7f82f1796c13c0) by Zoltan K).
