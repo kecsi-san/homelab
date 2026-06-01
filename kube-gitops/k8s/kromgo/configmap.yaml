@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kromgo-config
+  namespace: monitoring
+data:
+  config.yaml: |
+    prometheus_url: http://prometheus-operated.monitoring.svc.cluster.local:9090
+    metrics:
+      - name: cluster_node_count
+        query: count(kube_node_info)
+      - name: cluster_pod_count
+        query: count(kube_pod_info{node!=""})
+      - name: cluster_cpu_usage
+        query: round(sum(irate(node_cpu_seconds_total{mode!="idle"}[5m])) / scalar(sum(kube_node_status_capacity{resource="cpu"})) * 100, 1)
+        suffix: "%"
+      - name: cluster_memory_usage
+        query: round((1 - sum(node_memory_MemAvailable_bytes) / sum(node_memory_MemTotal_bytes)) * 100, 1)
+        suffix: "%"

@@ -53,6 +53,34 @@ config:
         cpu: true
         memory: true
         disk: /
+    - customapi:
+        url: https://kromgo.kecskemethy.org/cluster_cpu_usage
+        display: compact
+        mappings:
+          - field: result
+            label: CPU
+            format: text
+    - customapi:
+        url: https://kromgo.kecskemethy.org/cluster_memory_usage
+        display: compact
+        mappings:
+          - field: result
+            label: MEM
+            format: text
+    - customapi:
+        url: https://kromgo.kecskemethy.org/cluster_pod_count
+        display: compact
+        mappings:
+          - field: result
+            label: Pods
+            format: text
+    - customapi:
+        url: https://kromgo.kecskemethy.org/cluster_node_count
+        display: compact
+        mappings:
+          - field: result
+            label: Nodes
+            format: text
 
   services:
     - Kubernetes:
