@@ -118,7 +118,7 @@ config:
             description: Distributed block storage — LAN only
             icon: longhorn.png
             namespace: longhorn-system
-            app: longhorn-manager
+            app: longhorn
         - Traefik:
             href: https://traefik.kecskemethy.org/dashboard/
             description: Ingress controller — LAN only

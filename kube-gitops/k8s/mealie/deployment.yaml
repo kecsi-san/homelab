@@ -15,6 +15,7 @@ spec:
     metadata:
       labels:
         app: mealie
+        app.kubernetes.io/name: mealie
     spec:
       containers:
         - name: mealie
