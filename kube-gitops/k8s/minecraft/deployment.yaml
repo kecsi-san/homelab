@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minecraft-bedrock
+  namespace: minecraft
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minecraft-bedrock
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: minecraft-bedrock
+        app.kubernetes.io/name: minecraft-bedrock
+    spec:
+      containers:
+        - name: minecraft-bedrock
+          image: itzg/minecraft-bedrock-server:latest
+          ports:
+            - containerPort: 19132
+              protocol: UDP
+          env:
+            - name: EULA
+              value: "TRUE"
+            - name: SERVER_NAME
+              value: "Homelab Bedrock"
+            - name: GAMEMODE
+              value: "survival"
+            - name: DIFFICULTY
+              value: "normal"
+            - name: MAX_PLAYERS
+              value: "10"
+            - name: LEVEL_NAME
+              value: "world"
+            - name: TZ
+              value: "Europe/Budapest"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          readinessProbe:
+            exec:
+              command: ["/usr/local/bin/mc-monitor", "status-bedrock", "--host", "127.0.0.1"]
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: minecraft-data

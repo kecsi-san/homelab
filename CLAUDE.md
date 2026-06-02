@@ -268,6 +268,7 @@ ArgoCD manages all apps via app-of-apps pattern. Root app: `kube-gitops/k8s/root
 | volsync | volsync-system | Helm (backube/volsync) | PVC backup operator |
 | volsync-config | volsync-system | Raw manifests (`kube-gitops/k8s/volsync-config/`) | Longhorn VolumeSnapshotClass |
 | mealie | mealie | Raw manifests (`kube-gitops/k8s/mealie/`) | Self-hosted recipe manager; SQLite; default login changeme@example.com / MyPassword |
+| minecraft | minecraft | Raw manifests (`kube-gitops/k8s/minecraft/`) | Minecraft Bedrock server; `itzg/minecraft-bedrock-server`; UDP 19132 on 192.168.1.110 (kube-vip); 5Gi Longhorn PVC |
 
 **VolSync backup architecture:**
 - Restic REST server runs on hppd600g6 (192.168.1.52:8000) — external to k8s, data on 100G LV at `/backups/restic-repos/`
@@ -275,6 +276,7 @@ ArgoCD manages all apps via app-of-apps pattern. Root app: `kube-gitops/k8s/root
 - ntfy PVC (`ntfy/ntfy-data`) → backed up daily 02:00 → `rest:http://192.168.1.52:8000/ntfy`
 - gatus PVC (`gatus/gatus`) → backed up daily 03:00 → `rest:http://192.168.1.52:8000/gatus`
 - mealie PVC (`mealie/mealie-data`) → backed up daily 04:00 → `rest:http://192.168.1.52:8000/mealie`
+- minecraft PVC (`minecraft/minecraft-data`) → backed up weekly Sunday 05:00 → `rest:http://192.168.1.52:8000/minecraft`
 - `copyMethod: Clone` (Longhorn CSI clone; Snapshot requires Longhorn backup target which is not configured)
 - Retention: 6 hourly, 7 daily, 4 weekly, 3 monthly; prune every 14 days
 - Restic credentials stored as SealedSecrets per namespace (`volsync-restic-secret`)
