@@ -1,0 +1,19 @@
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: minecraft-backup
+  namespace: minecraft
+spec:
+  sourcePVC: minecraft-data
+  trigger:
+    schedule: "0 5 * * 0"
+  restic:
+    pruneIntervalDays: 14
+    repository: volsync-restic-secret
+    retain:
+      weekly: 4
+      monthly: 3
+    copyMethod: Clone
+    storageClassName: longhorn
+    accessModes: [ReadWriteOnce]
