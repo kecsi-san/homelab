@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(k3s/homepage): resolve NOT FOUND for forgejo and authentik ([d1dc7c8](https://github.com/kecsi-san/homelab/commit/d1dc7c87513cfc50ebbc4bff9baf12b77173d3a9) by Zoltan K).
 - fix(k8s/homepage): remove invalid openmetrics top-bar widgets; add Kromgo service ([7b7fc7e](https://github.com/kecsi-san/homelab/commit/7b7fc7e0d0d74425ca8ea18f0905d7a50816056f) by Zoltan K).
 - fix(k8s/homepage): resolve NOT FOUND status for raw-manifest services ([4bba95a](https://github.com/kecsi-san/homelab/commit/4bba95ad2eb3d4e210327536c44c84e48485f647) by Zoltan K).
 - fix(kromgo): badges definition update and gallery enabled ([0f75cc5](https://github.com/kecsi-san/homelab/commit/0f75cc51b25acfd37f19107fd3f92caae78e7522) by Zoltan K).
