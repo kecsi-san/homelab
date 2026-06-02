@@ -16,6 +16,12 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: postgres
+  ignoreDifferences:
+    - group: postgresql.cnpg.io
+      kind: Cluster
+      jsonPointers:
+        - /metadata/labels/app.kubernetes.io~1instance
+
   syncPolicy:
     automated:
       prune: true
