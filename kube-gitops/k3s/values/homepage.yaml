@@ -89,4 +89,4 @@ config:
             description: Identity provider · SSO
             icon: authentik.png
             namespace: authentik
-            app: authentik-server
+            app: authentik
