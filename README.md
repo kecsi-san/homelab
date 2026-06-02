@@ -2,24 +2,24 @@
 
 <div align="center">
 
-[![GitHub Tag](https://img.shields.io/github/v/tag/kecsi-san/homelab)](https://github.com/kecsi-san/homelab/releases)
-[![Lint](https://github.com/kecsi-san/homelab/actions/workflows/lint.yml/badge.svg)](https://github.com/kecsi-san/homelab/actions/workflows/lint.yml)
-[![License](https://img.shields.io/github/license/kecsi-san/homelab)](LICENSE)
-![GitHub last commit](https://img.shields.io/github/last-commit/kecsi-san/homelab)
+[![GitHub Tag](https://img.shields.io/github/v/tag/kecsi-san/homelab)](https://github.com/kecsi-san/homelab/releases)&nbsp;&nbsp;
+[![Lint](https://github.com/kecsi-san/homelab/actions/workflows/lint.yml/badge.svg)](https://github.com/kecsi-san/homelab/actions/workflows/lint.yml)&nbsp;&nbsp;
+[![License](https://img.shields.io/github/license/kecsi-san/homelab)](LICENSE)&nbsp;&nbsp;
+![GitHub last commit](https://img.shields.io/github/last-commit/kecsi-san/homelab)&nbsp;&nbsp;
 ![GitHub repo size](https://img.shields.io/github/repo-size/kecsi-san/homelab)
 
-[![Renovate](https://img.shields.io/badge/renovate-enabled-brightgreen?logo=renovatebot)](https://renovatebot.com)
+[![Renovate](https://img.shields.io/badge/renovate-enabled-brightgreen?logo=renovatebot)](https://renovatebot.com)&nbsp;&nbsp;
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://pre-commit.com)
 
-![debian_version](https://kromgo.kecskemethy.org/badges/debian_version)
-![kubernetes_version](https://kromgo.kecskemethy.org/badges/kubernetes_version)
-![cluster_node_count](https://kromgo.kecskemethy.org/badges/cluster_node_count)
-![cluster_pod_count](https://kromgo.kecskemethy.org/badges/cluster_pod_count)
-![cluster_cpu_usage](https://kromgo.kecskemethy.org/badges/cluster_cpu_usage)
-![cluster_memory_usage](https://kromgo.kecskemethy.org/badges/cluster_memory_usage)
-![cluster_birth_age](https://kromgo.kecskemethy.org/badges/cluster_birth_age)
-![cluster_uptime_age](https://kromgo.kecskemethy.org/badges/cluster_uptime_age)
-![cluster_alert_count](https://kromgo.kecskemethy.org/badges/cluster_alert_count)
+[![debian_version](https://kromgo.kecskemethy.org/badges/debian_version)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![kubernetes_version](https://kromgo.kecskemethy.org/badges/kubernetes_version)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![cluster_node_count](https://kromgo.kecskemethy.org/badges/cluster_node_count)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![cluster_pod_count](https://kromgo.kecskemethy.org/badges/cluster_pod_count)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![cluster_cpu_usage](https://kromgo.kecskemethy.org/badges/cluster_cpu_usage)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![cluster_memory_usage](https://kromgo.kecskemethy.org/badges/cluster_memory_usage)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![cluster_birth_age](https://kromgo.kecskemethy.org/badges/cluster_birth_age)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![cluster_uptime_age](https://kromgo.kecskemethy.org/badges/cluster_uptime_age)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
+[![cluster_alert_count](https://kromgo.kecskemethy.org/badges/cluster_alert_count)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
 
 </div>
 
