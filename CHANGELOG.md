@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(k8s/homepage): remove invalid openmetrics top-bar widgets; add Kromgo service ([7b7fc7e](https://github.com/kecsi-san/homelab/commit/7b7fc7e0d0d74425ca8ea18f0905d7a50816056f) by Zoltan K).
 - fix(k8s/homepage): resolve NOT FOUND status for raw-manifest services ([4bba95a](https://github.com/kecsi-san/homelab/commit/4bba95ad2eb3d4e210327536c44c84e48485f647) by Zoltan K).
 - fix(kromgo): badges definition update and gallery enabled ([0f75cc5](https://github.com/kecsi-san/homelab/commit/0f75cc51b25acfd37f19107fd3f92caae78e7522) by Zoltan K).
 - fix(k8s/homepage): switch Kromgo to openmetrics; fix app labels; add k8s widget ([e960d55](https://github.com/kecsi-san/homelab/commit/e960d55a87dbebf7b10d0d63b6ef143e619f885a) by Zoltan K).
