@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(k8s/volsync): disable kube-rbac-proxy auth on metrics endpoint ([029d7c1](https://github.com/kecsi-san/homelab/commit/029d7c1678cfd63f4d9995b131457d2cffa448c4) by Zoltan K).
 - fix(k8s/cnpg-cluster): ignore ArgoCD tracking label drift on Cluster resource ([ba0badd](https://github.com/kecsi-san/homelab/commit/ba0badd253c86bfebadd09a5fea8ade9b490811b) by Zoltan K).
 - fix(k8s/ntfy): set Recreate rollout strategy for RWO PVC ([08b76f4](https://github.com/kecsi-san/homelab/commit/08b76f4f511171c9e5d44a42bceffada8a566fb2) by Zoltan K).
 - fix(k3s/homepage): resolve NOT FOUND for forgejo and authentik ([d1dc7c8](https://github.com/kecsi-san/homelab/commit/d1dc7c87513cfc50ebbc4bff9baf12b77173d3a9) by Zoltan K).
