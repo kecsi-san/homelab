@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(ansible/security): add AIDE and initialize baseline database ([701957d](https://github.com/kecsi-san/homelab/commit/701957dc4ae74c5975e6dc38e204c16b84b8a124) by Zoltan K).
 - fix(k8s/volsync): disable kube-rbac-proxy auth on metrics endpoint ([029d7c1](https://github.com/kecsi-san/homelab/commit/029d7c1678cfd63f4d9995b131457d2cffa448c4) by Zoltan K).
 - fix(k8s/cnpg-cluster): ignore ArgoCD tracking label drift on Cluster resource ([ba0badd](https://github.com/kecsi-san/homelab/commit/ba0badd253c86bfebadd09a5fea8ade9b490811b) by Zoltan K).
 - fix(k8s/ntfy): set Recreate rollout strategy for RWO PVC ([08b76f4](https://github.com/kecsi-san/homelab/commit/08b76f4f511171c9e5d44a42bceffada8a566fb2) by Zoltan K).
