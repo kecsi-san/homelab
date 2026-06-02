@@ -25,7 +25,7 @@
 
 ---
 
-## <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f4a1/512.gif" alt="💡" width="20" height="20"> Intro
+## 💡 Intro
 
 This repository tries to follow a modular **LEGO approach**, build up automated resuable components.
 
@@ -33,13 +33,13 @@ This repository tries to follow a modular **LEGO approach**, build up automated 
 - Ansible roles usable for both workstation setup or a bare-metal Kubernetes homelab node.
 - Kubernetes clusters use a self-hosted platform stack managed via GitOps (ArgoCD).
 
-## <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f3d7/512.gif" alt="🏗️" width="20" height="20"> Clusters
+## <a id="kube"></a>⎈ Clusters
 
 **k8s** — 4-node bare-metal HA cluster running Kubespray 2.31 + Cilium CNI. Three control plane nodes with kube-vip providing a stable API VIP; one dedicated worker. All applications managed by ArgoCD via an app-of-apps pattern.
 
 **k3s** — Single-node development cluster running on WSL2 (penguinaid). Hosts the IDP stack (Authentik + Forgejo) and a Homepage dashboard for local access. Uses the same GitOps pattern as the bare-metal cluster with a separate ArgoCD root app.
 
-## <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f9f1/512.gif" alt="🧱" width="20" height="20"> Stack
+## 🧱 Stack
 
 ### Core Components
 
@@ -92,7 +92,7 @@ kube-gitops/
     └── ...
 ```
 
-## <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f310/512.gif" alt="🌐" width="20" height="20"> Networking
+## 🌐 Networking
 
 Two ingress paths serve all cluster services:
 
@@ -128,7 +128,7 @@ flowchart LR
 
 **Cloudflare path:** Cloudflare WARP routes remote traffic through the Cloudflare edge to a `cloudflared` pod running inside the cluster. Traefik receives it over cluster-internal HTTPS (`noTLSVerify: true`); the browser sees Cloudflare's Universal SSL certificate.
 
-## <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f5a5/512.gif" alt="🖥️" width="20" height="20"> Hardware
+## 🖥️ Hardware
 
 <details>
 <summary>Expand</summary>
@@ -155,7 +155,7 @@ flowchart LR
 
 </details>
 
-## <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/2601/512.gif" alt="☁️" width="20" height="20"> Cloud Dependencies
+## ☁️ Cloud Dependencies
 
 | Service | Use | Cost |
 |---------|-----|------|
@@ -163,7 +163,7 @@ flowchart LR
 | [GitHub](https://github.com) | Repository hosting, CI (Actions), Renovate dependency updates | Free |
 | [Let's Encrypt](https://letsencrypt.org) | TLS certificates issued via cert-manager DNS01 | Free |
 
-## <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f5fa/512.gif" alt="🗺️" width="20" height="20"> Workflows
+## 🗺️ Workflows
 
 | Guide | Description |
 |-------|-------------|
@@ -171,7 +171,7 @@ flowchart LR
 | [Local k3s Cluster](docs/ansible/k3s.md) | Single-node k3s cluster for local development (WSL2 + macOS) |
 | [4-Node Homelab Cluster](docs/ansible/k8s-homelab.md) | Bare-metal HA cluster, GitOps stack, Cloudflare Tunnel |
 
-## <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f4da/512.gif" alt="📚" width="20" height="20"> Reference
+## 📚 Reference
 
 | Guide | Description |
 |-------|-------------|
@@ -182,7 +182,7 @@ flowchart LR
 
 ---
 
-## <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f6e0/512.gif" alt="🛠️" width="20" height="20"> Tool Management Philosophy
+## 🛠️ Tool Management Philosophy
 
 | Method | macOS | Linux | When to use |
 |--------|-------|-------|-------------|
@@ -194,7 +194,7 @@ flowchart LR
 
 ---
 
-## <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f64f/512.gif" alt="🙏" width="20" height="20"> Thanks
+## 🙏 Thanks
 
 - Inspired by [homelab](https://github.com/topics/homelab), [home operations](https://github.com/topics/home-operations) and similar repositories and communities.
 - Kubernetes cluster provisioned with [Kubespray](https://kubespray.io).
