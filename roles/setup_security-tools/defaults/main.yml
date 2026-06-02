@@ -1,5 +1,6 @@
 ---
 security_tools_enabled: true
 security_apt_packages:
+  - aide
   - fail2ban
   - rkhunter
