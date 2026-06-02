@@ -194,6 +194,18 @@
         - hibernation
         - server
 
+    # openipmi.service tries to load the generic Linux IPMI kernel driver which
+    # fails on HP iLO hardware (iLO has its own IPMI path). ipmitool is kept for
+    # network IPMI access to iLO; only the local kernel driver service is masked.
+    - name: Mask openipmi.service on HP iLO nodes
+      ansible.builtin.systemd:
+        name: openipmi.service
+        masked: true
+      become: true
+      when: ansible_system == 'Linux'
+      tags:
+        - server
+
     - name: Configure NTP
       ansible.builtin.import_role:
         name: configure_ntp
