@@ -13,6 +13,7 @@ spec:
     metadata:
       labels:
         app: kromgo
+        app.kubernetes.io/name: kromgo
       annotations:
         reloader.stakater.com/auto: "true"
     spec:
