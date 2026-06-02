@@ -1,5 +1,8 @@
 ---
 # Homepage values — k3s local dev cluster
+image:
+  tag: v1.13.1
+
 enableRbac: true
 
 serviceAccount:

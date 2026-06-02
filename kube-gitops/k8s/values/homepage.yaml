@@ -1,5 +1,8 @@
 ---
 # Homepage values — k8s homelab dashboard
+image:
+  tag: v1.13.1
+
 enableRbac: true
 
 serviceAccount:
