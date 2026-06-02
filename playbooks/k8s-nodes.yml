@@ -236,6 +236,7 @@
         name: setup_security-tools
       vars:
         security_apt_packages:
+          - aide
           - fail2ban
           - rkhunter
       tags:

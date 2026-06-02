@@ -7,6 +7,14 @@
   become: true
   when: security_tools_enabled and ansible_system == 'Linux'
 
+# AIDE — initialize baseline database if not yet created (first run takes several minutes)
+- name: Initialize AIDE database
+  ansible.builtin.command:
+    cmd: aideinit -y
+    creates: /var/lib/aide/aide.db
+  become: true
+  when: security_tools_enabled and ansible_system == 'Linux' and 'aide' in security_apt_packages
+
 # Lynis — via Cisofy official apt repo (Linux only)
 - name: Download Cisofy GPG key
   ansible.builtin.get_url:
