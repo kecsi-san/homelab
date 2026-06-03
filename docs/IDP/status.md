@@ -25,9 +25,9 @@ Deploy a minimal IDP to **k3s** and the same minimal IDP **plus Backstage** to *
 | Shared database | CloudNativePG | Infrastructure | ✅ Done | ✅ Done |
 | Git server + OCI registry + CI | Forgejo | Platform | ✅ Done | ✅ Done |
 | SSO / Identity Provider | Authentik | Platform | ✅ Done | ✅ Done |
-| GitOps OIDC login | ArgoCD + Authentik | Platform | ✅ Done | Planned |
-| CI runners | Forgejo Actions | Platform | ✅ Done | Planned |
-| Documentation / wiki | Wiki.js | Platform | ✅ Done | Planned |
+| GitOps OIDC login | ArgoCD + Authentik | Platform | ✅ Done | ✅ Done |
+| CI runners | Forgejo Actions | Platform | ✅ Done | ✅ Done |
+| Documentation / wiki | Wiki.js | Platform | ✅ Done | ✅ Done |
 | Code analysis (SAST) | Semgrep OSS (CI step) | Quality | Planned | Planned |
 | Vulnerability scanning | Trivy (CI step) | Quality | Planned | Planned |
 
@@ -65,6 +65,16 @@ k8s only — after minimal IDP is stable:
 ---
 
 ## Achievements Log
+
+### 2026-06-03 — Wiki.js, ArgoCD OIDC, and Forgejo Actions runner deployed on k3s
+
+- **Wiki.js** deployed via Helm (charts.js.wiki 2.2.24); CNPG `wikijs` role + Database CR;
+  session-fix configmap (passport-openidconnect patch) applied; Authentik `wikijs-k3s`
+  blueprint with regex redirect URI (UUID unknown until first login; tighten to strict after)
+- **ArgoCD OIDC** wired to Authentik: `argocd-k3s` provider; `homelab-admins → role:admin` RBAC;
+  `argocd-config` ArgoCD app managing `kube-gitops/k3s/argocd/`
+- **Forgejo Actions runner** deployed: `k3s-runner`, DinD sidecar, capacity 2,
+  `ubuntu-latest` label, 1Gi `local-path` PVC
 
 ### 2026-06-01 — Authentik deployed on k3s
 
@@ -163,14 +173,17 @@ k8s only — after minimal IDP is stable:
 
 ## Deferred / TODO
 
-### ArgoCD OIDC on k3s
+### Wiki.js OIDC redirect URI (k3s)
 
-ArgoCD is deployed on k3s but not yet wired to Authentik as an OIDC provider.
-Mirror the k8s pattern: Authentik blueprint for ArgoCD provider + RBAC ConfigMap
-(`homelab-admins` group → `role:admin`).
+Blueprint uses `matching_mode: regex` for the callback URL because the UUID is generated
+by Wiki.js on first setup. After completing the OAuth2 strategy setup in the Wiki.js admin
+UI, update the blueprint to `matching_mode: strict` with the actual UUID:
 
-Reference: `kube-gitops/k8s/authentik/configmap-blueprints.yaml` (argocd.yaml blueprint),
-`kube-gitops/k8s/argocd/` (OIDC secret + rbac ConfigMap).
+```yaml
+redirect_uris:
+  - matching_mode: strict
+    url: https://wiki.k3s.kecskemethy.org/login/<uuid>/callback
+```
 
 ### Headlamp OIDC permissions (k8s)
 
