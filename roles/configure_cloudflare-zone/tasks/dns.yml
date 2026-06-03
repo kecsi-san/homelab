@@ -46,8 +46,8 @@
       type: "{{ item.item.type }}"
       name: "{{ item.item.name }}"
       content: "{{ item.item.content }}"
-      ttl: "{{ item.item.ttl | default(3600) }}"
-      proxied: "{{ item.item.proxied | default(false) }}"
+      ttl: "{{ item.item.ttl | default(3600) | int }}"
+      proxied: "{{ item.item.proxied | default(false) | bool }}"
       comment: "{{ item.item.comment | default('managed by ansible') }}"
     status_code: 200
   loop: "{{ _cf_dns_existing.results }}"
@@ -68,8 +68,8 @@
     body_format: json
     body:
       content: "{{ item.item.content }}"
-      ttl: "{{ item.item.ttl | default(3600) }}"
-      proxied: "{{ item.item.proxied | default(false) }}"
+      ttl: "{{ item.item.ttl | default(3600) | int }}"
+      proxied: "{{ item.item.proxied | default(false) | bool }}"
       comment: "{{ item.item.comment | default('managed by ansible') }}"
     status_code: 200
   loop: "{{ _cf_dns_existing.results }}"
