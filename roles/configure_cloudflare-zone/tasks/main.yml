@@ -1,7 +1,6 @@
 ---
 - name: Manage Cloudflare DNS records
   ansible.builtin.import_tasks: dns.yml
-  when: cloudflare_dns_records | length > 0
   tags: [cloudflare-dns]
 
 - name: Get current ECH setting

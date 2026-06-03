@@ -3,19 +3,19 @@
 # cloudflare_api_token: "your-dns-token"         # needs Zone:DNS:Edit scope
 # cloudflare_settings_token: "your-settings-token"  # needs Zone:Settings:Edit scope
 #   (if not set separately, falls back to cloudflare_api_token)
-# cloudflare_zone_id: "your-zone-id"
 # homelab_wan_ip: "your-public-ip"               # WAN IP for direct-access DNS records (not proxied)
 
 cloudflare_settings_token: "{{ cloudflare_api_token }}"
 
-# DNS A records to create/update — proxied: false required for UDP services (e.g. game servers)
+# DNS records managed via community.general.cloudflare_dns
+# proxied: false required for UDP services (e.g. game servers)
 cloudflare_dns_records:
-  - name: "minecraft.{{ domain_name }}"
+  - zone: "{{ domain_name }}"
+    record: minecraft
     type: A
-    content: "{{ homelab_wan_ip }}"
+    value: "{{ homelab_wan_ip }}"
     ttl: 3600
     proxied: false
-    comment: "Minecraft Bedrock server — direct (UDP, not proxiable)"
 
 # Zone settings to enforce
 cloudflare_ech_enabled: false

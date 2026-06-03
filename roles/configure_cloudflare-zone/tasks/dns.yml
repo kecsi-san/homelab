@@ -1,78 +1,14 @@
 ---
-- name: Get existing Cloudflare DNS records
-  uri:
-    url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records\
-          ?type={{ item.type }}&name={{ item.name }}"
-    method: GET
-    headers:
-      Authorization: "Bearer {{ cloudflare_api_token }}"
-      Content-Type: "application/json"
-    status_code: 200
+- name: Manage Cloudflare DNS records
+  community.general.cloudflare_dns:
+    zone: "{{ item.zone }}"
+    record: "{{ item.record }}"
+    type: "{{ item.type }}"
+    value: "{{ item.value }}"
+    ttl: "{{ item.ttl | default(3600) }}"
+    proxied: "{{ item.proxied | default(false) }}"
+    api_token: "{{ cloudflare_api_token }}"
+    state: present
   loop: "{{ cloudflare_dns_records }}"
-  register: _cf_dns_existing
-  check_mode: false
   loop_control:
-    label: "{{ item.name }} ({{ item.type }})"
-
-- name: Show current Cloudflare DNS record state
-  ansible.builtin.debug:
-    msg: >-
-      {{ item.item.name }} ({{ item.item.type }}) —
-      {% if item.json.result | length == 0 %}
-      NOT FOUND → will create
-      {% elif item.json.result[0].content != item.item.content
-           or item.json.result[0].proxied != (item.item.proxied | default(false)) %}
-      FOUND but differs → will update
-      (current: {{ item.json.result[0].content }}, proxied={{ item.json.result[0].proxied }})
-      (desired: {{ item.item.content }}, proxied={{ item.item.proxied | default(false) }})
-      {% else %}
-      FOUND and matches → no change
-      ({{ item.json.result[0].content }}, proxied={{ item.json.result[0].proxied }})
-      {% endif %}
-  loop: "{{ _cf_dns_existing.results }}"
-  when: not (item.skipped | default(false))
-  loop_control:
-    label: "{{ item.item.name }} ({{ item.item.type }})"
-
-- name: Create missing Cloudflare DNS records
-  uri:
-    url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records"
-    method: POST
-    headers:
-      Authorization: "Bearer {{ cloudflare_api_token }}"
-      Content-Type: "application/json"
-    body_format: json
-    body: "{{ {'type': item.item.type, 'name': item.item.name, 'content': item.item.content,
-               'ttl': item.item.ttl | default(3600) | int,
-               'proxied': item.item.proxied | default(false) | bool,
-               'comment': item.item.comment | default('managed by ansible')} }}"
-    status_code: 200
-  loop: "{{ _cf_dns_existing.results }}"
-  when:
-    - not (item.skipped | default(false))
-    - item.json.result | length == 0
-  loop_control:
-    label: "{{ item.item.name }} ({{ item.item.type }}) — create"
-
-- name: Update existing Cloudflare DNS records
-  uri:
-    url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}\
-          /dns_records/{{ item.json.result[0].id }}"
-    method: PATCH
-    headers:
-      Authorization: "Bearer {{ cloudflare_api_token }}"
-      Content-Type: "application/json"
-    body_format: json
-    body: "{{ {'content': item.item.content,
-               'ttl': item.item.ttl | default(3600) | int,
-               'proxied': item.item.proxied | default(false) | bool,
-               'comment': item.item.comment | default('managed by ansible')} }}"
-    status_code: 200
-  loop: "{{ _cf_dns_existing.results }}"
-  when:
-    - not (item.skipped | default(false))
-    - item.json.result | length > 0
-    - item.json.result[0].content != item.item.content
-      or item.json.result[0].proxied != item.item.proxied | default(false)
-  loop_control:
-    label: "{{ item.item.name }} ({{ item.item.type }}) — update"
+    label: "{{ item.record }}.{{ item.zone }} ({{ item.type }}) → {{ item.value }}"
