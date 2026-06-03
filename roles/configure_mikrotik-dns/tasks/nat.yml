@@ -1,0 +1,45 @@
+---
+- name: Update existing MikroTik NAT rules
+  community.routeros.api_find_and_modify:
+    hostname: "{{ mikrotik_host }}"
+    username: "{{ mikrotik_user }}"
+    password: "{{ mikrotik_password }}"
+    path: ip firewall nat
+    find:
+      comment: "{{ item.comment }}"
+    values:
+      chain: dstnat
+      in-interface: "{{ item.in_interface }}"
+      protocol: "{{ item.protocol }}"
+      dst-port: "{{ item.dst_port }}"
+      action: dst-nat
+      to-addresses: "{{ item.to_address }}"
+      to-ports: "{{ item.to_port }}"
+    require_matches_min: 0
+    require_matches_max: 1
+  loop: "{{ mikrotik_nat_rules }}"
+  register: nat_update
+  loop_control:
+    label: "{{ item.comment }}"
+
+- name: Add missing MikroTik NAT rules
+  community.routeros.api:
+    hostname: "{{ mikrotik_host }}"
+    username: "{{ mikrotik_user }}"
+    password: "{{ mikrotik_password }}"
+    path: ip firewall nat
+    add: >-
+      chain=dstnat
+      in-interface={{ item.item.in_interface }}
+      protocol={{ item.item.protocol }}
+      dst-port={{ item.item.dst_port }}
+      action=dst-nat
+      to-addresses={{ item.item.to_address }}
+      to-ports={{ item.item.to_port }}
+      comment={{ item.item.comment }}
+  loop: "{{ nat_update.results }}"
+  when:
+    - not (item.skipped | default(false))
+    - item.match_count | default(0) == 0
+  loop_control:
+    label: "{{ item.item.comment }}"
