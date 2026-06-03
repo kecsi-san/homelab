@@ -14,6 +14,26 @@
   loop_control:
     label: "{{ item.name }} ({{ item.type }})"
 
+- name: Show current Cloudflare DNS record state
+  ansible.builtin.debug:
+    msg: >-
+      {{ item.item.name }} ({{ item.item.type }}) —
+      {% if item.json.result | length == 0 %}
+      NOT FOUND → will create
+      {% elif item.json.result[0].content != item.item.content
+           or item.json.result[0].proxied != (item.item.proxied | default(false)) %}
+      FOUND but differs → will update
+      (current: {{ item.json.result[0].content }}, proxied={{ item.json.result[0].proxied }})
+      (desired: {{ item.item.content }}, proxied={{ item.item.proxied | default(false) }})
+      {% else %}
+      FOUND and matches → no change
+      ({{ item.json.result[0].content }}, proxied={{ item.json.result[0].proxied }})
+      {% endif %}
+  loop: "{{ _cf_dns_existing.results }}"
+  when: not (item.skipped | default(false))
+  loop_control:
+    label: "{{ item.item.name }} ({{ item.item.type }})"
+
 - name: Create missing Cloudflare DNS records
   uri:
     url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records"
