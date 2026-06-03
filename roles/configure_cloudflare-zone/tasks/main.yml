@@ -2,6 +2,7 @@
 - name: Manage Cloudflare DNS records
   ansible.builtin.import_tasks: dns.yml
   when: cloudflare_dns_records | length > 0
+  tags: [cloudflare-dns]
 
 - name: Get current ECH setting
   uri:
@@ -13,6 +14,7 @@
     status_code: 200
   register: _cf_ech_current
   check_mode: false
+  tags: [cloudflare-ech, ech]
 
 - name: Set ECH setting
   uri:
@@ -26,3 +28,4 @@
       value: "{{ cloudflare_ech_enabled | ternary('on', 'off') }}"
     status_code: 200
   when: _cf_ech_current.json.result.value != (cloudflare_ech_enabled | ternary('on', 'off'))
+  tags: [cloudflare-ech, ech]
