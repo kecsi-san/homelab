@@ -143,8 +143,8 @@ data:
           client_id: wikijs-k3s
           client_secret: !Env WIKIJS_OAUTH2_CLIENT_SECRET
           redirect_uris:
-            - matching_mode: regex
-              url: https://wiki\.k3s\.kecskemethy\.org/login/.+/callback
+            - matching_mode: strict
+              url: https://wiki.k3s.kecskemethy.org/login/394c8518-0693-47c0-8bcc-b25f31d6f2e7/callback
           property_mappings:
             - !Find [authentik_providers_oauth2.scopemapping, [managed, "goauthentik.io/providers/oauth2/scope-openid"]]
             - !Find [authentik_providers_oauth2.scopemapping, [managed, "goauthentik.io/providers/oauth2/scope-profile"]]
