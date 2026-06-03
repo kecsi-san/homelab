@@ -1,4 +1,8 @@
 ---
+- name: Configure NAT rules
+  ansible.builtin.import_tasks: nat.yml
+  when: mikrotik_nat_rules | length > 0
+
 - name: Update existing MikroTik static DNS records
   community.routeros.api_find_and_modify:
     hostname: "{{ mikrotik_host }}"
