@@ -1,5 +1,5 @@
 ---
-- name: Configure MikroTik router DNS records
+- name: Configure MikroTik router (DNS records + NAT rules)
   hosts: localhost
   connection: local
   become: false
@@ -8,5 +8,5 @@
     ansible_python_interpreter: "{{ ansible_playbook_python }}"
 
   roles:
-    - role: configure_mikrotik-dns
-      tags: mikrotik-dns
+    - role: configure_mikrotik-router
+      tags: [mikrotik, mikrotik-dns, mikrotik-nat]

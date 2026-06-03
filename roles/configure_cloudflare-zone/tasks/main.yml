@@ -1,4 +1,8 @@
 ---
+- name: Manage Cloudflare DNS records
+  ansible.builtin.import_tasks: dns.yml
+  when: cloudflare_dns_records | length > 0
+
 - name: Get current ECH setting
   uri:
     url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/settings/ech"

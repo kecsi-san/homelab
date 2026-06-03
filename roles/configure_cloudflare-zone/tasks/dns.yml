@@ -1,0 +1,58 @@
+---
+- name: Get existing Cloudflare DNS records
+  uri:
+    url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records\
+          ?type={{ item.type }}&name={{ item.name }}"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ cloudflare_api_token }}"
+      Content-Type: "application/json"
+    status_code: 200
+  loop: "{{ cloudflare_dns_records }}"
+  register: _cf_dns_existing
+  loop_control:
+    label: "{{ item.name }} ({{ item.type }})"
+
+- name: Create missing Cloudflare DNS records
+  uri:
+    url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}/dns_records"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ cloudflare_api_token }}"
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      type: "{{ item.item.type }}"
+      name: "{{ item.item.name }}"
+      content: "{{ item.item.content }}"
+      ttl: "{{ item.item.ttl | default(3600) }}"
+      proxied: "{{ item.item.proxied | default(false) }}"
+      comment: "{{ item.item.comment | default('managed by ansible') }}"
+    status_code: 200
+  loop: "{{ _cf_dns_existing.results }}"
+  when: item.json.result | length == 0
+  loop_control:
+    label: "{{ item.item.name }} ({{ item.item.type }}) — create"
+
+- name: Update existing Cloudflare DNS records
+  uri:
+    url: "https://api.cloudflare.com/client/v4/zones/{{ cloudflare_zone_id }}\
+          /dns_records/{{ item.json.result[0].id }}"
+    method: PATCH
+    headers:
+      Authorization: "Bearer {{ cloudflare_api_token }}"
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      content: "{{ item.item.content }}"
+      ttl: "{{ item.item.ttl | default(3600) }}"
+      proxied: "{{ item.item.proxied | default(false) }}"
+      comment: "{{ item.item.comment | default('managed by ansible') }}"
+    status_code: 200
+  loop: "{{ _cf_dns_existing.results }}"
+  when:
+    - item.json.result | length > 0
+    - item.json.result[0].content != item.item.content
+      or item.json.result[0].proxied != item.item.proxied | default(false)
+  loop_control:
+    label: "{{ item.item.name }} ({{ item.item.type }}) — update"

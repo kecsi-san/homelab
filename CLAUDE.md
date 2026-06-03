@@ -115,7 +115,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 - `pre-k8s.yml` — runs after `prerequisite.yml` and before `k8s.yml`; prepares nodes (etckeeper)
 - `post-k8s.yml` — runs after Kubernetes cluster is up; installs cluster-level tools (Longhorn, kube-extra, Traefik, Sealed Secrets, Headlamp)
 - `post-k3s.yml` — runs after k3s install; installs ArgoCD then bootstraps GitOps (ArgoCD manages Traefik, Sealed Secrets, Headlamp via kube-gitops/k3s/)
-- `configure-router.yml` — localhost only; upserts static DNS records on MikroTik router via `configure_mikrotik-dns` role; **must run before `k8s.yml`** so kubeadm can resolve the API VIP hostname (`api.k8s.<domain>`) during cluster init
+- `configure-router.yml` — localhost only; upserts MikroTik DNS records and NAT rules via `configure_mikrotik-router` role; **must run before `k8s.yml`** so kubeadm can resolve the API VIP hostname (`api.k8s.<domain>`) during cluster init; also run after changing Traefik LB IPs, domain config, or port forwards
 - `upgrade.yml` — OS package upgrades across all kube hosts
 - `backup-nfs.yml` — targets hppd600g6; carves 100G LV from existing VG, formats ext4, mounts at `/backups`, exports via NFS to 192.168.1.0/25, installs restic REST server as a systemd service storing repos in `/backups/restic-repos/`
 
@@ -136,7 +136,8 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | Role | Purpose |
 |------|---------|
 | `configure_etc-hosts` | Manages `/etc/hosts` with kube group IPs and domain names |
-| `configure_mikrotik-dns` | Upserts static DNS records on MikroTik router via `community.routeros` API; manages API VIP (`api.k8s.<domain>`), k3s wildcard, and NFS alias |
+| `configure_mikrotik-router` | Upserts static DNS records and NAT (dst-nat) rules on MikroTik router via `community.routeros` API; manages API VIP (`api.k8s.<domain>`), k3s wildcard, NFS alias, and port forwards |
+| `configure_cloudflare-zone` | Manages Cloudflare zone settings (ECH) and DNS A records (e.g. `minecraft.<domain>`) via REST API; `proxied: false` for UDP services; credentials via `secrets.yml` |
 | `configure_fzf` | Adds fzf initialization to `~/.bashrc` (idempotent) |
 | `configure_ntp` | Disables systemd-timesyncd; installs chrony (Debian 13 dropped ntpd); configures MikroTik router as primary NTP + pool.ntp.org fallback; wired into `k8s-nodes.yml` and `local-core.yml` (Linux only) with `ntp` tag |
 | `configure_git` | Copies `~/.gitconfig` from static file |
