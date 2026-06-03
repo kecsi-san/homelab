@@ -1,8 +1,12 @@
 ---
 # Cloudflare API credentials — set in secrets.yml (gitignored)
-# cloudflare_api_token: "your-api-token"   # needs Zone:Settings:Edit + Zone:DNS:Edit scopes
+# cloudflare_api_token: "your-dns-token"         # needs Zone:DNS:Edit scope
+# cloudflare_settings_token: "your-settings-token"  # needs Zone:Settings:Edit scope
+#   (if not set separately, falls back to cloudflare_api_token)
 # cloudflare_zone_id: "your-zone-id"
-# homelab_wan_ip: "your-public-ip"         # WAN IP for direct-access DNS records (not proxied)
+# homelab_wan_ip: "your-public-ip"               # WAN IP for direct-access DNS records (not proxied)
+
+cloudflare_settings_token: "{{ cloudflare_api_token }}"
 
 # DNS A records to create/update — proxied: false required for UDP services (e.g. game servers)
 cloudflare_dns_records:
