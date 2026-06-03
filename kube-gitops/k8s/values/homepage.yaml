@@ -136,6 +136,11 @@ config:
             icon: https://raw.githubusercontent.com/glanceapp/glance/main/docs/logo.png
             namespace: glance
             app: glance
+        - Minecraft:
+            description: Bedrock server · 192.168.1.110:19132
+            icon: minecraft.png
+            namespace: minecraft
+            app: minecraft-bedrock
     - Platform:
         - Forgejo:
             href: https://forgejo.kecskemethy.org
