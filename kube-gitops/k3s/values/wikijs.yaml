@@ -1,0 +1,37 @@
+---
+# Wiki.js v2 — external PostgreSQL (CNPG), no bundled postgres
+postgresql:
+  enabled: false
+  postgresqlHost: postgres-rw.postgres.svc.cluster.local
+  postgresqlPort: 5432
+  postgresqlDatabase: wikijs
+  postgresqlUser: wikijs
+  existingSecret: wikijs-app
+  existingSecretKey: postgresql-password
+
+ingress:
+  enabled: false
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 50m
+  limits:
+    memory: 512Mi
+    cpu: "1"
+
+# Mount patched passport-openidconnect session state store that calls
+# req.session.save() explicitly so the OIDC state survives the redirect.
+volumes:
+  - name: session-fix
+    configMap:
+      name: wikijs-session-fix
+
+volumeMounts:
+  - name: session-fix
+    mountPath: /wiki/node_modules/passport-openidconnect/lib/state/session.js
+    subPath: session.js
