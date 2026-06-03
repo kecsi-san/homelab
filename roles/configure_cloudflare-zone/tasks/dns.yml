@@ -42,13 +42,10 @@
       Authorization: "Bearer {{ cloudflare_api_token }}"
       Content-Type: "application/json"
     body_format: json
-    body:
-      type: "{{ item.item.type }}"
-      name: "{{ item.item.name }}"
-      content: "{{ item.item.content }}"
-      ttl: "{{ item.item.ttl | default(3600) | int }}"
-      proxied: "{{ item.item.proxied | default(false) | bool }}"
-      comment: "{{ item.item.comment | default('managed by ansible') }}"
+    body: "{{ {'type': item.item.type, 'name': item.item.name, 'content': item.item.content,
+               'ttl': item.item.ttl | default(3600) | int,
+               'proxied': item.item.proxied | default(false) | bool,
+               'comment': item.item.comment | default('managed by ansible')} }}"
     status_code: 200
   loop: "{{ _cf_dns_existing.results }}"
   when:
@@ -66,11 +63,10 @@
       Authorization: "Bearer {{ cloudflare_api_token }}"
       Content-Type: "application/json"
     body_format: json
-    body:
-      content: "{{ item.item.content }}"
-      ttl: "{{ item.item.ttl | default(3600) | int }}"
-      proxied: "{{ item.item.proxied | default(false) | bool }}"
-      comment: "{{ item.item.comment | default('managed by ansible') }}"
+    body: "{{ {'content': item.item.content,
+               'ttl': item.item.ttl | default(3600) | int,
+               'proxied': item.item.proxied | default(false) | bool,
+               'comment': item.item.comment | default('managed by ansible')} }}"
     status_code: 200
   loop: "{{ _cf_dns_existing.results }}"
   when:
