@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(cloudflare-zone): cast ttl to int and proxied to bool for CF API ([b89142e](https://github.com/kecsi-san/homelab/commit/b89142e6ea122a47c6c4c9c6bf4494f207e283ea) by Zoltan K).
 - fix(cloudflare-zone): split DNS and settings tokens; ECH uses cloudflare_settings_token ([0e5b39c](https://github.com/kecsi-san/homelab/commit/0e5b39c0c37a305c3c3f01b20d814e4d333c44d8) by Zoltan K).
 - fix(cloudflare-zone): check_mode safe on ECH GET task ([3b7866d](https://github.com/kecsi-san/homelab/commit/3b7866d5a3c549cd81632ffc1336629d2ce39bad) by Zoltan K).
 - fix(cloudflare-zone): check_mode safe GET; guard create/update against skipped items ([f3c1669](https://github.com/kecsi-san/homelab/commit/f3c16696987c80457b0a0655303a6857f6b9a515) by Zoltan K).
