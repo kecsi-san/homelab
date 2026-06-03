@@ -1,7 +1,17 @@
 ---
 # Cloudflare API credentials — set in secrets.yml (gitignored)
-# cloudflare_api_token: "your-api-token"   # needs Zone:Settings:Edit scope
+# cloudflare_api_token: "your-api-token"   # needs Zone:Settings:Edit + Zone:DNS:Edit scopes
 # cloudflare_zone_id: "your-zone-id"
+# homelab_wan_ip: "your-public-ip"         # WAN IP for direct-access DNS records (not proxied)
+
+# DNS A records to create/update — proxied: false required for UDP services (e.g. game servers)
+cloudflare_dns_records:
+  - name: "minecraft.{{ domain_name }}"
+    type: A
+    content: "{{ homelab_wan_ip }}"
+    ttl: 3600
+    proxied: false
+    comment: "Minecraft Bedrock server — direct (UDP, not proxiable)"
 
 # Zone settings to enforce
 cloudflare_ech_enabled: false
