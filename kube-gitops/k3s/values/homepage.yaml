@@ -93,3 +93,9 @@ config:
             icon: authentik.png
             namespace: authentik
             app: authentik
+        - Wiki.js:
+            href: https://wiki.k3s.kecskemethy.org
+            description: Documentation wiki
+            icon: wikijs.png
+            namespace: wikijs
+            app: wiki
