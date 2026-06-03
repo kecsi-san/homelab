@@ -80,8 +80,8 @@ k8s only — after minimal IDP is stable:
     for newly added roles (existing roles only need `password`); workaround: create role manually
     then CNPG takes over, re-seal secret with `username` for rebuild safety
   - Note: setup wizard creates a local admin account separate from the Authentik OIDC account
-- **Forgejo Actions runner** deployed: `k3s-runner`, DinD sidecar, capacity 2,
-  `ubuntu-latest` label, 1Gi `local-path` PVC. Verification pending.
+- **Forgejo Actions runner** deployed and verified: `k3s-runner`, DinD sidecar, capacity 2,
+  `ubuntu-latest` label, 1Gi `local-path` PVC. Push job picked up and executed in `node:20-bookworm`.
 
 ### 2026-06-01 — Authentik deployed on k3s
 
