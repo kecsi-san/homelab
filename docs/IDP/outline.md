@@ -1,16 +1,19 @@
 ---
 title: "Outline — Role and Operational Guide"
 type: how-to
-status: stable
+status: superseded
 scope: [k8s]
 created: 2026-05-17
-updated: 2026-05-17
+updated: 2026-06-03
 tags: [outline, wiki, documentation, knowledge-base]
 ---
 
+> **Superseded (2026-05-31):** Outline has been replaced by Wiki.js v2 on k8s.
+> This document is retained for historical reference only.
+
 # Outline — Role and Operational Guide
 
-**Instance:** `https://outline.kecskemethy.org`
+**Instance:** `https://outline.kecskemethy.org` *(decommissioned)*
 **Login:** Authentik SSO (Authentik credentials; no separate Outline password)
 **Namespace:** `outline`
 

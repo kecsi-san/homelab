@@ -4,7 +4,7 @@ type: reference
 status: stable
 scope: [k8s, k3s]
 created: 2026-05-15
-updated: 2026-05-17
+updated: 2026-06-03
 tags: [idp, status, components]
 ---
 
@@ -24,9 +24,10 @@ Deploy a minimal IDP to **k3s** and the same minimal IDP **plus Backstage** to *
 |---|---|---|---|---|
 | Shared database | CloudNativePG | Infrastructure | ✅ Done | ✅ Done |
 | Git server + OCI registry + CI | Forgejo | Platform | ✅ Done | ✅ Done |
-| SSO / Identity Provider | Authentik | Platform | ✅ Done | Planned |
+| SSO / Identity Provider | Authentik | Platform | ✅ Done | ✅ Done |
+| GitOps OIDC login | ArgoCD + Authentik | Platform | ✅ Done | Planned |
 | CI runners | Forgejo Actions | Platform | ✅ Done | Planned |
-| Documentation / wiki | Outline | Platform | ✅ Done | Planned |
+| Documentation / wiki | Wiki.js | Platform | ✅ Done | Planned |
 | Code analysis (SAST) | Semgrep OSS (CI step) | Quality | Planned | Planned |
 | Vulnerability scanning | Trivy (CI step) | Quality | Planned | Planned |
 
@@ -34,7 +35,7 @@ Deploy a minimal IDP to **k3s** and the same minimal IDP **plus Backstage** to *
 
 | Component | Tool | Layer | Status |
 |---|---|---|---|
-| Service catalog | Backstage | Platform | Planned |
+| Service catalog | Backstage | Platform | ✅ Done |
 
 ---
 
@@ -54,7 +55,7 @@ Both clusters follow the same sequence for the minimal IDP:
 1. **CloudNativePG** — shared PostgreSQL cluster; everything stateful depends on it
 2. **Forgejo** — git + OCI registry + Actions runner; foundations for all pipelines
 3. **Authentik** — SSO; wire Forgejo OIDC on install; gates all subsequent UIs
-4. **Outline** — wiki; shares PostgreSQL with Authentik, gains OIDC from Authentik
+4. **Wiki.js** — wiki; shares PostgreSQL with Authentik, gains OIDC from Authentik
 5. **Semgrep + Trivy** — add as Forgejo Actions pipeline steps; zero new services
 
 k8s only — after minimal IDP is stable:
@@ -64,6 +65,33 @@ k8s only — after minimal IDP is stable:
 ---
 
 ## Achievements Log
+
+### 2026-06-01 — Authentik deployed on k3s
+
+- **Authentik 2026.5.0** deployed on k3s; same blueprint pattern as k8s
+- **Forgejo OAuth2 login verified** — `kecsi` user authenticated via Authentik OIDC on k3s
+- **PostSync job** registers Forgejo auth source after each ArgoCD sync (same pattern as k8s)
+- **Note:** ArgoCD OIDC on k3s not yet wired up — next step
+
+### 2026-05-31 — Wiki.js replaces Outline on k8s
+
+- **Outline removed** — replaced by **Wiki.js v2** (`kube-gitops/k8s/wikijs/`)
+- Wiki.js provides equivalent OIDC/SSO support with a more actively maintained codebase
+- PostgreSQL backend via CNPG; OIDC via Authentik
+- ADR 011 superseded; see `docs/adr/011-outline-wiki.md`
+
+### 2026-05-29 — ArgoCD RBAC group-based (k8s)
+
+- Switched from email-based RBAC to **group-based**: `homelab-admins` Authentik group → `role:admin`
+- Authentik blueprint adds `Groups` scope mapping; ArgoCD provider gets `groups` claim
+- `argocd-rbac-cm.yaml`: `g, homelab-admins, role:admin`
+- Login via Authentik → homelab-admins group → full ArgoCD admin access verified
+
+### 2026-05-20 — ArgoCD Authentik OIDC (k8s)
+
+- **ArgoCD OIDC sign-in** wired to Authentik (`per_provider` issuer mode)
+- Authentik blueprint creates ArgoCD OAuth2 provider; OIDC secret managed as SealedSecret
+- Initial setup used email-based RBAC subject; migrated to group-based on 2026-05-29
 
 ### 2026-05-17 — Forgejo Actions runner deployed (k8s)
 
@@ -79,30 +107,9 @@ k8s only — after minimal IDP is stable:
 
 ### 2026-05-16 — Outline wiki deployed with Authentik OIDC (k8s)
 
-- **Docmost dropped** — OIDC/SSO is an EE (paid) feature; not suitable for homelab
-- **Outline 1.7.1** deployed: Deployment (Recreate), Service, PVC (5Gi Longhorn),
-  standalone `redis:7-alpine`, SealedSecrets (SECRET_KEY, UTILS_SECRET, DATABASE_URL,
-  OIDC_CLIENT_SECRET)
-- **CNPG**: `outline` managed role + `Database` CR; Docmost equivalents removed
-- **Authentik blueprint** (`outline.yaml`): OAuth2 provider (`client_id: outline`,
-  `issuer_mode: global`, redirect `https://outline.kecskemethy.org/auth/oidc.callback`)
-  + application; blueprint applied via `ak apply_blueprint` after push
-- **Login confirmed**: Authentik OIDC login working; first login creates Outline user
-
-### 2026-05-15 — k8s Authentik deployed and integrated
-
-- **Authentik 2026.2.3** deployed on k8s with standalone `redis:7-alpine`
-  (Bitnami images removed from Docker Hub; official redis image used instead)
-- **CNPG managed role** for `authentik` user + `Database` CR for `authentik` DB
-- **Blueprint** (`kube-gitops/k8s/authentik/configmap-blueprints.yaml`) creates Forgejo
-  OAuth2 provider + application in Authentik automatically on worker startup
-  - Required `invalidation_flow` field (added in Authentik 2026.x)
-- **PostSync job** (`kube-gitops/k8s/forgejo/job-register-authentik.yaml`) registers
-  the Authentik auth source in Forgejo's DB after each ArgoCD sync; idempotent
-  - Writes minimal `app.ini` to `/var/lib/gitea/custom/conf/` (image GITEA_CUSTOM default)
-- **Forgejo `kecsi` admin** account linked to Authentik `kecsi` user via OAuth2
-  (`sub_mode: user_username` — Authentik username maps to Forgejo username on first login)
-- **User management runbook** at `docs/IDP/user-management.md`
+- *Subsequently replaced by Wiki.js on 2026-05-31 — see entry above*
+- **Outline 1.7.1** deployed; Authentik OIDC login confirmed working
+- CNPG `outline` managed role + `Database` CR
 
 ### 2026-05-16 — Authentik forwardAuth + Headlamp OIDC (k8s)
 
@@ -131,6 +138,21 @@ k8s only — after minimal IDP is stable:
   headers before navigation fires; long-term `gitea_incredible` token survived sign-out
   and silently recreated the session
 
+### 2026-05-15 — k8s Authentik deployed and integrated
+
+- **Authentik 2026.2.3** deployed on k8s with standalone `redis:7-alpine`
+  (Bitnami images removed from Docker Hub; official redis image used instead)
+- **CNPG managed role** for `authentik` user + `Database` CR for `authentik` DB
+- **Blueprint** (`kube-gitops/k8s/authentik/configmap-blueprints.yaml`) creates Forgejo
+  OAuth2 provider + application in Authentik automatically on worker startup
+  - Required `invalidation_flow` field (added in Authentik 2026.x)
+- **PostSync job** (`kube-gitops/k8s/forgejo/job-register-authentik.yaml`) registers
+  the Authentik auth source in Forgejo's DB after each ArgoCD sync; idempotent
+  - Writes minimal `app.ini` to `/var/lib/gitea/custom/conf/` (image GITEA_CUSTOM default)
+- **Forgejo `kecsi` admin** account linked to Authentik `kecsi` user via OAuth2
+  (`sub_mode: user_username` — Authentik username maps to Forgejo username on first login)
+- **User management runbook** at `docs/IDP/user-management.md`
+
 ### 2026-05-15 — NTP / chrony
 
 - **`configure_ntp` Ansible role** replaced ntpd with chrony (Debian 13 dropped the
@@ -140,6 +162,15 @@ k8s only — after minimal IDP is stable:
 ---
 
 ## Deferred / TODO
+
+### ArgoCD OIDC on k3s
+
+ArgoCD is deployed on k3s but not yet wired to Authentik as an OIDC provider.
+Mirror the k8s pattern: Authentik blueprint for ArgoCD provider + RBAC ConfigMap
+(`homelab-admins` group → `role:admin`).
+
+Reference: `kube-gitops/k8s/authentik/configmap-blueprints.yaml` (argocd.yaml blueprint),
+`kube-gitops/k8s/argocd/` (OIDC secret + rbac ConfigMap).
 
 ### Headlamp OIDC permissions (k8s)
 
@@ -155,20 +186,15 @@ Next debug steps when revisiting:
 3. Check whether Headlamp `-in-cluster` + OIDC mode correctly substitutes the user token
    instead of the in-cluster SA token for API calls
 
-### ArgoCD OIDC (k8s)
-
-Wire ArgoCD to Authentik as an OIDC provider (similar to Headlamp). Skipped until
-Headlamp OIDC is confirmed working.
-
 ---
 
 ## Integration Notes
 
 - Forgejo LFS → backed by existing Garage S3 (`forgejo` bucket)
 - Authentik → Traefik `forwardAuth` middleware for future apps (not yet wired)
-- All stateful services (Forgejo data, Authentik PG, Docmost PG) → VolSync daily
+- All stateful services (Forgejo data, Wiki.js PVC, Authentik PG) → VolSync daily
   backup to restic REST server at `backups.kinet.local` (Forgejo VolSync: planned)
-- All credentials → SealedSecrets (`kubeseal --context admin@k8s`)
+- All credentials → SealedSecrets (`kubeseal --context admin@k8s` for k8s, `--context admin@k3s` for k3s)
 
 ## Reference
 

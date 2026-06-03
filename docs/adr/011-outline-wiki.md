@@ -1,10 +1,10 @@
 ---
 title: "011 — Outline as Team Wiki"
 type: adr
-status: accepted
+status: superseded
 scope: [k8s]
 created: 2026-05-17
-updated: 2026-05-17
+updated: 2026-06-03
 tags: [outline, wiki, documentation, oidc, knowledge-base]
 ---
 
@@ -12,7 +12,9 @@ tags: [outline, wiki, documentation, oidc, knowledge-base]
 
 ## Status
 
-Accepted
+Superseded (2026-05-31) — Outline replaced by **Wiki.js v2**. Wiki.js provides equivalent
+OIDC support with a more actively maintained codebase. Manifests moved to
+`kube-gitops/k8s/wikijs/`.
 
 ## Context
 
