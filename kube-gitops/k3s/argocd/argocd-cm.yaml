@@ -1,0 +1,45 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-cm
+    app.kubernetes.io/part-of: argocd
+data:
+  url: https://argocd.k3s.kecskemethy.org
+  resource.customizations.knownTypeFields.apps_Deployment: |
+    - field: "status.terminatingReplicas"
+      type: "integer"
+  resource.customizations.knownTypeFields.apps_ReplicaSet: |
+    - field: "status.terminatingReplicas"
+      type: "integer"
+  resource.customizations.knownTypeFields.apps_StatefulSet: |
+    - field: "status.terminatingReplicas"
+      type: "integer"
+  resource.customizations.knownTypeFields.apps_DaemonSet: |
+    - field: "status.terminatingReplicas"
+      type: "integer"
+  resource.customizations.ignoreDifferences.apps_Deployment: |
+    jqPathExpressions:
+      - .status.terminatingReplicas
+  resource.customizations.ignoreDifferences.apps_ReplicaSet: |
+    jqPathExpressions:
+      - .status.terminatingReplicas
+  resource.customizations.ignoreDifferences.apps_StatefulSet: |
+    jqPathExpressions:
+      - .status.terminatingReplicas
+  resource.customizations.ignoreDifferences.apps_DaemonSet: |
+    jqPathExpressions:
+      - .status.terminatingReplicas
+  oidc.config: |
+    name: Authentik
+    issuer: https://authentik.k3s.kecskemethy.org/application/o/argocd-k3s/
+    clientID: argocd-k3s
+    clientSecret: $argocd-oidc-secret:client-secret
+    requestedScopes:
+      - openid
+      - profile
+      - email
+      - groups
