@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(k3s/argocd): add app.kubernetes.io/part-of label to oidc secret template ([7f03018](https://github.com/kecsi-san/homelab/commit/7f030186a96a649f132f24fe83975e1e43cf88c8) by Zoltan K).
 - fix(kromgo): make it public, via cloudflare proxy so we can display badges in GH readme.md ([27b37b7](https://github.com/kecsi-san/homelab/commit/27b37b7b5093da2b47ad8fc8bc8047e8a69d5ac8) by Zoltan K).
 - fix(ansible/k8s-nodes): mask openipmi.service on HP iLO nodes ([712de08](https://github.com/kecsi-san/homelab/commit/712de0892790b346e797e3999f81b3604c5d79a4) by Zoltan K).
 - fix(ansible/security): add AIDE and initialize baseline database ([701957d](https://github.com/kecsi-san/homelab/commit/701957dc4ae74c5975e6dc38e204c16b84b8a124) by Zoltan K).
