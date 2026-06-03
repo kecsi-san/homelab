@@ -9,4 +9,4 @@
 
   roles:
     - role: configure_cloudflare-zone
-      tags: cloudflare-zone
+      tags: [cloudflare-zone, cloudflare-dns, cloudflare-ech]
