@@ -1,0 +1,16 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: wikijs
+  namespace: wikijs
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`wiki.k3s.kecskemethy.org`)
+      kind: Rule
+      services:
+        - name: wikijs
+          port: 80
+  tls: {}

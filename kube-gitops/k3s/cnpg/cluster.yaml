@@ -28,6 +28,11 @@ spec:
         login: true
         passwordSecret:
           name: authentik-db-credentials
+      - name: wikijs
+        ensure: present
+        login: true
+        passwordSecret:
+          name: wikijs-db-credentials
 
   storage:
     storageClass: local-path
