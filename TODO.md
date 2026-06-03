@@ -6,9 +6,9 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 
 - [x] **Forgejo SSH (port 22)** — Traefik TCP entrypoint (`ssh`, container 2022 → LB port 22); IngressRouteTCP with HostSNI(*); clone URL: `git@forgejo.kecskemethy.org:user/repo.git`
 - [x] **Authentik on k3s** — deployed and synced; Forgejo OAuth2 login verified working
-- [x] **ArgoCD Authentik OIDC on k3s** — deployed; `argocd-k3s` provider + `homelab-admins → role:admin` RBAC
-- [x] **Wiki.js on k3s** — deployed via Helm; CNPG role + DB; Authentik blueprint (regex redirect URI until UUID confirmed)
-- [x] **Forgejo Actions runner on k3s** — `k3s-runner`; DinD sidecar; capacity 2; `local-path` PVC
+- [x] **ArgoCD Authentik OIDC on k3s** — verified working; `homelab-admins → role:admin`; fix: `app.kubernetes.io/part-of: argocd` label required on oidc secret
+- [x] **Wiki.js on k3s** — verified working; Authentik OIDC login confirmed; admin group; UUID tightened to strict in blueprint
+- [ ] **Forgejo Actions runner on k3s** — deployed (`k3s-runner`); verification pending (push a test workflow)
 - [x] **Cloudflare ECH → Ansible** — `configure_cloudflare-zone` role + `configure-cloudflare.yml` playbook; idempotent GET+PATCH; credentials via `secrets.yml` (`cloudflare_api_token`, `cloudflare_zone_id`)
 - [ ] **Backstage Kubernetes plugin** — shows "Entity context is not available" as a standalone nav item; either configure it for catalog entities (requires annotations) or remove `kubernetesPlugin` from `App.tsx`
 - [x] **Monitoring stack — seal OAuth2 secret** — sealed for both namespaces; Grafana OAuth2 login verified working
@@ -51,6 +51,10 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 - [ ] **macOS playbook review** — many roles behave differently on Darwin; consider a dedicated `local-mac.yml`
 
 ## Done (recent)
+
+- [x] ArgoCD Authentik OIDC on k3s — verified (2026-06-03); gotcha: oidc secret needs `app.kubernetes.io/part-of: argocd` label
+- [x] Wiki.js on k3s — deployed + OIDC verified (2026-06-03); gotcha: CNPG managed role secret needs `username` key for new roles
+- [x] Forgejo Actions runner on k3s — deployed (2026-06-03); verification pending
 
 - [x] Authentik upgraded to 2026.5.0 on k8s; DB migration clean; OIDC providers verified working
 - [x] Traefik upgraded to v40 (chart 40.2.0 / Traefik 3.7.1) on both k8s and k3s; fixed breaking `ports.web.http.redirections` rename

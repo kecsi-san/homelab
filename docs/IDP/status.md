@@ -66,15 +66,22 @@ k8s only — after minimal IDP is stable:
 
 ## Achievements Log
 
-### 2026-06-03 — Wiki.js, ArgoCD OIDC, and Forgejo Actions runner deployed on k3s
+### 2026-06-03 — Wiki.js, ArgoCD OIDC, and Forgejo Actions runner on k3s
 
-- **Wiki.js** deployed via Helm (charts.js.wiki 2.2.24); CNPG `wikijs` role + Database CR;
-  session-fix configmap (passport-openidconnect patch) applied; Authentik `wikijs-k3s`
-  blueprint with regex redirect URI (UUID unknown until first login; tighten to strict after)
 - **ArgoCD OIDC** wired to Authentik: `argocd-k3s` provider; `homelab-admins → role:admin` RBAC;
-  `argocd-config` ArgoCD app managing `kube-gitops/k3s/argocd/`
+  `argocd-config` ArgoCD app managing `kube-gitops/k3s/argocd/`. **Verified working.**
+  - ⚠ Gotcha: `argocd-oidc-secret` must carry label `app.kubernetes.io/part-of: argocd`
+    or ArgoCD silently ignores the secret and sends an empty client_secret → `invalid_client`
+- **Wiki.js** deployed via Helm (charts.js.wiki 2.2.24); CNPG `wikijs` role + Database CR;
+  session-fix configmap (passport-openidconnect patch); Authentik `wikijs-k3s` blueprint.
+  **OIDC login verified** — `kecsi` authenticated via Authentik, assigned Administrators group.
+  - Redirect URI UUID: `394c8518-0693-47c0-8bcc-b25f31d6f2e7` (tightened to `strict` in blueprint)
+  - ⚠ Gotcha: CNPG managed role `passwordSecret` needs both `username` and `password` keys
+    for newly added roles (existing roles only need `password`); workaround: create role manually
+    then CNPG takes over, re-seal secret with `username` for rebuild safety
+  - Note: setup wizard creates a local admin account separate from the Authentik OIDC account
 - **Forgejo Actions runner** deployed: `k3s-runner`, DinD sidecar, capacity 2,
-  `ubuntu-latest` label, 1Gi `local-path` PVC
+  `ubuntu-latest` label, 1Gi `local-path` PVC. Verification pending.
 
 ### 2026-06-01 — Authentik deployed on k3s
 
@@ -172,18 +179,6 @@ k8s only — after minimal IDP is stable:
 ---
 
 ## Deferred / TODO
-
-### Wiki.js OIDC redirect URI (k3s)
-
-Blueprint uses `matching_mode: regex` for the callback URL because the UUID is generated
-by Wiki.js on first setup. After completing the OAuth2 strategy setup in the Wiki.js admin
-UI, update the blueprint to `matching_mode: strict` with the actual UUID:
-
-```yaml
-redirect_uris:
-  - matching_mode: strict
-    url: https://wiki.k3s.kecskemethy.org/login/<uuid>/callback
-```
 
 ### Headlamp OIDC permissions (k8s)
 
