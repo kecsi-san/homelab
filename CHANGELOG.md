@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(cloudflare-zone): split DNS and settings tokens; ECH uses cloudflare_settings_token ([0e5b39c](https://github.com/kecsi-san/homelab/commit/0e5b39c0c37a305c3c3f01b20d814e4d333c44d8) by Zoltan K).
 - fix(cloudflare-zone): check_mode safe on ECH GET task ([3b7866d](https://github.com/kecsi-san/homelab/commit/3b7866d5a3c549cd81632ffc1336629d2ce39bad) by Zoltan K).
 - fix(cloudflare-zone): check_mode safe GET; guard create/update against skipped items ([f3c1669](https://github.com/kecsi-san/homelab/commit/f3c16696987c80457b0a0655303a6857f6b9a515) by Zoltan K).
 - fix(k3s/wikijs): tighten Authentik redirect URI to strict with real UUID ([9e9f3e2](https://github.com/kecsi-san/homelab/commit/9e9f3e2cf4d27777d0e1d007df2af2313c3978d9) by Zoltan K).
