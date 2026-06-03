@@ -25,6 +25,10 @@ mikrotik_dns_records:
   - name: "backups.kinet.local"
     address: "192.168.1.52"
 
+  # Minecraft Bedrock — exact record overrides wildcard; points to kube-vip LB IP on LAN
+  - name: "minecraft.{{ domain_name }}"
+    address: "192.168.1.110"
+
 # NAT (dst-nat) rules — idempotent; matched by comment field; never deleted automatically
 mikrotik_nat_rules:
   - comment: "Minecraft Bedrock internet access"
