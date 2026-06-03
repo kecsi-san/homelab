@@ -10,6 +10,7 @@
     status_code: 200
   loop: "{{ cloudflare_dns_records }}"
   register: _cf_dns_existing
+  check_mode: false
   loop_control:
     label: "{{ item.name }} ({{ item.type }})"
 
@@ -30,7 +31,9 @@
       comment: "{{ item.item.comment | default('managed by ansible') }}"
     status_code: 200
   loop: "{{ _cf_dns_existing.results }}"
-  when: item.json.result | length == 0
+  when:
+    - not (item.skipped | default(false))
+    - item.json.result | length == 0
   loop_control:
     label: "{{ item.item.name }} ({{ item.item.type }}) — create"
 
@@ -51,6 +54,7 @@
     status_code: 200
   loop: "{{ _cf_dns_existing.results }}"
   when:
+    - not (item.skipped | default(false))
     - item.json.result | length > 0
     - item.json.result[0].content != item.item.content
       or item.json.result[0].proxied != item.item.proxied | default(false)
