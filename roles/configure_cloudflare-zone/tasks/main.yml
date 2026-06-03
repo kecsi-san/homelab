@@ -12,6 +12,7 @@
       Content-Type: "application/json"
     status_code: 200
   register: _cf_ech_current
+  check_mode: false
 
 - name: Set ECH setting
   uri:
