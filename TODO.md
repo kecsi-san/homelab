@@ -18,6 +18,25 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 - [ ] **Kromgo** — expose named Prometheus queries as HTTP endpoints for Homepage dashboard widgets (replaces broken Kubernetes metrics widget removed earlier); requires monitoring stack above; configure `config.yaml` with cluster CPU%, RAM%, pod count, node count
 - [ ] **VictoriaLogs** — log aggregation (no log storage currently); single-binary replacement for Loki, significantly lower RAM, simpler to operate; community is moving away from Loki toward VictoriaLogs; deploy alongside kube-prometheus-stack; Fluent Bit or Grafana Alloy as log forwarder
 
+## AWS / EC2 & Email
+
+### Terraform (`terraform/aws/`)
+
+- [ ] **Terraform state backend** — S3 bucket + DynamoDB table for remote state locking; implement first as pre-req for all other AWS Terraform work; `terraform/aws/backend.tf`
+- [ ] **EC2 instance** — codify existing instance in `terraform/aws/ec2/`: instance type, AMI, Elastic IP (EIP), security groups (22 SSH, 80/443 HTTP/HTTPS, 993 IMAPS, 587 SMTP submission, 51820/UDP Wireguard)
+- [ ] **S3 buckets** — codify existing buckets in `terraform/aws/s3/`: versioning, server-side encryption, lifecycle policies
+- [ ] **Route53 hosted zone** — codify existing public zone in `terraform/aws/route53/`; import zone + MX/SPF/DMARC/DKIM records as Terraform resources
+
+### Ansible — inventory, roles & playbooks
+
+- [ ] **AWS inventory group** — add `aws` group to `inventory/hosts.example`; `inventory/group_vars/aws.yml` with SSH user, Python interpreter, EC2 SSH key path; EC2 EIP as static host
+- [ ] **`ec2-core.yml` playbook** — base EC2 provisioning targeting `aws` group (mirrors `k8s-nodes.yml`): SSH key deploy, sudo, minimal packages, NTP, legal banner, etckeeper
+- [ ] **`setup_email-server` role** — implement placeholder: Postfix (SMTP + submission port 587, STARTTLS) + Dovecot (IMAP-SSL port 993); certbot DNS-01 via Route53 for Let's Encrypt cert; OpenDKIM; DKIM/SPF/DMARC records managed via `configure_route53`
+- [ ] **`ec2-mail.yml` playbook** — deploy full email stack on EC2 via `setup_email-server`
+- [ ] **`configure_wireguard` role** — EC2 as Wireguard hub: wg0 interface, IP forwarding, NAT masquerade; workstation + kube nodes as spokes; keypair management; `wg0.conf` via Jinja2 templates; peer list from inventory
+- [ ] **`ec2-wireguard.yml` playbook** — deploy Wireguard hub on EC2 and configure spoke peers
+- [ ] **`configure_route53` role** — upsert Route53 A/TXT/MX records via `community.aws.route53` (analogous to `configure_mikrotik-router` + `configure_cloudflare-zone`); credentials via `secrets.yml` (`aws_access_key_id`, `aws_secret_access_key`); `configure-route53.yml` playbook
+
 ## Projects / Repos
 
 - [ ] **homelab-notify** (`forgejo.kecskemethy.org/kecsi/homelab-notify`) — typed ntfy CLI wrapper (Python); CI pipeline is red, needs investigation
@@ -40,6 +59,7 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 ## Big migrations
 
 - [ ] **Vault** — replace SealedSecrets with HashiCorp Vault (or OpenBao) for secrets management; significant migration: re-seal all secrets, update ArgoCD apps, update workflows
+- [ ] **Cloudflare → Route53 + Wireguard** — long-term full replacement of Cloudflare as DNS provider and remote-access tunnel; stages: (1) Route53 becomes authoritative DNS (migrate all records, update registrar NS); (2) cert-manager DNS01 ClusterIssuer switches to Route53 provider (replaces Cloudflare API token); (3) Wireguard hub-and-spoke (EC2 gateway) replaces Cloudflare WARP for remote cluster access; (4) decommission `configure_cloudflare-zone` role and cloudflared tunnel; blocked on: Route53 zone live, Wireguard stable
 
 ## Low priority / Future
 

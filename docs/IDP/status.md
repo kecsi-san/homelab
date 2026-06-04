@@ -95,7 +95,7 @@ k8s only — after minimal IDP is stable:
 - **Outline removed** — replaced by **Wiki.js v2** (`kube-gitops/k8s/wikijs/`)
 - Wiki.js provides equivalent OIDC/SSO support with a more actively maintained codebase
 - PostgreSQL backend via CNPG; OIDC via Authentik
-- ADR 011 superseded; see `docs/adr/011-outline-wiki.md`
+- ADR 011 superseded; see `docs/ADR/011-outline-wiki.md`
 
 ### 2026-05-29 — ArgoCD RBAC group-based (k8s)
 

@@ -4,7 +4,7 @@ type: reference
 status: stable
 scope: [general]
 created: 2026-05-17
-updated: 2026-05-17
+updated: 2026-06-04
 tags: [meta, documentation, standards]
 ---
 
@@ -30,7 +30,8 @@ documentation by purpose into four types:
 | **adr** | Decision | "Why did we make this decision?" | Architecture Decision Records |
 
 A fifth type, **tutorial**, would cover guided learning (e.g. "first-time cluster setup
-walkthrough"). We do not have tutorials yet; add them under `docs/tutorials/` when needed.
+walkthrough"). We do not have tutorials yet; add them under `docs/howtos/` when needed
+(we use `howtos/` for both operational how-tos and guided walkthroughs).
 
 ### Practical classification guide
 
@@ -85,17 +86,54 @@ tags: [tag1, tag2]                              # at least one
 docs/
 ├── STANDARDS.md          ← this file
 ├── README.md             ← index and nav guide
-├── adr/                  ← Architecture Decision Records
+├── ADR/                  ← Architecture Decision Records
 ├── ansible/              ← how-to + reference docs for Ansible roles and playbooks
-├── IDP/                  ← how-to + reference + research docs for the IDP stack
-├── research/             ← research (explanation) docs: tech comparisons, evaluations
-└── tutorials/            ← (future) guided walkthroughs for new team members
+├── homelab/              ← reference + architecture docs for the bare-metal k8s cluster
+├── howtos/               ← cross-cutting operational procedures, runbooks, and walkthroughs
+├── IDP/                  ← how-to + reference docs for the internal developer portal stack
+└── research/             ← research (explanation) docs: tech comparisons, evaluations
 ```
 
 **Why topic folders rather than type folders?**
 Grouping by system (IDP, ansible) rather than by type (how-to, reference) makes navigation
 faster when you know *what system* you are working on. The `type` field in front-matter
 provides the type dimension for search and tooling.
+
+---
+
+## File Naming Conventions
+
+### `docs/research/` files
+
+Filenames follow the pattern `<prefix>-<subject>[-<qualifier>].md`:
+
+| Prefix | Use for |
+|---|---|
+| `homelab-` | Surveys and evaluations of homelab community practice: repo comparisons, tool adoption trends |
+| `cloud-` | Cloud and VPS services used to extend or complement homelab infrastructure |
+| `dev-` | Developer tooling research not specific to homelab (language ecosystems, project templates) |
+
+Optional qualifier suffix:
+
+| Qualifier | Use for |
+|---|---|
+| `-survey` | Survey of multiple public repos or community practice |
+| `-comparison` | Head-to-head comparison of two or more tools |
+| `-stack` | Research into a specific technology stack for a use case |
+| `-candidates` | Evaluating options for a pending decision |
+
+Examples: `homelab-monitoring-survey.md`, `cloud-vps-services-survey.md`, `homelab-dashboard-comparison.md`.
+
+### `docs/howtos/` files
+
+Cross-cutting operational procedures and runbooks not scoped to a single system folder
+(e.g. `ansible/` or `IDP/`). Use lowercase, hyphens only, no version suffix.
+Examples: `cilium-migration.md`, `cluster-rebuild.md`.
+
+### Topic folder files (`ansible/`, `IDP/`, `homelab/`)
+
+No prescribed prefix — the folder provides the context. Use a descriptive lowercase name:
+`k8s-homelab.md`, `forgejo.md`, `ci-cd.md`.
 
 ---
 
@@ -158,7 +196,7 @@ Use the ADR format when a decision is:
 - Worth explaining to future-you or a new contributor
 - The result of evaluating multiple options
 
-Store ADRs in `docs/adr/` with the naming convention `NNN-short-title.md`
+Store ADRs in `docs/ADR/` with the naming convention `NNN-short-title.md`
 (e.g. `001-authentik-over-keycloak.md`).
 
 ### ADR template
