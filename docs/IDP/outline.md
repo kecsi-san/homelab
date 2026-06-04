@@ -27,7 +27,7 @@ The homelab uses **two documentation layers** that complement each other:
 
 **What goes here:** Technical documentation that lives alongside the code.
 
-- Architecture Decision Records (`docs/adr/`) — decisions and their rationale
+- Architecture Decision Records (`docs/ADR/`) — decisions and their rationale
 - Research notes (`docs/research/`) — evaluations, comparisons, tool selection
 - Operational runbooks (`docs/IDP/`, `docs/ansible/`) — how to operate the cluster
 - Standards (`docs/STANDARDS.md`) — documentation conventions
