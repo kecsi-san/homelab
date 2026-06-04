@@ -4,7 +4,7 @@ type: research
 status: stable
 scope: [general]
 created: 2026-06-04
-updated: 2026-06-04
+updated: 2026-06-05
 tags: [cloud, vps, email, wireguard, vpn, aws, hetzner, route53, dns]
 ---
 
@@ -113,7 +113,7 @@ even in repos that run no VPS compute. R2 in particular is attractive at zero eg
 |---------|-----------|
 | AWS EC2 is unusual; Hetzner/DO more common for VPS | Existing AWS investment still valid; no community pressure to switch |
 | Wireguard hub-and-spoke on VPS is an established pattern | Planned `configure_wireguard` role follows community practice |
-| Full self-hosted email (Postfix+Dovecot) is rare but sovereign/sovereign proves it works | `setup_email-server` role is non-trivial; sovereign is a good reference implementation |
+| Full self-hosted email (Postfix+Dovecot) is rare but sovereign/sovereign proves it works | `setup_email-server` role is non-trivial; sovereign and docker-mailserver are both valid references |
 | Route53 is not used in any surveyed homelab | `configure_route53` role would be novel; Cloudflare DNS is the norm if Route53 is dropped |
 | Cloudflare Tunnel is the dominant web-exposure method | Current cloudflared setup is community standard; Wireguard would be a meaningful departure |
 | Headscale (self-hosted Tailscale) on VPS is a viable alternative to Wireguard | Consider as an option alongside Wireguard in the VPN planning |
@@ -122,6 +122,75 @@ even in repos that run no VPS compute. R2 in particular is attractive at zero eg
 
 ## Notable Reference Projects
 
-- **[sovereign/sovereign](https://github.com/sovereign/sovereign)** — 10.5k stars; Ansible playbooks for a complete self-hosted VPS: Postfix, Dovecot, DKIM, SpamAssassin, Roundcube webmail, Wireguard, CalDAV, Git. Best reference for the `setup_email-server` role.
+- **[sovereign/sovereign](https://github.com/sovereign/sovereign)** — 10.5k stars; Ansible playbooks for a complete self-hosted VPS: Postfix, Dovecot, DKIM, SpamAssassin, Roundcube webmail, Wireguard, CalDAV, Git. Best reference for a bare-metal `setup_email-server` role approach.
+- **[docker-mailserver/docker-mailserver](https://github.com/docker-mailserver/docker-mailserver)** — 18.3k stars; production-ready containerised mail server: Postfix + Dovecot + Rspamd + ClamAV + OpenDKIM + OpenDMARC + Fail2ban in a single Docker image. See analysis below.
 - **[trailofbits/algo](https://github.com/trailofbits/algo)** — 30.3k stars; the definitive Wireguard/IKEv2 VPN deployment tool; supports 11 cloud providers. Reference for `configure_wireguard`.
 - **[hobby-kube/guide](https://github.com/hobby-kube/guide)** — detailed cost-effective k8s on Hetzner/DO with Wireguard networking; useful if cloud k8s node is ever added.
+
+---
+
+## Deep Dive: docker-mailserver
+
+**[docker-mailserver/docker-mailserver](https://github.com/docker-mailserver/docker-mailserver)** — 18.3k stars, 2k forks, actively maintained (~3–4 releases/year).
+
+### What it bundles
+
+A single Docker image ships the full mail stack: Postfix (MTA), Dovecot (IMAP/POP3), Rspamd (spam filtering, default) or SpamAssassin, ClamAV (antivirus, optional), OpenDKIM + OpenDMARC (email authentication), Fail2ban (brute-force protection), Fetchmail/Getmail6, and Sieve filtering. All configured via 100+ environment variables; no SQL database — file-based storage throughout.
+
+### What it handles automatically
+
+| Concern | docker-mailserver |
+|---------|------------------|
+| DKIM key generation | `setup.sh email` generates keys; DNS record printed |
+| TLS | Auto-detects mounted Let's Encrypt, Traefik, or Caddy certs |
+| Spam filtering (Rspamd) | Enabled by default |
+| ClamAV signature updates | Auto-updates inside container |
+| Fail2ban | Default jail: 6 failures → 1-week ban |
+| STARTTLS enforcement | On by default |
+
+### What still needs manual work
+
+- **Let's Encrypt renewal** — Certbot runs on the host (not in container); container picks up renewed certs on next restart. A host cron/systemd timer is required.
+- **DNS records** — A, MX, PTR, SPF, DKIM, DMARC must be set up externally (Route53/Cloudflare).
+- **User provisioning** — `setup.sh email add user@domain password`; file-based, requires container restart to take effect.
+- **Subdomain hostname** — `mail.example.com` strongly recommended over bare `example.com` to avoid Postfix delivery conflicts.
+- **Recursive DNS** — Cloudflare `1.1.1.1` can interfere with RBL/DNSBL lookups; a local unbound resolver is recommended.
+
+### Resource requirements
+
+1 vCore, 512 MB RAM minimum (1–2 GB recommended). With ClamAV enabled, budget ~850 MB RAM. A $5-6/month Hetzner CX11 / DigitalOcean Basic is on the edge; a $8-10/month instance (2 GB) is comfortable.
+
+### Container vs bare-metal on a VPS
+
+| Dimension | docker-mailserver (container) | Bare-metal Postfix+Dovecot (sovereign / Ansible) |
+|-----------|------------------------------|--------------------------------------------------|
+| **Setup complexity** | Low — one `docker-compose up` | High — coordinate 5+ packages, systemd units |
+| **Configuration** | Env vars + mounted files; setup.sh CLI | Direct config file editing; full Postfix/Dovecot flexibility |
+| **Ansible integration** | Weak — no official playbooks; Ansible deploys the compose file but can't manage mail users natively | Strong — sovereign and custom roles manage every aspect |
+| **Hot-reload** | No — user/config changes require restart | Yes — `systemctl reload postfix/dovecot` |
+| **Debugging** | Harder — logs spread across supervisord processes inside container | Easier — native `journalctl`, direct process inspection |
+| **Reproducibility** | High — Docker image version pins the entire stack | Medium — depends on Debian package versions |
+| **Cert renewal automation** | Host-side (cron/systemd); not self-contained | Ansible role handles it end-to-end |
+| **Upgrades** | `docker pull` + restart; CHANGELOG may require config changes | `apt upgrade`; service-by-service |
+| **Customisation ceiling** | Moderate — `user-patches.sh` for arbitrary overrides | Unlimited |
+
+**Key tension for this repo:** The existing Ansible-first approach means bare-metal wins on integration — an Ansible role can manage users, certs, and config as code with full idempotency. docker-mailserver's value proposition (avoiding manual coordination of 5+ packages) is partly negated when Ansible is already doing that coordination.
+
+**However**, docker-mailserver is worth considering if:
+- The VPS is intended to be long-lived and upgraded in place (image pinning prevents uncontrolled apt upgrades)
+- A quick initial deployment is needed before a full Ansible role is ready
+- The mail server may eventually move to the k8s cluster (container already matches that target form factor — though docker-mailserver itself is not k8s-native)
+
+### Known limitations
+
+- No built-in Let's Encrypt renewal (host responsibility)
+- No live user provisioning (restart required)
+- IPv6-only networks cause container crashes
+- No official Kubernetes support (designed for single-host Docker)
+- Podman has known auth issues (Docker recommended)
+
+### Verdict
+
+**Use docker-mailserver** for a fast, opinionated deployment where the default feature set (Rspamd, ClamAV, DKIM, Fail2ban) is sufficient and container operations are acceptable. Good starting point.
+
+**Use bare-metal (sovereign pattern + Ansible role)** for full IaC integration, hot-reload, and no container overhead — better long-term fit for this repo's Ansible-first philosophy. Higher initial effort but more maintainable alongside the existing role structure.
