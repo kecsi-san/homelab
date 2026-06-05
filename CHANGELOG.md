@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(security-tools): run aideinit in background to avoid blocking playbook ([a124c72](https://github.com/kecsi-san/homelab/commit/a124c7289e98791c921474aa65f02fa21dd010d1) by Zoltan K).
 - fix(cloudflare-zone): use Jinja2 dict expression for body to preserve int/bool types ([ab92218](https://github.com/kecsi-san/homelab/commit/ab9221826d999a7ade8433da9139275a18756380) by Zoltan K).
 - fix(cloudflare-zone): cast ttl to int and proxied to bool for CF API ([b89142e](https://github.com/kecsi-san/homelab/commit/b89142e6ea122a47c6c4c9c6bf4494f207e283ea) by Zoltan K).
 - fix(cloudflare-zone): split DNS and settings tokens; ECH uses cloudflare_settings_token ([0e5b39c](https://github.com/kecsi-san/homelab/commit/0e5b39c0c37a305c3c3f01b20d814e4d333c44d8) by Zoltan K).
