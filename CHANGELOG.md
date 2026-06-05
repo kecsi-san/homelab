@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(argocd): resolve OutOfSync for volsync, wikijs, cnpg-cluster ([4bb77ff](https://github.com/kecsi-san/homelab/commit/4bb77fffcec455ccc30e1c32554495b96179f384) by Zoltan K).
 - fix: typo in README.md ([cb37339](https://github.com/kecsi-san/homelab/commit/cb373393da1d2634453db1b9384e599b57db2a7c) by Zoltan K).
 - fix(kromgo): use ALERTS metric for alert count, exclude Watchdog and InfoInhibitor by name ([7bfef3a](https://github.com/kecsi-san/homelab/commit/7bfef3a99df32254c8ae9315460ee345d6c4314e) by Zoltan K).
 - fix(security-tools): run aideinit in background to avoid blocking playbook ([a124c72](https://github.com/kecsi-san/homelab/commit/a124c7289e98791c921474aa65f02fa21dd010d1) by Zoltan K).
