@@ -1,0 +1,45 @@
+---
+- name: Deploy dovecot.conf
+  ansible.builtin.template:
+    src: dovecot.conf.j2
+    dest: "{{ dovecot_config_dir }}/dovecot.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Reload dovecot
+  tags:
+    - dovecot
+
+- name: Deploy dovecot SSL config
+  ansible.builtin.template:
+    src: dovecot-ssl.conf.j2
+    dest: "{{ dovecot_config_dir }}/conf.d/10-ssl.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Reload dovecot
+  tags:
+    - dovecot
+
+- name: Create per-user maildir directories
+  ansible.builtin.file:
+    path: "{{ vmail_home }}/{{ item.1 }}/{{ item.0.name }}/Maildir"
+    state: directory
+    owner: "{{ vmail_user }}"
+    group: "{{ vmail_user }}"
+    mode: "0700"
+  become: true
+  loop: "{{ mailbox_users | subelements('domains') }}"
+  tags:
+    - dovecot
+
+- name: Ensure dovecot is enabled and running
+  ansible.builtin.systemd:
+    name: dovecot
+    enabled: true
+    state: started
+  become: true
+  tags:
+    - dovecot

@@ -1,0 +1,19 @@
+# Managed by Ansible — do not edit manually
+Syslog           yes
+SyslogSuccess    yes
+LogWhy           yes
+
+UserID           opendkim
+UMask            007
+
+Socket           local:/run/opendkim/opendkim.sock
+PidFile          /run/opendkim/opendkim.pid
+
+Canonicalization relaxed/simple
+Mode             sv
+SubDomains       no
+
+KeyTable         refile:{{ opendkim_config_dir }}/KeyTable
+SigningTable     refile:{{ opendkim_config_dir }}/SigningTable
+
+InternalHosts    refile:{{ opendkim_config_dir }}/TrustedHosts

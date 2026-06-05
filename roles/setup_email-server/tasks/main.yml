@@ -1,0 +1,38 @@
+---
+- name: Install email server packages
+  ansible.builtin.package:
+    name: "{{ email_apt_packages }}"
+    state: present
+  become: true
+
+- name: Create vmail group
+  ansible.builtin.group:
+    name: "{{ vmail_user }}"
+    gid: "{{ vmail_gid }}"
+    system: true
+  become: true
+
+- name: Create vmail system user
+  ansible.builtin.user:
+    name: "{{ vmail_user }}"
+    uid: "{{ vmail_uid }}"
+    group: "{{ vmail_user }}"
+    system: true
+    create_home: false
+    home: "{{ vmail_home }}"
+    shell: /usr/sbin/nologin
+  become: true
+
+- name: Create mailbox base directory
+  ansible.builtin.file:
+    path: "{{ vmail_home }}"
+    state: directory
+    owner: "{{ vmail_user }}"
+    group: "{{ vmail_user }}"
+    mode: "0750"
+  become: true
+
+- ansible.builtin.import_tasks: certbot.yml
+- ansible.builtin.import_tasks: postfix.yml
+- ansible.builtin.import_tasks: dovecot.yml
+- ansible.builtin.import_tasks: opendkim.yml

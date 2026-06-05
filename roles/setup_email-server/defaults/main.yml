@@ -1,0 +1,26 @@
+---
+email_server_enabled: true
+
+# Primary mail hostname — used for TLS cert, SMTP banner, Dovecot
+mail_hostname: "mail.{{ email_domains | first }}"
+
+# Virtual mail system user (owns all mailboxes on disk)
+vmail_user: vmail
+vmail_uid: 5000
+vmail_gid: 5000
+vmail_home: /var/mail/vmail
+
+# DKIM selector — change to rotate keys (old selector stays valid until DNS TTL expires)
+dkim_selector: mail
+
+# Certbot Let's Encrypt registration email (falls back to acme_email from secrets.yml)
+certbot_email: "{{ acme_email }}"
+
+# Mailbox users — define in secrets.yml (never commit real passwords)
+# Format:
+#   - name: user
+#     domains:
+#       - kecskemethy.com
+#       - kecskemethy.net
+#     password_hash: "{{ 'password' | password_hash('sha512') }}"
+mailbox_users: []
