@@ -270,6 +270,7 @@ ArgoCD manages all apps via app-of-apps pattern. Root app: `kube-gitops/k8s/root
 | volsync-config | volsync-system | Raw manifests (`kube-gitops/k8s/volsync-config/`) | Longhorn VolumeSnapshotClass |
 | mealie | mealie | Raw manifests (`kube-gitops/k8s/mealie/`) | Self-hosted recipe manager; SQLite; default login changeme@example.com / MyPassword |
 | minecraft | minecraft | Raw manifests (`kube-gitops/k8s/minecraft/`) | Minecraft Bedrock server; `itzg/minecraft-bedrock-server`; UDP 19132 on 192.168.1.110 (kube-vip); 5Gi Longhorn PVC |
+| pod-cleanup | kube-system | Raw manifests (`kube-gitops/k8s/pod-cleanup/`) | Nightly CronJob (03:00) deleting Failed + Succeeded pods cluster-wide; RBAC: list+delete pods |
 
 **VolSync backup architecture:**
 - Restic REST server runs on hppd600g6 (192.168.1.52:8000) — external to k8s, data on 100G LV at `/backups/restic-repos/`
@@ -281,6 +282,11 @@ ArgoCD manages all apps via app-of-apps pattern. Root app: `kube-gitops/k8s/root
 - `copyMethod: Clone` (Longhorn CSI clone; Snapshot requires Longhorn backup target which is not configured)
 - Retention: 6 hourly, 7 daily, 4 weekly, 3 monthly; prune every 14 days
 - Restic credentials stored as SealedSecrets per namespace (`volsync-restic-secret`)
+
+**Pod garbage collection:**
+- `kube_controller_terminated_pod_gc_threshold: 20` set in `inventory/group_vars/k8s_cluster/k8s-cluster.yml`; takes effect after next `k8s.yml` run (Kubespray pushes flag to kube-controller-manager)
+- `pod-cleanup` CronJob (kube-system, 03:00 daily) deletes all `Failed` and `Succeeded` pods cluster-wide as a second layer; `Succeeded` pods accumulate from VolSync backup jobs
+- Manual cleanup: `kubectl delete pods -A --field-selector=status.phase=Failed`
 
 **SealedSecrets workflow:**
 ```bash
