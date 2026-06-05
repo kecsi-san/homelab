@@ -26,17 +26,23 @@ spec:
       - name: authentik
         ensure: present
         login: true
+        inherit: true
+        connectionLimit: -1
         passwordSecret:
           name: authentik-db-credentials
       - name: wikijs
         ensure: present
         login: true
         createDb: true
+        inherit: true
+        connectionLimit: -1
         passwordSecret:
           name: wikijs-db-credentials
       - name: backstage
         ensure: present
         login: true
+        inherit: true
+        connectionLimit: -1
         passwordSecret:
           name: backstage-db-credentials
 

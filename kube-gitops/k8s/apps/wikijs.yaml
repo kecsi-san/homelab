@@ -24,6 +24,11 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: wikijs
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jqPathExpressions:
+        - .spec.template.metadata.annotations."kubectl.kubernetes.io/restartedAt"
   syncPolicy:
     automated:
       prune: true
