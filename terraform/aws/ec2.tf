@@ -15,129 +15,64 @@ data "aws_ami" "debian13" {
   }
 }
 
+# Security group — rules managed via aws_security_group_rule below (no inline blocks).
 resource "aws_security_group" "ec2" {
   name        = "Linuxbox2016DebianGNULinux8Jessie"
   description = "Linuxbox.hu 2016 new security group for Debian GNU 8 Linux"
   vpc_id      = var.vpc_id
 
-  ingress {
-    description      = "SSH"
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    description      = "SMTP"
-    from_port        = 25
-    to_port          = 25
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    description      = "HTTP"
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    description      = "HTTPS"
-    from_port        = 443
-    to_port          = 443
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    description      = "SMTPS (legacy)"
-    from_port        = 465
-    to_port          = 465
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    description      = "SMTP submission (STARTTLS)"
-    from_port        = 587
-    to_port          = 587
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    description      = "IMAPS"
-    from_port        = 993
-    to_port          = 993
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    description = "Hugo dev server"
-    from_port   = 1313
-    to_port     = 1313
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    description      = "Jupyter"
-    from_port        = 8888
-    to_port          = 8888
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    description      = "Minecraft TCP"
-    from_port        = 19132
-    to_port          = 19132
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    description      = "Minecraft UDP"
-    from_port        = 19132
-    to_port          = 19132
-    protocol         = "udp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    description = "Wireguard VPN"
-    from_port   = 51820
-    to_port     = 51820
-    protocol    = "udp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    description      = "All outbound"
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
   tags = {
     Name = "homelab-edge"
   }
+}
+
+locals {
+  # port => { protocol, ipv6, description }
+  # ipv6 = false for rules where IPv6 was never configured (Hugo, Wireguard)
+  ingress_rules = {
+    ssh             = { port = 22,    protocol = "tcp", ipv6 = true,  description = "SSH" }
+    smtp            = { port = 25,    protocol = "tcp", ipv6 = true,  description = "SMTP" }
+    http            = { port = 80,    protocol = "tcp", ipv6 = true,  description = "HTTP" }
+    https           = { port = 443,   protocol = "tcp", ipv6 = true,  description = "HTTPS" }
+    smtps           = { port = 465,   protocol = "tcp", ipv6 = true,  description = "SMTPS (legacy)" }
+    smtp_submission = { port = 587,   protocol = "tcp", ipv6 = true,  description = "SMTP submission (STARTTLS)" }
+    imaps           = { port = 993,   protocol = "tcp", ipv6 = true,  description = "IMAPS" }
+    hugo            = { port = 1313,  protocol = "tcp", ipv6 = false, description = "Hugo dev server" }
+    jupyter         = { port = 8888,  protocol = "tcp", ipv6 = true,  description = "Jupyter" }
+    minecraft_tcp   = { port = 19132, protocol = "tcp", ipv6 = true,  description = "Minecraft TCP" }
+    minecraft_udp   = { port = 19132, protocol = "udp", ipv6 = true,  description = "Minecraft UDP" }
+    wireguard       = { port = 51820, protocol = "udp", ipv6 = false, description = "Wireguard VPN" }
+  }
+}
+
+resource "aws_security_group_rule" "ingress" {
+  for_each          = local.ingress_rules
+  security_group_id = aws_security_group.ec2.id
+  type              = "ingress"
+  from_port         = each.value.port
+  to_port           = each.value.port
+  protocol          = each.value.protocol
+  cidr_blocks       = ["0.0.0.0/0"]
+  ipv6_cidr_blocks  = each.value.ipv6 ? ["::/0"] : []
+  description       = each.value.description
+}
+
+resource "aws_security_group_rule" "egress_ipv4" {
+  security_group_id = aws_security_group.ec2.id
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "egress_ipv6" {
+  security_group_id = aws_security_group.ec2.id
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  ipv6_cidr_blocks  = ["::/0"]
 }
 
 resource "aws_instance" "ec2" {
