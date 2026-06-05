@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(aws): ec2 instance parameter sync ([1ee280c](https://github.com/kecsi-san/homelab/commit/1ee280c74ced9c9deb4e876497e36e8c3f967bb8) by Zoltan K).
 - fix(terraform): align ec2.tf with live state from reverse engineering ([9c8d009](https://github.com/kecsi-san/homelab/commit/9c8d00980e2f613e00a80fedcaf89c2e0a724298) by Zoltan K).
 - fix(terraform): replace deprecated dynamodb_table with use_lockfile, bump version to ~>1.10 ([1831311](https://github.com/kecsi-san/homelab/commit/1831311d9866bfe76bd4364a446d3d35e9556744) by Zoltan K).
 - fix(ansible-lint): add name to import_tasks in setup_email-server; add justfile TODO ([984a551](https://github.com/kecsi-san/homelab/commit/984a5510c8674a0247a9313990b4542e4ccaa3a2) by Zoltan K).
