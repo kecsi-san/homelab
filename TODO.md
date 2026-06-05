@@ -57,6 +57,8 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 
 ## Low priority / Future
 
+- [ ] **Justfile** — create and maintain a repo-level `justfile` as the single entry point for all common commands (Ansible playbooks, Terraform ops, kubectl one-liners, cluster rebuild runbook); replaces scattered README snippets; `just` is already installed via `setup_minimal` brew packages
+
 - [ ] **Wiki.js VolSync backup** — add daily restic backup for wiki.js PVC (same pattern as ntfy/gatus/mealie); Outline replaced by Wiki.js
 - [ ] **Kustomize domain injection** — eliminate hardcoded `kecskemethy.org` and `192.168.1.101` from `kube-gitops/` manifests (IngressRoutes, certificates, deployments, Traefik values annotation); use Kustomize replacements or a common vars ConfigMap
 - [ ] **ArgoCD app repo URLs** — 40+ `repoURL: https://github.com/kecsi-san/homelab.git` hardcoded in ArgoCD app files (both k8s and k3s); parameterise so the repo is forkable without find-replace; options: Kustomize variable, or a bootstrap ConfigMap read by the root app

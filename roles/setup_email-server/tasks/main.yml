@@ -32,7 +32,14 @@
     mode: "0750"
   become: true
 
-- ansible.builtin.import_tasks: certbot.yml
-- ansible.builtin.import_tasks: postfix.yml
-- ansible.builtin.import_tasks: dovecot.yml
-- ansible.builtin.import_tasks: opendkim.yml
+- name: Configure certbot TLS certificate
+  ansible.builtin.import_tasks: certbot.yml
+
+- name: Configure Postfix
+  ansible.builtin.import_tasks: postfix.yml
+
+- name: Configure Dovecot
+  ansible.builtin.import_tasks: dovecot.yml
+
+- name: Configure OpenDKIM
+  ansible.builtin.import_tasks: opendkim.yml
