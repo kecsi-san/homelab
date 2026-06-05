@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(kromgo): use ALERTS metric for alert count, exclude Watchdog and InfoInhibitor by name ([7bfef3a](https://github.com/kecsi-san/homelab/commit/7bfef3a99df32254c8ae9315460ee345d6c4314e) by Zoltan K).
 - fix(security-tools): run aideinit in background to avoid blocking playbook ([a124c72](https://github.com/kecsi-san/homelab/commit/a124c7289e98791c921474aa65f02fa21dd010d1) by Zoltan K).
 - fix(cloudflare-zone): use Jinja2 dict expression for body to preserve int/bool types ([ab92218](https://github.com/kecsi-san/homelab/commit/ab9221826d999a7ade8433da9139275a18756380) by Zoltan K).
 - fix(cloudflare-zone): cast ttl to int and proxied to bool for CF API ([b89142e](https://github.com/kecsi-san/homelab/commit/b89142e6ea122a47c6c4c9c6bf4494f207e283ea) by Zoltan K).
