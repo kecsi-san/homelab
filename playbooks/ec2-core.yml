@@ -1,0 +1,85 @@
+---
+# Base configuration for the AWS EC2 edge node.
+# Run after ec2-prerequisite.yml (passwordless sudo must be set up first).
+# Usage: ansible-playbook -i inventory/aws_hosts playbooks/ec2-core.yml
+- name: Configure EC2 edge node
+  hosts: aws
+  become: false
+  remote_user: "{{ ansible_ssh_user }}"
+  tasks:
+    - name: Upgrade Debian packages
+      ansible.builtin.import_role:
+        name: debian_upgrade
+      become: true
+      vars:
+        debian_upgrade_enabled: true
+      tags:
+        - update
+
+    - name: Configure SSH
+      ansible.builtin.import_role:
+        name: configure_ssh
+      become: true
+      tags:
+        - ssh
+
+    - name: Configure sudo
+      ansible.builtin.import_role:
+        name: configure_sudo
+      become: true
+      tags:
+        - sudo
+
+    - name: Setup legal banner
+      ansible.builtin.import_role:
+        name: setup_legal_banner
+      become: true
+      vars:
+        legal_banner_enabled: true
+      tags:
+        - banner
+        - security
+
+    - name: Setup minimal packages
+      ansible.builtin.import_role:
+        name: setup_minimal
+      become: true
+      vars:
+        install_base_packages: true
+        install_brew_base_packages: false
+      tags:
+        - minimal
+
+    - name: Setup network tools
+      ansible.builtin.import_role:
+        name: setup_network-tools
+      become: true
+      when: ansible_system == 'Linux'
+      tags:
+        - network
+
+    - name: Configure NTP
+      ansible.builtin.import_role:
+        name: configure_ntp
+      become: true
+      tags:
+        - ntp
+
+    - name: Setup etckeeper
+      ansible.builtin.import_role:
+        name: setup_etckeeper
+      become: true
+      when: etckeeper | default(false)
+      tags:
+        - etckeeper
+
+    - name: Setup security tools
+      ansible.builtin.import_role:
+        name: setup_security-tools
+      vars:
+        security_apt_packages:
+          - aide
+          - fail2ban
+          - rkhunter
+      tags:
+        - security

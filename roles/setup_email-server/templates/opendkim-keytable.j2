@@ -1,0 +1,5 @@
+# Managed by Ansible — do not edit manually
+# Format: keyname   domain:selector:keyfile
+{% for domain in email_domains %}
+{{ dkim_selector }}._domainkey.{{ domain }}   {{ domain }}:{{ dkim_selector }}:{{ opendkim_keys_dir }}/{{ domain }}/{{ dkim_selector }}.private
+{% endfor %}

@@ -1,0 +1,21 @@
+---
+# Run BEFORE ec2-core.yml on a fresh instance — passwordless sudo not yet configured.
+# Usage: ansible-playbook --ask-become-pass -i inventory/aws_hosts playbooks/ec2-prerequisite.yml
+- name: EC2 prerequisite setup
+  hosts: aws
+  become: false
+  remote_user: "{{ ansible_ssh_user }}"
+  tasks:
+    - name: Configure SSH
+      ansible.builtin.import_role:
+        name: configure_ssh
+      become: true
+      tags:
+        - ssh
+
+    - name: Configure sudo
+      ansible.builtin.import_role:
+        name: configure_sudo
+      become: true
+      tags:
+        - sudo

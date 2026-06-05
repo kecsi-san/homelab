@@ -1,0 +1,9 @@
+---
+# Variables for the [aws] group (EC2 edge node)
+# SSH key path and AWS credentials are in secrets.yml (gitignored)
+
+ansible_ssh_private_key_file: "{{ ec2_ssh_key_file }}"
+ansible_python_interpreter: /usr/bin/python3
+
+etckeeper: true
+linuxbrew: false   # headless server, not a workstation

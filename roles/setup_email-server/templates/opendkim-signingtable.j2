@@ -1,0 +1,5 @@
+# Managed by Ansible — do not edit manually
+# Format: sender-pattern   keyname
+{% for domain in email_domains %}
+*@{{ domain }}   {{ dkim_selector }}._domainkey.{{ domain }}
+{% endfor %}

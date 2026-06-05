@@ -1,0 +1,17 @@
+---
+email_apt_packages:
+  - postfix
+  - postfix-pcre
+  - dovecot-core
+  - dovecot-imapd
+  - dovecot-lmtpd
+  - opendkim
+  - opendkim-tools
+  - certbot
+  - python3-certbot-dns-route53
+
+postfix_config_dir: /etc/postfix
+dovecot_config_dir: /etc/dovecot
+opendkim_config_dir: /etc/opendkim
+opendkim_keys_dir: /etc/opendkim/keys
+certbot_cert_dir: /etc/letsencrypt/live

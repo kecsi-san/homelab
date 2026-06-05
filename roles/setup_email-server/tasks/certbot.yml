@@ -1,0 +1,37 @@
+---
+- name: Issue TLS certificate via DNS-01 (Route53)
+  ansible.builtin.command:
+    cmd: >
+      certbot certonly --non-interactive --agree-tos
+      --dns-route53
+      --email {{ certbot_email }}
+      -d {{ mail_hostname }}
+    creates: "{{ certbot_cert_dir }}/{{ mail_hostname }}/fullchain.pem"
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
+    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
+    AWS_DEFAULT_REGION: "{{ aws_region }}"
+  become: true
+  tags:
+    - certbot
+
+- name: Install certbot renewal systemd timer
+  ansible.builtin.systemd:
+    name: certbot.timer
+    enabled: true
+    state: started
+  become: true
+  tags:
+    - certbot
+
+- name: Add Postfix and Dovecot to certbot renewal hooks
+  ansible.builtin.copy:
+    dest: /etc/letsencrypt/renewal-hooks/deploy/reload-mail.sh
+    mode: "0750"
+    content: |
+      #!/bin/sh
+      systemctl reload postfix
+      systemctl reload dovecot
+  become: true
+  tags:
+    - certbot

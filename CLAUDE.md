@@ -60,6 +60,24 @@ ansible-playbook playbooks/configure-router.yml
 # OS upgrades on all kube group hosts
 ansible-playbook playbooks/upgrade.yml
 
+# AWS EC2 edge node — first-time setup (passwordless sudo not yet configured)
+ansible-playbook --ask-become-pass -i inventory/aws_hosts playbooks/ec2-prerequisite.yml
+
+# AWS EC2 edge node — base hardening (run after ec2-prerequisite.yml)
+ansible-playbook -i inventory/aws_hosts playbooks/ec2-core.yml
+
+# AWS EC2 edge node — email server (Postfix + Dovecot + OpenDKIM + certbot)
+ansible-playbook -i inventory/aws_hosts playbooks/ec2-mail.yml
+
+# Terraform — EC2 infra (provision/update, also writes inventory/aws_hosts)
+# cd terraform/aws && terraform init -backend-config=backend.conf && terraform apply
+
+# Terraform — import existing resources (run once per resource)
+# terraform import aws_instance.ec2 <instance-id>
+# terraform import aws_eip.ec2 <eip-allocation-id>
+# terraform import 'aws_route53_zone.zones["kecskemethy.com"]' <zone-id>
+# terraform import 'aws_route53_zone.zones["kecskemethy.net"]' <zone-id>
+
 # Typical full cluster rebuild timing (4-node homelab: 3 CP + 1 worker, Kubespray 2.31 + Cilium 1.18.5):
 #   reset-k8s.yml   ~4 min
 #   k8s.yml        ~21 min
@@ -171,9 +189,11 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | `upload_fav_bgimages` | Copies wallpapers to `/usr/share/backgrounds/`; generates GNOME background picker XML |
 | `upload_profile_image` | Sets GNOME/GDM profile picture; image path set via `profile_image_src` variable (not stored in repo) |
 
+| `setup_email-server` | Postfix (SMTP + submission 587 STARTTLS) + Dovecot (IMAPS 993) + OpenDKIM (per-domain DKIM keys) + certbot DNS-01 via Route53; virtual mailbox users from `secrets.yml`; multi-domain; prints DKIM public keys for Route53 TXT records |
+
 #### Placeholder Roles (empty `tasks/main.yml`)
 
-`setup_email-server`, `setup_email-tools`, `setup_mlops-tools`, `setup_aiops-tools`, `setup_mle-tools`
+`setup_email-tools`, `setup_mlops-tools`, `setup_aiops-tools`, `setup_mle-tools`
 
 ### Inventory Structure
 

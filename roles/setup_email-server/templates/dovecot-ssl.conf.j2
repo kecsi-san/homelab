@@ -1,0 +1,7 @@
+# Managed by Ansible — do not edit manually
+ssl = required
+ssl_cert = <{{ certbot_cert_dir }}/{{ mail_hostname }}/fullchain.pem
+ssl_key  = <{{ certbot_cert_dir }}/{{ mail_hostname }}/privkey.pem
+ssl_min_protocol = TLSv1.2
+ssl_cipher_list = ECDHE+AESGCM:ECDHE+CHACHA20:!aNULL:!eNULL
+ssl_prefer_server_ciphers = yes

@@ -1,0 +1,55 @@
+---
+- name: Deploy Postfix main.cf
+  ansible.builtin.template:
+    src: postfix-main.cf.j2
+    dest: "{{ postfix_config_dir }}/main.cf"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Reload postfix
+  tags:
+    - postfix
+
+- name: Deploy Postfix master.cf
+  ansible.builtin.template:
+    src: postfix-master.cf.j2
+    dest: "{{ postfix_config_dir }}/master.cf"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Reload postfix
+  tags:
+    - postfix
+
+- name: Deploy virtual mailbox map
+  ansible.builtin.template:
+    src: postfix-vmailbox.j2
+    dest: "{{ postfix_config_dir }}/vmailbox"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify:
+    - Rebuild vmailbox db
+    - Reload postfix
+  tags:
+    - postfix
+
+- name: Rebuild vmailbox hash db
+  ansible.builtin.command:
+    cmd: postmap {{ postfix_config_dir }}/vmailbox
+  become: true
+  changed_when: false
+  tags:
+    - postfix
+
+- name: Ensure postfix is enabled and running
+  ansible.builtin.systemd:
+    name: postfix
+    enabled: true
+    state: started
+  become: true
+  tags:
+    - postfix
