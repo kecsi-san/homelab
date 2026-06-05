@@ -2,10 +2,8 @@
 # Usage: terraform init -backend-config=backend.conf
 #
 # bucket name format: <name>-<region>-<environment>-<account-id>
-bucket = "your-tfstate-bucket-name"
-key    = "aws/terraform.tfstate"
-region = "eu-west-1"
-
-# Optional: enable state locking
-dynamodb_table = "terraform-state-lock"
-encrypt        = true
+bucket       = "your-tfstate-bucket-name"
+key          = "aws/terraform.tfstate"
+region       = "eu-west-1"
+encrypt      = true
+use_lockfile = true   # S3 native locking (Terraform >= 1.10, no DynamoDB needed)
