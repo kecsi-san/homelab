@@ -141,7 +141,7 @@ resource "aws_security_group" "ec2" {
 }
 
 resource "aws_instance" "ec2" {
-  ami                    = data.aws_ami.debian13.id
+  ami                    = "ami-0636e459be80b841e"
   instance_type          = var.instance_type
   key_name               = var.key_pair_name
   subnet_id              = var.subnet_id
@@ -149,11 +149,14 @@ resource "aws_instance" "ec2" {
   iam_instance_profile   = var.iam_instance_profile
 
   root_block_device {
-    device_name           = "xvda"
     volume_type           = "gp2"
     volume_size           = 25
     encrypted             = false
+    kms_key_id            = null
     delete_on_termination = false
+    tags = {
+      Name = "t3small.linuxbox.hu-root"
+    }
   }
 
   ebs_block_device {
