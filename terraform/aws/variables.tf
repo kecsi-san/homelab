@@ -27,8 +27,18 @@ variable "email_domains" {
   default     = []
 }
 
-variable "root_volume_size_gb" {
-  description = "Root EBS volume size in GB"
-  type        = number
-  default     = 30
+variable "vpc_id" {
+  description = "VPC ID where the EC2 instance lives"
+  type        = string
+}
+
+variable "subnet_id" {
+  description = "Subnet ID for the EC2 instance"
+  type        = string
+}
+
+variable "iam_instance_profile" {
+  description = "IAM instance profile name to attach to the EC2 instance"
+  type        = string
+  default     = ""
 }

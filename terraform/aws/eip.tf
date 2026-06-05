@@ -2,7 +2,7 @@ resource "aws_eip" "ec2" {
   domain = "vpc"
 
   tags = {
-    Name = "homelab-edge"
+    Name = "linuxbox.hu"
   }
 }
 
