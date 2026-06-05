@@ -46,6 +46,10 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 - [ ] **HashiCorp Vault ↔ Ansible** — replace `secrets.yml` values with `community.hashi_vault` lookups so Ansible fetches secrets at runtime; blocked on Vault deployment (see Big migrations below); endgame: `secrets.yml` contains only non-sensitive infra topology
 - [ ] **Helper scripts (`scripts/`)** — (a) random secret generator: writes `INTERNAL_TOKEN`, `SECRET_KEY`, `client-secret` etc. into `secrets.yml`; (b) ✅ `scripts/cloudflare-zone-id.sh <token> [domain]` — looks up zone ID and prints `secrets.yml` snippet; auto-reads `domain_name` from `vars.yml` if domain omitted
 
+## AWS / Golden Image
+
+- [ ] **Packer golden AMI** — bake a Debian 13 base image with security hardening and base packages pre-installed; faster EC2 cold-start than provisioning from scratch; build pipeline in a dedicated Forgejo repo with CI pushing finished AMI to ECR; replace `data "aws_ami" "debian13"` in Terraform once pipeline is stable
+
 ## Big migrations
 
 - [ ] **Vault** — replace SealedSecrets with HashiCorp Vault (or OpenBao) for secrets management; significant migration: re-seal all secrets, update ArgoCD apps, update workflows
