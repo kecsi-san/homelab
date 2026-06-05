@@ -52,6 +52,6 @@ data:
         color: 'result < 1 ? "green" : "red"'
         title: Failed Pods
       - id: cluster_alert_count
-        query: clamp_min(alertmanager_alerts{state="active"} - 1, 0)
+        query: count(ALERTS{alertstate="firing",alertname!~"Watchdog|InfoInhibitor"}) or vector(0)
         color: 'result < 1 ? "green" : "red"'
         title: Alerts
