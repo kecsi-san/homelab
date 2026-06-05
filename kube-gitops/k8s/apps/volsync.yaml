@@ -29,8 +29,8 @@ spec:
   ignoreDifferences:
     - group: apps
       kind: Deployment
-      jsonPointers:
-        - /status/terminatingReplicas
+      jqPathExpressions:
+        - .status
     - group: apiextensions.k8s.io
       kind: CustomResourceDefinition
       jsonPointers:
