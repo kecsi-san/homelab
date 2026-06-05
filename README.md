@@ -1,27 +1,14 @@
 # Just another Homelab IaC or home operations repo
 
-<div align="center">
-
-[![GitHub Tag](https://img.shields.io/github/v/tag/kecsi-san/homelab)](https://github.com/kecsi-san/homelab/releases)&nbsp;&nbsp;
-[![Lint](https://github.com/kecsi-san/homelab/actions/workflows/lint.yml/badge.svg)](https://github.com/kecsi-san/homelab/actions/workflows/lint.yml)&nbsp;&nbsp;
-[![License](https://img.shields.io/github/license/kecsi-san/homelab)](LICENSE)&nbsp;&nbsp;
-![GitHub last commit](https://img.shields.io/github/last-commit/kecsi-san/homelab)&nbsp;&nbsp;
-![GitHub repo size](https://img.shields.io/github/repo-size/kecsi-san/homelab)
-
-[![Renovate](https://img.shields.io/badge/renovate-enabled-brightgreen?logo=renovatebot)](https://renovatebot.com)&nbsp;&nbsp;
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://pre-commit.com)
-
-[![debian_version](https://kromgo.kecskemethy.org/badges/debian_version)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![kubernetes_version](https://kromgo.kecskemethy.org/badges/kubernetes_version)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![cluster_node_count](https://kromgo.kecskemethy.org/badges/cluster_node_count)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![cluster_pod_count](https://kromgo.kecskemethy.org/badges/cluster_pod_count)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![cluster_cpu_usage](https://kromgo.kecskemethy.org/badges/cluster_cpu_usage)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![cluster_memory_usage](https://kromgo.kecskemethy.org/badges/cluster_memory_usage)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![cluster_birth_age](https://kromgo.kecskemethy.org/badges/cluster_birth_age)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![cluster_uptime_age](https://kromgo.kecskemethy.org/badges/cluster_uptime_age)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-[![cluster_alert_count](https://kromgo.kecskemethy.org/badges/cluster_alert_count)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;
-
-</div>
+| | |
+|:--|:--|
+| **repo** | [![GitHub Tag](https://img.shields.io/github/v/tag/kecsi-san/homelab)](https://github.com/kecsi-san/homelab/releases)&nbsp;&nbsp;[![Lint](https://github.com/kecsi-san/homelab/actions/workflows/lint.yml/badge.svg)](https://github.com/kecsi-san/homelab/actions/workflows/lint.yml)&nbsp;&nbsp;[![License](https://img.shields.io/github/license/kecsi-san/homelab)](LICENSE)&nbsp;&nbsp;![GitHub last commit](https://img.shields.io/github/last-commit/kecsi-san/homelab)&nbsp;&nbsp;![GitHub repo size](https://img.shields.io/github/repo-size/kecsi-san/homelab) |
+| **tooling** | [![Renovate](https://img.shields.io/badge/renovate-enabled-brightgreen?logo=renovatebot)](https://renovatebot.com)&nbsp;&nbsp;[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://pre-commit.com) |
+---
+| **versions** | [![debian_version](https://kromgo.kecskemethy.org/badges/debian_version)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;[![kubernetes_version](https://kromgo.kecskemethy.org/badges/kubernetes_version)](https://github.com/home-operations/kromgo) |
+| **health** | [![cluster_alert_count](https://kromgo.kecskemethy.org/badges/cluster_alert_count)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;[![cluster_argocd_out_of_sync](https://kromgo.kecskemethy.org/badges/cluster_argocd_out_of_sync)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;[![cluster_failed_pods](https://kromgo.kecskemethy.org/badges/cluster_failed_pods)](https://github.com/home-operations/kromgo) |
+| **resources** | [![cluster_cpu_usage](https://kromgo.kecskemethy.org/badges/cluster_cpu_usage)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;[![cluster_memory_usage](https://kromgo.kecskemethy.org/badges/cluster_memory_usage)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;[![cluster_longhorn_storage](https://kromgo.kecskemethy.org/badges/cluster_longhorn_storage)](https://github.com/home-operations/kromgo) |
+| **cluster** | [![cluster_node_count](https://kromgo.kecskemethy.org/badges/cluster_node_count)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;[![cluster_pod_count](https://kromgo.kecskemethy.org/badges/cluster_pod_count)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;[![cluster_birth_age](https://kromgo.kecskemethy.org/badges/cluster_birth_age)](https://github.com/home-operations/kromgo)&nbsp;&nbsp;[![cluster_uptime_age](https://kromgo.kecskemethy.org/badges/cluster_uptime_age)](https://github.com/home-operations/kromgo) |
 
 ---
 
@@ -59,9 +46,9 @@ This repository tries to follow a modular **LEGO approach**, build up automated 
 | [Authentik](https://goauthentik.io) | SSO / Identity Provider — OIDC for all platform services | authentik.fqdn |
 | [Forgejo](https://forgejo.org) | Self-hosted Git server, OCI registry, and CI runner | forgejo.fqdn |
 | [Backstage](https://backstage.io) | Internal developer portal — catalog, scaffolder, TechDocs | backstage.fqdn |
-| [Outline](https://www.getoutline.com) | Self-hosted wiki and knowledge base | outline.fqdn |
+| [Wiki.js](https://js.wiki) | Self-hosted wiki and knowledge base | wiki.fqdn |
 | [Mealie](https://mealie.io) | Self-hosted recipe manager | mealie.fqdn |
-| [Homepage](https://gethomepage.dev) | Start page with live cluster and service widgets | homepage.kecskemethy.com |
+| [Homepage](https://gethomepage.dev) | Start page with live cluster and service widgets | homepage.kecskemethy.org |
 | [Headlamp](https://headlamp.dev) | Kubernetes dashboard | headlamp.fqdn |
 | [Prometheus + Grafana](https://prometheus.io) | Cluster metrics collection and dashboards | grafana.fqdn |
 | [Gatus](https://gatus.io) | Uptime monitoring and status page | gatus.fqdn |

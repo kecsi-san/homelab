@@ -39,6 +39,19 @@ data:
         query: round(avg(node_time_seconds - node_boot_time_seconds))
         value: humanizeDays(result)
         color: 'result <= 15552000 ? "green" : result <= 31104000 ? "orange" : "red"'
-      - id: cluster_alert_count
-        query: alertmanager_alerts{state="active"} - 1 # Ignore Watchdog
+      - id: cluster_longhorn_storage
+        query: round(sum(longhorn_node_storage_usage_bytes) / sum(longhorn_node_storage_capacity_bytes) * 100, 0.1)
+        value: string(result) + "%"
+        color: 'result <= 50 ? "green" : result <= 80 ? "orange" : "red"'
+      - id: cluster_argocd_out_of_sync
+        query: count(argocd_app_info{sync_status!="Synced"}) or vector(0)
         color: 'result < 1 ? "green" : "red"'
+        title: Apps Unsynced
+      - id: cluster_failed_pods
+        query: sum(kube_pod_status_phase{phase=~"Failed|Unknown"}) or vector(0)
+        color: 'result < 1 ? "green" : "red"'
+        title: Failed Pods
+      - id: cluster_alert_count
+        query: clamp_min(alertmanager_alerts{state="active"} - 1, 0)
+        color: 'result < 1 ? "green" : "red"'
+        title: Alerts
