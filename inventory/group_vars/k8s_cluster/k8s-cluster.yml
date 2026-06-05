@@ -385,3 +385,6 @@ kubeadm_patches: []
 
 # Set to true to remove the role binding to anonymous users created by kubeadm
 remove_anonymous_access: false
+
+# Garbage collect terminated pods once this many accumulate (default: 12500)
+kube_controller_terminated_pod_gc_threshold: 20
