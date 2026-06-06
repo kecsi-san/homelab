@@ -8,8 +8,11 @@ vpc_id               = "vpc-xxxxxxxx"
 subnet_id            = "subnet-xxxxxxxx"
 iam_instance_profile = "your-instance-profile-name"  # leave empty string if none
 
-# Domains whose MX/SPF/DMARC records are managed in Route53
-email_domains = ["example.com", "example.net"]
+# Domains with Route53 hosted zones — MX, SPF, DMARC records created for each
+route53_domains = ["example.com", "example.net"]
+
+# FQDN of the mail server; A record created in its parent zone
+mail_hostname = "mail.example.com"
 
 # Existing S3 bucket names to import and manage
 s3_bucket_names = []
