@@ -16,7 +16,7 @@ data "aws_ami" "debian13" {
 }
 
 # Security group — rules managed via aws_security_group_rule below (no inline blocks).
-resource "aws_security_group" "ec2" {
+resource "aws_security_group" "this" {
   name        = "Linuxbox2016DebianGNULinux8Jessie"
   description = "Linuxbox.hu 2016 new security group for Debian GNU 8 Linux"
   vpc_id      = var.vpc_id
@@ -26,28 +26,9 @@ resource "aws_security_group" "ec2" {
   }
 }
 
-locals {
-  # port => { protocol, ipv6, description }
-  # ipv6 = false for rules where IPv6 was never configured (Hugo, Wireguard)
-  ingress_rules = {
-    ssh             = { port = 22,    protocol = "tcp", ipv6 = true,  description = "SSH" }
-    smtp            = { port = 25,    protocol = "tcp", ipv6 = true,  description = "SMTP" }
-    http            = { port = 80,    protocol = "tcp", ipv6 = true,  description = "HTTP" }
-    https           = { port = 443,   protocol = "tcp", ipv6 = true,  description = "HTTPS" }
-    smtps           = { port = 465,   protocol = "tcp", ipv6 = true,  description = "SMTPS (legacy)" }
-    smtp_submission = { port = 587,   protocol = "tcp", ipv6 = true,  description = "SMTP submission (STARTTLS)" }
-    imaps           = { port = 993,   protocol = "tcp", ipv6 = true,  description = "IMAPS" }
-    hugo            = { port = 1313,  protocol = "tcp", ipv6 = false, description = "Hugo dev server" }
-    jupyter         = { port = 8888,  protocol = "tcp", ipv6 = true,  description = "Jupyter" }
-    minecraft_tcp   = { port = 19132, protocol = "tcp", ipv6 = true,  description = "Minecraft TCP" }
-    minecraft_udp   = { port = 19132, protocol = "udp", ipv6 = true,  description = "Minecraft UDP" }
-    wireguard       = { port = 51820, protocol = "udp", ipv6 = false, description = "Wireguard VPN" }
-  }
-}
-
 resource "aws_security_group_rule" "ingress" {
-  for_each          = local.ingress_rules
-  security_group_id = aws_security_group.ec2.id
+  for_each          = var.ingress_rules
+  security_group_id = aws_security_group.this.id
   type              = "ingress"
   from_port         = each.value.port
   to_port           = each.value.port
@@ -58,7 +39,7 @@ resource "aws_security_group_rule" "ingress" {
 }
 
 resource "aws_security_group_rule" "egress_ipv4" {
-  security_group_id = aws_security_group.ec2.id
+  security_group_id = aws_security_group.this.id
   type              = "egress"
   from_port         = 0
   to_port           = 0
@@ -67,7 +48,7 @@ resource "aws_security_group_rule" "egress_ipv4" {
 }
 
 resource "aws_security_group_rule" "egress_ipv6" {
-  security_group_id = aws_security_group.ec2.id
+  security_group_id = aws_security_group.this.id
   type              = "egress"
   from_port         = 0
   to_port           = 0
@@ -75,12 +56,12 @@ resource "aws_security_group_rule" "egress_ipv6" {
   ipv6_cidr_blocks  = ["::/0"]
 }
 
-resource "aws_instance" "ec2" {
-  ami                    = "ami-0636e459be80b841e"
+resource "aws_instance" "this" {
+  ami                    = data.aws_ami.debian13.id
   instance_type          = var.instance_type
   key_name               = var.key_pair_name
   subnet_id              = var.subnet_id
-  vpc_security_group_ids = [aws_security_group.ec2.id]
+  vpc_security_group_ids = [aws_security_group.this.id]
   iam_instance_profile   = var.iam_instance_profile
 
   root_block_device {

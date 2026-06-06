@@ -1,22 +1,19 @@
 output "ec2_public_ip" {
   description = "Elastic IP of the edge node"
-  value       = aws_eip.ec2.public_ip
+  value       = module.eip.public_ip
 }
 
 output "ec2_instance_id" {
   description = "EC2 instance ID"
-  value       = aws_instance.ec2.id
+  value       = module.ec2.instance_id
 }
 
 output "ec2_ami_id" {
   description = "AMI in use (Debian 13)"
-  value       = aws_instance.ec2.ami
+  value       = module.ec2.ami_id
 }
 
 output "route53_name_servers" {
-  description = "NS records per zone — update registrar if zones were recreated"
-  value = {
-    for domain, zone in aws_route53_zone.zones :
-    domain => zone.name_servers
-  }
+  description = "NS records per zone — verify with registrar if zones were recreated"
+  value       = module.route53.name_servers
 }

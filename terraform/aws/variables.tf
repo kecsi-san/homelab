@@ -21,12 +21,6 @@ variable "admin_user" {
   default     = "admin"
 }
 
-variable "email_domains" {
-  description = "Domains handled by the email server (MX records will be created for each)"
-  type        = list(string)
-  default     = []
-}
-
 variable "vpc_id" {
   description = "VPC ID where the EC2 instance lives"
   type        = string
@@ -38,7 +32,24 @@ variable "subnet_id" {
 }
 
 variable "iam_instance_profile" {
-  description = "IAM instance profile name to attach to the EC2 instance"
+  description = "IAM instance profile name to attach to the EC2 instance (empty string = none)"
   type        = string
   default     = ""
+}
+
+variable "route53_domains" {
+  description = "Domains with Route53 hosted zones to manage (MX, SPF, DMARC records created for each)"
+  type        = list(string)
+}
+
+variable "mail_hostname" {
+  description = "FQDN of the mail server; A record is created in its parent zone"
+  type        = string
+  default     = ""
+}
+
+variable "s3_bucket_names" {
+  description = "Names of existing S3 buckets to import and manage"
+  type        = list(string)
+  default     = []
 }
