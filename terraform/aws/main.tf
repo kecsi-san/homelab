@@ -33,8 +33,9 @@ module "route53" {
   source = "../modules/route53-zone"
 
   domains        = var.route53_domains
-  mail_hostname  = var.mail_hostname
   mail_public_ip = module.eip.public_ip
+  mail_ipv6      = var.mail_ipv6
+  dkim_keys      = var.dkim_keys
 }
 
 module "s3" {
