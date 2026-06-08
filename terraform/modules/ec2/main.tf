@@ -17,8 +17,8 @@ data "aws_ami" "debian13" {
 
 # Security group — rules managed via aws_security_group_rule below (no inline blocks).
 resource "aws_security_group" "this" {
-  name        = "Linuxbox2016DebianGNULinux8Jessie"
-  description = "Linuxbox.hu 2016 new security group for Debian GNU 8 Linux"
+  name        = "homelab-edge"
+  description = "Homelab edge node security group"
   vpc_id      = var.vpc_id
 
   tags = {

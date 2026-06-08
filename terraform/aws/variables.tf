@@ -42,10 +42,16 @@ variable "route53_domains" {
   type        = list(string)
 }
 
-variable "mail_hostname" {
-  description = "FQDN of the mail server; A record is created in its parent zone"
+variable "mail_ipv6" {
+  description = "Public IPv6 address of the mail server (for AAAA records)"
   type        = string
   default     = ""
+}
+
+variable "dkim_keys" {
+  description = "Map of domain => full DKIM TXT record value (public key); wildcard *._domainkey record created per entry"
+  type        = map(string)
+  default     = {}
 }
 
 variable "s3_bucket_names" {

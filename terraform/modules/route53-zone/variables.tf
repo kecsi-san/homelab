@@ -3,12 +3,18 @@ variable "domains" {
   type        = list(string)
 }
 
-variable "mail_hostname" {
-  description = "FQDN of the mail server (e.g. mail.example.com); A record created in its parent zone"
+variable "mail_public_ip" {
+  description = "Public IPv4 of the mail server"
   type        = string
 }
 
-variable "mail_public_ip" {
-  description = "Public IP of the mail server (used for the mail A record)"
+variable "mail_ipv6" {
+  description = "Public IPv6 of the mail server"
   type        = string
+}
+
+variable "dkim_keys" {
+  description = "Map of domain => full DKIM TXT record value; a wildcard *._domainkey record is created per entry"
+  type        = map(string)
+  default     = {}
 }
