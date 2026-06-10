@@ -1,0 +1,42 @@
+---
+- name: Reload postfix
+  ansible.builtin.systemd:
+    name: postfix
+    state: reloaded
+  become: true
+
+- name: Reload dovecot
+  ansible.builtin.systemd:
+    name: dovecot
+    state: reloaded
+  become: true
+
+- name: Reload opendkim
+  ansible.builtin.systemd:
+    name: opendkim
+    state: reloaded
+  become: true
+
+- name: Reload opendmarc
+  ansible.builtin.systemd:
+    name: opendmarc
+    state: reloaded
+  become: true
+
+- name: Restart postgrey
+  ansible.builtin.systemd:
+    name: postgrey
+    state: restarted
+  become: true
+
+- name: Restart spamd
+  ansible.builtin.systemd:
+    name: spamd
+    state: restarted
+  become: true
+
+- name: Rebuild vmailbox db
+  ansible.builtin.command:
+    cmd: postmap {{ postfix_config_dir }}/vmailbox
+  become: true
+  changed_when: true

@@ -1,0 +1,21 @@
+---
+- name: Deploy SpamAssassin local.cf
+  ansible.builtin.template:
+    src: spamassassin-local.cf.j2
+    dest: /etc/spamassassin/local.cf
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Restart spamd
+  tags:
+    - spamassassin
+
+- name: Ensure spamd is enabled and running
+  ansible.builtin.systemd:
+    name: spamd
+    enabled: true
+    state: started
+  become: true
+  tags:
+    - spamassassin

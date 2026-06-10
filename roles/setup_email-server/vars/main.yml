@@ -2,11 +2,16 @@
 email_apt_packages:
   - postfix
   - postfix-pcre
+  - postfix-policyd-spf-python
   - dovecot-core
   - dovecot-imapd
   - dovecot-lmtpd
   - opendkim
   - opendkim-tools
+  - opendmarc
+  - postgrey
+  - spamassassin
+  - spamc
   - certbot
   - python3-certbot-dns-route53
 

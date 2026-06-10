@@ -36,6 +36,18 @@
   tags:
     - opendkim
 
+- name: Deploy opendkim TrustedHosts
+  ansible.builtin.template:
+    src: opendkim-trustedhosts.j2
+    dest: "{{ opendkim_config_dir }}/TrustedHosts"
+    owner: root
+    group: opendkim
+    mode: "0640"
+  become: true
+  notify: Reload opendkim
+  tags:
+    - opendkim
+
 - name: Deploy opendkim.conf
   ansible.builtin.template:
     src: opendkim.conf.j2

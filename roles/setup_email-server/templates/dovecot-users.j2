@@ -1,0 +1,7 @@
+# Managed by Ansible — do not edit manually
+# Format: user@domain:{scheme}hash:uid:gid:gecos:home:shell
+{% for user in mailbox_users %}
+{% for domain in user.domains %}
+{{ user.name }}@{{ domain }}:{{ user.password_hash }}:{{ vmail_uid }}:{{ vmail_gid }}::{{ vmail_home }}/{{ domain }}/{{ user.name }}::
+{% endfor %}
+{% endfor %}

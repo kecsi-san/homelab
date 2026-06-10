@@ -37,13 +37,21 @@ smtpd_sasl_auth_enable = yes
 smtpd_recipient_restrictions =
     permit_mynetworks,
     permit_sasl_authenticated,
-    reject_unauth_destination
+    reject_unauth_destination,
+    check_policy_service unix:private/policyd-spf,
+    check_policy_service inet:127.0.0.1:{{ postgrey_port }}
 
-# OpenDKIM milter
+# SPF policy daemon timeout
+policyd-spf_time_limit = 3600
+
+# OpenDKIM + OpenDMARC milters
 milter_default_action = accept
 milter_protocol = 6
-smtpd_milters = local:/run/opendkim/opendkim.sock
+smtpd_milters = local:/run/opendkim/opendkim.sock, local:/run/opendmarc/opendmarc.sock
 non_smtpd_milters = $smtpd_milters
+
+# SpamAssassin content filter (inbound only — submission overrides this to empty)
+content_filter = spamassassin
 
 # Limits
 message_size_limit = 52428800
