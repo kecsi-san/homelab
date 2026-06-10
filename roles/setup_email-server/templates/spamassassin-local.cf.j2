@@ -1,0 +1,6 @@
+# Managed by Ansible — do not edit manually
+required_score {{ spamassassin_required_score }}
+rewrite_header Subject *SPAM*
+report_safe {{ spamassassin_report_safe }}
+use_bayes 1
+bayes_auto_learn 1

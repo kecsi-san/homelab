@@ -23,6 +23,19 @@
   tags:
     - dovecot
 
+- name: Deploy dovecot users file (virtual passwd-file)
+  ansible.builtin.template:
+    src: dovecot-users.j2
+    dest: /etc/dovecot/users
+    owner: root
+    group: dovecot
+    mode: "0640"
+  become: true
+  no_log: true
+  notify: Reload dovecot
+  tags:
+    - dovecot
+
 - name: Create per-user maildir directories
   ansible.builtin.file:
     path: "{{ vmail_home }}/{{ item.1 }}/{{ item.0.name }}/Maildir"

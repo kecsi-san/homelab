@@ -1,0 +1,12 @@
+# Managed by Ansible — do not edit manually
+AuthservID OpenDMARC
+TrustedAuthservIDs {{ mail_hostname }}
+
+Socket local:/run/opendmarc/opendmarc.sock
+PidFile /run/opendmarc/opendmarc.pid
+Syslog true
+UMask 0002
+UserID opendmarc
+
+# Report failures via headers but do not reject — use RejectFailures true only after monitoring
+RejectFailures false

@@ -24,3 +24,12 @@ certbot_email: "{{ acme_email }}"
 #       - kecskemethy.net
 #     password_hash: "{{ 'password' | password_hash('sha512') }}"
 mailbox_users: []
+
+# Postgrey greylisting
+postgrey_port: 10023
+postgrey_delay: 60
+
+# SpamAssassin
+spamassassin_required_score: 5.0
+spamassassin_report_safe: 0
+spamd_user: debian-spamd

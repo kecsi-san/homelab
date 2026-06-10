@@ -43,3 +43,12 @@
 
 - name: Configure OpenDKIM
   ansible.builtin.import_tasks: opendkim.yml
+
+- name: Configure OpenDMARC
+  ansible.builtin.import_tasks: opendmarc.yml
+
+- name: Configure Postgrey
+  ansible.builtin.import_tasks: postgrey.yml
+
+- name: Configure SpamAssassin
+  ansible.builtin.import_tasks: spamassassin.yml

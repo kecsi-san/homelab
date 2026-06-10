@@ -37,14 +37,6 @@
   tags:
     - postfix
 
-- name: Rebuild vmailbox hash db
-  ansible.builtin.command:
-    cmd: postmap {{ postfix_config_dir }}/vmailbox
-  become: true
-  changed_when: false
-  tags:
-    - postfix
-
 - name: Ensure postfix is enabled and running
   ansible.builtin.systemd:
     name: postfix
