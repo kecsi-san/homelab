@@ -209,7 +209,8 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 
 Group variables in `inventory/group_vars/`:
 - `all/all.yml` — Kubernetes cluster-wide settings (API server domain, load balancer)
-- `all/secrets.yml` — **gitignored**; holds `domain_name`, `upstream_dns_servers`, `kube_vip_address`, `kube_vip_interface`. Copy from `secrets.yml.example`.
+- `all/secrets.yml` — **gitignored**; holds credentials and user-specific values (`ansible_ssh_user`, `admin_user`, AWS keys, Cloudflare tokens, `email_domains`, `mailbox_users`, `apache_certs`, `apache_vhosts`). Copy from `secrets.yml.example`.
+- `all/vars.yml` — **committed**; holds non-sensitive infra values (`domain_name`, `upstream_dns_servers`, `kube_vip_address`, `kube_vip_interface`, `kube_control_plane_host`, `mikrotik_host`, Traefik IPs).
 - `k8s_cluster/` — Network plugin (Calico) and addons config
 - `kube.yml` — SSH user, Python interpreter, feature flags for the kube group
 - `local.yml` — Same variables scoped to localhost
