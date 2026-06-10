@@ -1,0 +1,40 @@
+---
+# Issues one cert per entry in apache_certs. The `creates:` guard makes this idempotent —
+# re-running is safe and will skip domains that already have a valid cert.
+- name: Issue TLS certificate via DNS-01 (Route53)
+  ansible.builtin.command:
+    cmd: >
+      certbot certonly --non-interactive --agree-tos
+      --dns-route53
+      --email {{ certbot_email }}
+      -d {{ item.domain }}
+      {% for san in item.extra_sans | default([]) %}-d {{ san }} {% endfor %}
+    creates: "{{ certbot_cert_dir }}/{{ item.domain }}/fullchain.pem"
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
+    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
+    AWS_DEFAULT_REGION: "{{ aws_region }}"
+  become: true
+  loop: "{{ apache_certs }}"
+  tags:
+    - certbot
+
+- name: Install certbot renewal systemd timer
+  ansible.builtin.systemd:
+    name: certbot.timer
+    enabled: true
+    state: started
+  become: true
+  tags:
+    - certbot
+
+- name: Add Apache2 to certbot renewal hooks
+  ansible.builtin.copy:
+    dest: /etc/letsencrypt/renewal-hooks/deploy/reload-apache2.sh
+    mode: "0750"
+    content: |
+      #!/bin/sh
+      systemctl reload apache2
+  become: true
+  tags:
+    - certbot

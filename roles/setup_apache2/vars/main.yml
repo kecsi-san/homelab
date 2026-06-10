@@ -1,0 +1,18 @@
+---
+apache_apt_packages:
+  - apache2
+  - libapache2-mod-security2
+  - modsecurity-crs
+  - libapache2-mod-evasive
+  - certbot
+  - python3-certbot-dns-route53
+
+# Modules enabled via a2enmod (creates: check uses .load file)
+apache_modules_to_enable:
+  - ssl
+  - rewrite
+  - proxy
+  - proxy_http
+  - headers
+  - security2
+  - evasive

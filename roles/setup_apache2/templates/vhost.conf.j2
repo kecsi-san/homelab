@@ -1,0 +1,45 @@
+# Managed by Ansible — do not edit manually
+{% if vhost.ssl | default(true) %}
+<VirtualHost *:80>
+    ServerName {{ vhost.name }}
+{% if vhost.server_alias is defined %}
+    ServerAlias {{ vhost.server_alias | join(' ') }}
+{% endif %}
+    Redirect permanent / https://{{ vhost.name }}/
+</VirtualHost>
+
+{% endif %}
+<VirtualHost *:{% if vhost.ssl | default(true) %}443{% else %}80{% endif %}>
+    ServerName {{ vhost.name }}
+{% if vhost.server_alias is defined %}
+    ServerAlias {{ vhost.server_alias | join(' ') }}
+{% endif %}
+
+{% if vhost.ssl | default(true) %}
+    SSLEngine on
+    SSLCertificateFile    {{ certbot_cert_dir }}/{{ vhost.ssl_cert_domain }}/fullchain.pem
+    SSLCertificateKeyFile {{ certbot_cert_dir }}/{{ vhost.ssl_cert_domain }}/privkey.pem
+
+    Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains"
+
+{% endif %}
+{% if vhost.proxy_pass is defined %}
+    ProxyPreserveHost On
+    ProxyPass        / {{ vhost.proxy_pass }}
+    ProxyPassReverse / {{ vhost.proxy_pass }}
+{% else %}
+    DocumentRoot {{ vhost.docroot | default('/var/www/' + vhost.name) }}
+    <Directory {{ vhost.docroot | default('/var/www/' + vhost.name) }}>
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+{% endif %}
+
+{% if vhost.extra_config is defined %}
+    {{ vhost.extra_config | indent(4) }}
+
+{% endif %}
+    ErrorLog  ${APACHE_LOG_DIR}/{{ vhost.name }}-error.log
+    CustomLog ${APACHE_LOG_DIR}/{{ vhost.name }}-access.log combined
+</VirtualHost>
