@@ -1,0 +1,57 @@
+---
+- name: Install unbound
+  ansible.builtin.package:
+    name: unbound
+    state: present
+  become: true
+  tags: [unbound]
+
+# systemd-resolved listens on 127.0.0.53:53 and manages /etc/resolv.conf via a symlink.
+# Disable it so unbound owns port 53 and /etc/resolv.conf points directly to 127.0.0.1.
+- name: Disable and stop systemd-resolved
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    enabled: false
+    state: stopped
+  become: true
+  ignore_errors: true  # not present on all Debian images
+  tags: [unbound]
+
+- name: Remove systemd-resolved resolv.conf symlink
+  ansible.builtin.file:
+    path: /etc/resolv.conf
+    state: absent
+  become: true
+  tags: [unbound]
+
+- name: Write static resolv.conf pointing to unbound
+  ansible.builtin.copy:
+    dest: /etc/resolv.conf
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      # Managed by Ansible — local Unbound resolver
+      nameserver 127.0.0.1
+  become: true
+  tags: [unbound]
+
+- name: Deploy unbound.conf
+  ansible.builtin.template:
+    src: unbound.conf.j2
+    dest: /etc/unbound/unbound.conf
+    owner: root
+    group: unbound
+    mode: "0640"
+    validate: "unbound-checkconf %s"
+  become: true
+  notify: Restart unbound
+  tags: [unbound]
+
+- name: Enable and start unbound
+  ansible.builtin.systemd:
+    name: unbound
+    enabled: true
+    state: started
+  become: true
+  tags: [unbound]

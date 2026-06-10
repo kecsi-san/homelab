@@ -1,0 +1,20 @@
+---
+# Upstream DNS forwarders. On EC2, 169.254.169.253 is the AWS VPC resolver —
+# it resolves internal AWS endpoints (RDS, ElastiCache, etc.) and is low-latency.
+# Falls back to Cloudflare for everything else.
+unbound_forward_addresses:
+  - "169.254.169.253"  # AWS VPC resolver
+  - "1.1.1.1"
+  - "1.0.0.1"
+
+# DNSSEC validation. Disable only if upstream doesn't support it.
+unbound_enable_dnssec: true
+
+# Serve stale data while refreshing (reduces latency on cache expiry)
+unbound_prefetch: true
+
+unbound_cache_min_ttl: 3600
+unbound_cache_max_ttl: 86400
+
+# Number of threads — 1 is sufficient for an edge node
+unbound_num_threads: 1

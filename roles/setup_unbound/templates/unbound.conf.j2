@@ -1,0 +1,42 @@
+# Managed by Ansible — do not edit manually
+server:
+    verbosity: 1
+
+    # Listen on localhost only — not a public resolver
+    interface: 127.0.0.1
+    port: 53
+    do-ip4: yes
+    do-ip6: no
+    do-tcp: yes
+    do-udp: yes
+
+    access-control: 127.0.0.0/8 allow
+
+    # Hide software version from queries
+    hide-identity: yes
+    hide-version: yes
+
+    # Security hardening
+    harden-glue: yes
+    harden-dnssec-stripped: yes
+    harden-below-nxdomain: yes
+    use-caps-for-id: yes
+    val-clean-additional: yes
+
+    # Cache
+    prefetch: {{ 'yes' if unbound_prefetch else 'no' }}
+    cache-min-ttl: {{ unbound_cache_min_ttl }}
+    cache-max-ttl: {{ unbound_cache_max_ttl }}
+
+    num-threads: {{ unbound_num_threads }}
+
+{% if unbound_enable_dnssec %}
+    # DNSSEC
+    auto-trust-anchor-file: "/var/lib/unbound/root.key"
+{% endif %}
+
+forward-zone:
+    name: "."
+{% for addr in unbound_forward_addresses %}
+    forward-addr: {{ addr }}
+{% endfor %}

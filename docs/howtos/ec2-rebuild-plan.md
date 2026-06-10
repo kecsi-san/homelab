@@ -101,12 +101,14 @@ New files: `roles/setup_vault/`, `playbooks/ec2-vault.yml`
 - Apache2 vhost proxy entry (handled by setup_apache2 via `apache_vhosts` var)
 - Note: unseal keys and root token are NOT stored in Ansible — manual step after deploy
 
-### Phase 5 — New role: `setup_dnsmasq` (est. 30min)
+### Phase 5 — New role: `setup_unbound` (est. 30min) ✅
 
-Add to `ec2-core.yml` or standalone.
+Added to `ec2-core.yml`.
 
-- Install dnsmasq, configure as caching resolver
-- Disable systemd-resolved conflict if present
+- Install unbound, configure as caching/forwarding resolver on 127.0.0.1:53
+- Disable systemd-resolved, write static /etc/resolv.conf
+- Forward to AWS VPC resolver (169.254.169.253) then Cloudflare; DNSSEC enabled
+- Config validated with unbound-checkconf before apply
 
 ### Phase 6 — New instance + data migration (est. 2–4h)
 
@@ -148,7 +150,7 @@ Add to `ec2-core.yml` or standalone.
 | `setup_email-server` | ⚠️ fix needed | ec2-mail |
 | `setup_apache2` | ❌ new | ec2-web (new playbook) |
 | `setup_users` | ❌ new | ec2-core or ec2-users (new) |
-| `setup_dnsmasq` | ❌ new | ec2-core |
+| `setup_unbound` | ✅ done | ec2-core |
 | `setup_vault` | ❌ new | ec2-vault (new playbook) |
 
 ---

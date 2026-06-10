@@ -65,6 +65,14 @@
       tags:
         - ntp
 
+    - name: Setup Unbound DNS resolver
+      ansible.builtin.import_role:
+        name: setup_unbound
+      become: true
+      tags:
+        - unbound
+        - dns
+
     - name: Setup etckeeper
       ansible.builtin.import_role:
         name: setup_etckeeper
