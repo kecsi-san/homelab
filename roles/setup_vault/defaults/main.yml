@@ -1,0 +1,23 @@
+---
+# Binary version — update SHA256 from https://releases.hashicorp.com/vault/<version>/
+vault_version: "1.17.5"
+
+vault_install_dir: /usr/local/bin
+vault_config_dir: /etc/vault.d
+vault_storage_path: /opt/vault/data
+vault_log_dir: /var/log/vault
+vault_user: vault
+vault_group: vault
+
+# Local bind address — Apache proxies HTTPS to here, so TLS is disabled on this listener
+vault_bind_addr: "127.0.0.1:8200"
+
+# Public API address — used by the Vault UI redirect and cluster members
+# Set to the full HTTPS URL of the vhost defined in apache_vhosts
+vault_api_addr: "https://vault.{{ domain_name }}"
+
+# Set to true only if the host kernel does not support mlock (e.g. some containers).
+# The systemd unit grants CAP_IPC_LOCK so this should stay false on EC2.
+vault_disable_mlock: false
+
+vault_ui: true

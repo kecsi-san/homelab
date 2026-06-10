@@ -1,0 +1,17 @@
+---
+# Deploy HashiCorp Vault on the EC2 edge node.
+# Run after ec2-web.yml (Apache2 must be configured to proxy vault.<domain>).
+# Vault binds to 127.0.0.1:8200 — Apache handles TLS termination.
+# IMPORTANT: after first deploy, manually run: vault operator init && vault operator unseal
+# Usage: ansible-playbook -i inventory/aws_hosts playbooks/ec2-vault.yml
+- name: Configure HashiCorp Vault
+  hosts: aws
+  become: false
+  remote_user: "{{ ansible_ssh_user }}"
+  tasks:
+    - name: Setup Vault
+      ansible.builtin.import_role:
+        name: setup_vault
+      become: true
+      tags:
+        - vault

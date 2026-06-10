@@ -72,6 +72,9 @@ ansible-playbook -i inventory/aws_hosts playbooks/ec2-mail.yml
 # AWS EC2 edge node — web server (Apache2 + ModSecurity + ModEvasive + certbot)
 ansible-playbook -i inventory/aws_hosts playbooks/ec2-web.yml
 
+# AWS EC2 edge node — HashiCorp Vault (run after ec2-web.yml; manually init+unseal after first deploy)
+ansible-playbook -i inventory/aws_hosts playbooks/ec2-vault.yml
+
 # Terraform — EC2 infra (provision/update, also writes inventory/aws_hosts)
 # cd terraform/aws && terraform init -backend-config=backend.conf && terraform apply
 
@@ -195,6 +198,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | `setup_email-server` | Postfix (SMTP + submission 587 STARTTLS) + Dovecot (IMAPS 993) + OpenDKIM (per-domain DKIM keys) + OpenDMARC + Postgrey + SpamAssassin + certbot DNS-01 via Route53; virtual mailbox users from `secrets.yml`; multi-domain; prints DKIM public keys for Route53 TXT records |
 | `setup_apache2` | Apache2 + ModSecurity (DetectionOnly) + ModEvasive + certbot DNS-01 via Route53; variable-driven vhosts supporting static sites, reverse proxy, and HTTPS redirect; `apache_vhosts` and `apache_certs` defined in `secrets.yml`; used by `ec2-web.yml` |
 | `setup_users` | Creates named system users with home dirs, optional SSH authorized_keys, optional sudo group membership; `ec2_users` list defined in `secrets.yml`; `ec2_users_absent` removes accounts while preserving home dirs for data migration; wired into `ec2-core.yml` |
+| `setup_vault` | Downloads version-pinned HashiCorp Vault binary from releases.hashicorp.com; creates `vault` system user; deploys `/etc/vault.d/vault.hcl` (file storage, local bind 127.0.0.1:8200, TLS disabled — Apache terminates TLS); installs hardened systemd unit with `CAP_IPC_LOCK`; prints init/unseal instructions on every run; unseal keys and root token are NOT managed by Ansible |
 
 #### Placeholder Roles (empty `tasks/main.yml`)
 
