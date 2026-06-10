@@ -1,0 +1,30 @@
+# Managed by Ansible — do not edit manually
+# Full-text search via Xapian. Indexes are stored inside each user's maildir.
+#
+# After first deploy or adding mailboxes, trigger a full index:
+#   doveadm fts rescan -A
+#   doveadm index -A -q '*'
+
+protocol imap {
+  mail_plugins = $mail_plugins fts fts_xapian
+}
+
+plugin {
+  fts = xapian
+  # partial: min prefix length for partial-word matching
+  # full: max word length indexed in full
+  # attachments=0: skip attachment bodies (saves significant CPU/disk)
+  fts_xapian = partial=2 full=20 attachments=0
+
+  # Automatically index new mail on arrival
+  fts_autoindex = yes
+
+  # When fts_enforced=no, Dovecot falls back to a slow full scan if the index
+  # is unavailable (e.g. mid-reindex). Set to yes once indexes are built and
+  # stable to force clients to get a proper error instead of a stalled search.
+  fts_enforced = no
+
+  # Skip indexing these folders — rarely searched, saves index space
+  fts_autoindex_exclude = \Trash
+  fts_autoindex_exclude2 = \Junk
+}

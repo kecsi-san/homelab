@@ -5,6 +5,7 @@ email_apt_packages:
   - dovecot-core
   - dovecot-imapd
   - dovecot-lmtpd
+  - dovecot-fts-xapian
   - rspamd
   - opendmarc
   - certbot

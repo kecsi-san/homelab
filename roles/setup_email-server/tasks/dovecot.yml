@@ -23,6 +23,19 @@
   tags:
     - dovecot
 
+- name: Deploy dovecot FTS config
+  ansible.builtin.template:
+    src: dovecot-fts.conf.j2
+    dest: "{{ dovecot_config_dir }}/conf.d/90-fts.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Reload dovecot
+  tags:
+    - dovecot
+    - fts
+
 - name: Deploy dovecot users file (virtual passwd-file)
   ansible.builtin.template:
     src: dovecot-users.j2
