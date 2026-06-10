@@ -7,7 +7,9 @@ smtpd     pass  -       -       y       -       -       smtpd
 dnsblog   unix  -       -       y       -       0       dnsblog
 tlsproxy  unix  -       -       y       -       0       tlsproxy
 
-# Port 587 — authenticated submission (no greylisting, no content filter)
+# Port 587 — authenticated submission
+# Uses Rspamd only (DKIM signing); OpenDMARC is skipped — no point enforcing
+# DMARC policy on mail we're submitting ourselves.
 submission inet n      -       y       -       -       smtpd
   -o syslog_name=postfix/submission
   -o smtpd_tls_security_level=encrypt
@@ -17,7 +19,7 @@ submission inet n      -       y       -       -       smtpd
   -o smtpd_client_restrictions=permit_sasl_authenticated,reject
   -o smtpd_recipient_restrictions=permit_sasl_authenticated,reject
   -o smtpd_relay_restrictions=permit_sasl_authenticated,reject
-  -o content_filter=
+  -o smtpd_milters=inet:127.0.0.1:11332
 
 pickup    unix  n       -       y       60      1       pickup
 cleanup   unix  n       -       y       -       0       cleanup
@@ -42,11 +44,3 @@ virtual   unix  -       n       n       -       -       virtual
 lmtp      unix  -       -       y       -       -       lmtp
 anvil     unix  -       -       y       -       1       anvil
 scache    unix  -       -       y       -       1       scache
-
-# SPF policy daemon
-policyd-spf  unix  -       n       n       -       0       spawn
-  user=policyd-spf argv=/usr/bin/policyd-spf
-
-# SpamAssassin content filter
-spamassassin unix -       n       n       -       -       pipe
-  user={{ spamd_user }} argv=/usr/bin/spamc -f -e /usr/sbin/sendmail -oi -f ${sender} ${recipient}

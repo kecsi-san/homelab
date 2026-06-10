@@ -13,8 +13,19 @@ vmail_home: /var/mail/vmail
 # DKIM selector — change to rotate keys (old selector stays valid until DNS TTL expires)
 dkim_selector: mail
 
+# Rspamd DKIM key directory
+rspamd_dkim_key_dir: /var/lib/rspamd/dkim
+
 # Certbot Let's Encrypt registration email (falls back to acme_email from secrets.yml)
 certbot_email: "{{ acme_email }}"
+
+# Postscreen DNSBL sites and scoring threshold.
+# Format: "hostname*weight" — total weight must reach threshold to trigger action.
+postscreen_dnsbl_sites:
+  - "zen.spamhaus.org*3"
+  - "bl.spamcop.net*2"
+  - "b.barracudacentral.org*2"
+postscreen_dnsbl_threshold: 3
 
 # Mailbox users — define in secrets.yml (never commit real passwords)
 # Format:
@@ -24,12 +35,3 @@ certbot_email: "{{ acme_email }}"
 #       - kecskemethy.net
 #     password_hash: "{{ 'password' | password_hash('sha512') }}"
 mailbox_users: []
-
-# Postgrey greylisting
-postgrey_port: 10023
-postgrey_delay: 60
-
-# SpamAssassin
-spamassassin_required_score: 5.0
-spamassassin_report_safe: 0
-spamd_user: debian-spamd
