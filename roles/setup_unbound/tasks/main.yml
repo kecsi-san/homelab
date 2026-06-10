@@ -32,7 +32,9 @@
     mode: "0644"
     content: |
       # Managed by Ansible — local Unbound resolver
+      # Primary: local validating resolver (DNSSEC/DANE); fallback: AWS VPC resolver
       nameserver 127.0.0.1
+      nameserver 169.254.169.253
   become: true
   tags: [unbound]
 

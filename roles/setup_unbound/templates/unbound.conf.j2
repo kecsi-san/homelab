@@ -1,8 +1,14 @@
 # Managed by Ansible — do not edit manually
+# Full recursive DNSSEC-validating resolver.
+#
+# NOT a forwarding resolver — queries go directly to authoritative servers,
+# so the 'ad' (Authenticated Data) flag is set by us, not trusted from upstream.
+# This is required for Postfix DANE (smtp_tls_security_level=dane) to work:
+# Postfix only trusts TLSA records from responses with the 'ad' flag set.
 server:
     verbosity: 1
 
-    # Listen on localhost only — not a public resolver
+    # Listen on loopback only
     interface: 127.0.0.1
     port: 53
     do-ip4: yes
@@ -12,31 +18,47 @@ server:
 
     access-control: 127.0.0.0/8 allow
 
-    # Hide software version from queries
+    # Hide software identity from queries
     hide-identity: yes
     hide-version: yes
 
-    # Security hardening
+    # DNSSEC hardening
     harden-glue: yes
     harden-dnssec-stripped: yes
     harden-below-nxdomain: yes
-    use-caps-for-id: yes
+    harden-algo-downgrade: yes
     val-clean-additional: yes
+    val-log-level: 1
 
-    # Cache
+    # Privacy: minimise query name sent to authoritative servers (RFC 7816)
+    qname-minimisation: yes
+
+    # Randomise case in queries (0x20 encoding) to resist spoofing
+    use-caps-for-id: yes
+
+    # Performance
     prefetch: {{ 'yes' if unbound_prefetch else 'no' }}
+    so-reuseport: yes
+    num-threads: {{ unbound_num_threads }}
+    msg-cache-size: {{ unbound_msg_cache_size }}
+    rrset-cache-size: {{ unbound_rrset_cache_size }}
+
+    # Cache TTL
     cache-min-ttl: {{ unbound_cache_min_ttl }}
     cache-max-ttl: {{ unbound_cache_max_ttl }}
 
-    num-threads: {{ unbound_num_threads }}
-
-{% if unbound_enable_dnssec %}
-    # DNSSEC
+    # DNSSEC root trust anchor (managed by unbound-anchor or package postinst)
     auto-trust-anchor-file: "/var/lib/unbound/root.key"
-{% endif %}
 
-forward-zone:
-    name: "."
-{% for addr in unbound_forward_addresses %}
-    forward-addr: {{ addr }}
-{% endfor %}
+    # Prevent DNS rebinding — refuse private addresses in public DNS responses
+    private-address: 10.0.0.0/8
+    private-address: 172.16.0.0/12
+    private-address: 192.168.0.0/16
+    private-address: 169.254.0.0/16
+    private-address: fd00::/8
+    private-address: fe80::/10
+
+# No forward-zone — this is a full recursive resolver.
+# Forward-only resolvers (e.g. AWS VPC resolver, Cloudflare 1.1.1.1) cannot
+# be trusted to set the DNSSEC 'ad' flag correctly, which would silently
+# break DANE TLS verification in Postfix.
