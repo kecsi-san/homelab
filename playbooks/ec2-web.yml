@@ -1,0 +1,15 @@
+---
+# Deploy Apache2 web server with virtual hosts.
+# Run after ec2-core.yml. Vhost and cert config come from secrets.yml.
+# Usage: ansible-playbook -i inventory/aws_hosts playbooks/ec2-web.yml
+- name: Configure Apache2 web server
+  hosts: aws
+  become: false
+  remote_user: "{{ ansible_ssh_user }}"
+  tasks:
+    - name: Setup Apache2
+      ansible.builtin.import_role:
+        name: setup_apache2
+      become: true
+      tags:
+        - apache2

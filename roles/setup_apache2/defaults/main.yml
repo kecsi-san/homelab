@@ -1,0 +1,38 @@
+---
+# TLS certificates to issue via certbot DNS-01 (Route53).
+# Each entry issues one cert covering the primary domain + any extra_sans.
+# Vhosts reference the primary domain via ssl_cert_domain.
+# Example:
+#   apache_certs:
+#     - domain: example.com
+#       extra_sans:
+#         - www.example.com
+#         - vault.example.com
+apache_certs: []
+
+# Vhost definitions. Each entry produces one .conf file in sites-available.
+# Fields:
+#   name          ServerName (required)
+#   server_alias  list of ServerAlias values (optional)
+#   ssl           true/false — if true, port 80 redirects to HTTPS (default true)
+#   ssl_cert_domain  certbot cert dir name — typically the apex domain (required when ssl: true)
+#   docroot       document root for static sites (default /var/www/<name>)
+#   proxy_pass    upstream URL for reverse proxy vhosts (mutually exclusive with docroot)
+#   extra_config  raw Apache config block injected into the HTTPS vhost (optional)
+# Example:
+#   apache_vhosts:
+#     - name: www.example.com
+#       server_alias: [example.com]
+#       docroot: /var/www/example.com
+#       ssl: true
+#       ssl_cert_domain: example.com
+#     - name: vault.example.com
+#       proxy_pass: http://127.0.0.1:8200/
+#       ssl: true
+#       ssl_cert_domain: example.com
+apache_vhosts: []
+
+# Certbot Let's Encrypt registration email (falls back to acme_email from secrets.yml)
+certbot_email: "{{ acme_email }}"
+
+certbot_cert_dir: /etc/letsencrypt/live

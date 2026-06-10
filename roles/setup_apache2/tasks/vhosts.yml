@@ -1,0 +1,48 @@
+---
+- name: Create docroot directories for static vhosts
+  ansible.builtin.file:
+    path: "{{ item.docroot | default('/var/www/' + item.name) }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: "0755"
+  become: true
+  loop: "{{ apache_vhosts }}"
+  when: item.proxy_pass is not defined
+  tags:
+    - vhosts
+
+- name: Deploy vhost configs
+  ansible.builtin.template:
+    src: vhost.conf.j2
+    dest: "/etc/apache2/sites-available/{{ vhost.name }}.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  loop: "{{ apache_vhosts }}"
+  loop_control:
+    loop_var: vhost
+  notify: Reload apache2
+  tags:
+    - vhosts
+
+- name: Enable vhosts
+  ansible.builtin.file:
+    src: "/etc/apache2/sites-available/{{ item.name }}.conf"
+    dest: "/etc/apache2/sites-enabled/{{ item.name }}.conf"
+    state: link
+  become: true
+  loop: "{{ apache_vhosts }}"
+  notify: Reload apache2
+  tags:
+    - vhosts
+
+- name: Disable default Apache site
+  ansible.builtin.file:
+    path: /etc/apache2/sites-enabled/000-default.conf
+    state: absent
+  become: true
+  notify: Reload apache2
+  tags:
+    - vhosts

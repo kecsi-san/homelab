@@ -69,6 +69,9 @@ ansible-playbook -i inventory/aws_hosts playbooks/ec2-core.yml
 # AWS EC2 edge node — email server (Postfix + Dovecot + OpenDKIM + certbot)
 ansible-playbook -i inventory/aws_hosts playbooks/ec2-mail.yml
 
+# AWS EC2 edge node — web server (Apache2 + ModSecurity + ModEvasive + certbot)
+ansible-playbook -i inventory/aws_hosts playbooks/ec2-web.yml
+
 # Terraform — EC2 infra (provision/update, also writes inventory/aws_hosts)
 # cd terraform/aws && terraform init -backend-config=backend.conf && terraform apply
 
@@ -189,7 +192,8 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | `upload_fav_bgimages` | Copies wallpapers to `/usr/share/backgrounds/`; generates GNOME background picker XML |
 | `upload_profile_image` | Sets GNOME/GDM profile picture; image path set via `profile_image_src` variable (not stored in repo) |
 
-| `setup_email-server` | Postfix (SMTP + submission 587 STARTTLS) + Dovecot (IMAPS 993) + OpenDKIM (per-domain DKIM keys) + certbot DNS-01 via Route53; virtual mailbox users from `secrets.yml`; multi-domain; prints DKIM public keys for Route53 TXT records |
+| `setup_email-server` | Postfix (SMTP + submission 587 STARTTLS) + Dovecot (IMAPS 993) + OpenDKIM (per-domain DKIM keys) + OpenDMARC + Postgrey + SpamAssassin + certbot DNS-01 via Route53; virtual mailbox users from `secrets.yml`; multi-domain; prints DKIM public keys for Route53 TXT records |
+| `setup_apache2` | Apache2 + ModSecurity (DetectionOnly) + ModEvasive + certbot DNS-01 via Route53; variable-driven vhosts supporting static sites, reverse proxy, and HTTPS redirect; `apache_vhosts` and `apache_certs` defined in `secrets.yml`; used by `ec2-web.yml` |
 
 #### Placeholder Roles (empty `tasks/main.yml`)
 
