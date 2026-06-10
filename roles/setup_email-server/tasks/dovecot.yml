@@ -61,6 +61,19 @@
   tags:
     - dovecot
 
+- name: Deploy Dovecot FTS maintenance cron job
+  ansible.builtin.cron:
+    name: dovecot-fts-maintenance
+    minute: "0"
+    hour: "4"
+    job: "/usr/bin/doveadm index -A -q '*' && /usr/bin/doveadm fts optimize -A"
+    user: root
+    cron_file: dovecot-fts
+  become: true
+  tags:
+    - dovecot
+    - fts
+
 - name: Ensure dovecot is enabled and running
   ansible.builtin.systemd:
     name: dovecot
