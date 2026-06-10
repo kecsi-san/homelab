@@ -1,14 +1,21 @@
 # Managed by Ansible — do not edit manually
+# Dovecot 2.4 configuration
+dovecot_config_version = 2.4.1
+dovecot_storage_version = 2.4.1
+
 protocols = imap lmtp
 
-mail_location = maildir:{{ vmail_home }}/%d/%n/Maildir
+# Virtual mailbox: all mail stored under vmail_home/<domain>/<user>/Maildir/
+mail_driver = maildir
+mail_path = {{ vmail_home }}/%d/%n/Maildir
 mail_uid = {{ vmail_uid }}
 mail_gid = {{ vmail_gid }}
 first_valid_uid = {{ vmail_uid }}
 last_valid_uid = {{ vmail_uid }}
 
-# Virtual user auth (password file)
+# Virtual user auth — passwords in /etc/dovecot/users (SHA512-CRYPT, managed by Ansible)
 auth_mechanisms = plain login
+auth_allow_cleartext = no
 
 passdb {
   driver = passwd-file
@@ -22,7 +29,7 @@ userdb {
 
 service imap-login {
   inet_listener imap {
-    port = 0       # disable plain IMAP
+    port = 0       # IMAP+STARTTLS disabled — IMAPS only
   }
   inet_listener imaps {
     port = 993

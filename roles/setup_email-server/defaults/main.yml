@@ -21,11 +21,20 @@ certbot_email: "{{ acme_email }}"
 
 # Postscreen DNSBL sites and scoring threshold.
 # Format: "hostname*weight" — total weight must reach threshold to trigger action.
+# Spamhaus free DNSBL requires a licence for cloud/datacenter IPs; replace with DQS key if available.
+# dnswl.org whitelist entries use negative weights to counterbalance.
+# Confirmed dead DNSBLs excluded: dnsbl.sorbs.net (NXDOMAIN), dsn.rfc-ignorant.org (NXDOMAIN).
 postscreen_dnsbl_sites:
-  - "zen.spamhaus.org*3"
-  - "bl.spamcop.net*2"
+  - "zen.spamhaus.org=127.0.0.[2..11]*3"
+  - "bl.mailspike.net=127.0.0.[2;14;13;12;11;10]"
   - "b.barracudacentral.org*2"
+  - "bl.spameatingmonkey.net=127.0.0.2"
+  - "psbl.surriel.com"
+  - "list.dnswl.org=127.0.[0..255].0*-2"
+  - "list.dnswl.org=127.0.[0..255].1*-3"
+  - "list.dnswl.org=127.0.[0..255].[2..3]*-4"
 postscreen_dnsbl_threshold: 3
+postscreen_dnsbl_whitelist_threshold: -1
 
 # Mailbox users — define in secrets.yml (never commit real passwords)
 # Format:

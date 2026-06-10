@@ -1,30 +1,37 @@
 # Managed by Ansible — do not edit manually
-# Full-text search via Xapian. Indexes are stored inside each user's maildir.
+# Dovecot 2.4 FTS configuration via dovecot-fts-xapian.
 #
 # After first deploy or adding mailboxes, trigger a full index:
 #   doveadm fts rescan -A
 #   doveadm index -A -q '*'
 
-protocol imap {
-  mail_plugins = $mail_plugins fts fts_xapian
+# Load FTS + Xapian plugin for IMAP sessions
+mail_plugins = fts fts_xapian
+
+# Automatically index new mail on arrival
+fts_autoindex = yes
+fts_autoindex_max_recent_msgs = 999
+fts_search_add_missing = yes
+
+# Skip indexing these folders — rarely searched, saves index space and CPU
+fts_autoindex_exclude = \Trash
+fts_autoindex_exclude2 = \Junk
+
+# Dovecot 2.4 requires at least one language block for FTS
+language "en" {
+  default = yes
 }
 
-plugin {
-  fts = xapian
-  # partial: min prefix length for partial-word matching
-  # full: max word length indexed in full
-  # attachments=0: skip attachment bodies (saves significant CPU/disk)
-  fts_xapian = partial=2 full=20 attachments=0
+# Xapian backend settings
+fts xapian {
+  partial = 3
+  verbose = 0
+  maxthreads = 2
+  # Memory (MB) to buffer before committing to disk; lower = less RAM pressure
+  lowmemory = 200
+}
 
-  # Automatically index new mail on arrival
-  fts_autoindex = yes
-
-  # When fts_enforced=no, Dovecot falls back to a slow full scan if the index
-  # is unavailable (e.g. mid-reindex). Set to yes once indexes are built and
-  # stable to force clients to get a proper error instead of a stalled search.
-  fts_enforced = no
-
-  # Skip indexing these folders — rarely searched, saves index space
-  fts_autoindex_exclude = \Trash
-  fts_autoindex_exclude2 = \Junk
+service indexer-worker {
+  # Xapian can use significant RAM during reindex; cap below OOM threshold
+  vsz_limit = 1G
 }
