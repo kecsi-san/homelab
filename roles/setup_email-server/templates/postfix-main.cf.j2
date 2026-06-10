@@ -37,21 +37,24 @@ smtpd_sasl_auth_enable = yes
 smtpd_recipient_restrictions =
     permit_mynetworks,
     permit_sasl_authenticated,
-    reject_unauth_destination,
-    check_policy_service unix:private/policyd-spf,
-    check_policy_service inet:127.0.0.1:{{ postgrey_port }}
+    reject_unauth_destination
 
-# SPF policy daemon timeout
-policyd-spf_time_limit = 3600
-
-# OpenDKIM + OpenDMARC milters
+# Milters:
+#   - Rspamd (spam scoring + DKIM sign/verify + greylisting) on inbound and outbound
+#   - OpenDMARC (inbound DMARC policy enforcement) on port 25 only
+#     (submission overrides smtpd_milters to Rspamd-only — see master.cf)
 milter_default_action = accept
 milter_protocol = 6
-smtpd_milters = local:/run/opendkim/opendkim.sock, local:/run/opendmarc/opendmarc.sock
-non_smtpd_milters = $smtpd_milters
+smtpd_milters = inet:127.0.0.1:11332, local:/run/opendmarc/opendmarc.sock
+non_smtpd_milters = inet:127.0.0.1:11332
 
-# SpamAssassin content filter (inbound only — submission overrides this to empty)
-content_filter = spamassassin
+# Postscreen — connection-level DNSBL filtering before smtpd accepts the session
+postscreen_access_list = permit_mynetworks
+postscreen_blacklist_action = drop
+postscreen_dnsbl_action = enforce
+postscreen_greet_action = enforce
+postscreen_dnsbl_sites = {{ postscreen_dnsbl_sites | join(', ') }}
+postscreen_dnsbl_threshold = {{ postscreen_dnsbl_threshold }}
 
 # Limits
 message_size_limit = 52428800

@@ -11,9 +11,9 @@
     state: reloaded
   become: true
 
-- name: Reload opendkim
+- name: Reload rspamd
   ansible.builtin.systemd:
-    name: opendkim
+    name: rspamd
     state: reloaded
   become: true
 
@@ -21,18 +21,6 @@
   ansible.builtin.systemd:
     name: opendmarc
     state: reloaded
-  become: true
-
-- name: Restart postgrey
-  ansible.builtin.systemd:
-    name: postgrey
-    state: restarted
-  become: true
-
-- name: Restart spamd
-  ansible.builtin.systemd:
-    name: spamd
-    state: restarted
   become: true
 
 - name: Rebuild vmailbox db

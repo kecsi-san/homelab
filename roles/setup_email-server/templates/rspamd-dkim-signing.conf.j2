@@ -1,0 +1,17 @@
+# Managed by Ansible — do not edit manually
+# Keys live at: {{ rspamd_dkim_key_dir }}/<domain>.{{ dkim_selector }}.key
+# To generate: rspamadm dkim_keygen -s {{ dkim_selector }} -d <domain> -k <path>
+# To migrate from OpenDKIM: cp /etc/opendkim/keys/<domain>/{{ dkim_selector }}.private <path>
+
+enabled = true;
+
+# $domain and $selector are resolved at signing time from the message envelope
+path = "{{ rspamd_dkim_key_dir }}/$domain.$selector.key";
+selector = "{{ dkim_selector }}";
+
+# Sign authenticated SMTP clients (port 587) and locally-injected mail
+sign_authenticated = true;
+sign_local = true;
+
+# Allow signing when envelope From domain doesn't match the SASL username
+allow_username_mismatch = true;

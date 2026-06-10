@@ -1,0 +1,93 @@
+---
+- name: Install rspamd
+  ansible.builtin.package:
+    name: rspamd
+    state: present
+  become: true
+  tags:
+    - rspamd
+
+- name: Create DKIM key directory
+  ansible.builtin.file:
+    path: "{{ rspamd_dkim_key_dir }}"
+    state: directory
+    owner: _rspamd
+    group: _rspamd
+    mode: "0700"
+  become: true
+  tags:
+    - rspamd
+
+# Creates both the private key file and a .txt file with the DNS TXT record.
+# Idempotent: skipped if the .key already exists (covers fresh install).
+# For keys migrated from the old server: copy the .key file first; this task
+# is then skipped but a .txt file won't exist — see the display task below.
+- name: Generate DKIM key pair per domain
+  ansible.builtin.shell:
+    cmd: >
+      rspamadm dkim_keygen
+      -s {{ dkim_selector }}
+      -d {{ item }}
+      -k {{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_selector }}.key
+      > {{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_selector }}.txt
+    creates: "{{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_selector }}.key"
+  become: true
+  loop: "{{ email_domains }}"
+  tags:
+    - rspamd
+    - dkim-dns
+
+- name: Fix DKIM key ownership
+  ansible.builtin.file:
+    path: "{{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_selector }}.key"
+    owner: _rspamd
+    group: _rspamd
+    mode: "0400"
+  become: true
+  loop: "{{ email_domains }}"
+  tags:
+    - rspamd
+
+- name: Deploy Rspamd DKIM signing config
+  ansible.builtin.template:
+    src: rspamd-dkim-signing.conf.j2
+    dest: /etc/rspamd/local.d/dkim_signing.conf
+    owner: root
+    group: _rspamd
+    mode: "0640"
+  become: true
+  notify: Reload rspamd
+  tags:
+    - rspamd
+
+- name: Ensure rspamd is enabled and running
+  ansible.builtin.systemd:
+    name: rspamd
+    enabled: true
+    state: started
+  become: true
+  tags:
+    - rspamd
+
+- name: Print DKIM public keys for DNS (add to Route53 as TXT records)
+  ansible.builtin.command:
+    cmd: cat {{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_selector }}.txt
+  become: true
+  loop: "{{ email_domains }}"
+  register: dkim_public_keys
+  changed_when: false
+  failed_when: false
+  tags:
+    - rspamd
+    - dkim-dns
+
+- name: Show DKIM public keys
+  ansible.builtin.debug:
+    msg: |
+      === DKIM TXT record for {{ item.item }} ===
+      Name:  {{ dkim_selector }}._domainkey.{{ item.item }}
+      {{ item.stdout | default('(key migrated from old server — .txt file not present; DNS record unchanged)') }}
+  loop: "{{ dkim_public_keys.results }}"
+  tags:
+    - rspamd
+    - dkim-dns

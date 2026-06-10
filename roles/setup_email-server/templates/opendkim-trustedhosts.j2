@@ -1,8 +1,0 @@
-# Managed by Ansible — do not edit manually
-# Hosts whose outgoing mail is signed (not verified)
-127.0.0.1
-::1
-localhost
-{% for domain in email_domains %}
-{{ domain }}
-{% endfor %}
