@@ -1,0 +1,14 @@
+# Managed by Ansible — do not edit manually
+
+storage "file" {
+  path = "{{ vault_storage_path }}"
+}
+
+listener "tcp" {
+  address     = "{{ vault_bind_addr }}"
+  tls_disable = true
+}
+
+api_addr        = "{{ vault_api_addr }}"
+ui              = {{ 'true' if vault_ui else 'false' }}
+disable_mlock   = {{ 'true' if vault_disable_mlock else 'false' }}

@@ -1,0 +1,3 @@
+---
+vault_apt_packages:
+  - unzip

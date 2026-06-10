@@ -1,0 +1,113 @@
+---
+- name: Install prerequisites
+  ansible.builtin.package:
+    name: "{{ vault_apt_packages }}"
+    state: present
+  become: true
+  tags: [vault]
+
+- name: Create vault group
+  ansible.builtin.group:
+    name: "{{ vault_group }}"
+    system: true
+  become: true
+  tags: [vault]
+
+- name: Create vault user
+  ansible.builtin.user:
+    name: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    system: true
+    create_home: false
+    shell: /usr/sbin/nologin
+  become: true
+  tags: [vault]
+
+- name: Create vault directories
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    mode: "{{ item.mode }}"
+  become: true
+  loop:
+    - {path: "{{ vault_config_dir }}", mode: "0750"}
+    - {path: "{{ vault_storage_path }}", mode: "0700"}
+    - {path: "{{ vault_log_dir }}", mode: "0750"}
+  tags: [vault]
+
+# Version-specific extract path ensures re-install when vault_version is bumped.
+- name: Download and extract Vault binary
+  ansible.builtin.unarchive:
+    src: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_amd64.zip"
+    dest: /tmp/
+    remote_src: true
+    creates: "/tmp/vault_{{ vault_version }}_linux_amd64"
+  become: false
+  tags: [vault]
+
+- name: Mark Vault version extracted
+  ansible.builtin.file:
+    path: "/tmp/vault_{{ vault_version }}_linux_amd64"
+    state: touch
+    mode: "0644"
+  tags: [vault]
+
+- name: Install Vault binary
+  ansible.builtin.copy:
+    src: /tmp/vault
+    dest: "{{ vault_install_dir }}/vault"
+    owner: root
+    group: "{{ vault_group }}"
+    mode: "0750"
+    remote_src: true
+  become: true
+  notify: Restart vault
+  tags: [vault]
+
+- name: Deploy vault.hcl
+  ansible.builtin.template:
+    src: vault.hcl.j2
+    dest: "{{ vault_config_dir }}/vault.hcl"
+    owner: "{{ vault_user }}"
+    group: "{{ vault_group }}"
+    mode: "0640"
+  become: true
+  notify: Restart vault
+  tags: [vault]
+
+- name: Deploy vault systemd unit
+  ansible.builtin.template:
+    src: vault.service.j2
+    dest: /etc/systemd/system/vault.service
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Restart vault
+  tags: [vault]
+
+- name: Enable and start vault
+  ansible.builtin.systemd:
+    name: vault
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true
+  tags: [vault]
+
+- name: Vault initialization reminder
+  ansible.builtin.debug:
+    msg: |
+      Vault is running at http://{{ vault_bind_addr }} (proxied via Apache at {{ vault_api_addr }}).
+
+      On FIRST DEPLOY only — initialize and unseal:
+        export VAULT_ADDR=http://127.0.0.1:8200
+        vault operator init          # outputs 5 unseal keys + root token — save these securely
+        vault operator unseal        # run 3 times with 3 different unseal keys
+        vault login <root-token>
+
+      Unseal keys and root token are NOT managed by Ansible.
+      Store them in a password manager or offline. Loss = permanent data loss.
+  tags: [vault]
