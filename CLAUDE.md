@@ -194,6 +194,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 
 | `setup_email-server` | Postfix (SMTP + submission 587 STARTTLS) + Dovecot (IMAPS 993) + OpenDKIM (per-domain DKIM keys) + OpenDMARC + Postgrey + SpamAssassin + certbot DNS-01 via Route53; virtual mailbox users from `secrets.yml`; multi-domain; prints DKIM public keys for Route53 TXT records |
 | `setup_apache2` | Apache2 + ModSecurity (DetectionOnly) + ModEvasive + certbot DNS-01 via Route53; variable-driven vhosts supporting static sites, reverse proxy, and HTTPS redirect; `apache_vhosts` and `apache_certs` defined in `secrets.yml`; used by `ec2-web.yml` |
+| `setup_users` | Creates named system users with home dirs, optional SSH authorized_keys, optional sudo group membership; `ec2_users` list defined in `secrets.yml`; `ec2_users_absent` removes accounts while preserving home dirs for data migration; wired into `ec2-core.yml` |
 
 #### Placeholder Roles (empty `tasks/main.yml`)
 

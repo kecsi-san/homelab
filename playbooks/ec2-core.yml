@@ -83,3 +83,10 @@
           - rkhunter
       tags:
         - security
+
+    - name: Setup named system users
+      ansible.builtin.import_role:
+        name: setup_users
+      become: true
+      tags:
+        - users

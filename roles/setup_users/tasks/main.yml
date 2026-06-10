@@ -1,0 +1,38 @@
+---
+- name: Create system users
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    uid: "{{ item.uid | default(omit) }}"
+    comment: "{{ item.comment | default(omit) }}"
+    groups: "{{ (item.groups | default([])) + (['sudo'] if item.sudo | default(false) else []) }}"
+    append: true
+    shell: "{{ item.shell | default('/bin/bash') }}"
+    create_home: true
+    state: present
+  become: true
+  loop: "{{ ec2_users }}"
+  tags:
+    - users
+
+- name: Set authorized SSH keys
+  ansible.posix.authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ item.ssh_key }}"
+    state: present
+    exclusive: false
+  become: true
+  loop: "{{ ec2_users }}"
+  when: item.ssh_key is defined
+  no_log: true
+  tags:
+    - users
+
+- name: Remove absent users (home directory preserved for data migration)
+  ansible.builtin.user:
+    name: "{{ item }}"
+    state: absent
+    remove: false
+  become: true
+  loop: "{{ ec2_users_absent }}"
+  tags:
+    - users
