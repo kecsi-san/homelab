@@ -1,0 +1,26 @@
+---
+# Named system users to create on the EC2 edge node.
+# Define in secrets.yml — never commit real SSH keys or passwords.
+# Fields:
+#   name     username (required)
+#   uid      UID to assign (optional — omit to let the OS pick)
+#   comment  GECOS / full name (optional)
+#   groups   additional groups to append the user to (optional list)
+#   shell    login shell (default: /bin/bash)
+#   ssh_key  SSH public key string for authorized_keys (optional)
+#   sudo     if true, adds user to the 'sudo' group (default: false)
+# Example:
+#   ec2_users:
+#     - name: alice
+#       comment: Alice Smith
+#       groups: [www-data]
+#       ssh_key: "ssh-ed25519 AAAA... alice@laptop"
+#     - name: bob
+#       comment: Bob Jones
+#       sudo: true
+#       ssh_key: "ssh-ed25519 AAAA... bob@laptop"
+ec2_users: []
+
+# Users to ensure are absent. Home directories are left in place so
+# data can still be migrated before the account is permanently removed.
+ec2_users_absent: []
