@@ -2,15 +2,17 @@
 - name: Create system users
   ansible.builtin.user:
     name: "{{ item.name }}"
-    uid: "{{ item.uid | default(omit) }}"
+    uid: "{{ item.uid }}"
     comment: "{{ item.comment | default(omit) }}"
     groups: "{{ (item.groups | default([])) + (['sudo'] if item.sudo | default(false) else []) }}"
     append: true
     shell: "{{ item.shell | default('/bin/bash') }}"
+    password: "{{ item.password_hash | default('!') }}"
     create_home: true
     state: present
   become: true
   loop: "{{ ec2_users }}"
+  no_log: true
   tags:
     - users
 

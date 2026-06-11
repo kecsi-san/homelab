@@ -7,3 +7,46 @@ ansible_python_interpreter: /usr/bin/python3
 
 etckeeper: true
 linuxbrew: false   # headless server, not a workstation
+
+# --- System users ---
+# UIDs pinned to match the live server — required for correct file ownership after rsync data migration.
+# Live server baseline (measured 2026-06-11):
+#   alice  UID 1000  ~5.2 GB Maildir, sudo admin
+#   bob   UID 1001  ~102 MB Maildir, mail-only
+#   carol  UID 1005  ~234 MB Maildir, mail-only
+#   dave  UID 1006  ~51 MB Maildir, mail-only
+#   vault  UID 1008  HashiCorp Vault service account
+#
+# UIDs 1002-1004 and 1007 intentionally skipped (deleted users — do not reuse).
+# Sensitive values (ssh_key, password_hash) must be in secrets.yml (ansible-vault encrypted).
+
+ec2_users:
+  - name: alice
+    uid: 1000
+    comment: Alice Smith
+    groups: [adm, mail, docker]
+    sudo: true
+    ssh_key: "{{ alice_ssh_key | default(omit) }}"
+    password_hash: "{{ alice_password_hash | default(omit) }}"
+
+  - name: bob
+    uid: 1001
+    comment: Bob Jones
+    password_hash: "{{ bob_password_hash | default(omit) }}"
+
+  - name: carol
+    uid: 1005
+    comment: Carol Davis
+    password_hash: "{{ carol_password_hash | default(omit) }}"
+
+  - name: dave
+    uid: 1006
+    comment: Dave Wilson
+    password_hash: "{{ dave_password_hash | default(omit) }}"
+
+  - name: vault
+    uid: 1008
+    comment: Vault daemon user
+    shell: /bin/false
+
+ec2_users_absent: []

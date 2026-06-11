@@ -52,7 +52,18 @@ The EC2 edge node has been manually configured since 2016. Terraform now manages
 
 ## Phased Plan
 
-### Phase 1 — `setup_email-server` role ✅ Done
+### Phase 1 — `setup_users` role ✅ Done
+
+Must run **before** `setup_email-server` — the mail stack references system users by name, and UIDs must exist on the new server before any data migration.
+
+- UIDs pinned to match live server — rsync preserves numeric UIDs, so new server must match before Maildirs are copied
+- kecsi (1000): sudo, adm, mail, docker groups; SSH key from secrets.yml
+- orsi (1001), peter (1005), tamas (1006): mail-only users, password hash from secrets.yml
+- vault (1008): service account, shell `/bin/false`
+- UIDs 1002–1004 and 1007 skipped (deleted users — do not reuse)
+- See `roles/setup_users/README.md` for full variable reference and `inventory/group_vars/aws.yml` for definitions
+
+### Phase 2 — `setup_email-server` role ✅ Done
 
 Role fully implemented and covers:
 
@@ -62,7 +73,7 @@ Role fully implemented and covers:
 - OpenDMARC: DMARC validation milter
 - See `roles/setup_email-server/README.md` for full variable reference
 
-### Phase 2 — New role: `setup_apache2` (est. 2–3h)
+### Phase 3 — New role: `setup_apache2` (est. 2–3h)
 
 New files: `roles/setup_apache2/`, `playbooks/ec2-web.yml`
 
@@ -81,14 +92,6 @@ New files: `roles/setup_apache2/`, `playbooks/ec2-web.yml`
       proxy_pass: http://127.0.0.1:8200/
       ssl: true
   ```
-
-### Phase 3 — New role: `setup_users` (est. 1h)
-
-New files: `roles/setup_users/`, wired into `ec2-core.yml` or a new `ec2-users.yml`
-
-- Create named system users with home dirs, SSH authorized_keys, optional sudo
-- Variable-driven: `ec2_users` list with name, uid, groups, ssh_key, shell
-- Decide which existing users need SSH access vs. mail-alias-only before running
 
 ### Phase 4 — New role: `setup_vault` (est. 2h)
 
@@ -112,19 +115,23 @@ Added to `ec2-core.yml`.
 ### Phase 6 — New instance + data migration (est. 2–4h)
 
 1. Terraform: launch new EC2 instance alongside old one (separate resource, same SG)
-2. Run playbooks against new instance: `ec2-prerequisite` → `ec2-core` → `ec2-web` → `ec2-mail` → `ec2-vault`
-3. Migrate data:
+2. Run playbooks in order (users before mail — UIDs must exist before data migration):
+   ```
+   ec2-prerequisite → ec2-core (includes setup_users) → ec2-mail → ec2-web → ec2-vault
+   ```
+3. Migrate data (**after** setup_users has run so UIDs match):
    ```bash
-   # DKIM keys (critical — do this first)
+   # DKIM keys
    rsync -av old-ec2:/var/lib/rspamd/dkim/ new-ec2:/var/lib/rspamd/dkim/
 
    # Website content
    rsync -av old-ec2:/var/www/ new-ec2:/var/www/
 
-   # Mailboxes (system user Maildirs — ~5.6 GB)
+   # Mailboxes (system user Maildirs — ~5.6 GB total)
+   # UIDs are pinned in setup_users so ownership is correct without chown
    rsync -av old-ec2:/home/kecsi/Maildir/ new-ec2:/home/kecsi/Maildir/
-   rsync -av old-ec2:/home/peter/Maildir/ new-ec2:/home/peter/Maildir/
    rsync -av old-ec2:/home/orsi/Maildir/ new-ec2:/home/orsi/Maildir/
+   rsync -av old-ec2:/home/peter/Maildir/ new-ec2:/home/peter/Maildir/
    rsync -av old-ec2:/home/tamas/Maildir/ new-ec2:/home/tamas/Maildir/
    ```
 4. DNS smoke test: point one vhost to new instance, verify end-to-end
@@ -146,9 +153,9 @@ Added to `ec2-core.yml`.
 | `configure_ntp` | ✅ done | ec2-core |
 | `setup_etckeeper` | ✅ done | ec2-core |
 | `setup_security-tools` | ✅ done | ec2-core |
+| `setup_users` | ✅ done | ec2-core |
 | `setup_email-server` | ✅ done | ec2-mail |
 | `setup_apache2` | ❌ new | ec2-web (new playbook) |
-| `setup_users` | ❌ new | ec2-core or ec2-users (new) |
 | `setup_unbound` | ✅ done | ec2-core |
 | `setup_vault` | ❌ new | ec2-vault (new playbook) |
 
@@ -158,12 +165,12 @@ Added to `ec2-core.yml`.
 
 | Phase | Estimated time |
 |-------|----------------|
-| Phase 1 — Fix email role | 2–3h |
-| Phase 2 — Apache2 role | 2–3h |
-| Phase 3 — Users role | 1h |
+| Phase 1 — setup_users role | ✅ done |
+| Phase 2 — setup_email-server role | ✅ done |
+| Phase 3 — Apache2 role | 2–3h |
 | Phase 4 — Vault role | 2h |
-| Phase 5 — dnsmasq role | 30min |
+| Phase 5 — setup_unbound role | ✅ done |
 | Phase 6 — Migration + cutover | 2–4h |
-| **Total** | **~10–14h across sessions** |
+| **Remaining** | **~4–7h** |
 
 Phases 1–5 can be developed and tested without touching the live server.

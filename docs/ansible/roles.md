@@ -117,6 +117,7 @@ Use `roles/role_template/` as a starting point when creating a new role.
 | `upgrade_python-uv` | `uv tool upgrade --all` + `uv pip install --upgrade` in devops venv | upgrade.yml, upgrade-local.yml |
 | `upload_fav_bgimages` | Copies wallpapers to `/usr/share/backgrounds/`; generates GNOME XML descriptor (Linux only) | k8s-nodes.yml |
 | `upload_profile_image` | Sets user profile picture — GNOME/GDM via AccountsService (Linux); macOS account picture via `dsimport`/`dscl`; source path set via `profile_image_src` | personalise.yml, k8s-nodes.yml |
+| `setup_users` | Creates named EC2 system users with pinned UIDs (critical for data migration), SSH authorized keys, password hashes, group memberships; removes absent users while preserving home dirs | ec2-core.yml |
 | `setup_email-server` | Full email stack: Postfix (multi-domain, PAM/system users, LMTP, postscreen, DNSBL, DANE), Dovecot (IMAPS, PAM auth, FTS Xapian), Rspamd (DKIM 2048-bit, SPF, greylisting), OpenDMARC | ec2-mail.yml |
 | `setup_unbound` | Installs Unbound as local DNSSEC-validating caching resolver; disables systemd-resolved; writes static `/etc/resolv.conf`; forwards to AWS VPC resolver then Cloudflare | ec2-core.yml |
 

@@ -1,26 +1,43 @@
 ---
-# Named system users to create on the EC2 edge node.
-# Define in secrets.yml — never commit real SSH keys or passwords.
+# Named system users for the EC2 edge node.
+#
+# UIDs MUST be pinned explicitly — rsync --archive preserves numeric UIDs,
+# so new server UIDs must match old server before any data migration.
+#
 # Fields:
-#   name     username (required)
-#   uid      UID to assign (optional — omit to let the OS pick)
-#   comment  GECOS / full name (optional)
-#   groups   additional groups to append the user to (optional list)
-#   shell    login shell (default: /bin/bash)
-#   ssh_key  SSH public key string for authorized_keys (optional)
-#   sudo     if true, adds user to the 'sudo' group (default: false)
-# Example:
+#   name          username (required)
+#   uid           UID — REQUIRED, always set explicitly (see above)
+#   comment       GECOS / full name
+#   groups        additional groups to append (beyond the primary group)
+#   shell         login shell (default: /bin/bash; use /bin/false for service accounts)
+#   sudo          if true, appends user to 'sudo' group (default: false)
+#   ssh_key       SSH public key string for authorized_keys — store in secrets.yml
+#   password_hash SHA512-CRYPT hash — store in secrets.yml; omit to lock the account
+#
+# Group ordering note: groups listed here must exist at the time this role runs.
+# 'adm' and 'mail' are standard Debian base groups (GIDs 4 and 8).
+# 'docker' is created by the docker installation role — run that before setup_users.
+#
+# Generate a password hash: python3 -c "import crypt; print(crypt.crypt('password', crypt.mksalt(crypt.METHOD_SHA512)))"
+#
+# Example (put actual ssh_key / password_hash in secrets.yml):
 #   ec2_users:
 #     - name: alice
+#       uid: 1000
 #       comment: Alice Smith
-#       groups: [www-data]
-#       ssh_key: "ssh-ed25519 AAAA... alice@laptop"
-#     - name: bob
-#       comment: Bob Jones
+#       groups: [adm, mail, docker]
 #       sudo: true
-#       ssh_key: "ssh-ed25519 AAAA... bob@laptop"
+#       ssh_key: "{{ alice_ssh_key }}"
+#       password_hash: "{{ alice_password_hash | default(omit) }}"
+#     - name: bob
+#       uid: 1001
+#       comment: Bob Jones
+#     - name: vault
+#       uid: 1008
+#       comment: Vault daemon user
+#       shell: /bin/false
 ec2_users: []
 
-# Users to ensure are absent. Home directories are left in place so
-# data can still be migrated before the account is permanently removed.
+# Users to ensure are absent. Home directories are preserved so data can
+# be migrated or reviewed before permanent deletion.
 ec2_users_absent: []
