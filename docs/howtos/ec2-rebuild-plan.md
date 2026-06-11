@@ -73,25 +73,16 @@ Role fully implemented and covers:
 - OpenDMARC: DMARC validation milter
 - See `roles/setup_email-server/README.md` for full variable reference
 
-### Phase 3 — New role: `setup_apache2` (est. 2–3h)
+### Phase 3 — `setup_apache2` role ✅ Done
 
-New files: `roles/setup_apache2/`, `playbooks/ec2-web.yml`
+Role covers all 7 vhosts across both domains:
 
-- Install Apache2 + modules: ssl, rewrite, proxy, proxy_http, headers, evasive, security2
-- Template vhosts from variable-driven config: domain, docroot, aliases, proxy targets, SSL cert path
-- Certbot integration: issue per-domain Let's Encrypt certs (DNS-01 via Route53 or HTTP-01)
-- Capture the existing vhosts as role defaults (parameterised — no hardcoded domain names)
-- Variable structure:
-  ```yaml
-  apache_vhosts:
-    - name: www.example.com
-      docroot: /var/www/example.com/public
-      ssl: true
-      certbot_domain: example.com
-    - name: app.example.com
-      proxy_pass: http://127.0.0.1:8200/
-      ssl: true
-  ```
+- linuxbox.hu, hugo.linuxbox.hu (static), vault.linuxbox.hu (→ Vault 8200)
+- kecskemethy.hu, zoltan.kecskemethy.hu (static), kepek.kecskemethy.hu (static + S3 proxy for /album/), vault.kecskemethy.hu (→ Vault 8200)
+- Certbot HTTP-01 (webroot) for both domains; DNS-01 Route53 available for Route53 zones
+- ModSecurity + ModEvasive; OCSP stapling; HSTS; ServerTokens Prod
+- All vhosts defined in `inventory/group_vars/aws.yml`; see `roles/setup_apache2/README.md`
+- **Note:** cert issuance (HTTP-01) requires EIP to be swapped to the new instance first
 
 ### Phase 4 — New role: `setup_vault` (est. 2h)
 
@@ -155,7 +146,7 @@ Added to `ec2-core.yml`.
 | `setup_security-tools` | ✅ done | ec2-core |
 | `setup_users` | ✅ done | ec2-core |
 | `setup_email-server` | ✅ done | ec2-mail |
-| `setup_apache2` | ❌ new | ec2-web (new playbook) |
+| `setup_apache2` | ✅ done | ec2-web (new playbook) |
 | `setup_unbound` | ✅ done | ec2-core |
 | `setup_vault` | ❌ new | ec2-vault (new playbook) |
 
@@ -167,10 +158,10 @@ Added to `ec2-core.yml`.
 |-------|----------------|
 | Phase 1 — setup_users role | ✅ done |
 | Phase 2 — setup_email-server role | ✅ done |
-| Phase 3 — Apache2 role | 2–3h |
+| Phase 3 — setup_apache2 role | ✅ done |
 | Phase 4 — Vault role | 2h |
 | Phase 5 — setup_unbound role | ✅ done |
 | Phase 6 — Migration + cutover | 2–4h |
-| **Remaining** | **~4–7h** |
+| **Remaining** | **~2–4h** (Vault role + migration) |
 
 Phases 1–5 can be developed and tested without touching the live server.

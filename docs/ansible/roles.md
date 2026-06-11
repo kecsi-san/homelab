@@ -120,6 +120,7 @@ Use `roles/role_template/` as a starting point when creating a new role.
 | `setup_users` | Creates named EC2 system users with pinned UIDs (critical for data migration), SSH authorized keys, password hashes, group memberships; removes absent users while preserving home dirs | ec2-core.yml |
 | `setup_email-server` | Full email stack: Postfix (multi-domain, PAM/system users, LMTP, postscreen, DNSBL, DANE), Dovecot (IMAPS, PAM auth, FTS Xapian), Rspamd (DKIM 2048-bit, SPF, greylisting), OpenDMARC | ec2-mail.yml |
 | `setup_unbound` | Installs Unbound as local DNSSEC-validating caching resolver; disables systemd-resolved; writes static `/etc/resolv.conf`; forwards to AWS VPC resolver then Cloudflare | ec2-core.yml |
+| `setup_apache2` | Apache2 with ModSecurity, ModEvasive, certbot (HTTP-01 webroot + DNS-01 Route53); variable-driven vhosts for static sites, full proxies, and path-specific proxies; OCSP stapling; HSTS | ec2-web.yml |
 
 ---
 

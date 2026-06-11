@@ -1,0 +1,10 @@
+# Managed by Ansible — do not edit manually
+
+# Hide server version information
+ServerTokens Prod
+ServerSignature Off
+TraceEnable Off
+
+# OCSP Stapling — requires mod_ssl and mod_socache_shmcb
+SSLUseStapling on
+SSLStaplingCache shmcb:/run/apache2/ocsp(131072)

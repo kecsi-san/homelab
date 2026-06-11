@@ -50,3 +50,60 @@ ec2_users:
     shell: /bin/false
 
 ec2_users_absent: []
+
+# --- Apache2 ---
+# acme_email must be in secrets.yml
+
+apache_server_admin: webmaster@linuxbox.hu
+
+apache_certs:
+  # HTTP-01 via webroot — integrity.hu DNS, no API access
+  - domain: linuxbox.hu
+    extra_sans:
+      - www.linuxbox.hu
+      - hugo.linuxbox.hu
+      - vault.linuxbox.hu
+  - domain: kecskemethy.hu
+    extra_sans:
+      - www.kecskemethy.hu
+      - kepek.kecskemethy.hu
+      - vault.kecskemethy.hu
+      - zoltan.kecskemethy.hu
+
+apache_vhosts:
+  # --- linuxbox.hu ---
+  - name: linuxbox.hu
+    server_alias: [www.linuxbox.hu]
+    ssl_cert_domain: linuxbox.hu
+    docroot: /var/www/linuxbox.hu/jekyll.linuxbox.hu/_site
+
+  - name: hugo.linuxbox.hu
+    server_alias: [beta.linuxbox.hu]
+    ssl_cert_domain: linuxbox.hu
+    docroot: /var/www/linuxbox.hu/hugo.linuxbox.hu/public
+
+  - name: vault.linuxbox.hu
+    ssl_cert_domain: linuxbox.hu
+    proxy_pass: http://127.0.0.1:8200/
+
+  # --- kecskemethy.hu ---
+  - name: kecskemethy.hu
+    server_alias: [www.kecskemethy.hu]
+    ssl_cert_domain: kecskemethy.hu
+    docroot: /var/www/kecskemethy.hu/www.kecskemethy.hu/_site
+
+  - name: kepek.kecskemethy.hu
+    server_alias: [pics.kecskemethy.hu]
+    ssl_cert_domain: kecskemethy.hu
+    docroot: /var/www/kecskemethy.hu/kepek.kecskemethy.hu
+    proxy_paths:
+      - path: /album/
+        upstream: http://kepek.kecskemethy.hu.s3-website-eu-west-1.amazonaws.com/album/
+
+  - name: vault.kecskemethy.hu
+    ssl_cert_domain: kecskemethy.hu
+    proxy_pass: http://127.0.0.1:8200/
+
+  - name: zoltan.kecskemethy.hu
+    ssl_cert_domain: kecskemethy.hu
+    docroot: /var/www/kecskemethy.hu/zoltan.kecskemethy.hu
