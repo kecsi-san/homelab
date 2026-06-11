@@ -12,21 +12,21 @@ The EC2 edge node has been manually configured since 2016. Terraform now manages
 
 | Component | Details | Ansible role exists? |
 |-----------|---------|----------------------|
-| Apache2 | 8 vhosts across 2 domains; SSL, ModSecurity, ModEvasive, proxy | ❌ None |
+| Apache2 | 7 vhosts across 2 domains; SSL, ModSecurity, ModEvasive, proxy | ✅ `setup_apache2` |
 | Postfix | Multi-domain, PAM/system users, postscreen, DNSBL, DANE outbound TLS | ✅ `setup_email-server` |
 | Dovecot | IMAPS + LMTP delivery, PAM auth, FTS Xapian | ✅ same role |
 | Rspamd | DKIM sign/verify, SPF, greylisting, spam scoring — replaced OpenDKIM + Postgrey + SpamAssassin | ✅ same role |
 | OpenDMARC | DMARC validation milter | ✅ same role |
+| Certbot | Let's Encrypt for all hosted domains; HTTP-01 webroot + DNS-01 Route53 | ✅ `setup_apache2` |
 | Unbound | Local DNSSEC-validating resolver (required for DANE) | ✅ `setup_unbound` |
 | dnsmasq | Replaced by Unbound | ♻️ decommissioned |
 | Docker | Installed, no containers running | ❌ None |
-| Certbot | Let's Encrypt for all hosted domains | ⚠️ referenced in mail role only |
 | Fail2Ban | Custom jail.local (SASL, Postfix, Dovecot jails, 24h bantime) | ✅ ec2-core covers install |
 | Duo 2FA | ForceCommand login_duo in sshd | ✅ ec2-prerequisite covers |
 | SSH hardening | lynis_hardening.conf (MaxAuthTries 2, no X11, no AgentForwarding, etc.) | ⚠️ partially (banner + legal) |
 | auditd | Security audit logging | ✅ ec2-core security-tools |
-| Named system users | Multiple users with home directories and SSH access | ❌ None |
-| HashiCorp Vault | Binary install, proxied via Apache | ❌ None |
+| Named system users | kecsi, orsi, peter, tamas + vault service account | ✅ `setup_users` |
+| HashiCorp Vault | Binary install, proxied via Apache | ❌ `setup_vault` (planned) |
 
 ### Decommissioned (not rebuilding)
 
