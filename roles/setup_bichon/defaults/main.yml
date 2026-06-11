@@ -1,0 +1,7 @@
+---
+# Default variables for <role-name>
+# These are the lowest-precedence variables — safe to override in group_vars or host_vars.
+#
+# Example:
+# my_role_enabled: true
+# my_role_setting: "default_value"

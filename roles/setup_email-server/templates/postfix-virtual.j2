@@ -1,0 +1,7 @@
+# Managed by Ansible — virtual address map
+# Format: user@domain   local_system_user
+{% for user in mailbox_users %}
+{% for domain in user.domains %}
+{{ user.name }}@{{ domain }}   {{ user.name }}
+{% endfor %}
+{% endfor %}

@@ -1,0 +1,8 @@
+---
+# Debian/Ubuntu-specific variable overrides for <role-name>
+# Loaded via: include_vars: "os/{{ ansible_distribution }}.yml"
+#
+# Example:
+# my_role_packages:
+#   - package-name
+#   - another-package

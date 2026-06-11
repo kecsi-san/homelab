@@ -133,6 +133,7 @@ Use `roles/role_template/` as a starting point when creating a new role.
 | Role | Intended Purpose |
 |------|-----------------|
 | `setup_email-server` | Email server setup |
+| `setup_bichon` | Self-hosted email archive (Bichon — Rust, IMAP pull, React UI); see `docs/research/email-archive-software.md` |
 | `setup_email-tools` | Email client tools |
 | `setup_mlops-tools` | MLOps tooling (MLflow, DVC, ZenML, Prefect, etc.) |
 | `setup_aiops-tools` | AIOps tooling (OpenTelemetry, Prometheus, Grafana CLI, etc.) |

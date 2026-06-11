@@ -23,17 +23,29 @@
   tags:
     - postfix
 
-- name: Deploy virtual mailbox map
+- name: Deploy virtual address map
   ansible.builtin.template:
-    src: postfix-vmailbox.j2
-    dest: "{{ postfix_config_dir }}/vmailbox"
+    src: postfix-virtual.j2
+    dest: "{{ postfix_config_dir }}/virtual"
     owner: root
     group: root
     mode: "0644"
   become: true
   notify:
-    - Rebuild vmailbox db
+    - Rebuild virtual db
     - Reload postfix
+  tags:
+    - postfix
+
+- name: Deploy /etc/aliases
+  ansible.builtin.template:
+    src: aliases.j2
+    dest: /etc/aliases
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Rebuild aliases db
   tags:
     - postfix
 

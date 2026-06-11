@@ -1,0 +1,11 @@
+---
+# Handlers for <role-name>
+# Handlers run once at the end of a play when notified by a task.
+# Commonly used to restart/reload services after config changes.
+#
+# Example:
+# - name: Restart my_service
+#   ansible.builtin.service:
+#     name: my_service
+#     state: restarted
+#   become: true

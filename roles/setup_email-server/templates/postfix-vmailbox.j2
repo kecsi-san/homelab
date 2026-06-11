@@ -1,7 +1,0 @@
-# Managed by Ansible — virtual mailbox map
-# Format: user@domain   domain/user/Maildir/
-{% for user in mailbox_users %}
-{% for domain in user.domains %}
-{{ user.name }}@{{ domain }}   {{ domain }}/{{ user.name }}/Maildir/
-{% endfor %}
-{% endfor %}
