@@ -9,22 +9,21 @@ myorigin = $mydomain
 inet_interfaces = all
 inet_protocols = ipv4
 
-# No local delivery — all mail goes to virtual mailboxes
-mydestination =
-local_recipient_maps =
-local_transport = error:local delivery disabled
+# All served domains — local delivery to system users
+mydestination = $myhostname, localhost{% for d in email_domains %}, {{ d }}, mail.{{ d }}{% endfor %}
 
-# Virtual mailbox setup
-virtual_mailbox_domains = {% for d in email_domains %}{{ d }}{% if not loop.last %}, {% endif %}{% endfor %}
+# Validate recipients: aliases, system users, virtual address map
+local_recipient_maps = $alias_maps unix:passwd.byname $virtual_maps
 
-virtual_mailbox_base = {{ vmail_home }}
-virtual_mailbox_maps = hash:{{ postfix_config_dir }}/vmailbox
-virtual_minimum_uid = 100
-virtual_uid_maps = static:{{ vmail_uid }}
-virtual_gid_maps = static:{{ vmail_gid }}
+# Virtual address map — redirects user@domain to local system username
+virtual_maps = hash:{{ postfix_config_dir }}/virtual
 
-# Deliver via Dovecot LMTP
-virtual_transport = lmtp:unix:private/dovecot-lmtp
+# Deliver all local mailboxes via Dovecot LMTP (writes to ~/Maildir)
+mailbox_transport = lmtp:unix:private/dovecot-lmtp
+home_mailbox = Maildir/
+
+# Subaddressing (user+tag@domain)
+recipient_delimiter = +
 
 # TLS — inbound (smtpd)
 smtpd_tls_cert_file = {{ certbot_cert_dir }}/{{ mail_hostname }}/fullchain.pem

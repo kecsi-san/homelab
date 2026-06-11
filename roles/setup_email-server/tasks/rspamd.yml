@@ -26,6 +26,7 @@
   ansible.builtin.shell:
     cmd: >
       rspamadm dkim_keygen
+      --bits 2048
       -s {{ dkim_selector }}
       -d {{ item }}
       -k {{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_selector }}.key

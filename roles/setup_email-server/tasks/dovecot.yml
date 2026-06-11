@@ -36,37 +36,17 @@
     - dovecot
     - fts
 
-- name: Deploy dovecot users file (virtual passwd-file)
-  ansible.builtin.template:
-    src: dovecot-users.j2
-    dest: /etc/dovecot/users
-    owner: root
-    group: dovecot
-    mode: "0640"
-  become: true
-  no_log: true
-  notify: Reload dovecot
-  tags:
-    - dovecot
-
-- name: Create per-user maildir directories
-  ansible.builtin.file:
-    path: "{{ vmail_home }}/{{ item.1 }}/{{ item.0.name }}/Maildir"
-    state: directory
-    owner: "{{ vmail_user }}"
-    group: "{{ vmail_user }}"
-    mode: "0700"
-  become: true
-  loop: "{{ mailbox_users | subelements('domains') }}"
-  tags:
-    - dovecot
-
 - name: Deploy Dovecot FTS maintenance cron job
   ansible.builtin.cron:
     name: dovecot-fts-maintenance
     minute: "0"
     hour: "4"
-    job: "/usr/bin/doveadm index -A -q '*' && /usr/bin/doveadm fts optimize -A"
+    job: >-
+      for dir in /home/*/Maildir/xapian-indexes; do
+      [ -d "$dir" ] || continue;
+      u=$(stat -c '%U' "$dir");
+      /usr/bin/doveadm fts optimize -u "$u" 2>&1 | logger -t dovecot-fts-optimize;
+      done
     user: root
     cron_file: dovecot-fts
   become: true

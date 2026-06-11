@@ -1,0 +1,23 @@
+# Managed by Ansible — do not edit manually
+# System aliases — all standard roles redirect to root
+mailer-daemon: postmaster
+postmaster: root
+nobody: root
+hostmaster: root
+usenet: root
+news: root
+webmaster: root
+www: root
+ftp: root
+abuse: root
+noc: root
+security: root
+uucp: root
+
+# Root mail goes to the primary admin user
+root: {{ aliases_root }}
+
+# Site-specific aliases
+{% for alias, target in extra_aliases.items() %}
+{{ alias }}: {{ target }}
+{% endfor %}

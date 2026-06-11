@@ -19,6 +19,8 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 
 ### Ansible — inventory, roles & playbooks
 
+- [ ] **`setup_bichon` role** — deploy Bichon email archive (Rust, IMAP pull from Dovecot, React UI); placeholder role created; see `docs/research/email-archive-software.md` for evaluation
+
 - [ ] **AWS inventory group** — add `aws` group to `inventory/hosts.example`; `inventory/group_vars/aws.yml` with SSH user, Python interpreter, EC2 SSH key path; EC2 EIP as static host
 - [ ] **`ec2-core.yml` playbook** — base EC2 provisioning targeting `aws` group (mirrors `k8s-nodes.yml`): SSH key deploy, sudo, minimal packages, NTP, legal banner, etckeeper
 - [ ] **`setup_email-server` role** — implement placeholder: Postfix (SMTP + submission port 587, STARTTLS) + Dovecot (IMAP-SSL port 993); certbot DNS-01 via Route53 for Let's Encrypt cert; OpenDKIM; DKIM/SPF/DMARC records managed via `configure_route53`

@@ -1,0 +1,15 @@
+---
+# Tasks for <role-name>
+# Replace this file with your actual tasks.
+#
+# Guidelines:
+#   - Use become: true only for tasks that require root (system files, packages, services)
+#   - Use become: false (or omit) for user-level tasks
+#   - Tag every task or block with the role's primary tag
+#   - Use ansible.builtin.* FQCN for all core modules
+
+- name: Example task
+  ansible.builtin.debug:
+    msg: "Replace this with real tasks"
+  tags:
+    - role_template

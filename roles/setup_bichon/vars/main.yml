@@ -1,0 +1,7 @@
+---
+# Internal variables for <role-name>
+# These are role-specific constants not intended to be overridden by users.
+# Use defaults/main.yml for anything that should be user-configurable.
+#
+# Example:
+# _my_role_internal_path: "/etc/my_service"

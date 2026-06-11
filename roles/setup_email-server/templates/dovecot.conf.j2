@@ -1,30 +1,25 @@
 # Managed by Ansible — do not edit manually
-# Dovecot 2.4 configuration
+# Dovecot 2.4 configuration — PAM auth, system user mailboxes
 dovecot_config_version = 2.4.1
 dovecot_storage_version = 2.4.1
 
 protocols = imap lmtp
 
-# Virtual mailbox: all mail stored under vmail_home/<domain>/<user>/Maildir/
+# System user mailboxes — Maildir in each user's home directory
 mail_driver = maildir
-mail_path = {{ vmail_home }}/%d/%n/Maildir
-mail_uid = {{ vmail_uid }}
-mail_gid = {{ vmail_gid }}
-first_valid_uid = {{ vmail_uid }}
-last_valid_uid = {{ vmail_uid }}
+mail_path = ~/Maildir
+mail_privileged_group = mail
 
-# Virtual user auth — passwords in /etc/dovecot/users (SHA512-CRYPT, managed by Ansible)
+# Reject cleartext auth over unencrypted connections
 auth_mechanisms = plain login
 auth_allow_cleartext = no
 
-passdb {
-  driver = passwd-file
-  args = scheme=SHA512-CRYPT /etc/dovecot/users
+# PAM password authentication (validates via /etc/shadow)
+passdb pam {
 }
 
-userdb {
-  driver = static
-  args = uid={{ vmail_uid }} gid={{ vmail_gid }} home={{ vmail_home }}/%d/%n
+# System user database — home dir, uid/gid from /etc/passwd
+userdb passwd {
 }
 
 service imap-login {
@@ -53,7 +48,6 @@ service auth {
   }
   unix_listener auth-userdb {
     mode = 0600
-    user = {{ vmail_user }}
   }
 }
 

@@ -4,12 +4,6 @@ email_server_enabled: true
 # Primary mail hostname — used for TLS cert, SMTP banner, Dovecot
 mail_hostname: "mail.{{ email_domains | first }}"
 
-# Virtual mail system user (owns all mailboxes on disk)
-vmail_user: vmail
-vmail_uid: 5000
-vmail_gid: 5000
-vmail_home: /var/mail/vmail
-
 # DKIM selector — change to rotate keys (old selector stays valid until DNS TTL expires)
 dkim_selector: mail
 
@@ -36,11 +30,16 @@ postscreen_dnsbl_sites:
 postscreen_dnsbl_threshold: 3
 postscreen_dnsbl_whitelist_threshold: -1
 
-# Mailbox users — define in secrets.yml (never commit real passwords)
+# System aliases
+aliases_root: root        # who receives root's mail — override in host_vars
+extra_aliases: {}         # e.g. {fail2ban: kecsi, wiki: kecsi}
+
+# Mail users — defines the virtual address map (user@domain → local system user).
+# System users must already exist on the host (created by another role or manually).
+# Define in inventory/host_vars — no passwords needed here.
 # Format:
-#   - name: user
+#   - name: kecsi           # local system username
 #     domains:
+#       - kecskemethy.hu
 #       - kecskemethy.com
-#       - kecskemethy.net
-#     password_hash: "{{ 'password' | password_hash('sha512') }}"
 mailbox_users: []

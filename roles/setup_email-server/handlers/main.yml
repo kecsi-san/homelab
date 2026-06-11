@@ -23,8 +23,14 @@
     state: reloaded
   become: true
 
-- name: Rebuild vmailbox db
+- name: Rebuild virtual db
   ansible.builtin.command:
-    cmd: postmap {{ postfix_config_dir }}/vmailbox
+    cmd: postmap {{ postfix_config_dir }}/virtual
+  become: true
+  changed_when: true
+
+- name: Rebuild aliases db
+  ansible.builtin.command:
+    cmd: newaliases
   become: true
   changed_when: true
