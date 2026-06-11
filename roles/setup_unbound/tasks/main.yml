@@ -1,7 +1,9 @@
 ---
 - name: Install unbound
   ansible.builtin.package:
-    name: unbound
+    name:
+      - unbound
+      - unbound-anchor  # separate package in Debian 13+; needed for root trust anchor init/update
     state: present
   become: true
   tags: [unbound]
