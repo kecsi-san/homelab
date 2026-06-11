@@ -21,7 +21,7 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 
 - [ ] **`setup_bichon` role** — deploy Bichon email archive (Rust, IMAP pull from Dovecot, React UI); placeholder role created; see `docs/research/email-archive-software.md` for evaluation
 
-- [ ] **AWS inventory group** — add `aws` group to `inventory/hosts.example`; `inventory/group_vars/aws.yml` with SSH user, Python interpreter, EC2 SSH key path; EC2 EIP as static host
+- [x] **AWS inventory group** — `[aws]` group in `inventory/hosts.example`; `inventory/group_vars/aws.yml` with SSH user, Python interpreter, EC2 SSH key path, and ec2_users definitions
 - [ ] **`ec2-core.yml` playbook** — base EC2 provisioning targeting `aws` group (mirrors `k8s-nodes.yml`): SSH key deploy, sudo, minimal packages, NTP, legal banner, etckeeper
 - [x] **`setup_email-server` role** — implemented: Postfix + Dovecot (PAM auth) + Rspamd (DKIM 2048-bit, SPF, greylisting) + OpenDMARC; see `roles/setup_email-server/README.md`
 - [ ] **`ec2-mail.yml` playbook** — deploy full email stack on EC2 via `setup_email-server`
