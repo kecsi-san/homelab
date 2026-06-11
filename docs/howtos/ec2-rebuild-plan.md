@@ -13,13 +13,12 @@ The EC2 edge node has been manually configured since 2016. Terraform now manages
 | Component | Details | Ansible role exists? |
 |-----------|---------|----------------------|
 | Apache2 | 8 vhosts across 2 domains; SSL, ModSecurity, ModEvasive, proxy | ❌ None |
-| Postfix | Multi-domain, virtual aliases, postscreen, DNSBL | ⚠️ `setup_email-server` (incomplete) |
-| Dovecot | IMAPS | ⚠️ same role (incomplete) |
-| OpenDKIM | Multiple domains | ⚠️ same role (incomplete) |
-| OpenDMARC | DMARC validation milter | ❌ Not in role at all |
-| Postgrey | Greylisting on :10023 | ❌ Not in role at all |
-| SpamAssassin | spamd | ❌ Not in role at all |
-| dnsmasq | Caching DNS resolver | ❌ None |
+| Postfix | Multi-domain, PAM/system users, postscreen, DNSBL, DANE outbound TLS | ✅ `setup_email-server` |
+| Dovecot | IMAPS + LMTP delivery, PAM auth, FTS Xapian | ✅ same role |
+| Rspamd | DKIM sign/verify, SPF, greylisting, spam scoring — replaced OpenDKIM + Postgrey + SpamAssassin | ✅ same role |
+| OpenDMARC | DMARC validation milter | ✅ same role |
+| Unbound | Local DNSSEC-validating resolver (required for DANE) | ✅ `setup_unbound` |
+| dnsmasq | Replaced by Unbound | ♻️ decommissioned |
 | Docker | Installed, no containers running | ❌ None |
 | Certbot | Let's Encrypt for all hosted domains | ⚠️ referenced in mail role only |
 | Fail2Ban | Custom jail.local (SASL, Postfix, Dovecot jails, 24h bantime) | ✅ ec2-core covers install |
@@ -43,9 +42,9 @@ The EC2 edge node has been manually configured since 2016. Terraform now manages
 
 | Data | Size | Priority |
 |------|------|----------|
-| DKIM private keys (`/etc/opendkim/keys/`) | tiny | 🔴 Critical — lose these = DKIM breaks |
+| DKIM private keys (`/var/lib/rspamd/dkim/`) | tiny | 🔴 Critical — lose these = DKIM breaks |
 | Website content `/var/www/` | ~1.15 GB | 🔴 Critical |
-| Mailboxes `/var/mail/` | ~6 MB | 🔴 Critical |
+| Mailboxes `/home/*/Maildir/` | ~5.6 GB | 🔴 Critical |
 | Selected `/home/` user directories | ~8 GB | 🟡 Selective (active users only) |
 | TLS certs `/etc/letsencrypt/` | small | 🟢 Can regenerate via certbot |
 
@@ -53,15 +52,15 @@ The EC2 edge node has been manually configured since 2016. Terraform now manages
 
 ## Phased Plan
 
-### Phase 1 — Fix `setup_email-server` role (est. 2–3h)
+### Phase 1 — `setup_email-server` role ✅ Done
 
-The role structure (tasks, templates, vars) exists but is broken. Files to modify: `roles/setup_email-server/`.
+Role fully implemented and covers:
 
-- Add `handlers/main.yml` — Reload postfix / dovecot / opendkim
-- Extend role to cover OpenDMARC, Postgrey, SpamAssassin (currently absent entirely)
-- Add task to populate `/etc/dovecot/users` from `mailbox_users` variable (SHA512-CRYPT hashes)
-- Template the Postfix custom rules: postscreen, DNSBL, SPF policy daemon, virtual aliases
-- Test: `ansible-playbook -i inventory/aws_hosts playbooks/ec2-mail.yml --check`
+- Postfix: multi-domain, PAM/system user delivery via LMTP to Dovecot, postscreen, DNSBL, DANE outbound TLS, virtual alias map, `/etc/aliases`
+- Dovecot: IMAPS (port 993), LMTP delivery socket, PAM auth (system users), FTS Xapian
+- Rspamd: DKIM signing/verification (2048-bit, selector `mail`), SPF, greylisting, spam scoring
+- OpenDMARC: DMARC validation milter
+- See `roles/setup_email-server/README.md` for full variable reference
 
 ### Phase 2 — New role: `setup_apache2` (est. 2–3h)
 
@@ -117,16 +116,16 @@ Added to `ec2-core.yml`.
 3. Migrate data:
    ```bash
    # DKIM keys (critical — do this first)
-   rsync -av old-ec2:/etc/opendkim/keys/ new-ec2:/etc/opendkim/keys/
+   rsync -av old-ec2:/var/lib/rspamd/dkim/ new-ec2:/var/lib/rspamd/dkim/
 
    # Website content
    rsync -av old-ec2:/var/www/ new-ec2:/var/www/
 
-   # Mailboxes
-   rsync -av old-ec2:/var/mail/ new-ec2:/var/mail/
-
-   # User home dirs (selective)
-   rsync -av old-ec2:/home/<user>/ new-ec2:/home/<user>/
+   # Mailboxes (system user Maildirs — ~5.6 GB)
+   rsync -av old-ec2:/home/kecsi/Maildir/ new-ec2:/home/kecsi/Maildir/
+   rsync -av old-ec2:/home/peter/Maildir/ new-ec2:/home/peter/Maildir/
+   rsync -av old-ec2:/home/orsi/Maildir/ new-ec2:/home/orsi/Maildir/
+   rsync -av old-ec2:/home/tamas/Maildir/ new-ec2:/home/tamas/Maildir/
    ```
 4. DNS smoke test: point one vhost to new instance, verify end-to-end
 5. Terraform: swap EIP to new instance (`terraform apply` with updated `instance_id`)
@@ -147,7 +146,7 @@ Added to `ec2-core.yml`.
 | `configure_ntp` | ✅ done | ec2-core |
 | `setup_etckeeper` | ✅ done | ec2-core |
 | `setup_security-tools` | ✅ done | ec2-core |
-| `setup_email-server` | ⚠️ fix needed | ec2-mail |
+| `setup_email-server` | ✅ done | ec2-mail |
 | `setup_apache2` | ❌ new | ec2-web (new playbook) |
 | `setup_users` | ❌ new | ec2-core or ec2-users (new) |
 | `setup_unbound` | ✅ done | ec2-core |

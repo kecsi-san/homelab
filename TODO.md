@@ -23,7 +23,7 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 
 - [ ] **AWS inventory group** — add `aws` group to `inventory/hosts.example`; `inventory/group_vars/aws.yml` with SSH user, Python interpreter, EC2 SSH key path; EC2 EIP as static host
 - [ ] **`ec2-core.yml` playbook** — base EC2 provisioning targeting `aws` group (mirrors `k8s-nodes.yml`): SSH key deploy, sudo, minimal packages, NTP, legal banner, etckeeper
-- [ ] **`setup_email-server` role** — implement placeholder: Postfix (SMTP + submission port 587, STARTTLS) + Dovecot (IMAP-SSL port 993); certbot DNS-01 via Route53 for Let's Encrypt cert; OpenDKIM; DKIM/SPF/DMARC records managed via `configure_route53`
+- [x] **`setup_email-server` role** — implemented: Postfix + Dovecot (PAM auth) + Rspamd (DKIM 2048-bit, SPF, greylisting) + OpenDMARC; see `roles/setup_email-server/README.md`
 - [ ] **`ec2-mail.yml` playbook** — deploy full email stack on EC2 via `setup_email-server`
 - [ ] **`configure_wireguard` role** — EC2 as Wireguard hub: wg0 interface, IP forwarding, NAT masquerade; workstation + kube nodes as spokes; keypair management; `wg0.conf` via Jinja2 templates; peer list from inventory
 - [ ] **`ec2-wireguard.yml` playbook** — deploy Wireguard hub on EC2 and configure spoke peers
