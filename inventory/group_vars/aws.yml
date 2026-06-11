@@ -107,3 +107,11 @@ apache_vhosts:
   - name: admin.example.net
     ssl_cert_domain: example.net
     docroot: /var/www/example.net/admin.example.net
+
+# --- HashiCorp Vault ---
+# vault_version: leave empty to install latest from HashiCorp APT repo.
+# Pin after first install to prevent unintended upgrades — apt-mark hold is applied automatically when set.
+# Data migration from old server: rsync /opt/hashicorp/vault-data/ → /opt/vault/data/
+# Files are owned vault:vault (UID 1008) on both old and new server — no chown needed after rsync.
+vault_version: ""
+vault_api_addr: "https://vault.example.net"
