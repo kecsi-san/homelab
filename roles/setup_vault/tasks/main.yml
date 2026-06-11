@@ -54,6 +54,14 @@
   notify: Restart vault
   tags: [vault]
 
+- name: Hold vault at installed version to prevent unintended upgrades
+  ansible.builtin.dpkg_selections:
+    name: vault
+    selection: hold
+  become: true
+  when: vault_version | length > 0
+  tags: [vault]
+
 - name: Enable and start vault
   ansible.builtin.systemd:
     name: vault
