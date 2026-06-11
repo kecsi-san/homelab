@@ -17,6 +17,27 @@
   tags:
     - apache2
 
+- name: Deploy global security config
+  ansible.builtin.template:
+    src: security.conf.j2
+    dest: /etc/apache2/conf-available/security-hardening.conf
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Reload apache2
+  tags:
+    - apache2
+
+- name: Enable global security config
+  ansible.builtin.command:
+    cmd: a2enconf security-hardening
+    creates: /etc/apache2/conf-enabled/security-hardening.conf
+  become: true
+  notify: Reload apache2
+  tags:
+    - apache2
+
 - name: Issue TLS certificates
   ansible.builtin.import_tasks: certbot.yml
 

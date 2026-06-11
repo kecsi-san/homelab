@@ -1,38 +1,55 @@
 ---
-# TLS certificates to issue via certbot DNS-01 (Route53).
-# Each entry issues one cert covering the primary domain + any extra_sans.
-# Vhosts reference the primary domain via ssl_cert_domain.
+# TLS certificates to issue via certbot. Each entry issues one cert covering
+# the primary domain + any extra_sans. Vhosts reference it via ssl_cert_domain.
+#
+# Fields:
+#   domain       primary domain (required)
+#   extra_sans   additional SANs on the same cert (optional list)
+#   method       'webroot' (default, HTTP-01) or 'dns-route53' (DNS-01 for Route53 zones)
+#
 # Example:
 #   apache_certs:
 #     - domain: example.com
-#       extra_sans:
-#         - www.example.com
-#         - vault.example.com
+#       extra_sans: [www.example.com, vault.example.com]
+#     - domain: example.net
+#       method: dns-route53
+#       extra_sans: [www.example.net]
 apache_certs: []
 
 # Vhost definitions. Each entry produces one .conf file in sites-available.
+#
 # Fields:
-#   name          ServerName (required)
-#   server_alias  list of ServerAlias values (optional)
-#   ssl           true/false — if true, port 80 redirects to HTTPS (default true)
-#   ssl_cert_domain  certbot cert dir name — typically the apex domain (required when ssl: true)
-#   docroot       document root for static sites (default /var/www/<name>)
-#   proxy_pass    upstream URL for reverse proxy vhosts (mutually exclusive with docroot)
-#   extra_config  raw Apache config block injected into the HTTPS vhost (optional)
+#   name             ServerName (required)
+#   server_alias     list of ServerAlias values (optional)
+#   server_admin     override per-vhost admin email (falls back to apache_server_admin)
+#   ssl              true/false — port 80 redirects to HTTPS when true (default true)
+#   ssl_cert_domain  certbot cert dir name — apex domain (required when ssl: true)
+#   docroot          document root for static sites (default /var/www/<name>)
+#   proxy_pass       upstream URL for full reverse proxy (mutually exclusive with docroot)
+#   proxy_paths      list of {path, upstream} for path-specific proxying alongside a docroot
+#   extra_config     raw Apache config block appended inside the HTTPS vhost (optional)
+#
 # Example:
 #   apache_vhosts:
-#     - name: www.example.com
-#       server_alias: [example.com]
+#     - name: example.com
+#       server_alias: [www.example.com]
+#       ssl_cert_domain: example.com
 #       docroot: /var/www/example.com
-#       ssl: true
-#       ssl_cert_domain: example.com
 #     - name: vault.example.com
-#       proxy_pass: http://127.0.0.1:8200/
-#       ssl: true
 #       ssl_cert_domain: example.com
+#       proxy_pass: http://127.0.0.1:8200/
+#     - name: media.example.com
+#       ssl_cert_domain: example.com
+#       docroot: /var/www/media
+#       proxy_paths:
+#         - path: /remote/
+#           upstream: http://s3-bucket.s3-website.eu-west-1.amazonaws.com/remote/
 apache_vhosts: []
 
-# Certbot Let's Encrypt registration email (falls back to acme_email from secrets.yml)
+# Default ServerAdmin email for all vhosts (override per-vhost with server_admin field)
+apache_server_admin: webmaster@localhost
+
+# Certbot Let's Encrypt registration email — set in secrets.yml as acme_email
 certbot_email: "{{ acme_email }}"
 
 certbot_cert_dir: /etc/letsencrypt/live

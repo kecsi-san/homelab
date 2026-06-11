@@ -1,7 +1,79 @@
 ---
-# Issues one cert per entry in apache_certs. The `creates:` guard makes this idempotent —
-# re-running is safe and will skip domains that already have a valid cert.
-- name: Issue TLS certificate via DNS-01 (Route53)
+# Install DNS-Route53 plugin only if at least one cert uses that method
+- name: Install certbot DNS-Route53 plugin
+  ansible.builtin.package:
+    name: python3-certbot-dns-route53
+    state: present
+  become: true
+  when: apache_certs | selectattr('method', 'defined') | selectattr('method', 'equalto', 'dns-route53') | list | length > 0
+  tags:
+    - apache2
+    - certbot
+
+# Webroot dir — serves ACME challenges for all vhosts via the global conf
+- name: Create certbot webroot directory
+  ansible.builtin.file:
+    path: /var/www/letsencrypt/.well-known/acme-challenge
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: "0755"
+  become: true
+  tags:
+    - apache2
+    - certbot
+
+- name: Deploy ACME challenge global conf
+  ansible.builtin.copy:
+    dest: /etc/apache2/conf-available/letsencrypt-webroot.conf
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      # Managed by Ansible — serve ACME challenges for all vhosts
+      Alias /.well-known/acme-challenge/ /var/www/letsencrypt/.well-known/acme-challenge/
+      <Directory /var/www/letsencrypt/.well-known/acme-challenge/>
+          Options None
+          AllowOverride None
+          Require all granted
+      </Directory>
+  become: true
+  notify: Reload apache2
+  tags:
+    - apache2
+    - certbot
+
+- name: Enable ACME challenge conf
+  ansible.builtin.command:
+    cmd: a2enconf letsencrypt-webroot
+    creates: /etc/apache2/conf-enabled/letsencrypt-webroot.conf
+  become: true
+  notify: Reload apache2
+  tags:
+    - apache2
+    - certbot
+
+# Flush handlers so Apache reloads before certbot tries to validate
+- name: Flush handlers before cert issuance
+  ansible.builtin.meta: flush_handlers
+  tags:
+    - certbot
+
+- name: Issue TLS certificates via webroot (HTTP-01)
+  ansible.builtin.command:
+    cmd: >
+      certbot certonly --non-interactive --agree-tos
+      --webroot -w /var/www/letsencrypt
+      --email {{ certbot_email }}
+      -d {{ item.domain }}
+      {% for san in item.extra_sans | default([]) %}-d {{ san }} {% endfor %}
+    creates: "{{ certbot_cert_dir }}/{{ item.domain }}/fullchain.pem"
+  become: true
+  loop: "{{ apache_certs | rejectattr('method', 'defined') | list + apache_certs | selectattr('method', 'defined') | rejectattr('method', 'equalto', 'dns-route53') | list }}"
+  tags:
+    - certbot
+
+- name: Issue TLS certificates via DNS-01 (Route53)
   ansible.builtin.command:
     cmd: >
       certbot certonly --non-interactive --agree-tos
@@ -15,7 +87,7 @@
     AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
     AWS_DEFAULT_REGION: "{{ aws_region }}"
   become: true
-  loop: "{{ apache_certs }}"
+  loop: "{{ apache_certs | selectattr('method', 'defined') | selectattr('method', 'equalto', 'dns-route53') | list }}"
   tags:
     - certbot
 
@@ -28,7 +100,7 @@
   tags:
     - certbot
 
-- name: Add Apache2 to certbot renewal hooks
+- name: Add Apache2 to certbot renewal deploy hook
   ansible.builtin.copy:
     dest: /etc/letsencrypt/renewal-hooks/deploy/reload-apache2.sh
     mode: "0750"

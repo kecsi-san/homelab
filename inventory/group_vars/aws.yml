@@ -50,3 +50,60 @@ ec2_users:
     shell: /bin/false
 
 ec2_users_absent: []
+
+# --- Apache2 ---
+# acme_email must be in secrets.yml
+
+apache_server_admin: webmaster@example.com
+
+apache_certs:
+  # HTTP-01 via webroot — integrity.hu DNS, no API access
+  - domain: example.com
+    extra_sans:
+      - www.example.com
+      - hugo.example.com
+      - vault.example.com
+  - domain: example.net
+    extra_sans:
+      - www.example.net
+      - pics.example.net
+      - vault.example.net
+      - admin.example.net
+
+apache_vhosts:
+  # --- example.com ---
+  - name: example.com
+    server_alias: [www.example.com]
+    ssl_cert_domain: example.com
+    docroot: /var/www/example.com/jekyll.example.com/_site
+
+  - name: hugo.example.com
+    server_alias: [beta.example.com]
+    ssl_cert_domain: example.com
+    docroot: /var/www/example.com/hugo.example.com/public
+
+  - name: vault.example.com
+    ssl_cert_domain: example.com
+    proxy_pass: http://127.0.0.1:8200/
+
+  # --- example.net ---
+  - name: example.net
+    server_alias: [www.example.net]
+    ssl_cert_domain: example.net
+    docroot: /var/www/example.net/www.example.net/_site
+
+  - name: pics.example.net
+    server_alias: [pics2.example.net]
+    ssl_cert_domain: example.net
+    docroot: /var/www/example.net/pics.example.net
+    proxy_paths:
+      - path: /album/
+        upstream: http://pics.example.net.s3-website-eu-west-1.amazonaws.com/album/
+
+  - name: vault.example.net
+    ssl_cert_domain: example.net
+    proxy_pass: http://127.0.0.1:8200/
+
+  - name: admin.example.net
+    ssl_cert_domain: example.net
+    docroot: /var/www/example.net/admin.example.net

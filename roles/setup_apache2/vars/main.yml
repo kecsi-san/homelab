@@ -5,14 +5,15 @@ apache_apt_packages:
   - modsecurity-crs
   - libapache2-mod-evasive
   - certbot
-  - python3-certbot-dns-route53
 
-# Modules enabled via a2enmod (creates: check uses .load file)
+# Modules enabled via a2enmod (creates: guard uses .load file — works for all modules)
 apache_modules_to_enable:
   - ssl
+  - socache_shmcb   # required for SSL session cache and OCSP stapling
   - rewrite
   - proxy
   - proxy_http
   - headers
+  - deflate
   - security2
   - evasive
