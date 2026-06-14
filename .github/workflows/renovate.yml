@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: renovatebot/github-action@v46.1.14
+      - uses: renovatebot/github-action@v46.1.15
         with:
           configurationFile: renovate.json
         env:
