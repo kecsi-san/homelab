@@ -11,7 +11,7 @@ spec:
   sources:
     - repoURL: https://backstage.github.io/charts
       chart: backstage
-      targetRevision: "2.8.0"
+      targetRevision: "2.8.2"
       helm:
         valueFiles:
           - $values/kube-gitops/k8s/values/backstage.yaml
