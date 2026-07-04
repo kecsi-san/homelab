@@ -1,5 +1,6 @@
 ---
 git_user_name: "{{ admin_full_name }}"
 git_user_email: "{{ admin_email }}"
-git_user_signingkey: "{{ git_signing_key }}"
-git_user_gpgsign: true
+git_user_signingkey: "{{ git_user_signkey }}"
+# false until GPG key distribution is solved (see README TODO — needs Vault)
+git_user_gpgsign: false

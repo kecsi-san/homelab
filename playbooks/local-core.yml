@@ -165,6 +165,13 @@
       tags:
         - minimal
 
+    - name: Configure git
+      ansible.builtin.import_role:
+        name: configure_git
+      tags:
+        - gitconfig
+        - git
+
     - name: Configure /etc/hosts
       ansible.builtin.import_role:
         name: configure_etc-hosts
