@@ -69,7 +69,10 @@
       {% for san in item.extra_sans | default([]) %}-d {{ san }} {% endfor %}
     creates: "{{ certbot_cert_dir }}/{{ item.domain }}/fullchain.pem"
   become: true
-  loop: "{{ apache_certs | rejectattr('method', 'defined') | list + apache_certs | selectattr('method', 'defined') | rejectattr('method', 'equalto', 'dns-route53') | list }}"
+  loop: >-
+    {{ apache_certs | rejectattr('method', 'defined') | list +
+       apache_certs | selectattr('method', 'defined') |
+       rejectattr('method', 'equalto', 'dns-route53') | list }}
   tags:
     - certbot
 
