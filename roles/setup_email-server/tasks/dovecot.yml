@@ -44,7 +44,7 @@
     job: >-
       for dir in /home/*/Maildir/xapian-indexes; do
       [ -d "$dir" ] || continue;
-      u=$(stat -c '%U' "$dir");
+      u=$(stat -c '\%U' "$dir");
       /usr/bin/doveadm fts optimize -u "$u" 2>&1 | logger -t dovecot-fts-optimize;
       done
     user: root
