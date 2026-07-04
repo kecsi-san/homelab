@@ -8,6 +8,12 @@ collections:
   - name: ansible.posix
   - name: kubernetes.core
     version: ">=4.0.0"
+  # TODO: check periodically for a newer release-2.x branch — currently on the
+  # latest available (2.31 as of 2026-07-04). Kubespray's own documented
+  # ansible-core support range tends to lag well behind what's in requirements.txt
+  # here (e.g. 2.31 only documents ansible-core 2.18.x, while requirements.txt is
+  # on ansible-core ~2.21.1 via the ansible 14.1.0 PyPI package) — upgrading
+  # Kubespray may narrow or shift that gap, worth re-checking next bump.
   - name: https://github.com/kubernetes-sigs/kubespray
     type: git
     version: release-2.31

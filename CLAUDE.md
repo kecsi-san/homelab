@@ -270,7 +270,7 @@ Always tag new roles consistently so users can run them individually.
 Two strategies, two different targets:
 
 **Kubespray — bare-metal multi-node cluster (`kube` group)**
-- Uses `kubernetes-sigs/kubespray` collection (release-2.29 branch, installed via `requirements.yml`)
+- Uses `kubernetes-sigs/kubespray` collection (release-2.31 branch, installed via `requirements.yml`)
 - HA control plane with kube-vip at `api.k8s.<domain_name>:6443`, Calico CNI, 3-node etcd
 - Kubespray group vars live in `inventory/group_vars/` alongside custom role vars — same inventory serves both
 - Post-cluster setup (`post-k8s.yml`) installs Longhorn distributed block storage via `setup_longhorn`
