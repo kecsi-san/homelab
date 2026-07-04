@@ -2,7 +2,13 @@
 
 ## Context
 
-The EC2 edge node has been manually configured since 2016. Terraform now manages the infrastructure (security group, EIP, Route53). The goal is to build Ansible roles for everything running on the old instance, rebuild a fresh instance, migrate data, then swap the EIP — no DNS changes required.
+**The EC2 edge node currently running (`i-04dba0d34a28a972d`, `52.48.130.44`) is still the original instance manually configured since 2016** — it was brought under Terraform management via `terraform import` (security group, EIP, Route53), not replaced. Its EC2 `LaunchTime` shows a 2026-06 date, but that just reflects a reboot after an in-place Debian Bookworm → Trixie upgrade, not instance creation — don't mistake it for a fresh box.
+
+**Plan history:** The original idea was to fully reverse-engineer this instance's configuration and apply the resulting Ansible + Terraform code *in place*, converging the live box itself into a fully codified, idempotent state without replacing hardware. This was investigated directly in a Claude Code session running on the instance itself. That investigation found enough accumulated manual drift from ~10 years of hands-on changes — legacy SSH keys from multiple eras, mail-stack components later found redundant and replaced (OpenDKIM + Postgrey + SpamAssassin → Rspamd), installed-but-unused software (Docker with no containers), decommissioned services left behind (Nextcloud, MariaDB), unserved static file leftovers — that safely reconciling it all in place via Ansible wasn't realistic. **That approach was abandoned.**
+
+The current plan instead: build Ansible roles that capture the *desired* state (validated by reading the live box's config, not by running Ansible against it), provision a **new** EC2 instance, apply the full role set there fresh, migrate only the data that's actually valuable (DKIM keys, mailboxes, website content, Vault data — see below), swap the EIP, then decommission whatever remains on the old instance.
+
+**Exception (2026-07-04):** Two narrow, self-contained fixes were applied directly to the still-live legacy instance ahead of the rebuild, rather than waiting for cutover: a `setup_email-server` cron bug fix (dovecot-fts `%` escaping), and a `configure_duo-ssh` + `setup_aws-ssm-agent` migration of SSH MFA from `ForceCommand login_duo` to PAM-based `pam_duo.so` (the old ForceCommand setup was making routine Ansible/ops work on this box impractically slow, one Duo push per SSH session). These are operational improvements to the box as it exists today — they are **not** progress toward Phase 6 below, and the new instance build should still apply these same roles fresh rather than assume anything carries over.
 
 **EIP cutover strategy:** When the new instance is ready, swap EIP via `terraform apply`. Route53 points to EIP so DNS is unchanged.
 
@@ -22,8 +28,9 @@ The EC2 edge node has been manually configured since 2016. Terraform now manages
 | dnsmasq | Replaced by Unbound | ♻️ decommissioned |
 | Docker | Installed, no containers running | ❌ None |
 | Fail2Ban | Custom jail.local (SASL, Postfix, Dovecot jails, 24h bantime) | ✅ ec2-core covers install |
-| Duo 2FA | ForceCommand login_duo in sshd | ✅ ec2-prerequisite covers |
-| SSH hardening | lynis_hardening.conf (MaxAuthTries 2, no X11, no AgentForwarding, etc.) | ⚠️ partially (banner + legal) |
+| Duo 2FA | Migrated 2026-07-04 from ForceCommand login_duo → PAM-based pam_duo.so, scoped to sshd only | ✅ `configure_duo-ssh` |
+| AWS SSM agent | Added 2026-07-04 as an out-of-band rescue path independent of sshd | ✅ `setup_aws-ssm-agent` |
+| SSH hardening | lynis_hardening.conf (MaxAuthTries 2, no X11, no AgentForwarding, etc.) — still a raw, hand-applied drop-in, no role manages this content | ⚠️ partially (banner + legal + Duo only) |
 | auditd | Security audit logging | ✅ ec2-core security-tools |
 | Named system users | kecsi, orsi, peter, tamas + vault service account | ✅ `setup_users` |
 | HashiCorp Vault | Binary install, proxied via Apache | ❌ `setup_vault` (planned) |
@@ -155,6 +162,8 @@ Added to `ec2-core.yml`.
 | `setup_apache2` | ✅ done | ec2-web (new playbook) |
 | `setup_unbound` | ✅ done | ec2-core |
 | `setup_vault` | ✅ done | ec2-vault (new playbook) |
+| `setup_aws-ssm-agent` | ✅ done — applied directly to the live legacy instance (2026-07-04 exception) | ec2-core |
+| `configure_duo-ssh` | ✅ done — applied directly to the live legacy instance (2026-07-04 exception) | ec2-core |
 
 ---
 
@@ -170,4 +179,4 @@ Added to `ec2-core.yml`.
 | Phase 6 — Migration + cutover | 2–4h |
 | **Remaining** | **~2–4h** (migration + cutover only) |
 
-Phases 1–5 can be developed and tested without touching the live server.
+Phases 1–5 were developed and tested without touching the live server — with the exception of the two 2026-07-04 hardening fixes noted in Context above (`setup_email-server`'s cron fix, `configure_duo-ssh` + `setup_aws-ssm-agent`), which were deliberately applied directly to the still-live legacy instance ahead of the rebuild.

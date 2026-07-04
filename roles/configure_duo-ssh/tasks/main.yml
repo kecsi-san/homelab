@@ -1,0 +1,47 @@
+---
+- name: Deploy pam_duo.conf
+  ansible.builtin.template:
+    src: pam_duo.conf.j2
+    dest: /etc/duo/pam_duo.conf
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  notify: Reload sshd
+  tags: [ssh, duo, security]
+
+- name: Deploy sshd Duo drop-in (PAM-based, no ForceCommand)
+  ansible.builtin.template:
+    src: duo_2fa.conf.j2
+    dest: /etc/ssh/sshd_config.d/duo_2fa.conf
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Reload sshd
+  tags: [ssh, duo, security]
+
+- name: Remove standard unix auth from sshd PAM stack (replaced by Duo)
+  ansible.builtin.lineinfile:
+    path: /etc/pam.d/sshd
+    regexp: '^@include common-auth$'
+    state: absent
+  become: true
+  notify: Reload sshd
+  tags: [ssh, duo, security]
+
+- name: Add Duo PAM module to sshd auth stack
+  ansible.builtin.lineinfile:
+    path: /etc/pam.d/sshd
+    line: "auth       required     {{ duo_pam_module_path }}"
+    insertafter: '^# Standard Un\*x authentication\.$'
+    firstmatch: true
+  become: true
+  notify: Reload sshd
+  tags: [ssh, duo, security]
+
+- name: Validate full effective sshd configuration before reload
+  ansible.builtin.command: /usr/sbin/sshd -t
+  become: true
+  changed_when: false
+  tags: [ssh, duo, security]

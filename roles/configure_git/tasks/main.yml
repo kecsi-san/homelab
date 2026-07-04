@@ -1,7 +1,35 @@
 ---
-- name: Copy gitconfig file
-  ansible.builtin.copy:
-    src: files/gitconfig
+- name: Install git-lfs (Linux)
+  ansible.builtin.package:
+    name: git-lfs
+    state: present
+  become: true
+  when: ansible_system == 'Linux'
+  tags:
+    - gitconfig
+    - git
+
+- name: Install git-lfs (macOS)
+  community.general.homebrew:
+    name: git-lfs
+    state: present
+  become: false
+  when: ansible_system == 'Darwin'
+  tags:
+    - gitconfig
+    - git
+
+- name: Register git-lfs global filters
+  ansible.builtin.command: git lfs install --skip-repo
+  become: false
+  changed_when: false
+  tags:
+    - gitconfig
+    - git
+
+- name: Deploy gitconfig file
+  ansible.builtin.template:
+    src: gitconfig.j2
     dest: "{{ ansible_env.HOME }}/.gitconfig"
     owner: "{{ ansible_env.USER }}"
     group: "{{ ansible_env.USER }}"

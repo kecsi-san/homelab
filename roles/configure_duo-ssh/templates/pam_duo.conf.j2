@@ -1,0 +1,12 @@
+[duo]
+; Duo integration key
+ikey = {{ duo_ikey }}
+; Duo secret key
+skey = {{ duo_skey }}
+; Duo API host
+host = {{ duo_api_host }}
+; `failmode = safe` allows login without 2FA if this config or the Duo API is unreachable.
+; `failmode = secure` denies access in those cases — misconfiguration can lock you out.
+failmode = {{ duo_pam_failmode }}
+; Automatically send a Duo Push instead of prompting for passcode/option selection
+autopush = {{ 'yes' if duo_pam_autopush else 'no' }}
