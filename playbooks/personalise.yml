@@ -85,6 +85,13 @@
         - fzf
         - desktop
 
+    - name: Configure git
+      ansible.builtin.import_role:
+        name: configure_git
+      tags:
+        - gitconfig
+        - git
+
     - name: Upload profile image
       ansible.builtin.import_role:
         name: upload_profile_image

@@ -1,0 +1,8 @@
+---
+duo_pam_failmode: safe
+duo_pam_autopush: true
+duo_ssh_authentication_methods: "publickey,keyboard-interactive"
+# Debian 13's duo-unix package installs pam_duo.so under /lib64/security/, not the
+# multiarch /lib/x86_64-linux-gnu/security/ path libpam searches by default for a bare
+# module name — must be referenced by full path or PAM fails with "Module is unknown".
+duo_pam_module_path: /lib64/security/pam_duo.so

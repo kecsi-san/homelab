@@ -1,6 +1,11 @@
 [user]
     name = {{ git_user_name }}
     email = {{ git_user_email }}
+    # TODO: signingkey references a GPG key ID, but the actual key material isn't
+    # deployed by this role. gpgsign is left off (see [commit] below) until there's a
+    # secure way to distribute the private key to each machine — plan is to pull it
+    # from HashiCorp Vault (see setup_vault role) once Vault is actually initialized
+    # and unsealed. Until then this is a manual, per-machine step.
     signingkey = {{ git_user_signingkey }}
 [alias]
     st = status
@@ -15,6 +20,9 @@
     editor = vim
     autocrlf = input
     excludesfile = ~/.gitignore
+    # a matter of taste (uncomment if you dare)
+    # fsmonitor = true
+    # untrackedCache = true
 [color]
     ui = auto
 
@@ -46,7 +54,7 @@
     autocorrect = prompt
 [commit]
     verbose = true
-    gpgsign = false
+    gpgsign = {{ git_user_gpgsign | lower }}
 [rerere]
     enabled = true
     autoupdate = true
@@ -54,17 +62,13 @@
     autoSquash = true
     autoStash = true
     updateRefs = true
-# a matter of taste (uncomment if you dare)
-[core]
-    # fsmonitor = true
-    # untrackedCache = true
 [merge]
     # (just 'diff3' if git version < 2.3)
-    # conflictstyle = zdiff3 
+    # conflictstyle = zdiff3
 [pull]
     rebase = true
 # Copypasta end.
-# lfs
+# lfs — requires the git-lfs package installed (see tasks/main.yml)
 [filter "lfs"]
     clean = git-lfs clean -- %f
     smudge = git-lfs smudge -- %f
@@ -91,3 +95,5 @@
     hunk-header-file-style = red
     hunk-header-line-number-style = "#067a00"
     hunk-header-style = file line-number syntax
+[credential]
+	helper = store

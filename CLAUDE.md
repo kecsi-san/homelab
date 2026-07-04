@@ -200,6 +200,8 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | `setup_users` | Creates named system users with home dirs, optional SSH authorized_keys, optional sudo group membership; `ec2_users` list defined in `secrets.yml`; `ec2_users_absent` removes accounts while preserving home dirs for data migration; wired into `ec2-core.yml` |
 | `setup_vault` | Installs Vault via HashiCorp APT repo; deploys `/etc/vault.d/vault.hcl` (file storage backend, binds to 127.0.0.1:8200 with TLS disabled — Apache terminates TLS); package provides vault user and hardened systemd unit with `CAP_IPC_LOCK`; prints init/unseal instructions on every run; unseal keys and root token are NOT managed by Ansible |
 | `setup_unbound` | Caching/forwarding DNS resolver on 127.0.0.1:53; disables systemd-resolved and writes a static `/etc/resolv.conf`; forwards to AWS VPC resolver (169.254.169.253) then Cloudflare; DNSSEC validation enabled; config validated with `unbound-checkconf` before apply; wired into `ec2-core.yml` |
+| `setup_aws-ssm-agent` | Installs and enables the AWS SSM agent; gives an out-of-band rescue path (AWS Console → Session Manager) independent of sshd; requires `AmazonSSMManagedInstanceCore` attached to the instance's IAM role (not Ansible-managed); wired into `ec2-core.yml` |
+| `configure_duo-ssh` | Migrates SSH MFA from `ForceCommand login_duo` to PAM-based `pam_duo.so`, scoped to sshd only via `/etc/pam.d/sshd` (never `common-auth`); `AuthenticationMethods publickey,keyboard-interactive`; validates with `sshd -t` before reload; `duo_ikey`/`duo_skey`/`duo_api_host` from `secrets.yml`; wired into `ec2-core.yml` |
 
 #### Placeholder Roles (empty `tasks/main.yml`)
 
