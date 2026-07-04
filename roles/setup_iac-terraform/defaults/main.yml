@@ -3,6 +3,12 @@ iac_terraform_enabled: true
 
 iac_brew_packages:
   - hashicorp/tap/terraform
+  - hashicorp/tap/vault
   - terraform-docs
   - tflint
   - trivy
+
+# Set to a Vault server URL (e.g. "https://vault.example.com") to export
+# VAULT_ADDR in ~/.bashrc. Leave empty to skip — not everyone using this role
+# has a Vault server to point at.
+iac_vault_addr: ""

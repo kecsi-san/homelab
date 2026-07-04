@@ -23,12 +23,15 @@
       vars:
         iac_terraform_enabled: true
         iac_brew_packages:
-          - terraform
+          - hashicorp/tap/terraform
+          - hashicorp/tap/vault
           - terraform-docs
           - tflint
+        iac_vault_addr: "https://vault.kecskemethy.hu"
       tags:
         - iac
         - terraform
+        - vault
 
     - name: Setup extra IaC tooling
       ansible.builtin.import_role:

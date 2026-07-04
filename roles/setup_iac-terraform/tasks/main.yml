@@ -11,3 +11,13 @@
     state: present
   loop: "{{ iac_brew_packages }}"
   become: false
+
+- name: Add VAULT_ADDR to ~/.bashrc
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_env.HOME }}/.bashrc"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK — vault addr"
+    block: |
+      export VAULT_ADDR="{{ iac_vault_addr }}"
+    create: false
+  become: false
+  when: iac_vault_addr | length > 0
