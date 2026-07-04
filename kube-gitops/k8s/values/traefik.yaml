@@ -48,9 +48,8 @@ metrics:
     serviceMonitor:
       enabled: false
 
-logs:
-  general:
-    level: INFO
+log:
+  level: INFO
 
 # Dashboard is exposed via IngressRoute in kube-gitops/k8s/apps — not via Helm.
 ingressRoute:

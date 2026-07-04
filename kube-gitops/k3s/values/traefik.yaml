@@ -48,9 +48,8 @@ api:
   dashboard: true
   insecure: false
 
-logs:
-  general:
-    level: INFO
+log:
+  level: INFO
 
 ingressRoute:
   dashboard:
