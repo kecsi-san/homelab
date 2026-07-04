@@ -27,110 +27,17 @@ ansible_ssh_args: >-
 etckeeper: true
 linuxbrew: false   # headless server, not a workstation
 
-# --- System users ---
-# UIDs pinned to match the live server — required for correct file ownership after rsync data migration.
-# Live server baseline (measured 2026-06-11):
-#   alice  UID 1000  ~5.2 GB Maildir, sudo admin
-#   bob   UID 1001  ~102 MB Maildir, mail-only
-#   carol  UID 1005  ~234 MB Maildir, mail-only
-#   dave  UID 1006  ~51 MB Maildir, mail-only
-#   vault  UID 1008  HashiCorp Vault service account
-#
-# UIDs 1002-1004 and 1007 intentionally skipped (deleted users — do not reuse).
-# Sensitive values (ssh_key, password_hash) must be in secrets.yml (ansible-vault encrypted).
-
-ec2_users:
-  - name: alice
-    uid: 1000
-    comment: Alice Smith
-    groups: [adm, mail, docker]
-    sudo: true
-    ssh_key: "{{ alice_ssh_key | default(omit) }}"
-    password_hash: "{{ alice_password_hash | default(omit) }}"
-
-  - name: bob
-    uid: 1001
-    comment: Bob Jones
-    password_hash: "{{ bob_password_hash | default(omit) }}"
-
-  - name: carol
-    uid: 1005
-    comment: Carol Davis
-    password_hash: "{{ carol_password_hash | default(omit) }}"
-
-  - name: dave
-    uid: 1006
-    comment: Dave Wilson
-    password_hash: "{{ dave_password_hash | default(omit) }}"
-
-  - name: vault
-    uid: 1008
-    comment: Vault daemon user
-    shell: /bin/false
-
-ec2_users_absent: []
-
-# --- Apache2 ---
-# acme_email must be in secrets.yml
-
-apache_server_admin: webmaster@example.com
-
-apache_certs:
-  # HTTP-01 via webroot — integrity.hu DNS, no API access
-  - domain: example.com
-    extra_sans:
-      - www.example.com
-      - hugo.example.com
-      - vault.example.com
-  - domain: example.net
-    extra_sans:
-      - www.example.net
-      - pics.example.net
-      - vault.example.net
-      - admin.example.net
-
-apache_vhosts:
-  # --- example.com ---
-  - name: example.com
-    server_alias: [www.example.com]
-    ssl_cert_domain: example.com
-    docroot: /var/www/example.com/jekyll.example.com/_site
-
-  - name: hugo.example.com
-    server_alias: [beta.example.com]
-    ssl_cert_domain: example.com
-    docroot: /var/www/example.com/hugo.example.com/public
-
-  - name: vault.example.com
-    ssl_cert_domain: example.com
-    proxy_pass: http://127.0.0.1:8200/
-
-  # --- example.net ---
-  - name: example.net
-    server_alias: [www.example.net]
-    ssl_cert_domain: example.net
-    docroot: /var/www/example.net/www.example.net/_site
-
-  - name: pics.example.net
-    server_alias: [pics2.example.net]
-    ssl_cert_domain: example.net
-    docroot: /var/www/example.net/pics.example.net
-    proxy_paths:
-      - path: /album/
-        upstream: http://pics.example.net.s3-website-eu-west-1.amazonaws.com/album/
-
-  - name: vault.example.net
-    ssl_cert_domain: example.net
-    proxy_pass: http://127.0.0.1:8200/
-
-  - name: admin.example.net
-    ssl_cert_domain: example.net
-    docroot: /var/www/example.net/admin.example.net
+# --- System users, Apache vhosts/certs, Vault address ---
+# ec2_users, ec2_users_absent, apache_server_admin, apache_certs, apache_vhosts, and
+# vault_api_addr all live in secrets.yml (gitignored) — this file previously had them
+# committed in plaintext (real names, UIDs, domains, internal proxy targets), which is
+# exactly the kind of exposure secrets.yml exists to avoid. See secrets.yml.example for
+# the expected structure. UIDs must stay pinned to the live server for correct file
+# ownership after rsync data migration; do not reuse a deleted user's UID.
 
 # --- HashiCorp Vault ---
 # vault_version: leave empty to install latest from HashiCorp APT repo.
 # Pin after first install to prevent unintended upgrades — apt-mark hold is applied automatically when set.
 # Data migration from old server: rsync /opt/hashicorp/vault-data/ → /opt/vault/data/
-# Files are owned vault:vault (UID 1008) on both old and new server — no chown needed after rsync.
+# Files are owned vault:vault on both old and new server — no chown needed after rsync.
 vault_version: ""
-vault_api_addr: "https://vault.example.net"
