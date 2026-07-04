@@ -1,0 +1,22 @@
+---
+- name: Download AWS SSM agent package
+  ansible.builtin.get_url:
+    url: "{{ aws_ssm_agent_deb_url }}"
+    dest: /tmp/amazon-ssm-agent.deb
+    mode: "0644"
+  become: false
+  tags: [ssm]
+
+- name: Install AWS SSM agent package
+  ansible.builtin.apt:
+    deb: /tmp/amazon-ssm-agent.deb
+  become: true
+  tags: [ssm]
+
+- name: Enable and start AWS SSM agent
+  ansible.builtin.systemd:
+    name: amazon-ssm-agent
+    enabled: true
+    state: started
+  become: true
+  tags: [ssm]
