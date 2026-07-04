@@ -13,17 +13,15 @@ Creates and configures named system users on the EC2 edge node.
 
 When migrating Maildirs and home data from the old server via `rsync --archive`, file ownership is stored as numeric UIDs in the filesystem. If the new server creates users with different UIDs, rsynced files will be owned by the wrong users. Pinning UIDs to match the live server eliminates the need for `chown -R` after migration.
 
-**Live server UIDs (baseline 2026-06-11):**
+Example layout — see `secrets.yml` for the actual `ec2_users` list and UID assignments:
 
 | User  | UID  | GID  | Purpose               |
 |-------|------|------|-----------------------|
 | alice | 1000 | 1000 | Primary admin, sudo   |
-| bob  | 1001 | 1001 | Mail-only             |
-| carol | 1005 | 1005 | Mail-only             |
-| dave | 1006 | 1006 | Mail-only             |
+| bob   | 1001 | 1001 | Mail-only             |
 | vault | 1008 | 1008 | Vault service account |
 
-UIDs 1002–1004 and 1007 are intentionally skipped (deleted users from old server — do not reuse to avoid confusion).
+Skip UIDs of deleted users from the old server entirely — don't reuse them, to avoid confusion.
 
 ## Playbook order
 
@@ -35,7 +33,7 @@ This role must run **before** `setup_email-server` (which creates Maildirs and r
 
 ## Variables
 
-All defined in `inventory/group_vars/aws.yml`. Sensitive values go in `secrets.yml`.
+`ec2_users` and `ec2_users_absent` are defined in `secrets.yml` (gitignored) — this data (real names, UIDs) is sensitive enough that it shouldn't be committed in plaintext.
 
 | Variable         | Default | Description |
 |------------------|---------|-------------|
@@ -67,8 +65,6 @@ python3 -c "import crypt; print(crypt.crypt('yourpassword', crypt.mksalt(crypt.M
 alice_ssh_key: "ssh-ed25519 AAAA..."
 alice_password_hash: "$6$salt$hash..."
 bob_password_hash: "$6$salt$hash..."
-carol_password_hash: "$6$salt$hash..."
-dave_password_hash: "$6$salt$hash..."
 ```
 
 ## Tags
