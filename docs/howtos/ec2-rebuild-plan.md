@@ -10,6 +10,8 @@ The current plan instead: build Ansible roles that capture the *desired* state (
 
 **Exception (2026-07-04):** Two narrow, self-contained fixes were applied directly to the still-live legacy instance ahead of the rebuild, rather than waiting for cutover: a `setup_email-server` cron bug fix (dovecot-fts `%` escaping), and a `configure_duo-ssh` + `setup_aws-ssm-agent` migration of SSH MFA from `ForceCommand login_duo` to PAM-based `pam_duo.so` (the old ForceCommand setup was making routine Ansible/ops work on this box impractically slow, one Duo push per SSH session). These are operational improvements to the box as it exists today — they are **not** progress toward Phase 6 below, and the new instance build should still apply these same roles fresh rather than assume anything carries over.
 
+**Security fix (2026-07-04):** `inventory/group_vars/aws.yml` had `ec2_users`, `apache_certs`, `apache_vhosts`, `apache_server_admin`, and `vault_api_addr` committed in plaintext — real full names, UIDs, domain/vhost topology, and an internal Vault proxy target, directly violating this repo's own documented secrets.yml/vars.yml split. Moved into `secrets.yml` (gitignored). Also added `configure_ssh-hardening` (see Roles Summary below). Full Phase 6 automation (new instance + 4-volume EBS layout + provisioning/migration/cutover orchestration) remains a separate, not-yet-started follow-up.
+
 **EIP cutover strategy:** When the new instance is ready, swap EIP via `terraform apply`. Route53 points to EIP so DNS is unchanged.
 
 ---
@@ -30,7 +32,7 @@ The current plan instead: build Ansible roles that capture the *desired* state (
 | Fail2Ban | Custom jail.local (SASL, Postfix, Dovecot jails, 24h bantime) | ✅ ec2-core covers install |
 | Duo 2FA | Migrated 2026-07-04 from ForceCommand login_duo → PAM-based pam_duo.so, scoped to sshd only | ✅ `configure_duo-ssh` |
 | AWS SSM agent | Added 2026-07-04 as an out-of-band rescue path independent of sshd | ✅ `setup_aws-ssm-agent` |
-| SSH hardening | lynis_hardening.conf (MaxAuthTries 2, no X11, no AgentForwarding, etc.) — still a raw, hand-applied drop-in, no role manages this content | ⚠️ partially (banner + legal + Duo only) |
+| SSH hardening | Codified 2026-07-04 — MaxAuthTries 2, PermitRootLogin no, X11Forwarding no, no AgentForwarding, etc. (dropped the deprecated UsePrivilegeSeparation directive from the original lynis output) | ✅ `configure_ssh-hardening` |
 | auditd | Security audit logging | ✅ ec2-core security-tools |
 | Named system users | kecsi, orsi, peter, tamas + vault service account | ✅ `setup_users` |
 | HashiCorp Vault | Binary install, proxied via Apache | ❌ `setup_vault` (planned) |
@@ -164,6 +166,7 @@ Added to `ec2-core.yml`.
 | `setup_vault` | ✅ done | ec2-vault (new playbook) |
 | `setup_aws-ssm-agent` | ✅ done — applied directly to the live legacy instance (2026-07-04 exception) | ec2-core |
 | `configure_duo-ssh` | ✅ done — applied directly to the live legacy instance (2026-07-04 exception) | ec2-core |
+| `configure_ssh-hardening` | ✅ done | ec2-core |
 
 ---
 

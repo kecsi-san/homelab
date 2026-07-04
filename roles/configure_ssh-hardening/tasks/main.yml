@@ -1,0 +1,17 @@
+---
+- name: Deploy sshd hardening drop-in
+  ansible.builtin.template:
+    src: hardening.conf.j2
+    dest: /etc/ssh/sshd_config.d/hardening.conf
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Reload sshd
+  tags: [ssh, hardening, security]
+
+- name: Validate full effective sshd configuration before reload
+  ansible.builtin.command: /usr/sbin/sshd -t
+  become: true
+  changed_when: false
+  tags: [ssh, hardening, security]

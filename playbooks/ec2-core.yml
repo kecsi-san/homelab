@@ -38,6 +38,15 @@
         - duo
         - security
 
+    - name: Configure SSH hardening
+      ansible.builtin.import_role:
+        name: configure_ssh-hardening
+      become: true
+      tags:
+        - ssh
+        - hardening
+        - security
+
     - name: Configure sudo
       ansible.builtin.import_role:
         name: configure_sudo

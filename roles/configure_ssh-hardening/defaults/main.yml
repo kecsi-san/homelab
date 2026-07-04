@@ -1,0 +1,12 @@
+---
+sshd_hardening_banner: /etc/issue.net
+sshd_hardening_allow_tcp_forwarding: false
+sshd_hardening_client_alive_count_max: 2
+sshd_hardening_compression: false
+sshd_hardening_log_level: VERBOSE
+sshd_hardening_max_auth_tries: 2
+sshd_hardening_max_sessions: 2
+sshd_hardening_permit_root_login: false
+sshd_hardening_x11_forwarding: false
+sshd_hardening_allow_agent_forwarding: false
+sshd_hardening_tcp_keepalive: false

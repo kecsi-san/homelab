@@ -1,0 +1,11 @@
+Banner {{ sshd_hardening_banner }}
+AllowTcpForwarding {{ sshd_hardening_allow_tcp_forwarding | ternary('yes', 'no') }}
+ClientAliveCountMax {{ sshd_hardening_client_alive_count_max }}
+Compression {{ sshd_hardening_compression | ternary('yes', 'no') }}
+LogLevel {{ sshd_hardening_log_level }}
+MaxAuthTries {{ sshd_hardening_max_auth_tries }}
+MaxSessions {{ sshd_hardening_max_sessions }}
+PermitRootLogin {{ sshd_hardening_permit_root_login | ternary('yes', 'no') }}
+X11Forwarding {{ sshd_hardening_x11_forwarding | ternary('yes', 'no') }}
+AllowAgentForwarding {{ sshd_hardening_allow_agent_forwarding | ternary('yes', 'no') }}
+TCPKeepAlive {{ sshd_hardening_tcp_keepalive | ternary('yes', 'no') }}
