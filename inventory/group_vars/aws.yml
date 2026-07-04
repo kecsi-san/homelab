@@ -5,6 +5,25 @@
 ansible_ssh_private_key_file: "{{ ec2_ssh_key_file }}"
 ansible_python_interpreter: /usr/bin/python3
 
+# Ansible hardcodes "-o KbdInteractiveAuthentication=no -o PreferredAuthentications=
+# gssapi-with-mic,gssapi-keyex,hostbased,publickey" whenever no ansible_password is set
+# (plugins/connection/ssh.py, added right before ssh_common_args/ssh_extra_args), and
+# ssh honors the FIRST occurrence of a repeated -o key — so overriding via
+# ansible_ssh_extra_args/ansible_ssh_common_args arrives too late to win.
+# ansible_ssh_args (-> the "ssh_args" plugin option) is the one inserted earlier than
+# that hardcoded block, so it's the only var that can actually override it. Since
+# ansible_ssh_args fully replaces the default rather than appending, we repeat
+# Ansible's own default ("-C -o ControlMaster=auto -o ControlPersist=60s") here too.
+# This host requires keyboard-interactive for PAM-based Duo (configure_duo-ssh) as the
+# second factor. With this override in place Ansible completes the Duo challenge itself
+# (no PTY needed — Duo's autopush flow works fine non-interactively) on the first
+# connection, then reuses it via its own ControlPersist=60s for the rest of the run.
+# See roles/configure_duo-ssh/README.md.
+ansible_ssh_args: >-
+  -C -o ControlMaster=auto -o ControlPersist=60s
+  -o PreferredAuthentications=publickey,keyboard-interactive
+  -o KbdInteractiveAuthentication=yes
+
 etckeeper: true
 linuxbrew: false   # headless server, not a workstation
 
