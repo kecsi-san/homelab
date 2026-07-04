@@ -12,120 +12,121 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
-- fix(security): move sensitive EC2 data out of committed aws.yml ([401f1ec](https://github.com/kecsi-san/homelab/commit/401f1ececc3cb7ed40cfd2afe70496f246fcd189) by Zoltan K).
-- fix(ci): install Ansible collections into the actual cached path ([580a245](https://github.com/kecsi-san/homelab/commit/580a2458cdeb78347b8325ec0d41c4ce9c349c2e) by Zoltan K).
-- fix(configure_git): install git-lfs, fix templating, wire into local playbooks ([dcaaaa3](https://github.com/kecsi-san/homelab/commit/dcaaaa37904dc5cc622886b1695fbb7bb350c058) by Zoltan K).
-- fix(setup_email-server): escape % in dovecot-fts cron job ([5a64151](https://github.com/kecsi-san/homelab/commit/5a6415143568b0ca58899ced3eb8d14bed07775c) by Zoltan K).
-- fix(setup_unbound): install unbound-anchor package for Debian 13+ ([e29b85b](https://github.com/kecsi-san/homelab/commit/e29b85bb3984495924ca6a9b56e319fba07c9ffd) by Zoltan K).
-- fix(aws): ec2 instance parameter sync ([1ee280c](https://github.com/kecsi-san/homelab/commit/1ee280c74ced9c9deb4e876497e36e8c3f967bb8) by Zoltan K).
-- fix(terraform): align ec2.tf with live state from reverse engineering ([9c8d009](https://github.com/kecsi-san/homelab/commit/9c8d00980e2f613e00a80fedcaf89c2e0a724298) by Zoltan K).
-- fix(terraform): replace deprecated dynamodb_table with use_lockfile, bump version to ~>1.10 ([1831311](https://github.com/kecsi-san/homelab/commit/1831311d9866bfe76bd4364a446d3d35e9556744) by Zoltan K).
-- fix(ansible-lint): add name to import_tasks in setup_email-server; add justfile TODO ([984a551](https://github.com/kecsi-san/homelab/commit/984a5510c8674a0247a9313990b4542e4ccaa3a2) by Zoltan K).
-- fix(argocd): resolve OutOfSync for volsync, wikijs, cnpg-cluster ([4bb77ff](https://github.com/kecsi-san/homelab/commit/4bb77fffcec455ccc30e1c32554495b96179f384) by Zoltan K).
-- fix: typo in README.md ([cb37339](https://github.com/kecsi-san/homelab/commit/cb373393da1d2634453db1b9384e599b57db2a7c) by Zoltan K).
-- fix(kromgo): use ALERTS metric for alert count, exclude Watchdog and InfoInhibitor by name ([7bfef3a](https://github.com/kecsi-san/homelab/commit/7bfef3a99df32254c8ae9315460ee345d6c4314e) by Zoltan K).
-- fix(security-tools): run aideinit in background to avoid blocking playbook ([a124c72](https://github.com/kecsi-san/homelab/commit/a124c7289e98791c921474aa65f02fa21dd010d1) by Zoltan K).
-- fix(cloudflare-zone): use Jinja2 dict expression for body to preserve int/bool types ([ab92218](https://github.com/kecsi-san/homelab/commit/ab9221826d999a7ade8433da9139275a18756380) by Zoltan K).
-- fix(cloudflare-zone): cast ttl to int and proxied to bool for CF API ([b89142e](https://github.com/kecsi-san/homelab/commit/b89142e6ea122a47c6c4c9c6bf4494f207e283ea) by Zoltan K).
-- fix(cloudflare-zone): split DNS and settings tokens; ECH uses cloudflare_settings_token ([0e5b39c](https://github.com/kecsi-san/homelab/commit/0e5b39c0c37a305c3c3f01b20d814e4d333c44d8) by Zoltan K).
-- fix(cloudflare-zone): check_mode safe on ECH GET task ([3b7866d](https://github.com/kecsi-san/homelab/commit/3b7866d5a3c549cd81632ffc1336629d2ce39bad) by Zoltan K).
-- fix(cloudflare-zone): check_mode safe GET; guard create/update against skipped items ([f3c1669](https://github.com/kecsi-san/homelab/commit/f3c16696987c80457b0a0655303a6857f6b9a515) by Zoltan K).
-- fix(k3s/wikijs): tighten Authentik redirect URI to strict with real UUID ([9e9f3e2](https://github.com/kecsi-san/homelab/commit/9e9f3e2cf4d27777d0e1d007df2af2313c3978d9) by Zoltan K).
-- fix(k3s/argocd): add app.kubernetes.io/part-of label to oidc secret template ([7f03018](https://github.com/kecsi-san/homelab/commit/7f030186a96a649f132f24fe83975e1e43cf88c8) by Zoltan K).
-- fix(kromgo): make it public, via cloudflare proxy so we can display badges in GH readme.md ([27b37b7](https://github.com/kecsi-san/homelab/commit/27b37b7b5093da2b47ad8fc8bc8047e8a69d5ac8) by Zoltan K).
-- fix(ansible/k8s-nodes): mask openipmi.service on HP iLO nodes ([712de08](https://github.com/kecsi-san/homelab/commit/712de0892790b346e797e3999f81b3604c5d79a4) by Zoltan K).
-- fix(ansible/security): add AIDE and initialize baseline database ([701957d](https://github.com/kecsi-san/homelab/commit/701957dc4ae74c5975e6dc38e204c16b84b8a124) by Zoltan K).
-- fix(k8s/volsync): disable kube-rbac-proxy auth on metrics endpoint ([029d7c1](https://github.com/kecsi-san/homelab/commit/029d7c1678cfd63f4d9995b131457d2cffa448c4) by Zoltan K).
-- fix(k8s/cnpg-cluster): ignore ArgoCD tracking label drift on Cluster resource ([ba0badd](https://github.com/kecsi-san/homelab/commit/ba0badd253c86bfebadd09a5fea8ade9b490811b) by Zoltan K).
-- fix(k8s/ntfy): set Recreate rollout strategy for RWO PVC ([08b76f4](https://github.com/kecsi-san/homelab/commit/08b76f4f511171c9e5d44a42bceffada8a566fb2) by Zoltan K).
-- fix(k3s/homepage): resolve NOT FOUND for forgejo and authentik ([d1dc7c8](https://github.com/kecsi-san/homelab/commit/d1dc7c87513cfc50ebbc4bff9baf12b77173d3a9) by Zoltan K).
-- fix(k8s/homepage): remove invalid openmetrics top-bar widgets; add Kromgo service ([7b7fc7e](https://github.com/kecsi-san/homelab/commit/7b7fc7e0d0d74425ca8ea18f0905d7a50816056f) by Zoltan K).
-- fix(k8s/homepage): resolve NOT FOUND status for raw-manifest services ([4bba95a](https://github.com/kecsi-san/homelab/commit/4bba95ad2eb3d4e210327536c44c84e48485f647) by Zoltan K).
-- fix(kromgo): badges definition update and gallery enabled ([0f75cc5](https://github.com/kecsi-san/homelab/commit/0f75cc51b25acfd37f19107fd3f92caae78e7522) by Zoltan K).
-- fix(k8s/homepage): switch Kromgo to openmetrics; fix app labels; add k8s widget ([e960d55](https://github.com/kecsi-san/homelab/commit/e960d55a87dbebf7b10d0d63b6ef143e619f885a) by Zoltan K).
-- fix(homepage): remove unsupported display:compact from customapi widgets ([67f729e](https://github.com/kecsi-san/homelab/commit/67f729eb3ea3d0aeb96993813598e09a2acc79d5) by Zoltan K).
-- fix(k3s/homepage): enable Kubernetes cluster mode for widget ([7b0a544](https://github.com/kecsi-san/homelab/commit/7b0a54482d0048d1b23b5f4d00d1c644afa2183c) by Zoltan K).
-- fix(homepage): use internal service URL for Kromgo customapi widgets ([a7ae1f0](https://github.com/kecsi-san/homelab/commit/a7ae1f0971be857d64384638c92191848bc10e2b) by Zoltan K).
-- fix(k3s/forgejo): add Recreate strategy and hostAlias for Authentik ([9acb78c](https://github.com/kecsi-san/homelab/commit/9acb78c3b9de5f55bebd6565ee031b3909d0a084) by Zoltan K).
-- fix(k3s/forgejo): add hostAlias for authentik.k3s.kecskemethy.org ([cd823e9](https://github.com/kecsi-san/homelab/commit/cd823e9126c2e2fa470b22c539f0f5ca8c822f52) by Zoltan K).
-- fix(k3s/traefik): correct service type path to service.spec.type ([8f9354a](https://github.com/kecsi-san/homelab/commit/8f9354a9469371779824f3bf7c8806e13dff2e63) by Zoltan K).
-- fix(etc-hosts): add retired_hosts_patterns; fix wikijs→wiki domain ([3e24951](https://github.com/kecsi-san/homelab/commit/3e24951e23e8be8632875ac913613d6b9c92f1c8) by Zoltan K).
-- fix(dns): remove k3s AAAA override; fix Windows hosts and WSL2 extra_hosts ([1e38fdd](https://github.com/kecsi-san/homelab/commit/1e38fddeb98b0f220e09036601323b82c7bbbf4c) by Zoltan K).
-- fix(homepage): update Kromgo widget field from result to message ([0f5f413](https://github.com/kecsi-san/homelab/commit/0f5f413d871bb38987e7e88e52439090f878ba9c) by Zoltan K).
-- fix(kromgo): upgrade to home-operations/kromgo:0.11.1 with correct config format ([6a6d019](https://github.com/kecsi-san/homelab/commit/6a6d019686523f2d2366d6839a6b6eb73d74696a) by Zoltan K).
-- fix(kromgo): restore prometheus_url in config.yaml ([a20ed42](https://github.com/kecsi-san/homelab/commit/a20ed426d64f579921f36dad0b30643d1915c8cc) by Zoltan K).
-- fix(kromgo): pass PROMETHEUS_URL as env var; remove from config file ([d6634ec](https://github.com/kecsi-san/homelab/commit/d6634eccbd0643cc3a144d21794bcca90b3c66e4) by Zoltan K).
-- fix(kromgo): correct config mount path to /kromgo/config.yaml ([fe475b8](https://github.com/kecsi-san/homelab/commit/fe475b841c711ae1e1e0adcb52efe86ee4db10e8) by Zoltan K).
-- fix(kromgo): correct image to ghcr.io/kashalls/kromgo:0.3.1 ([408d679](https://github.com/kecsi-san/homelab/commit/408d679e1a7dfe53edd4ccf520ea26853459b30d) by Zoltan K).
-- fix(wikijs): remove debug patches, clean up OIDC login fix ([06fec93](https://github.com/kecsi-san/homelab/commit/06fec93677c6e1a2c59b4f92301038a269f83fa6) by Zoltan K).
-- fix(wikijs): change Authentik issuer_mode to per_provider ([8d3c161](https://github.com/kecsi-san/homelab/commit/8d3c16103129bdd1c1bb2f3a094ce51b8d570e10) by Zoltan K).
-- fix(wikijs): patch passport-openidconnect session state store ([2bd7c93](https://github.com/kecsi-san/homelab/commit/2bd7c9346d36782e2bd4a165aa54f818ed192cb6) by Zoltan K).
-- fix(wiki): correct Authentik redirect_uri to Wiki.js UUID-based callback ([8d1cc33](https://github.com/kecsi-san/homelab/commit/8d1cc3354d943d6e04c2920a255b4b1b94fdc119) by Zoltan K).
-- fix(monitoring): replace Traefik chart ServiceMonitor with raw one ([7dba74e](https://github.com/kecsi-san/homelab/commit/7dba74eac6c41b47a4aa96785d7f82f1796c13c0) by Zoltan K).
-- fix(monitoring): add traefik-traefik label to metrics service ([944d069](https://github.com/kecsi-san/homelab/commit/944d06949475788d2dc4e4805ff43c43e4b0157c) by Zoltan K).
-- fix(monitoring): fix dashboards + Traefik metrics service ([ba73b91](https://github.com/kecsi-san/homelab/commit/ba73b918f4f50da0daad6628c5312bb25a2412f1) by Zoltan K).
-- fix(monitoring): set serviceMonitorSelectorNilUsesHelmValues: false ([e5b5751](https://github.com/kecsi-san/homelab/commit/e5b575134510dad9a3bb16a6759b8acac314d493) by Zoltan K).
-- fix(monitoring): add Longhorn ServiceMonitor as raw manifest ([dc22232](https://github.com/kecsi-san/homelab/commit/dc22232a62a8f882df660215d794875546ccec30) by Zoltan K).
-- fix(monitoring): include name label in ntfy alert message body ([9272358](https://github.com/kecsi-san/homelab/commit/92723580e0c2416a936cec6d4e07eb0cfaf9c317) by Zoltan K).
-- fix(monitoring): fix non-ASCII x in ntfy title header; add PYTHONUNBUFFERED ([c0694ae](https://github.com/kecsi-san/homelab/commit/c0694aed3d973297cb62d8a2a98ca9e7a3439565) by Zoltan K).
-- fix(argocd): use knownTypeFields for terminatingReplicas; add hostNetwork ignore ([19734c7](https://github.com/kecsi-san/homelab/commit/19734c739b187b0d76e89c61ec8265a9fb4e9edd) by Zoltan K).
-- fix(argocd): add Deployment+ReplicaSet to terminatingReplicas ignoreDifferences ([d664770](https://github.com/kecsi-san/homelab/commit/d6647708e3aaa0085fe420f853cbf9291995776d) by Zoltan K).
-- fix(authentik+argocd): grant_types for Grafana; global terminatingReplicas ignore ([1786358](https://github.com/kecsi-san/homelab/commit/17863584fc5bbb754f56db97481e32284531cc6e) by Zoltan K).
-- fix(argocd): add global resource customizations for monitoring.coreos.com ([8338ff0](https://github.com/kecsi-san/homelab/commit/8338ff0799a67ca901335a91f9af7a6d7ad41259) by Zoltan K).
-- fix(monitoring): disable PKCE in Grafana OAuth2 config ([c090f4e](https://github.com/kecsi-san/homelab/commit/c090f4e20bc804ac7490257827eaed95681ea2c7) by Zoltan K).
-- fix(monitoring): restore ServerSideApply + add CRD ignoreDifferences for KPS ([c62334e](https://github.com/kecsi-san/homelab/commit/c62334ef6135de9013e951269e6cea6f26e1b6f4) by Zoltan K).
-- fix(monitoring): add ignoreDifferences for terminatingReplicas on KPS ([a161da4](https://github.com/kecsi-san/homelab/commit/a161da4258ed9c6b18b28920fcaa378c8ab481dc) by Zoltan K).
-- fix(monitoring): remove ServerSideApply; fix node-exporter port conflict ([2162453](https://github.com/kecsi-san/homelab/commit/2162453d95f84895f88159f4164a30b8113c9b18) by Zoltan K).
-- fix(monitoring): bump chart versions to latest available ([5825fc2](https://github.com/kecsi-san/homelab/commit/5825fc271083ab64dd30c4ff0ad4e33b4340ef5c) by Zoltan K).
-- fix+docs: redact real email from kubeseal example; add hardening TODOs ([03c1c4b](https://github.com/kecsi-san/homelab/commit/03c1c4b5eaeffaad8ec10fd6993189f00e81af97) by Zoltan K).
-- fix(traefik): move redirections under ports.web.http for chart v40 compatibility ([0caeeb2](https://github.com/kecsi-san/homelab/commit/0caeeb2786742985467b9617bd4fda2a7720ae48) by Zoltan K).
-- fix(argocd): use email as RBAC subject for admin role ([ad8dfaf](https://github.com/kecsi-san/homelab/commit/ad8dfafc7db7e40f6fd3cd601e01c0823f824e41) by Zoltan K).
-- fix(argocd): add required label to oidc secret ([e7ef810](https://github.com/kecsi-san/homelab/commit/e7ef810143b2868edb9488e23109163f64ea0247) by Zoltan K).
-- fix(argocd): set server.url so redirect URI uses https ([78b898a](https://github.com/kecsi-san/homelab/commit/78b898acb7080498d19e7908c421896f2c550057) by Zoltan K).
-- fix(argocd): use per_provider issuer mode in Authentik blueprint ([63a515a](https://github.com/kecsi-san/homelab/commit/63a515a152609241346fea774ec4dfbcf3b60542) by Zoltan K).
-- fix(argocd): manage oidc config via raw manifests ([6781568](https://github.com/kecsi-san/homelab/commit/6781568ba15bd61f3e41558e502eac15a2d1152c) by Zoltan K).
-- fix(backstage): remove scope option, use default OIDC scopes ([9d686aa](https://github.com/kecsi-san/homelab/commit/9d686aa2f1e69fe4c261b82b4a7a77ee1b8cd4d1) by Zoltan K).
-- fix(backstage): use emailLocalPartMatchingUserEntityName resolver ([ab1e1d8](https://github.com/kecsi-san/homelab/commit/ab1e1d88cd574dd863429e34739dcaa4817d4583) by Zoltan K).
-- fix(backstage): add auth.providers to Helm appConfig ([20893ba](https://github.com/kecsi-san/homelab/commit/20893ba7691f91ae85a51527782d057098df2bc2) by Zoltan K).
-- fix(homepage): remove broken kubernetes widget, fix backstage icon ([c029122](https://github.com/kecsi-san/homelab/commit/c02912256509a61230e257f1a07139c112a5580d) by Zoltan K).
-- fix(forgejo-runner): use Recreate strategy for RWO PVC ([9097d59](https://github.com/kecsi-san/homelab/commit/9097d598ffb817520dc806bc351a4cd9dfb282e6) by Zoltan K).
-- fix(backstage): move OIDC provider config into custom image app-config ([59fb2fa](https://github.com/kecsi-san/homelab/commit/59fb2fa6f835f9d0df210565848902d92892e856) by Zoltan K).
-- fix(ci): use host network + TCP Docker host for job containers ([f957652](https://github.com/kecsi-san/homelab/commit/f957652165b7d35e4d3b97915b72171519230470) by Zoltan K).
-- fix(backstage): use schema-based plugin division to avoid createdb permission ([3f0f78b](https://github.com/kecsi-san/homelab/commit/3f0f78bcfbf04fba5b00b11f8547897bb6919e8d) by Zoltan K).
-- fix(dns): use ::1 for k3s AAAA wildcard, fd42::1 for k8s only ([0ce04ee](https://github.com/kecsi-san/homelab/commit/0ce04ee57d9e4f4ae315ba016d8df996fc6818dd) by Zoltan K).
-- fix(dns): use RouterOS type field to distinguish A/AAAA records; migrate ::1 to fd42::1 ([3991226](https://github.com/kecsi-san/homelab/commit/3991226710a342bb91dc3623ee94023b8b60b663) by Zoltan K).
-- fix(dns): add wildcard AAAA overrides to block Cloudflare IPv6 on LAN ([e4a992f](https://github.com/kecsi-san/homelab/commit/e4a992f763c8b31f199220e2edd4bf105e4aa075) by Zoltan K).
-- fix(forgejo): increase memory limit 512Mi → 1Gi to prevent OOMKill ([b1a2583](https://github.com/kecsi-san/homelab/commit/b1a25836ee3184d66086ab40b8310438bc349781) by Zoltan K).
-- fix(forgejo-runner): chmod /data before register to fix PVC permissions ([1eb8cf8](https://github.com/kecsi-san/homelab/commit/1eb8cf8d4bd4a64e921d4eab75c89a1829fc291a) by Zoltan K).
-- fix(forgejo-runner): set workingDir /data on init container ([cd64ac3](https://github.com/kecsi-san/homelab/commit/cd64ac3b50d8d707c29227a10b71d8049ad9dc84) by Zoltan K).
-- fix(forgejo-runner): cd /data before register to write .runner to PVC ([f27f1f0](https://github.com/kecsi-san/homelab/commit/f27f1f000cc5eb1e9ab91c7bb13656108900b379) by Zoltan K).
-- fix(forgejo-runner): persist runner data on Longhorn PVC ([e2979cf](https://github.com/kecsi-san/homelab/commit/e2979cfe5fa181b790cc4ab45e9507b73676ec53) by Zoltan K).
-- fix(forgejo-runner): use wget to wait for DinD instead of docker CLI ([c17aaa0](https://github.com/kecsi-san/homelab/commit/c17aaa0e5de76583f0eb0293647bbb2b029aeb07) by Zoltan K).
-- fix(forgejo-runner): use tcp://localhost:2375 for DinD socket ([208bca6](https://github.com/kecsi-san/homelab/commit/208bca607e54498e3f89f8489890702cfebef042) by Zoltan K).
-- fix(forgejo-runner): use github.com repo URL in ArgoCD app ([786cebc](https://github.com/kecsi-san/homelab/commit/786cebc70b8dadeb03c6c98a2a0938de6bbb308e) by Zoltan K).
-- fix(k8s/authentik): use per_provider issuer_mode for Headlamp OIDC ([4c2cc27](https://github.com/kecsi-san/homelab/commit/4c2cc2764d68397bd0425ffe17d04123aa67aea4) by Zoltan K).
-- fix(k8s/traefik): disable kubernetesIngress provider ([18e6ee0](https://github.com/kecsi-san/homelab/commit/18e6ee0b2a21dc40c46910ade3417ed582692480) by Zoltan K).
-- fix(k8s/traefik): enable allowCrossNamespace for cross-ns middleware refs ([b1f2f01](https://github.com/kecsi-san/homelab/commit/b1f2f01f2ab86f612f3a382e8260f71d4f0e47bc) by Zoltan K).
-- fix(forgejo): use Recreate rollout strategy to avoid LevelDB queue lock ([a5e1902](https://github.com/kecsi-san/homelab/commit/a5e19025366657b04c6e206708ccc54822a5719e) by Zoltan K).
-- fix(forgejo): disable remember-me to prevent silent re-login after sign-out ([1d3c960](https://github.com/kecsi-san/homelab/commit/1d3c96068dd92a9e2cf97f5c2c31afdf0c7eae93) by Zoltan K).
-- fix(authentik/forgejo): add invalidation_flow to blueprint, fix job app.ini path ([cf86e85](https://github.com/kecsi-san/homelab/commit/cf86e85d63995a8a154183820c5baf5e98325e9a) by Zoltan K).
-- fix(configure_ntp): switch from ntpd to chrony (Debian 13 removed ntp package) ([a3a53c3](https://github.com/kecsi-san/homelab/commit/a3a53c3abe1de34c80c4d885d7a87cc8cc818b7f) by Zoltan K).
-- fix(k8s/authentik): replace bundled Redis with standalone official image ([20c68d9](https://github.com/kecsi-san/homelab/commit/20c68d92672757ea64d0cc758d332098ae374365) by Zoltan K).
-- fix(k8s/authentik): override Redis image registry to registry.bitnami.com ([4fb3cd6](https://github.com/kecsi-san/homelab/commit/4fb3cd6e83356cdd15618a22b416905c1391d942) by Zoltan K).
-- fix(k3s/homepage): add Forgejo to Platform section, fix ArgoCD icon ([6fd0abe](https://github.com/kecsi-san/homelab/commit/6fd0abea32e33db2ebde35b3de26c2bdf799aad9) by Zoltan K).
-- fix(forgejo): update admin SealedSecret username from admin to kecsi ([bf773f9](https://github.com/kecsi-san/homelab/commit/bf773f9e91f0eda009a1493cd2ca44d4d647142c) by Zoltan K).
-- fix(forgejo): use GITEA__ env vars for config, mount PVC at /var/lib/gitea ([800ffed](https://github.com/kecsi-san/homelab/commit/800ffed289c6014824414137b25fca9367137625) by Zoltan K).
-- fix(forgejo): split image registry from repository to prevent Gitea chart prepending default registry ([7c0ac01](https://github.com/kecsi-san/homelab/commit/7c0ac014b61061b0505763248b452e647ce823ca) by Zoltan K).
-- fix(cnpg): reduce postgres PVC size from 10Gi to 2Gi ([036389b](https://github.com/kecsi-san/homelab/commit/036389b265154607508b1139af1fe641c1c59b1a) by Zoltan K).
-- fix(cnpg): add username key to forgejo-db-credentials SealedSecret in postgres ns ([0118228](https://github.com/kecsi-san/homelab/commit/0118228ea8c00a2b278164b5e9e34f4ee9e3d770) by Zoltan K).
-- fix(cnpg): add RespectIgnoreDifferences to fix terminatingReplicas schema error ([e87009d](https://github.com/kecsi-san/homelab/commit/e87009d7838ac78377ff51978ad973698470c136) by Zoltan K).
-- fix(cnpg): add ServerSideApply to resolve oversized CRD annotation ([2123f77](https://github.com/kecsi-san/homelab/commit/2123f77b70069c0dc2a2909b054ebec8db536724) by Zoltan K).
-- fix(homepage): remove background blur to improve image visibility ([7a76f81](https://github.com/kecsi-san/homelab/commit/7a76f81e6b65ff1b8110dc7f9d4c03eb9e0fe7e7) by Zoltan K).
-- fix(homepage): correct Glance logo URL (docs/logo.png not docs/images/logo.png) ([f2de1bf](https://github.com/kecsi-san/homelab/commit/f2de1bff89e21fcf7b4cd62f2b4f6c47ecd66b6d) by Zoltan K).
-- fix(secrets): add yamllint disable-line comments to SealedSecret encrypted data ([2f506cf](https://github.com/kecsi-san/homelab/commit/2f506cfd8f96e135a6b28142e3c32a11e2eac986) by Zoltan K).
-- fix(volsync): add RespectIgnoreDifferences to fix terminatingReplicas schema error ([7fc28e1](https://github.com/kecsi-san/homelab/commit/7fc28e1d826eabe10c09602263d3aa7b079bcaf4) by Zoltan K).
-- fix(gatus): correct env format to dict and set Recreate strategy ([537cbe8](https://github.com/kecsi-san/homelab/commit/537cbe80974917a0a260c9bde8f7c6f0dbfe9219) by Zoltan K).
-- fix(kube-gitops): restore real domain in operational manifests ([156bc68](https://github.com/kecsi-san/homelab/commit/156bc68257b91f6bfc1c1b0abe77056aa5f3e301) by Zoltan K).
+- fix(security): replace real family names with generic examples ([48b0a7c](https://github.com/kecsi-san/homelab/commit/48b0a7c57fd6109152113b664b6c6613d1cc21af) by Zoltan K).
+- fix(security): move sensitive EC2 data out of committed aws.yml ([cc7dc1b](https://github.com/kecsi-san/homelab/commit/cc7dc1b5208db6a632673af408ff0c780aa54714) by Zoltan K).
+- fix(ci): install Ansible collections into the actual cached path ([8eb8d59](https://github.com/kecsi-san/homelab/commit/8eb8d59bc4ab85e5c5797b4179c07e18c15cf2f9) by Zoltan K).
+- fix(configure_git): install git-lfs, fix templating, wire into local playbooks ([1eb94dc](https://github.com/kecsi-san/homelab/commit/1eb94dc35c6b87f3f4f2e722b42fc916185b3db8) by Zoltan K).
+- fix(setup_email-server): escape % in dovecot-fts cron job ([4d5d7dd](https://github.com/kecsi-san/homelab/commit/4d5d7ddface8dc4b85fec2f9a174c86eba906d81) by Zoltan K).
+- fix(setup_unbound): install unbound-anchor package for Debian 13+ ([abff576](https://github.com/kecsi-san/homelab/commit/abff576e5f73d2fe3d0df8fb8f35cb919b1ff68f) by Zoltan K).
+- fix(aws): ec2 instance parameter sync ([9ecae12](https://github.com/kecsi-san/homelab/commit/9ecae120cdb0e38a55e846226f7a3ca0643296f8) by Zoltan K).
+- fix(terraform): align ec2.tf with live state from reverse engineering ([bd5c36e](https://github.com/kecsi-san/homelab/commit/bd5c36ee91a2c50fc37200c75541adb3438f429b) by Zoltan K).
+- fix(terraform): replace deprecated dynamodb_table with use_lockfile, bump version to ~>1.10 ([c11c9c6](https://github.com/kecsi-san/homelab/commit/c11c9c6312ce47714207e0dec35eb6f4c437fd37) by Zoltan K).
+- fix(ansible-lint): add name to import_tasks in setup_email-server; add justfile TODO ([7f8e28f](https://github.com/kecsi-san/homelab/commit/7f8e28f76e601261169f525c19ab16d3405312ae) by Zoltan K).
+- fix(argocd): resolve OutOfSync for volsync, wikijs, cnpg-cluster ([434566c](https://github.com/kecsi-san/homelab/commit/434566c3feac71bb196fff08476472ad29f462c3) by Zoltan K).
+- fix: typo in README.md ([744a312](https://github.com/kecsi-san/homelab/commit/744a312fb320ec1298873cba260161d90989280c) by Zoltan K).
+- fix(kromgo): use ALERTS metric for alert count, exclude Watchdog and InfoInhibitor by name ([bb2870b](https://github.com/kecsi-san/homelab/commit/bb2870bddb134c34c281cc8f12fa9cdf79eee5d1) by Zoltan K).
+- fix(security-tools): run aideinit in background to avoid blocking playbook ([baa85f9](https://github.com/kecsi-san/homelab/commit/baa85f970fcd4381b8d638e1cae81be85f8d38f9) by Zoltan K).
+- fix(cloudflare-zone): use Jinja2 dict expression for body to preserve int/bool types ([dbd55ba](https://github.com/kecsi-san/homelab/commit/dbd55bae36f3c92c870fdd574e2708bd21bce508) by Zoltan K).
+- fix(cloudflare-zone): cast ttl to int and proxied to bool for CF API ([35b2734](https://github.com/kecsi-san/homelab/commit/35b27344acb534a2886634aa3a950ffacdcd8e64) by Zoltan K).
+- fix(cloudflare-zone): split DNS and settings tokens; ECH uses cloudflare_settings_token ([88c2bb4](https://github.com/kecsi-san/homelab/commit/88c2bb49af704e3d06b6f02e6f81461eb8408e6a) by Zoltan K).
+- fix(cloudflare-zone): check_mode safe on ECH GET task ([241334f](https://github.com/kecsi-san/homelab/commit/241334fa782d3ec001438b19328d3c7e5c70a068) by Zoltan K).
+- fix(cloudflare-zone): check_mode safe GET; guard create/update against skipped items ([b9c9541](https://github.com/kecsi-san/homelab/commit/b9c9541f7fec0d1612c6e83cf28693a0968d676d) by Zoltan K).
+- fix(k3s/wikijs): tighten Authentik redirect URI to strict with real UUID ([dacc26f](https://github.com/kecsi-san/homelab/commit/dacc26f61a063c1bf2d508a097cdf7830c0c55de) by Zoltan K).
+- fix(k3s/argocd): add app.kubernetes.io/part-of label to oidc secret template ([e2593fc](https://github.com/kecsi-san/homelab/commit/e2593fc71a208f6938880caf5b018db1217eb1ca) by Zoltan K).
+- fix(kromgo): make it public, via cloudflare proxy so we can display badges in GH readme.md ([d4c10c0](https://github.com/kecsi-san/homelab/commit/d4c10c0be68739852724cfc54ed7f544532faedc) by Zoltan K).
+- fix(ansible/k8s-nodes): mask openipmi.service on HP iLO nodes ([97db3cd](https://github.com/kecsi-san/homelab/commit/97db3cdc44244441fbbbff1fb7a3b02956a1a72b) by Zoltan K).
+- fix(ansible/security): add AIDE and initialize baseline database ([85c7634](https://github.com/kecsi-san/homelab/commit/85c7634befb28e9e8aee38eb081503540fed20c4) by Zoltan K).
+- fix(k8s/volsync): disable kube-rbac-proxy auth on metrics endpoint ([1081550](https://github.com/kecsi-san/homelab/commit/10815504032c1d425ea86ddaed0c94d9e325690a) by Zoltan K).
+- fix(k8s/cnpg-cluster): ignore ArgoCD tracking label drift on Cluster resource ([b06dd86](https://github.com/kecsi-san/homelab/commit/b06dd861773180f75c67acdceb1bad1cc8cb30c3) by Zoltan K).
+- fix(k8s/ntfy): set Recreate rollout strategy for RWO PVC ([ef7b480](https://github.com/kecsi-san/homelab/commit/ef7b480539df47e9fee994e383d300975bf2a120) by Zoltan K).
+- fix(k3s/homepage): resolve NOT FOUND for forgejo and authentik ([9fa0606](https://github.com/kecsi-san/homelab/commit/9fa0606d82e2472cd69471ee48b5c4e8206794a8) by Zoltan K).
+- fix(k8s/homepage): remove invalid openmetrics top-bar widgets; add Kromgo service ([fcbcad2](https://github.com/kecsi-san/homelab/commit/fcbcad2e59ae97904ffe6cae3b8ef779117cbab9) by Zoltan K).
+- fix(k8s/homepage): resolve NOT FOUND status for raw-manifest services ([70d2fc7](https://github.com/kecsi-san/homelab/commit/70d2fc7646782fae7af54e50a12029eafb77bab8) by Zoltan K).
+- fix(kromgo): badges definition update and gallery enabled ([68bd830](https://github.com/kecsi-san/homelab/commit/68bd830552993602964e85517716ca9133759b6d) by Zoltan K).
+- fix(k8s/homepage): switch Kromgo to openmetrics; fix app labels; add k8s widget ([c944c2f](https://github.com/kecsi-san/homelab/commit/c944c2f2fcc8e352b142aa6385c068ae860b47fb) by Zoltan K).
+- fix(homepage): remove unsupported display:compact from customapi widgets ([dfecaa0](https://github.com/kecsi-san/homelab/commit/dfecaa079b8398e092d584312cf225195cf022bb) by Zoltan K).
+- fix(k3s/homepage): enable Kubernetes cluster mode for widget ([028c6e4](https://github.com/kecsi-san/homelab/commit/028c6e4deeac49775fd4a5c84a06fab98eac6b18) by Zoltan K).
+- fix(homepage): use internal service URL for Kromgo customapi widgets ([219725c](https://github.com/kecsi-san/homelab/commit/219725c97520fa3966a0efd74c5f1d2032c34543) by Zoltan K).
+- fix(k3s/forgejo): add Recreate strategy and hostAlias for Authentik ([42210d7](https://github.com/kecsi-san/homelab/commit/42210d7587ace249433e1922f7aca5895fbdd246) by Zoltan K).
+- fix(k3s/forgejo): add hostAlias for authentik.k3s.kecskemethy.org ([5809ed6](https://github.com/kecsi-san/homelab/commit/5809ed6e11efaba8117301599a06585e9088f766) by Zoltan K).
+- fix(k3s/traefik): correct service type path to service.spec.type ([595522f](https://github.com/kecsi-san/homelab/commit/595522f92b8a1404ba2e9a66a830ac37743c67cb) by Zoltan K).
+- fix(etc-hosts): add retired_hosts_patterns; fix wikijs→wiki domain ([3bf8f66](https://github.com/kecsi-san/homelab/commit/3bf8f669451bda4eaab819da1a6269719b330377) by Zoltan K).
+- fix(dns): remove k3s AAAA override; fix Windows hosts and WSL2 extra_hosts ([f310e38](https://github.com/kecsi-san/homelab/commit/f310e38b0e386bdb45fc0fc70be9a97c8e827178) by Zoltan K).
+- fix(homepage): update Kromgo widget field from result to message ([8129f4c](https://github.com/kecsi-san/homelab/commit/8129f4ced1745be0e349da6f511f65fef5aa9d13) by Zoltan K).
+- fix(kromgo): upgrade to home-operations/kromgo:0.11.1 with correct config format ([5dc78ef](https://github.com/kecsi-san/homelab/commit/5dc78efdd224fb4f349c0454dcad6f82cf202a2f) by Zoltan K).
+- fix(kromgo): restore prometheus_url in config.yaml ([45c313c](https://github.com/kecsi-san/homelab/commit/45c313c8ed1ddd57847a7b894c0f113f4530dfb7) by Zoltan K).
+- fix(kromgo): pass PROMETHEUS_URL as env var; remove from config file ([bb1e22d](https://github.com/kecsi-san/homelab/commit/bb1e22d49a1f0f965e7dcfada50238be41571dc7) by Zoltan K).
+- fix(kromgo): correct config mount path to /kromgo/config.yaml ([2c83d8d](https://github.com/kecsi-san/homelab/commit/2c83d8d44b06a490f687e6df38f0403b815b5995) by Zoltan K).
+- fix(kromgo): correct image to ghcr.io/kashalls/kromgo:0.3.1 ([773a353](https://github.com/kecsi-san/homelab/commit/773a353696d8c85ae6ef86715fda97bb9e0ca50e) by Zoltan K).
+- fix(wikijs): remove debug patches, clean up OIDC login fix ([d30b5e4](https://github.com/kecsi-san/homelab/commit/d30b5e45647076b8f54318906bdbb70b528dfe59) by Zoltan K).
+- fix(wikijs): change Authentik issuer_mode to per_provider ([991e80d](https://github.com/kecsi-san/homelab/commit/991e80d8ba9fa1ab9ab4d4eae7990effa60a52b6) by Zoltan K).
+- fix(wikijs): patch passport-openidconnect session state store ([3f70705](https://github.com/kecsi-san/homelab/commit/3f70705983cbb025d2b6deac9e334ee455e62380) by Zoltan K).
+- fix(wiki): correct Authentik redirect_uri to Wiki.js UUID-based callback ([b31edf4](https://github.com/kecsi-san/homelab/commit/b31edf44448a6f149c64b2ec74a5bfc4017b5a84) by Zoltan K).
+- fix(monitoring): replace Traefik chart ServiceMonitor with raw one ([82bea88](https://github.com/kecsi-san/homelab/commit/82bea8811d071aff94a7aee82319eb6c42374746) by Zoltan K).
+- fix(monitoring): add traefik-traefik label to metrics service ([19e51ff](https://github.com/kecsi-san/homelab/commit/19e51ff27e26a664c2c4b24472810c3f58533127) by Zoltan K).
+- fix(monitoring): fix dashboards + Traefik metrics service ([ba293a4](https://github.com/kecsi-san/homelab/commit/ba293a47d24cbc924b1b329ebfeae26398c59ad9) by Zoltan K).
+- fix(monitoring): set serviceMonitorSelectorNilUsesHelmValues: false ([543376a](https://github.com/kecsi-san/homelab/commit/543376a1847322b3a4f50a7e9843534700365571) by Zoltan K).
+- fix(monitoring): add Longhorn ServiceMonitor as raw manifest ([94384ca](https://github.com/kecsi-san/homelab/commit/94384ca31d9543bf6d5678acbe430393533bc0e7) by Zoltan K).
+- fix(monitoring): include name label in ntfy alert message body ([44b0d6e](https://github.com/kecsi-san/homelab/commit/44b0d6e287bc633b16e1d407c4d55b8c3e3025bd) by Zoltan K).
+- fix(monitoring): fix non-ASCII x in ntfy title header; add PYTHONUNBUFFERED ([2c243be](https://github.com/kecsi-san/homelab/commit/2c243be4a9f1b8dba82545697eeff00c6be4355b) by Zoltan K).
+- fix(argocd): use knownTypeFields for terminatingReplicas; add hostNetwork ignore ([927bb7e](https://github.com/kecsi-san/homelab/commit/927bb7eaecf43b00070946b6a7519fd077c99e63) by Zoltan K).
+- fix(argocd): add Deployment+ReplicaSet to terminatingReplicas ignoreDifferences ([fb488a4](https://github.com/kecsi-san/homelab/commit/fb488a4328e536e73886c17706b8b69139c2b92d) by Zoltan K).
+- fix(authentik+argocd): grant_types for Grafana; global terminatingReplicas ignore ([978bcff](https://github.com/kecsi-san/homelab/commit/978bcffe4e0ac924e5cfd2d137267a2465044490) by Zoltan K).
+- fix(argocd): add global resource customizations for monitoring.coreos.com ([d011b9b](https://github.com/kecsi-san/homelab/commit/d011b9b8563fa7739d3378f9260014c105154e83) by Zoltan K).
+- fix(monitoring): disable PKCE in Grafana OAuth2 config ([69754cb](https://github.com/kecsi-san/homelab/commit/69754cba3dc9abcc174a215629d5d0f48f8cfce3) by Zoltan K).
+- fix(monitoring): restore ServerSideApply + add CRD ignoreDifferences for KPS ([380f41c](https://github.com/kecsi-san/homelab/commit/380f41c5c74ccdc51b158f9ec59d1d59103ae55f) by Zoltan K).
+- fix(monitoring): add ignoreDifferences for terminatingReplicas on KPS ([efacbd6](https://github.com/kecsi-san/homelab/commit/efacbd650bf02bca0de2aa9fec027049ed563896) by Zoltan K).
+- fix(monitoring): remove ServerSideApply; fix node-exporter port conflict ([9838534](https://github.com/kecsi-san/homelab/commit/9838534bc2c760b16cc8b3c83a5280fe4f5ee168) by Zoltan K).
+- fix(monitoring): bump chart versions to latest available ([574e219](https://github.com/kecsi-san/homelab/commit/574e2199bb50baf29338ee717c84dabe9312f8e8) by Zoltan K).
+- fix+docs: redact real email from kubeseal example; add hardening TODOs ([cc80c37](https://github.com/kecsi-san/homelab/commit/cc80c37862a214224fa20d53ed800d738b340989) by Zoltan K).
+- fix(traefik): move redirections under ports.web.http for chart v40 compatibility ([5ffbfa8](https://github.com/kecsi-san/homelab/commit/5ffbfa81653c57e7daab4f2ce97fdd72e6f20323) by Zoltan K).
+- fix(argocd): use email as RBAC subject for admin role ([607f794](https://github.com/kecsi-san/homelab/commit/607f79411341cb99ce5b23f3e3338262740615de) by Zoltan K).
+- fix(argocd): add required label to oidc secret ([910d32d](https://github.com/kecsi-san/homelab/commit/910d32d446ecc3a7e51191f87a0ba0f929b925ca) by Zoltan K).
+- fix(argocd): set server.url so redirect URI uses https ([6e6cda9](https://github.com/kecsi-san/homelab/commit/6e6cda9a7c9eaed4cce35f7cafd80f23945eaf40) by Zoltan K).
+- fix(argocd): use per_provider issuer mode in Authentik blueprint ([a711de0](https://github.com/kecsi-san/homelab/commit/a711de03dee89cda26e32d8e9476fb4d21131580) by Zoltan K).
+- fix(argocd): manage oidc config via raw manifests ([1a908de](https://github.com/kecsi-san/homelab/commit/1a908de931a55f3fa06d692d1b1cf8890ad4a425) by Zoltan K).
+- fix(backstage): remove scope option, use default OIDC scopes ([d058b42](https://github.com/kecsi-san/homelab/commit/d058b427f05520fb20c79f77876eefc644993ec6) by Zoltan K).
+- fix(backstage): use emailLocalPartMatchingUserEntityName resolver ([c6d37db](https://github.com/kecsi-san/homelab/commit/c6d37db0b59faa61e6a679d4590741b604e8e791) by Zoltan K).
+- fix(backstage): add auth.providers to Helm appConfig ([dbabdaf](https://github.com/kecsi-san/homelab/commit/dbabdaf9c450d0177d68bbd3fdcdb56b3e245392) by Zoltan K).
+- fix(homepage): remove broken kubernetes widget, fix backstage icon ([19abbe2](https://github.com/kecsi-san/homelab/commit/19abbe28c23ec3799c6c8ac05959c78559dfc320) by Zoltan K).
+- fix(forgejo-runner): use Recreate strategy for RWO PVC ([725d7cd](https://github.com/kecsi-san/homelab/commit/725d7cd556a9433ee7aeb2d311279cf9c261c89b) by Zoltan K).
+- fix(backstage): move OIDC provider config into custom image app-config ([659a0d1](https://github.com/kecsi-san/homelab/commit/659a0d142c3ba4a575c02b813bc06b7e40966152) by Zoltan K).
+- fix(ci): use host network + TCP Docker host for job containers ([110981d](https://github.com/kecsi-san/homelab/commit/110981dc7695905e4dadefcbf9d01206434e5b9b) by Zoltan K).
+- fix(backstage): use schema-based plugin division to avoid createdb permission ([22a26f1](https://github.com/kecsi-san/homelab/commit/22a26f13acef382e396a7465929747877ee93986) by Zoltan K).
+- fix(dns): use ::1 for k3s AAAA wildcard, fd42::1 for k8s only ([ad4d29a](https://github.com/kecsi-san/homelab/commit/ad4d29a2b4f9efbbdd06a3abbf923abf997b2750) by Zoltan K).
+- fix(dns): use RouterOS type field to distinguish A/AAAA records; migrate ::1 to fd42::1 ([036f20c](https://github.com/kecsi-san/homelab/commit/036f20cdb3a26ba7ceb3d3c59873b53e7f8a50ad) by Zoltan K).
+- fix(dns): add wildcard AAAA overrides to block Cloudflare IPv6 on LAN ([3489d8d](https://github.com/kecsi-san/homelab/commit/3489d8d6b2a0f835f087c8502fd6e116f06676ef) by Zoltan K).
+- fix(forgejo): increase memory limit 512Mi → 1Gi to prevent OOMKill ([b01235e](https://github.com/kecsi-san/homelab/commit/b01235eb603f018e8b1767dfa24e161e533bb118) by Zoltan K).
+- fix(forgejo-runner): chmod /data before register to fix PVC permissions ([2646c49](https://github.com/kecsi-san/homelab/commit/2646c49c1396016e5335e6fdf3f938d689f076ac) by Zoltan K).
+- fix(forgejo-runner): set workingDir /data on init container ([af4f3a9](https://github.com/kecsi-san/homelab/commit/af4f3a9aaaaf94267bf0ced55ab85e7519a518f6) by Zoltan K).
+- fix(forgejo-runner): cd /data before register to write .runner to PVC ([894c188](https://github.com/kecsi-san/homelab/commit/894c188a833d5f90e4262caa37a90b298984e2c2) by Zoltan K).
+- fix(forgejo-runner): persist runner data on Longhorn PVC ([f66d8b0](https://github.com/kecsi-san/homelab/commit/f66d8b0a19b045b5690dfc7e60e3605dd2a38482) by Zoltan K).
+- fix(forgejo-runner): use wget to wait for DinD instead of docker CLI ([370071c](https://github.com/kecsi-san/homelab/commit/370071c374823876914a5bf047adefc14733d154) by Zoltan K).
+- fix(forgejo-runner): use tcp://localhost:2375 for DinD socket ([4f7eac3](https://github.com/kecsi-san/homelab/commit/4f7eac36933273a76a952cac7cd2d2a93c40aebb) by Zoltan K).
+- fix(forgejo-runner): use github.com repo URL in ArgoCD app ([146c084](https://github.com/kecsi-san/homelab/commit/146c084efad4fcf0c7a21577b3bdd5d8e3beb756) by Zoltan K).
+- fix(k8s/authentik): use per_provider issuer_mode for Headlamp OIDC ([3e46e9b](https://github.com/kecsi-san/homelab/commit/3e46e9bbcc8ccf2fe23e21486c0f257ee8fa8e46) by Zoltan K).
+- fix(k8s/traefik): disable kubernetesIngress provider ([871528e](https://github.com/kecsi-san/homelab/commit/871528e5acd3466f11e231c046b42db836e8006e) by Zoltan K).
+- fix(k8s/traefik): enable allowCrossNamespace for cross-ns middleware refs ([ae58273](https://github.com/kecsi-san/homelab/commit/ae5827326c47c75b61f67178f99c093fb310e8bc) by Zoltan K).
+- fix(forgejo): use Recreate rollout strategy to avoid LevelDB queue lock ([af6d5e7](https://github.com/kecsi-san/homelab/commit/af6d5e7984222c7994bab8a781f92bfa68b5a4c5) by Zoltan K).
+- fix(forgejo): disable remember-me to prevent silent re-login after sign-out ([952ca98](https://github.com/kecsi-san/homelab/commit/952ca98833b7140c83f9b5b1fd44fbddfb1a8f97) by Zoltan K).
+- fix(authentik/forgejo): add invalidation_flow to blueprint, fix job app.ini path ([e9aa67c](https://github.com/kecsi-san/homelab/commit/e9aa67cf9758cc82ed4ba4ed11fb83e698e6b5b0) by Zoltan K).
+- fix(configure_ntp): switch from ntpd to chrony (Debian 13 removed ntp package) ([47564f8](https://github.com/kecsi-san/homelab/commit/47564f8141a4810ae357c20ed57da006af61e178) by Zoltan K).
+- fix(k8s/authentik): replace bundled Redis with standalone official image ([b3bbf17](https://github.com/kecsi-san/homelab/commit/b3bbf17ac679b9527be7eb23e2f9e3d8b8f54205) by Zoltan K).
+- fix(k8s/authentik): override Redis image registry to registry.bitnami.com ([adfc3d5](https://github.com/kecsi-san/homelab/commit/adfc3d5fe538403c742e18ff1e2d1aed8bcadb84) by Zoltan K).
+- fix(k3s/homepage): add Forgejo to Platform section, fix ArgoCD icon ([807b09a](https://github.com/kecsi-san/homelab/commit/807b09accbad5286d78d45a61c8c460f691d5f8b) by Zoltan K).
+- fix(forgejo): update admin SealedSecret username from admin to kecsi ([746b4cd](https://github.com/kecsi-san/homelab/commit/746b4cd0a1d275b762e43457428e3fbc4ea955ff) by Zoltan K).
+- fix(forgejo): use GITEA__ env vars for config, mount PVC at /var/lib/gitea ([0f30752](https://github.com/kecsi-san/homelab/commit/0f30752be8d92478c96bec91da2748a217014ddd) by Zoltan K).
+- fix(forgejo): split image registry from repository to prevent Gitea chart prepending default registry ([45ad1bd](https://github.com/kecsi-san/homelab/commit/45ad1bdc6fc4eb2980a1f8331f9bd655767fbc97) by Zoltan K).
+- fix(cnpg): reduce postgres PVC size from 10Gi to 2Gi ([24b7aba](https://github.com/kecsi-san/homelab/commit/24b7aba42016be89d2c260ac189fc53c1ebb7590) by Zoltan K).
+- fix(cnpg): add username key to forgejo-db-credentials SealedSecret in postgres ns ([d8ae86a](https://github.com/kecsi-san/homelab/commit/d8ae86a91c696477ec6dc1ea83b5081c4a463df3) by Zoltan K).
+- fix(cnpg): add RespectIgnoreDifferences to fix terminatingReplicas schema error ([ed85c1e](https://github.com/kecsi-san/homelab/commit/ed85c1e9961f8b084d98caf99ddfa9b2e31a29d2) by Zoltan K).
+- fix(cnpg): add ServerSideApply to resolve oversized CRD annotation ([b282989](https://github.com/kecsi-san/homelab/commit/b28298907aa4e13b798d62754525a50bb988e44f) by Zoltan K).
+- fix(homepage): remove background blur to improve image visibility ([c5913cf](https://github.com/kecsi-san/homelab/commit/c5913cf4ad5c1561f50f46d7ecb27279ba12cbc1) by Zoltan K).
+- fix(homepage): correct Glance logo URL (docs/logo.png not docs/images/logo.png) ([5529402](https://github.com/kecsi-san/homelab/commit/5529402de6d5836892123c9aca6e5e5faef78fac) by Zoltan K).
+- fix(secrets): add yamllint disable-line comments to SealedSecret encrypted data ([08657ec](https://github.com/kecsi-san/homelab/commit/08657ecbc20c7816333fcfdd3c62ba933e19663b) by Zoltan K).
+- fix(volsync): add RespectIgnoreDifferences to fix terminatingReplicas schema error ([62d75c2](https://github.com/kecsi-san/homelab/commit/62d75c252c584932218086936fc41a0c77216344) by Zoltan K).
+- fix(gatus): correct env format to dict and set Recreate strategy ([184819c](https://github.com/kecsi-san/homelab/commit/184819c7703a25f3bc91c0d6607f64c31db2c1a3) by Zoltan K).
+- fix(kube-gitops): restore real domain in operational manifests ([3233954](https://github.com/kecsi-san/homelab/commit/32339542cb25c8cd03b7262bb423160c7d47b00d) by Zoltan K).
 
 <!-- insertion marker -->
 ## [v0.1.0](https://github.com/kecsi-san/homelab/releases/tag/v0.1.0) - 2026-05-10
@@ -134,57 +135,57 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
-- fix(docs): push Headlamp label below icon with leading newlines ([c78ae98](https://github.com/kecsi-san/homelab/commit/c78ae982df4296d79a9be4f95a79878f56ce5468) by Zoltan K).
-- fix(docs): resize headlamp icon to 85% (350x435) by resizing the PNG ([90d78dc](https://github.com/kecsi-san/homelab/commit/90d78dc5f84ea6714053a6819066d496117eebb7) by Zoltan K).
-- fix(docs): scale Headlamp icon to 85% ([6f239e1](https://github.com/kecsi-san/homelab/commit/6f239e1030a37915edfa1aadf199a75855b5be08) by Zoltan K).
-- fix(docs): move GitHub node to right side of diagram ([ce70394](https://github.com/kecsi-san/homelab/commit/ce70394258363f5f1680f8af32650bb19c46738c) by Zoltan K).
-- fix(docs): fix custom icon path + force Nodes cluster above sub-clusters ([bbc8ef7](https://github.com/kecsi-san/homelab/commit/bbc8ef786e8764ce08191c393d653a29efeac2d3) by Zoltan K).
-- fix(longhorn): add dataLocality best-effort + WaitForFirstConsumer ([0f37e81](https://github.com/kecsi-san/homelab/commit/0f37e81380a4c2ce3dfb33103e8f0a80112eed17) by Zoltan K).
-- fix(mikrotik-dns): replace k8s subdomain wildcard with domain-level wildcard ([89240bf](https://github.com/kecsi-san/homelab/commit/89240bf19f672a368154bc541708f80b1a955610) by Zoltan K).
-- fix(lint): capitalize handler names to satisfy name[casing] rule ([1293de2](https://github.com/kecsi-san/homelab/commit/1293de2ee47346eb7d3fb00f1f810cfd480328ca) by Zoltan K).
-- fix(tls): replace wildcard cert with per-service certs, remove idleTimeout ([4ea0c6f](https://github.com/kecsi-san/homelab/commit/4ea0c6f0f09ffd99db2b6701785376d0c6d4fe63) by Zoltan K).
-- fix(k3s): rename kubeconfig context to admin@k3s automatically ([bc34fa1](https://github.com/kecsi-san/homelab/commit/bc34fa17f1a907c77918bc7eef5c86ea170565ed) by Zoltan K).
-- fix(post-k8s): rename kubeconfig context to admin@k8s automatically ([c741b7f](https://github.com/kecsi-san/homelab/commit/c741b7f4b50251abfef2bed843d8325582fe4adb) by Zoltan K).
-- fix(volsync): switch copyMethod from Snapshot to Clone ([c0fda78](https://github.com/kecsi-san/homelab/commit/c0fda78b4661e47d1104ab6c665b5067eadecb1f) by Zoltan K).
-- fix(volsync): regenerate restic sealed secrets cleanly (no manual copy-paste) ([0d2563a](https://github.com/kecsi-san/homelab/commit/0d2563aed89b489d1112bac3dc036691f33c51c1) by Zoltan K).
-- fix(volsync): reseal restic secrets against k8s cluster (not k3s) ([098423c](https://github.com/kecsi-san/homelab/commit/098423cde574410761e846ca33b4f6ae55970254) by Zoltan K).
-- fix(python-uv): add librouteros to ansible-core extras; use --force on install ([ac869e4](https://github.com/kecsi-san/homelab/commit/ac869e4ccc5f23fdad893829b8743c1d9290b19a) by Zoltan K).
-- fix(dns): rename backup.kinet.local → backups.kinet.local ([689f37e](https://github.com/kecsi-san/homelab/commit/689f37e984ff9d0bec589f59126ba611b1c4d0e2) by Zoltan K).
-- fix(traefik): disable HTTP/2 to prevent Firefox H2 connection coalescing ([dd62c98](https://github.com/kecsi-san/homelab/commit/dd62c982d59a3100ac16d04e10259eefc2f58537) by Zoltan K).
-- fix(volsync): remove ServerSideApply to use lenient diff path ([6368b66](https://github.com/kecsi-san/homelab/commit/6368b665f95c4a2a9bc6c8a6dc99f82d12ee1943) by Zoltan K).
-- fix(volsync): ignore terminatingReplicas field missing from ArgoCD schema ([8a1c5fe](https://github.com/kecsi-san/homelab/commit/8a1c5fecdedbde84790ccac80971f782a84aa1d9) by Zoltan K).
-- fix(gatus): use strategy.type Recreate for RWO PVC compatibility ([54dde1f](https://github.com/kecsi-san/homelab/commit/54dde1f90d5ffc4c59669f973771b339e5c61414) by Zoltan K).
-- fix(garage): add explicit command entrypoint for garage binary ([3c86caa](https://github.com/kecsi-san/homelab/commit/3c86caa598c60c60f1674fdda6a83c7150e6dd9a) by Zoltan K).
-- fix: correct garage config path, volsync CRD schema, gatus recreate strategy ([1702195](https://github.com/kecsi-san/homelab/commit/170219595bf0ec58c73bb16c1328fff36315106b) by Zoltan K).
-- fix(traefik): set 20s idle connection timeout to prevent stale H2 connections ([fba1e13](https://github.com/kecsi-san/homelab/commit/fba1e13579860e3241104ceaadbd60baabbf340a) by Zoltan K).
-- fix(argocd): patch insecure mode in post-k8s.yml after Kubespray install ([7257c13](https://github.com/kecsi-san/homelab/commit/7257c13132b645e57551162d3f0bf817e21deb88) by Zoltan K).
-- fix(longhorn): disable pre-upgrade hook for ArgoCD fresh install ([75f0834](https://github.com/kecsi-san/homelab/commit/75f083462a46cae42941c1eb9890a42a357640bd) by Zoltan K).
-- fix(k8s): fix Cilium CNI for reliable automated cluster rebuild ([2be1065](https://github.com/kecsi-san/homelab/commit/2be1065552608c544e39b20337d34d2d32893b7a) by Zoltan K).
-- fix(router): fix mikrotik-dns playbook and role for first-run reliability ([533f0fd](https://github.com/kecsi-san/homelab/commit/533f0fd5dcd1c4779ef4fe3d8e9bf3df25ec9114) by Zoltan K).
-- fix(k8s): use cluster.local as internal DNS domain ([60b718b](https://github.com/kecsi-san/homelab/commit/60b718b6d0ddc8f96323dbff79b72e2180073788) by Zoltan K).
-- fix(security): remove hardcoded email from ClusterIssuer manifests ([ddbd836](https://github.com/kecsi-san/homelab/commit/ddbd836ba0eed0d04c0a42ff68c435b5adc58d87) by Zoltan K).
-- fix(uv): add netaddr to ansible-core tool extras (required by Kubespray) ([43613f3](https://github.com/kecsi-san/homelab/commit/43613f39162d4279ab387fcd8c6e9febfc35eb62) by Zoltan K).
-- fix(uv): add ~/.local/bin to PATH via blockinfile instead of update-shell ([3af0dde](https://github.com/kecsi-san/homelab/commit/3af0ddee4e8f8daee1a76445ff1344e0a59492b7) by Zoltan K).
-- fix(uv): run uv tool update-shell to add ~/.local/bin to PATH ([ce31dd5](https://github.com/kecsi-san/homelab/commit/ce31dd5baba7529640a79ebf7d3cae627c7f7802) by Zoltan K).
-- fix(uv): install ansible-core instead of ansible meta-package ([0cdd3cc](https://github.com/kecsi-san/homelab/commit/0cdd3cc4d51bef6cbe86fa0cac79faa5ef83488c) by Zoltan K).
-- fix(uv): pin ansible to >=11,<12 for Kubespray 2.31 compatibility ([78203ee](https://github.com/kecsi-san/homelab/commit/78203eea705efc91596f8bedec84c17f72385fe0) by Zoltan K).
-- fix(k3s): run Traefik as root for privileged port binding on WSL2 ([1163d10](https://github.com/kecsi-san/homelab/commit/1163d109190966455a0a112dea4750ff15e8af6e) by Zoltan K).
-- fix(k3s): use Recreate strategy for Traefik with hostNetwork ([025ac7a](https://github.com/kecsi-san/homelab/commit/025ac7ad29541e86503817c929fbcbece6691617) by Zoltan K).
-- fix(k3s): bind Traefik to ports 80/443 with NET_BIND_SERVICE for hostNetwork ([63d6c12](https://github.com/kecsi-san/homelab/commit/63d6c12bac6713f8ebc56cc795941196cd7cb076) by Zoltan K).
-- fix(k3s): change Traefik metrics port to 9101 (9100 taken by node-exporter) ([4c15b51](https://github.com/kecsi-san/homelab/commit/4c15b519812d0e350cc64e292572df7f8e99a228) by Zoltan K).
-- fix(k3s): correct hostNetwork to top-level key in Traefik values ([62d0238](https://github.com/kecsi-san/homelab/commit/62d023880c8e92880a7e414073818c59c4864912) by Zoltan K).
-- fix(k3s): use hostNetwork+ClusterIP for Traefik on WSL2 mirrored mode ([0a60570](https://github.com/kecsi-san/homelab/commit/0a60570a4dc7a6e357ac0d75c63ac96d36f5864d) by Zoltan K).
-- fix(k3s): add hostPort to Traefik for WSL2 mirrored mode ([1d28d72](https://github.com/kecsi-san/homelab/commit/1d28d7240941064026bf7cb04cbfeb9e9e29b315) by Zoltan K).
-- fix(ci): pass RENOVATE_REPOSITORIES so self-hosted Renovate finds the repo ([dc43e9c](https://github.com/kecsi-san/homelab/commit/dc43e9c565cdf6ddbfbda86efb33677b2e2a34c2) by Zoltan K).
-- fix(ci): pin renovatebot/github-action to v46.1.13 (no major tags published) ([b99a4e1](https://github.com/kecsi-san/homelab/commit/b99a4e1ccb81aa6545982cbf75857d8a36c70e57) by Zoltan K).
-- fix(ci): correct renovatebot/github-action version to v46 ([aeb393f](https://github.com/kecsi-san/homelab/commit/aeb393f9a6291ba04bad34742a897d6222d0f305) by Zoltan K).
-- fix: correct Traefik dashboard URL in Homepage to include /dashboard/ path ([0d4c135](https://github.com/kecsi-san/homelab/commit/0d4c13528a0b2e9abc151cc839581d1d97031bf8) by Zoltan K).
-- fix: set HOMEPAGE_ALLOWED_HOSTS env var for host validation ([5cd8532](https://github.com/kecsi-san/homelab/commit/5cd8532f5f970ccae93cff22427d353518743929) by Zoltan K).
-- fix: allow homepage.kecskemethy.org in Homepage host validation ([4c349a9](https://github.com/kecsi-san/homelab/commit/4c349a91dfcf1d6b5a141e65f499ca304e8a029d) by Zoltan K).
-- fix: disable HTTP/3 on k8s Traefik — kube-vip LB is TCP-only, QUIC/UDP fails ([d78d954](https://github.com/kecsi-san/homelab/commit/d78d954e0ad0f88e6843e17b5f56cf96290dfa6a) by Zoltan K).
-- fix: cloudflared metrics on 0.0.0.0 so liveness probe can reach it ([632050e](https://github.com/kecsi-san/homelab/commit/632050eb3ddb6682cfb7a827bb25258c91fbffaf) by Zoltan K).
-- fix: update Traefik redirect syntax for chart v34 ([d583069](https://github.com/kecsi-san/homelab/commit/d5830695bca94e92bcb3ee97fdeae273cb47528d) by Zoltan K).
-- fix: remove apex domain from wildcard cert — wildcard is sufficient ([13a9ebf](https://github.com/kecsi-san/homelab/commit/13a9ebf49817521d9c3f6bb9b961765e589c3305) by Zoltan K).
+- fix(docs): push Headlamp label below icon with leading newlines ([74f2842](https://github.com/kecsi-san/homelab/commit/74f2842fb81182f3e78303be839ebfe78cc2bae3) by Zoltan K).
+- fix(docs): resize headlamp icon to 85% (350x435) by resizing the PNG ([70b24fe](https://github.com/kecsi-san/homelab/commit/70b24fe5cced7ed903ec75ffc8ce93a00237910e) by Zoltan K).
+- fix(docs): scale Headlamp icon to 85% ([4578161](https://github.com/kecsi-san/homelab/commit/4578161beb369e8231293c2ed22444183558998e) by Zoltan K).
+- fix(docs): move GitHub node to right side of diagram ([9bc1926](https://github.com/kecsi-san/homelab/commit/9bc1926613ce27a0653b673d5aac472be8971635) by Zoltan K).
+- fix(docs): fix custom icon path + force Nodes cluster above sub-clusters ([e1e3225](https://github.com/kecsi-san/homelab/commit/e1e3225610bfdf7dc944e7797bfb24a0587c900f) by Zoltan K).
+- fix(longhorn): add dataLocality best-effort + WaitForFirstConsumer ([409962e](https://github.com/kecsi-san/homelab/commit/409962eb7899537d1d25604090511bb1ce0ea317) by Zoltan K).
+- fix(mikrotik-dns): replace k8s subdomain wildcard with domain-level wildcard ([b8eb302](https://github.com/kecsi-san/homelab/commit/b8eb30287979f794ff7a8e440c0e9dce87eb2b7e) by Zoltan K).
+- fix(lint): capitalize handler names to satisfy name[casing] rule ([5f8a9ef](https://github.com/kecsi-san/homelab/commit/5f8a9ef3c4478fc799101c1caef1915cd6d370a0) by Zoltan K).
+- fix(tls): replace wildcard cert with per-service certs, remove idleTimeout ([ff18cc0](https://github.com/kecsi-san/homelab/commit/ff18cc05b46dfdc88cc3b5eddaff6cfdc3fd6cee) by Zoltan K).
+- fix(k3s): rename kubeconfig context to admin@k3s automatically ([5a2dded](https://github.com/kecsi-san/homelab/commit/5a2dded981b747cebe1703b8fc65028bef579caa) by Zoltan K).
+- fix(post-k8s): rename kubeconfig context to admin@k8s automatically ([5850838](https://github.com/kecsi-san/homelab/commit/58508381f9450153b10431588d1f802999a6f868) by Zoltan K).
+- fix(volsync): switch copyMethod from Snapshot to Clone ([b1bb88b](https://github.com/kecsi-san/homelab/commit/b1bb88b777e3054218557401bea1f4927cdc4960) by Zoltan K).
+- fix(volsync): regenerate restic sealed secrets cleanly (no manual copy-paste) ([2a37a57](https://github.com/kecsi-san/homelab/commit/2a37a57656c08fce1413519ef97218fe507d2806) by Zoltan K).
+- fix(volsync): reseal restic secrets against k8s cluster (not k3s) ([66cb368](https://github.com/kecsi-san/homelab/commit/66cb36843f460c686ed16ee0515cd1de7a8e92c4) by Zoltan K).
+- fix(python-uv): add librouteros to ansible-core extras; use --force on install ([fb76fe7](https://github.com/kecsi-san/homelab/commit/fb76fe76b285e285b7d18c7efe7e0c4a63a30aed) by Zoltan K).
+- fix(dns): rename backup.kinet.local → backups.kinet.local ([05c6e6e](https://github.com/kecsi-san/homelab/commit/05c6e6efa8d899356b8f67c4fb99093a5eb44fb3) by Zoltan K).
+- fix(traefik): disable HTTP/2 to prevent Firefox H2 connection coalescing ([051c671](https://github.com/kecsi-san/homelab/commit/051c671a8e9ad62c4eb10f6e9316099190e35648) by Zoltan K).
+- fix(volsync): remove ServerSideApply to use lenient diff path ([9cd50e4](https://github.com/kecsi-san/homelab/commit/9cd50e41a5fc2eb7fd7c178b9699c786734ad8e7) by Zoltan K).
+- fix(volsync): ignore terminatingReplicas field missing from ArgoCD schema ([a723089](https://github.com/kecsi-san/homelab/commit/a7230897221dad3637618e256817de43b4fc11a0) by Zoltan K).
+- fix(gatus): use strategy.type Recreate for RWO PVC compatibility ([c4315b4](https://github.com/kecsi-san/homelab/commit/c4315b4573fcce0337910a8d08a3f137ea17ec43) by Zoltan K).
+- fix(garage): add explicit command entrypoint for garage binary ([79f7160](https://github.com/kecsi-san/homelab/commit/79f716090544144b766556bae8c351fc3103c89f) by Zoltan K).
+- fix: correct garage config path, volsync CRD schema, gatus recreate strategy ([669ad2f](https://github.com/kecsi-san/homelab/commit/669ad2fa72cbf2a80551cb5a4d1465af272c22df) by Zoltan K).
+- fix(traefik): set 20s idle connection timeout to prevent stale H2 connections ([21db195](https://github.com/kecsi-san/homelab/commit/21db195607bc9cf4a41a1454dd8ee1dab408e528) by Zoltan K).
+- fix(argocd): patch insecure mode in post-k8s.yml after Kubespray install ([a95ac2d](https://github.com/kecsi-san/homelab/commit/a95ac2d3d712d8a4e453008840c70afb4a3d8e78) by Zoltan K).
+- fix(longhorn): disable pre-upgrade hook for ArgoCD fresh install ([a26033f](https://github.com/kecsi-san/homelab/commit/a26033f38a56318bf4d22f77e65566220abee311) by Zoltan K).
+- fix(k8s): fix Cilium CNI for reliable automated cluster rebuild ([2c5b3a2](https://github.com/kecsi-san/homelab/commit/2c5b3a208c3e721f74ede8febd8dc71127dd730b) by Zoltan K).
+- fix(router): fix mikrotik-dns playbook and role for first-run reliability ([fd47d2b](https://github.com/kecsi-san/homelab/commit/fd47d2b31515a9038f5259a67e7040fd988a03e1) by Zoltan K).
+- fix(k8s): use cluster.local as internal DNS domain ([6ac27a4](https://github.com/kecsi-san/homelab/commit/6ac27a44c0cb0518c8ad62511681ac7adae81321) by Zoltan K).
+- fix(security): remove hardcoded email from ClusterIssuer manifests ([df4b226](https://github.com/kecsi-san/homelab/commit/df4b226c1b766b804dfe6fca3d100117a27901ae) by Zoltan K).
+- fix(uv): add netaddr to ansible-core tool extras (required by Kubespray) ([0e4a1bf](https://github.com/kecsi-san/homelab/commit/0e4a1bf3d54de90a968921888e0fe7921756e397) by Zoltan K).
+- fix(uv): add ~/.local/bin to PATH via blockinfile instead of update-shell ([94001a6](https://github.com/kecsi-san/homelab/commit/94001a6929b7b29ef7ab0cca3ad4e7555f4d7cfd) by Zoltan K).
+- fix(uv): run uv tool update-shell to add ~/.local/bin to PATH ([f7777b3](https://github.com/kecsi-san/homelab/commit/f7777b3cdc72b69080fb0774754b94345fe0704e) by Zoltan K).
+- fix(uv): install ansible-core instead of ansible meta-package ([ee6db96](https://github.com/kecsi-san/homelab/commit/ee6db96db95fbc49c7355a500212fbc45ab17af2) by Zoltan K).
+- fix(uv): pin ansible to >=11,<12 for Kubespray 2.31 compatibility ([18e0b9a](https://github.com/kecsi-san/homelab/commit/18e0b9af5f3a96eb0184a28fea2e30e2913d020d) by Zoltan K).
+- fix(k3s): run Traefik as root for privileged port binding on WSL2 ([395d557](https://github.com/kecsi-san/homelab/commit/395d5578660fbdc19d9fb141c348b39f322c7a85) by Zoltan K).
+- fix(k3s): use Recreate strategy for Traefik with hostNetwork ([75ca7da](https://github.com/kecsi-san/homelab/commit/75ca7da6085deeecb6b17fb6e5841ee4020dced9) by Zoltan K).
+- fix(k3s): bind Traefik to ports 80/443 with NET_BIND_SERVICE for hostNetwork ([655540c](https://github.com/kecsi-san/homelab/commit/655540ca0f0cca088897e0f2788845f66cba4dd7) by Zoltan K).
+- fix(k3s): change Traefik metrics port to 9101 (9100 taken by node-exporter) ([e7b7a76](https://github.com/kecsi-san/homelab/commit/e7b7a7687ba2c8c958f6b5566fe94da744bfcb5d) by Zoltan K).
+- fix(k3s): correct hostNetwork to top-level key in Traefik values ([1c0096d](https://github.com/kecsi-san/homelab/commit/1c0096d7a36c71a0755c2e9cc3d6a3eec82ec6e6) by Zoltan K).
+- fix(k3s): use hostNetwork+ClusterIP for Traefik on WSL2 mirrored mode ([d1190d7](https://github.com/kecsi-san/homelab/commit/d1190d7106f4a13b7abc714f837372d4ecad5b17) by Zoltan K).
+- fix(k3s): add hostPort to Traefik for WSL2 mirrored mode ([02094da](https://github.com/kecsi-san/homelab/commit/02094da95b33c2a65715a72c07e52091bb47b4a4) by Zoltan K).
+- fix(ci): pass RENOVATE_REPOSITORIES so self-hosted Renovate finds the repo ([065b32e](https://github.com/kecsi-san/homelab/commit/065b32e975b77b7a4e074a3d511523443d85174f) by Zoltan K).
+- fix(ci): pin renovatebot/github-action to v46.1.13 (no major tags published) ([4550107](https://github.com/kecsi-san/homelab/commit/4550107e69c25bfe4c6b3d3765067468914f211a) by Zoltan K).
+- fix(ci): correct renovatebot/github-action version to v46 ([807528c](https://github.com/kecsi-san/homelab/commit/807528cc0ff696567d7e9c4257a0c4b2f73d459e) by Zoltan K).
+- fix: correct Traefik dashboard URL in Homepage to include /dashboard/ path ([9824a62](https://github.com/kecsi-san/homelab/commit/9824a62217e703160cdf75f27ec0380dec961119) by Zoltan K).
+- fix: set HOMEPAGE_ALLOWED_HOSTS env var for host validation ([e516428](https://github.com/kecsi-san/homelab/commit/e51642880ce48daa015030c5668f72b7a146382c) by Zoltan K).
+- fix: allow homepage.kecskemethy.org in Homepage host validation ([6c18ab2](https://github.com/kecsi-san/homelab/commit/6c18ab294932fdb351c3c57dfb8687dd8a69e170) by Zoltan K).
+- fix: disable HTTP/3 on k8s Traefik — kube-vip LB is TCP-only, QUIC/UDP fails ([3a66ee8](https://github.com/kecsi-san/homelab/commit/3a66ee85dd8b5196bf1209855dfa9328ecfd1fcf) by Zoltan K).
+- fix: cloudflared metrics on 0.0.0.0 so liveness probe can reach it ([c011349](https://github.com/kecsi-san/homelab/commit/c011349c154fc4f0962c11b5e546ad5a75e7a62c) by Zoltan K).
+- fix: update Traefik redirect syntax for chart v34 ([39381bf](https://github.com/kecsi-san/homelab/commit/39381bfad01fe2e415e87f36cef5fc7ca8451788) by Zoltan K).
+- fix: remove apex domain from wildcard cert — wildcard is sufficient ([539fe25](https://github.com/kecsi-san/homelab/commit/539fe2545ccf61361211757c06acd9d858cbb689) by Zoltan K).
 - fix: skip ansible-lint when vault password is unavailable (Dependabot) ([6171d8a](https://github.com/kecsi-san/homelab/commit/6171d8a09aae80ca9c971534a89f24f60bab77b3) by Zoltan K).
 - fix: break long line in configure_oh-my-posh theme selection ([43edd7b](https://github.com/kecsi-san/homelab/commit/43edd7b700f2e496a143ca1d5b90c47d15c3302e) by Zoltan K).
 - fix: resolve ansible-lint key-order and name-casing violations ([a4925fe](https://github.com/kecsi-san/homelab/commit/a4925fea70c9c860d1bd7fcab5cfcadb7fb26357) by Zoltan K).
