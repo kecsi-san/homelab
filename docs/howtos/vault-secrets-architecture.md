@@ -1,0 +1,57 @@
+# Vault Architecture: Mounts, Access Management, EC2 Secrets Migration
+
+**Status: planned, not yet implemented.**
+
+## Context
+
+Vault is live at `vault.kecskemethy.hu` (installed 2026-07-04, initialized/unsealed, CLI configured on the primary workstation with `VAULT_ADDR` set — see `docs/howtos/ec2-rebuild-plan.md` for the install). This doc plans the move from "root token for everything" to a properly designed setup before putting real secrets in it: separate mount points per concern, real access management, and a decision on whether Terraform should manage secret data itself.
+
+**Decisions:**
+1. **Terraform manages structure only** (mounts, policies, auth methods) — never secret *values*. Terraform state duplicates whatever it manages in plaintext (encrypted at rest via the S3 backend, but still a second place secrets could leak from); HashiCorp's own guidance is against using `vault_kv_secret_v2`-style resources for real secret content. Secret values get written directly via `vault kv put`, entirely outside Terraform's purview.
+2. **Scope: EC2/Ansible secrets only, this round.** Today's `inventory/group_vars/all/secrets.yml` (AWS creds, Duo, `apache_certs`/`apache_vhosts`, `ec2_users`, `mailbox_users`, etc.) migrates into Vault. Kubernetes SealedSecrets (49 of them across `kube-gitops/`) and MikroTik/router credentials are explicitly **out of scope** — the former needs a much bigger lift (External Secrets Operator or Vault Agent Injector to actually deliver secrets into pods); the latter has a real bootstrapping risk (if the router or WAN breaks, you'd want router credentials reachable without depending on a network path to Vault) and is better left in the existing vaulted `secrets.yml` as a break-glass fallback.
+3. **Human auth stays simple for now**: userpass + a scoped policy for day-to-day use, root token reserved for admin/emergency only. OIDC via Authentik (already used for ArgoCD/Forgejo/Grafana) is a good future enhancement, not a blocker to start using Vault today.
+
+## Architecture
+
+### Mounts (this round)
+- `ec2/` — KV v2, holds everything currently in `secrets.yml` that's EC2/Ansible-specific.
+
+### Policies
+- `ec2-ansible-read` — read + list only on `ec2/data/*` and `ec2/metadata/*`. Bound to the Ansible AppRole.
+- `ec2-admin` — full CRUD on `ec2/*`, for day-to-day `vault kv put/get` work — bound to a userpass login, not root.
+
+### Auth methods
+- `approle` — for Ansible (machine auth). Role `ansible` bound to `ec2-ansible-read`.
+- `userpass` — for the human user, bound to `ec2-admin`. The auth method and policy are Terraform-managed; the actual user+password is created with a manual `vault write auth/userpass/users/<name> password=... policies=ec2-admin` (a credential, so kept out of Terraform per decision #1).
+
+### Terraform module: `terraform/vault/`
+New root module, separate state from `terraform/aws/` (different blast radius — Vault-admin credentials shouldn't be mixed into the same plan/state as AWS infra). Mirrors `terraform/aws/`'s existing backend pattern (same S3 bucket, new state key `vault/terraform.tfstate`; `backend.conf.example` committed, `backend.conf` gitignored).
+
+- `provider.tf` — `hashicorp/vault` provider, address from a variable (default `https://vault.kecskemethy.hu`), token via ambient `VAULT_TOKEN`/`~/.vault-token` (never a Terraform variable — this module needs *no* secret tfvars at all, unlike `terraform/aws/`)
+- `main.tf` — `vault_mount.ec2`, `vault_policy.ec2_ansible_read`, `vault_policy.ec2_admin`, `vault_auth_backend.approle`, `vault_auth_backend.userpass`, `vault_approle_auth_backend_role.ansible`
+- `outputs.tf` — the AppRole `role_id` (stable, not sensitive — safe to output)
+- README documenting the manual bootstrap steps below (things Terraform deliberately doesn't do)
+
+### Bootstrap steps (manual, documented in the module's README, not automated)
+1. `terraform apply` (using the root token via `VAULT_TOKEN` for this one-time run — reasonable for a low-frequency, human-run apply, same trust level as today's root-equivalent AWS creds in `secrets.yml`)
+2. Generate the AppRole secret_id: `vault write -f auth/approle/role/ansible/secret-id` — store the result alongside `role_id` (from Terraform output) as two new keys in the existing `secrets.yml` (`vault_ansible_role_id`, `vault_ansible_secret_id`) — reuses the existing gitignored-secrets mechanism rather than inventing a new one
+3. Create the human userpass login: `vault write auth/userpass/users/<name> password=... policies=ec2-admin`
+4. Migrate secret data — one-time `vault kv put` calls grouped to mirror `secrets.yml`'s existing comment sections (`ec2/aws-creds`, `ec2/duo`, `ec2/users`, `ec2/vhosts`, `ec2/mail`)
+
+### Ansible integration
+- Add `community.hashi_vault` to `requirements.yml` (collections)
+- **No role changes needed.** Replace the static values in `inventory/group_vars/aws.yml` with `community.hashi_vault.vault_kv2_get` lookups under the *same* variable names (`ec2_users`, `apache_certs`, etc., authenticating via the AppRole `role_id`/`secret_id` from `secrets.yml`) — every role still just reads `{{ ec2_users }}` as before, only the source changes from a static file to a live Vault lookup.
+- **Rollout safety:** keep `secrets.yml`'s current EC2 values in place as a fallback during transition — don't delete them until the Vault-lookup path has been verified working end-to-end. Remove the fallback only after that's confirmed, as a separate, later cleanup step.
+
+## Deferred (explicitly out of scope, tracked for later)
+- OIDC auth via Authentik for human login
+- Kubernetes SealedSecrets → Vault migration (needs External Secrets Operator or Vault Agent Injector)
+- MikroTik/router credentials — staying in vaulted `secrets.yml` deliberately (bootstrapping risk)
+- Secret rotation automation
+
+## Verification (once implemented)
+- `terraform -chdir=terraform/vault plan` / `apply` succeed cleanly against the new module
+- `vault policy read ec2-ansible-read` / `vault auth list` confirm the AppRole and policies exist as expected
+- A manual `vault write auth/approle/login role_id=... secret_id=...` succeeds and returns a token scoped to `ec2-ansible-read` only (confirm it does NOT have access outside `ec2/*` — try reading a different mount/path and confirm denial)
+- An Ansible lookup test resolves `ec2_users`/`apache_certs` via `community.hashi_vault.vault_kv2_get` and matches the current `secrets.yml` values exactly
+- `ansible-playbook -i inventory/aws_hosts playbooks/ec2-core.yml --check` (and similarly `ec2-web.yml`, `ec2-vault.yml`) still resolve all EC2 variables correctly once `aws.yml` is switched to Vault-backed lookups
