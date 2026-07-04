@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(ci): install Ansible collections into the actual cached path ([580a245](https://github.com/kecsi-san/homelab/commit/580a2458cdeb78347b8325ec0d41c4ce9c349c2e) by Zoltan K).
 - fix(configure_git): install git-lfs, fix templating, wire into local playbooks ([dcaaaa3](https://github.com/kecsi-san/homelab/commit/dcaaaa37904dc5cc622886b1695fbb7bb350c058) by Zoltan K).
 - fix(setup_email-server): escape % in dovecot-fts cron job ([5a64151](https://github.com/kecsi-san/homelab/commit/5a6415143568b0ca58899ced3eb8d14bed07775c) by Zoltan K).
 - fix(setup_unbound): install unbound-anchor package for Debian 13+ ([e29b85b](https://github.com/kecsi-san/homelab/commit/e29b85bb3984495924ca6a9b56e319fba07c9ffd) by Zoltan K).
