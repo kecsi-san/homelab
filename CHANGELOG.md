@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(configure_git): install git-lfs, fix templating, wire into local playbooks ([dcaaaa3](https://github.com/kecsi-san/homelab/commit/dcaaaa37904dc5cc622886b1695fbb7bb350c058) by Zoltan K).
 - fix(setup_email-server): escape % in dovecot-fts cron job ([5a64151](https://github.com/kecsi-san/homelab/commit/5a6415143568b0ca58899ced3eb8d14bed07775c) by Zoltan K).
 - fix(setup_unbound): install unbound-anchor package for Debian 13+ ([e29b85b](https://github.com/kecsi-san/homelab/commit/e29b85bb3984495924ca6a9b56e319fba07c9ffd) by Zoltan K).
 - fix(aws): ec2 instance parameter sync ([1ee280c](https://github.com/kecsi-san/homelab/commit/1ee280c74ced9c9deb4e876497e36e8c3f967bb8) by Zoltan K).
