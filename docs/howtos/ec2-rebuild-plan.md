@@ -35,7 +35,7 @@ The current plan instead: build Ansible roles that capture the *desired* state (
 | SSH hardening | Codified 2026-07-04 — MaxAuthTries 2, PermitRootLogin no, X11Forwarding no, no AgentForwarding, etc. (dropped the deprecated UsePrivilegeSeparation directive from the original lynis output) | ✅ `configure_ssh-hardening` |
 | auditd | Security audit logging | ✅ ec2-core security-tools |
 | Named system users | kecsi, orsi, peter, tamas + vault service account | ✅ `setup_users` |
-| HashiCorp Vault | Binary install, proxied via Apache | ❌ `setup_vault` (planned) |
+| HashiCorp Vault | Migrated 2026-07-04 from old manual binary (v1.4.0, dead, bound to VPC IP) to APT package, initialized and unsealed, live at vault.kecskemethy.hu — old `200-kecskemethy.hu.conf` vhost's ProxyPass repointed from 172.30.2.246:8200 to 127.0.0.1:8200 (manual fix, that vhost file isn't Ansible-managed) | ✅ `setup_vault` |
 
 ### Decommissioned (not rebuilding)
 
@@ -54,7 +54,7 @@ The current plan instead: build Ansible roles that capture the *desired* state (
 | DKIM private keys (`/var/lib/rspamd/dkim/`) | tiny | 🔴 Critical — lose these = DKIM breaks |
 | Website content `/var/www/` | ~1.15 GB | 🔴 Critical |
 | Mailboxes `/home/*/Maildir/` | ~5.6 GB | 🔴 Critical |
-| Vault data (`/opt/hashicorp/vault-data/`) | ~172 MB | 🔴 Critical — contains secrets; loss = manual re-init |
+| ~~Vault data (`/opt/hashicorp/vault-data/`)~~ | ~172 MB | 🟢 Not migrated — old Vault (v1.4.0) had been dead/unreachable since ~2020, nothing depended on it; new Vault was freshly initialized instead (2026-07-04). Old data left in place, unused. |
 | Selected `/home/` user directories | ~8 GB | 🟡 Selective (active users only) |
 | TLS certs `/etc/letsencrypt/` | small | 🟢 Can regenerate via certbot |
 
