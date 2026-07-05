@@ -29,6 +29,10 @@ spec:
       kind: Deployment
       jqPathExpressions:
         - .spec.template.metadata.annotations."kubectl.kubernetes.io/restartedAt"
+        # deployment.kubernetes.io/revision is written by the Deployment
+        # controller on every rollout, not by us — never present in the
+        # git manifest, so it perpetually shows the Deployment OutOfSync.
+        - .metadata.annotations."deployment.kubernetes.io/revision"
   syncPolicy:
     automated:
       prune: true
