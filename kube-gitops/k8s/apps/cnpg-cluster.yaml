@@ -21,6 +21,10 @@ spec:
       kind: Cluster
       jsonPointers:
         - /metadata/labels/app.kubernetes.io~1instance
+        # cnpg.io/reconciliationLoop is a nonce the CNPG operator rewrites on
+        # its own reconcile cadence (unrelated to our spec) — without this,
+        # ArgoCD flags the Cluster OutOfSync every time the operator ticks.
+        - /metadata/annotations/cnpg.io~1reconciliationLoop
 
   syncPolicy:
     automated:
