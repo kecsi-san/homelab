@@ -21,7 +21,7 @@ Recurring maintenance — not one-off tasks; re-verify occasionally rather than 
 ## AWS / EC2 & Email
 
 - [ ] **EC2 rebuild — Phase 6** — new instance provisioning + data migration + EIP cutover + old-instance decommission; Phases 1–5 (all Ansible roles: users, email, apache2, vault, unbound) are done; see `docs/howtos/ec2-rebuild-plan.md` for the full phased plan and current status
-- [ ] **Vault ↔ Ansible integration** — architecture designed, not yet built; see `docs/howtos/vault-secrets-architecture.md` and "Ansible secrets management" below
+- [ ] **Vault ↔ Ansible integration — last verification step** — code + bootstrap done 2026-07-05 (terraform/vault/ applied, all 5 EC2 secret groups migrated into Vault, vault_kv2_get lookups verified working locally); only remaining step is a live `ansible-playbook -i inventory/aws_hosts playbooks/ec2-core.yml --check` against the production EC2 host to confirm end-to-end — deferred since it's the live email server; `secrets.yml`'s original values are untouched as fallback. See `docs/howtos/vault-secrets-architecture.md`.
 
 ### Terraform (`terraform/aws/`)
 
@@ -50,8 +50,8 @@ Recurring maintenance — not one-off tasks; re-verify occasionally rather than 
 
 ## Ansible secrets management
 
-- [ ] **ansible-vault** — encrypt `secrets.yml` with ansible-vault and commit it; store vault password in `~/.vault-pass` (gitignored); add `--vault-password-file ~/.vault-pass` to playbook docs; short-term fix until HashiCorp Vault is deployed
-- [ ] **HashiCorp Vault ↔ Ansible** — replace `secrets.yml` values with `community.hashi_vault` lookups so Ansible fetches secrets at runtime; blocked on Vault deployment (see Big migrations below); endgame: `secrets.yml` contains only non-sensitive infra topology
+- [x] ~~ansible-vault~~ — superseded 2026-07-05: went straight to real HashiCorp Vault integration instead of this stopgap (see "AWS / EC2 & Email" above); `secrets.yml` remains as the fallback/non-EC2 secrets store, not vault-encrypted
+- [ ] **HashiCorp Vault ↔ Ansible** — see "Vault ↔ Ansible integration — last verification step" under AWS / EC2 & Email above; endgame once fully cut over: `secrets.yml` contains only non-sensitive infra topology plus the AppRole credentials themselves
 - [ ] **Helper scripts (`scripts/`)** — (a) random secret generator: writes `INTERNAL_TOKEN`, `SECRET_KEY`, `client-secret` etc. into `secrets.yml`; (b) ✅ `scripts/cloudflare-zone-id.sh <token> [domain]` — looks up zone ID and prints `secrets.yml` snippet; auto-reads `domain_name` from `vars.yml` if domain omitted
 
 ## AWS / Golden Image
