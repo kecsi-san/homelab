@@ -33,7 +33,6 @@ spec:
       - name: wikijs
         ensure: present
         login: true
-        createDb: true
         inherit: true
         connectionLimit: -1
         passwordSecret:
