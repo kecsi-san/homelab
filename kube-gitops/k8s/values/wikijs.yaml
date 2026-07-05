@@ -1,11 +1,16 @@
 ---
 # Wiki.js v2 — external PostgreSQL (CNPG), no bundled postgres
+# chart v3.0.0 renamed the external-DB values block: postgresql.* (with
+# enabled: false) no longer renders any DB_* env vars — externalPostgresql.*
+# is required instead (postgresqlHost -> host, postgresqlPort -> port, etc.)
 postgresql:
   enabled: false
-  postgresqlHost: postgres-rw.postgres.svc.cluster.local
-  postgresqlPort: 5432
-  postgresqlDatabase: wikijs
-  postgresqlUser: wikijs
+
+externalPostgresql:
+  host: postgres-rw.postgres.svc.cluster.local
+  port: 5432
+  database: wikijs
+  username: wikijs
   existingSecret: wikijs-app
   existingSecretKey: postgresql-password
 
