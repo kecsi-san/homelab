@@ -37,7 +37,7 @@ spec:
         # but corev1.EnvVar.Value has an omitempty json tag, so the API
         # server drops the key entirely on write — the live object can
         # never match an explicit empty string, causing perpetual drift.
-        - '(.spec.template.spec.containers[] | select(.name == "wiki") | .env[] | select(.name == "DB_SSL_CA")).value'
+        - '.spec.template.spec.containers[] | select(.name == "wiki") | .env[] | select(.name == "DB_SSL_CA") | .value'
   syncPolicy:
     automated:
       prune: true
