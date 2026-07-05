@@ -1,0 +1,7 @@
+# Kubernetes dynamic storage backends -- constantly churning container/volume
+# data, not part of the static OS surface AIDE is meant to protect; without
+# this, the catch-all / 0 Full rule tries to checksum tens of GB of this on
+# every run and never finishes cleanly.
+-/var/lib/containerd$ 0
+-/var/lib/kubelet$ 0
+-/var/lib/longhorn$ 0

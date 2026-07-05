@@ -7,15 +7,31 @@
   become: true
   when: security_tools_enabled and ansible_system == 'Linux'
 
-# AIDE — initialize baseline database if not yet created; runs in background (takes ~10 min)
+# AIDE — exclude Kubernetes' own dynamic storage backends (containerd, kubelet,
+# Longhorn) from the catch-all / 0 Full scan rule; without this, aideinit never
+# finishes cleanly on kube nodes (tens of GB of constantly-churning data).
+# Harmless no-op on hosts without these paths (workstations, the EC2 host).
+- name: Deploy AIDE exclusions for Kubernetes dynamic storage paths
+  ansible.builtin.copy:
+    src: 50_aide_kubernetes
+    dest: /etc/aide/aide.conf.d/50_aide_kubernetes
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  when: security_tools_enabled and ansible_system == 'Linux' and 'aide' in security_apt_packages
+
+# AIDE — initialize baseline database if not yet created. Polled (not fire-and-
+# forget) so a failed/hung run actually surfaces instead of silently vanishing —
+# this ran unbounded in the background for weeks on 3 nodes and never finished.
 - name: Initialize AIDE database
   ansible.builtin.command:
     cmd: aideinit -y
     creates: /var/lib/aide/aide.db
   become: true
   when: security_tools_enabled and ansible_system == 'Linux' and 'aide' in security_apt_packages
-  async: 3600
-  poll: 0
+  async: 1800
+  poll: 30
 
 # Lynis — via Cisofy official apt repo (Linux only)
 - name: Download Cisofy GPG key
