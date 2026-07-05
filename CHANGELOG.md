@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(cnpg-cluster): ignore CNPG's reconciliationLoop annotation churn ([ffac236](https://github.com/kecsi-san/homelab/commit/ffac23641cf2356df559cc78d5b305bc81e8c32a) by Zoltan K).
 - fix(sealed-secrets): update Helm repo URL for bitnami-labs -> bitnami org rename ([8edccb9](https://github.com/kecsi-san/homelab/commit/8edccb9fe8ecab514523978ff9a992566ef837ea) by Zoltan K).
 - fix(wikijs): migrate to externalPostgresql values for chart v3.0.0 ([696f4e1](https://github.com/kecsi-san/homelab/commit/696f4e14aeaf90e40c97f0e0b5630a7128038b7a) by Zoltan K).
 - fix(security): replace real family names with generic examples ([48b0a7c](https://github.com/kecsi-san/homelab/commit/48b0a7c57fd6109152113b664b6c6613d1cc21af) by Zoltan K).
