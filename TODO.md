@@ -7,27 +7,31 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 - [ ] **Backstage Kubernetes plugin** — shows "Entity context is not available" as a standalone nav item; either configure it for catalog entities (requires annotations) or remove `kubernetesPlugin` from `App.tsx`
 - [x] **Kromgo** — badges live on GitHub README; 12 metrics: versions, nodes, pods, failed pods, CPU, memory, Longhorn storage, birth age, uptime age, alerts, ArgoCD out-of-sync
 - [ ] **VictoriaLogs** — log aggregation (no log storage currently); single-binary replacement for Loki, significantly lower RAM, simpler to operate; community is moving away from Loki toward VictoriaLogs; deploy alongside kube-prometheus-stack; Fluent Bit or Grafana Alloy as log forwarder
+- [ ] **TargetDown alert** — investigate what Prometheus target is actually down (wasn't confirmed firing yet)
+- [ ] **`kube_controller_terminated_pod_gc_threshold: 20`** — set in `inventory/group_vars/k8s_cluster/k8s-cluster.yml` but needs `ansible-playbook -b playbooks/k8s.yml` rerun to actually take effect on kube-controller-manager
+
+## Periodic checks
+
+Recurring maintenance — not one-off tasks; re-verify occasionally rather than checking off.
+
+- **ArgoCD version** — `argocd_chart_version` in `roles/setup_argocd/defaults/main.yml` is a plain Ansible default, not tracked by Renovate; the two clusters only upgrade when someone reruns `post-k8s.yml`/`post-k3s.yml` after bumping it, so they can silently drift apart. Check https://github.com/argoproj/argo-helm for newer releases and confirm both clusters still match. Last checked 2026-07-05: k8s v2.14.5 (chart 7.7.5), k3s v2.13.1 (older chart pin — reran less recently).
 
 ## AWS / EC2 & Email
 
+- [ ] **EC2 rebuild — Phase 6** — new instance provisioning + data migration + EIP cutover + old-instance decommission; Phases 1–5 (all Ansible roles: users, email, apache2, vault, unbound) are done; see `docs/howtos/ec2-rebuild-plan.md` for the full phased plan and current status
+- [ ] **Vault ↔ Ansible integration** — architecture designed, not yet built; see `docs/howtos/vault-secrets-architecture.md` and "Ansible secrets management" below
+
 ### Terraform (`terraform/aws/`)
 
-- [ ] **Terraform state backend** — S3 bucket + DynamoDB table for remote state locking; implement first as pre-req for all other AWS Terraform work; `terraform/aws/backend.tf`
-- [ ] **EC2 instance** — codify existing instance in `terraform/aws/ec2/`: instance type, AMI, Elastic IP (EIP), security groups (22 SSH, 80/443 HTTP/HTTPS, 993 IMAPS, 587 SMTP submission, 51820/UDP Wireguard)
-- [ ] **S3 buckets** — codify existing buckets in `terraform/aws/s3/`: versioning, server-side encryption, lifecycle policies
-- [ ] **Route53 hosted zone** — codify existing public zone in `terraform/aws/route53/`; import zone + MX/SPF/DMARC/DKIM records as Terraform resources
+- [x] **Terraform state backend**, **EC2 instance**, **S3 buckets**, **Route53 hosted zone** — all codified as modules (`ec2`, `eip`, `route53`, `s3`) in `terraform/aws/main.tf`
 
 ### Ansible — inventory, roles & playbooks
 
 - [ ] **`setup_bichon` role** — deploy Bichon email archive (Rust, IMAP pull from Dovecot, React UI); placeholder role created; see `docs/research/email-archive-software.md` for evaluation
-
-- [x] **AWS inventory group** — `[aws]` group in `inventory/hosts.example`; `inventory/group_vars/aws.yml` with SSH user, Python interpreter, EC2 SSH key path, and ec2_users definitions
-- [ ] **`ec2-core.yml` playbook** — base EC2 provisioning targeting `aws` group (mirrors `k8s-nodes.yml`): SSH key deploy, sudo, minimal packages, NTP, legal banner, etckeeper
-- [x] **`setup_email-server` role** — implemented: Postfix + Dovecot (PAM auth) + Rspamd (DKIM 2048-bit, SPF, greylisting) + OpenDMARC; see `roles/setup_email-server/README.md`
-- [ ] **`ec2-mail.yml` playbook** — deploy full email stack on EC2 via `setup_email-server`
 - [ ] **`configure_wireguard` role** — EC2 as Wireguard hub: wg0 interface, IP forwarding, NAT masquerade; workstation + kube nodes as spokes; keypair management; `wg0.conf` via Jinja2 templates; peer list from inventory
 - [ ] **`ec2-wireguard.yml` playbook** — deploy Wireguard hub on EC2 and configure spoke peers
 - [ ] **`configure_route53` role** — upsert Route53 A/TXT/MX records via `community.aws.route53` (analogous to `configure_mikrotik-router` + `configure_cloudflare-zone`); credentials via `secrets.yml` (`aws_access_key_id`, `aws_secret_access_key`); `configure-route53.yml` playbook
+- [x] **AWS inventory group**, **`ec2-core.yml`/`ec2-mail.yml`/`ec2-web.yml`/`ec2-vault.yml` playbooks**, **`setup_email-server` role** — all implemented, see `docs/howtos/ec2-rebuild-plan.md`
 
 ## Projects / Repos
 
