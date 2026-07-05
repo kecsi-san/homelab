@@ -62,6 +62,7 @@ Cross-cutting operational procedures and runbooks.
 | [Cloud VPS Services Survey](research/cloud-vps-services-survey.md) | Cloud/VPS usage in homelab repos: VPN, email, DNS, provider trends (18 repos) |
 | [Email Server Components](research/cloud-email-server-components.md) | Self-hosted email stack: Postfix, Dovecot, Rspamd, TLS, DNS requirements |
 | [Python Project Templates](research/dev-python-templates.md) | uv-based Python project template comparison and recommendation (7 templates) |
+| [Secret Store Comparison](research/homelab-secret-store-comparison.md) | HashiCorp Vault vs OpenBao — license, feature parity, ecosystem maturity |
 
 ## Architecture Decisions
 
