@@ -21,6 +21,20 @@
   become: true
   when: security_tools_enabled and ansible_system == 'Linux' and 'aide' in security_apt_packages
 
+# AIDE — suppress mail reports. dailyaidecheck tries to email its report via
+# mail(1), which fails from the systemd service context on hosts with no MTA
+# configured (none of ours have one — ntfy is this repo's alerting channel),
+# causing the wrapper script to exit 1 regardless of whether AIDE found
+# anything. The scan itself still runs and logs; only the (undeliverable)
+# e-mail is suppressed.
+- name: Suppress AIDE mail reports (no MTA configured on these hosts)
+  ansible.builtin.lineinfile:
+    path: /etc/default/aide
+    regexp: '^SILENTREPORTS='
+    line: 'SILENTREPORTS=yes'
+  become: true
+  when: security_tools_enabled and ansible_system == 'Linux' and 'aide' in security_apt_packages
+
 # AIDE — initialize baseline database if not yet created. Polled (not fire-and-
 # forget) so a failed/hung run actually surfaces instead of silently vanishing —
 # this ran unbounded in the background for weeks on 3 nodes and never finished.
