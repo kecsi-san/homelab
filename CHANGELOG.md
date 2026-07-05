@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(garage): shrink PVC 10Gi -> 1Gi, unused/oversized ([8a56867](https://github.com/kecsi-san/homelab/commit/8a56867089013800a964aeb4862da5893d66656e) by Zoltan K).
 - fix(aide): codify SILENTREPORTS=yes, applied live earlier this session ([382de87](https://github.com/kecsi-san/homelab/commit/382de87df9100163fe36cca79dd483cd1b14fd17) by Zoltan K).
 - fix(aide): exclude kube dynamic storage paths, poll aideinit properly ([ff95615](https://github.com/kecsi-san/homelab/commit/ff95615747eae18164687f780ea38125d7c2c30e) by Zoltan K).
 - fix(wikijs): correct jqPathExpressions syntax for DB_SSL_CA ignore ([a5bdf44](https://github.com/kecsi-san/homelab/commit/a5bdf44ae297d11a14f530e1598005a977ec749e) by Zoltan K).
