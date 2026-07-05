@@ -14,6 +14,7 @@ uv_tools:
     extras:
       - netaddr
       - librouteros
+      - hvac
   - name: ansible-lint
   - name: checkov
   - name: git-changelog
