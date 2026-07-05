@@ -58,7 +58,7 @@ Recurring maintenance — not one-off tasks; re-verify occasionally rather than 
 
 ## Big migrations
 
-- [ ] **Vault** — replace SealedSecrets with HashiCorp Vault (or OpenBao) for secrets management; significant migration: re-seal all secrets, update ArgoCD apps, update workflows
+- [ ] **Vault (Kubernetes side)** — replace SealedSecrets with HashiCorp Vault (or OpenBao) for secrets management; separate, bigger lift than the EC2/Ansible Vault integration above — needs External Secrets Operator or Vault Agent Injector to actually deliver secrets into pods; 49 SealedSecrets currently exist across `kube-gitops/`; significant migration: re-seal all secrets, update ArgoCD apps, update workflows
 - [ ] **Cloudflare → Route53 + Wireguard** — long-term full replacement of Cloudflare as DNS provider and remote-access tunnel; stages: (1) Route53 becomes authoritative DNS (migrate all records, update registrar NS); (2) cert-manager DNS01 ClusterIssuer switches to Route53 provider (replaces Cloudflare API token); (3) Wireguard hub-and-spoke (EC2 gateway) replaces Cloudflare WARP for remote cluster access; (4) decommission `configure_cloudflare-zone` role and cloudflared tunnel; blocked on: Route53 zone live, Wireguard stable
 
 ## Low priority / Future
