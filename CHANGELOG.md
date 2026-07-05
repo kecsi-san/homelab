@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(setup_python-uv): add hvac extra for community.hashi_vault lookups ([0f36421](https://github.com/kecsi-san/homelab/commit/0f3642135b000295dde416b4fe1b2a05ce5eb98a) by Zoltan K).
 - fix(garage): shrink PVC 10Gi -> 1Gi, unused/oversized ([8a56867](https://github.com/kecsi-san/homelab/commit/8a56867089013800a964aeb4862da5893d66656e) by Zoltan K).
 - fix(aide): codify SILENTREPORTS=yes, applied live earlier this session ([382de87](https://github.com/kecsi-san/homelab/commit/382de87df9100163fe36cca79dd483cd1b14fd17) by Zoltan K).
 - fix(aide): exclude kube dynamic storage paths, poll aideinit properly ([ff95615](https://github.com/kecsi-san/homelab/commit/ff95615747eae18164687f780ea38125d7c2c30e) by Zoltan K).
