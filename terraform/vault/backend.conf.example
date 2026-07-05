@@ -1,0 +1,10 @@
+# Copy to backend.conf (gitignored) and fill in your values.
+# Usage: terraform init -backend-config=backend.conf
+#
+# Same S3 bucket as terraform/aws/, different state key — separate blast
+# radius (Vault-admin structure vs AWS infra) but no need for a second bucket.
+bucket       = "your-tfstate-bucket-name"
+key          = "vault/terraform.tfstate"
+region       = "eu-west-1"
+encrypt      = true
+use_lockfile = true   # S3 native locking (Terraform >= 1.10, no DynamoDB needed)

@@ -27,13 +27,44 @@ ansible_ssh_args: >-
 etckeeper: true
 linuxbrew: false   # headless server, not a workstation
 
-# --- System users, Apache vhosts/certs, Vault address ---
-# ec2_users, ec2_users_absent, apache_server_admin, apache_certs, apache_vhosts, and
-# vault_api_addr all live in secrets.yml (gitignored) — this file previously had them
-# committed in plaintext (real names, UIDs, domains, internal proxy targets), which is
-# exactly the kind of exposure secrets.yml exists to avoid. See secrets.yml.example for
-# the expected structure. UIDs must stay pinned to the live server for correct file
-# ownership after rsync data migration; do not reuse a deleted user's UID.
+# --- System users, Apache vhosts/certs, Duo, AWS creds, mail ---
+# Read live from Vault (see docs/howtos/vault-secrets-architecture.md and
+# terraform/vault/README.md) rather than static values in secrets.yml. Every role
+# still just reads {{ ec2_users }} etc. as before — only the source changed.
+# vault_ansible_role_id / vault_ansible_secret_id (AppRole auth for this lookup)
+# still live in secrets.yml (gitignored) — see secrets.yml.example.
+#
+# ROLLOUT SAFETY: the pre-migration values also still exist in secrets.yml as a
+# manual fallback. Don't remove them until `ansible-playbook -i inventory/aws_hosts
+# playbooks/ec2-core.yml --check` confirms every one of these resolves correctly
+# from Vault. Removing the fallback is a separate, later cleanup step.
+#
+# Key layout below mirrors terraform/vault/README.md's bootstrap step 4 grouping
+# (ec2/aws-creds, ec2/duo, ec2/users, ec2/vhosts, ec2/mail) — adjust the paths/keys
+# here if you land on a different grouping when you actually migrate the data.
+vault_ec2_lookup_args:
+  url: "{{ vault_api_addr | default('https://vault.kecskemethy.hu') }}"
+  engine_mount_point: ec2
+  auth_method: approle
+  role_id: "{{ vault_ansible_role_id }}"
+  secret_id: "{{ vault_ansible_secret_id }}"
+
+aws_access_key_id: "{{ lookup('community.hashi_vault.vault_kv2_get', 'aws-creds', **vault_ec2_lookup_args)['secret']['aws_access_key_id'] }}"
+aws_secret_access_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'aws-creds', **vault_ec2_lookup_args)['secret']['aws_secret_access_key'] }}"
+
+duo_ikey: "{{ lookup('community.hashi_vault.vault_kv2_get', 'duo', **vault_ec2_lookup_args)['secret']['duo_ikey'] }}"
+duo_skey: "{{ lookup('community.hashi_vault.vault_kv2_get', 'duo', **vault_ec2_lookup_args)['secret']['duo_skey'] }}"
+duo_api_host: "{{ lookup('community.hashi_vault.vault_kv2_get', 'duo', **vault_ec2_lookup_args)['secret']['duo_api_host'] }}"
+
+ec2_users: "{{ lookup('community.hashi_vault.vault_kv2_get', 'users', **vault_ec2_lookup_args)['secret']['ec2_users'] }}"
+ec2_users_absent: "{{ lookup('community.hashi_vault.vault_kv2_get', 'users', **vault_ec2_lookup_args)['secret']['ec2_users_absent'] }}"
+
+apache_server_admin: "{{ lookup('community.hashi_vault.vault_kv2_get', 'vhosts', **vault_ec2_lookup_args)['secret']['apache_server_admin'] }}"
+apache_certs: "{{ lookup('community.hashi_vault.vault_kv2_get', 'vhosts', **vault_ec2_lookup_args)['secret']['apache_certs'] }}"
+apache_vhosts: "{{ lookup('community.hashi_vault.vault_kv2_get', 'vhosts', **vault_ec2_lookup_args)['secret']['apache_vhosts'] }}"
+
+mailbox_users: "{{ lookup('community.hashi_vault.vault_kv2_get', 'mail', **vault_ec2_lookup_args)['secret']['mailbox_users'] }}"
+email_domains: "{{ lookup('community.hashi_vault.vault_kv2_get', 'mail', **vault_ec2_lookup_args)['secret']['email_domains'] }}"
 
 # --- HashiCorp Vault ---
 # vault_version: leave empty to install latest from HashiCorp APT repo.

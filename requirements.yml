@@ -18,3 +18,5 @@ collections:
     type: git
     version: release-2.31
   - name: community.routeros
+  - name: community.hashi_vault
+    version: ">=6.2.0"
