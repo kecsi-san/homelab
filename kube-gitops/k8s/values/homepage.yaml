@@ -1,7 +1,7 @@
 ---
 # Homepage values — k8s homelab dashboard
 image:
-  tag: v1.13.1
+  tag: v1.13.2
 
 enableRbac: true
 
