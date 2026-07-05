@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(wikijs): migrate to externalPostgresql values for chart v3.0.0 ([696f4e1](https://github.com/kecsi-san/homelab/commit/696f4e14aeaf90e40c97f0e0b5630a7128038b7a) by Zoltan K).
 - fix(security): replace real family names with generic examples ([48b0a7c](https://github.com/kecsi-san/homelab/commit/48b0a7c57fd6109152113b664b6c6613d1cc21af) by Zoltan K).
 - fix(security): move sensitive EC2 data out of committed aws.yml ([cc7dc1b](https://github.com/kecsi-san/homelab/commit/cc7dc1b5208db6a632673af408ff0c780aa54714) by Zoltan K).
 - fix(ci): install Ansible collections into the actual cached path ([8eb8d59](https://github.com/kecsi-san/homelab/commit/8eb8d59bc4ab85e5c5797b4179c07e18c15cf2f9) by Zoltan K).
