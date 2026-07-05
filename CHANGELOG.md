@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(wikijs): ignore deployment.kubernetes.io/revision annotation ([3f801ac](https://github.com/kecsi-san/homelab/commit/3f801acabde2aa94cdb250ad12304e7eaa5d20bf) by Zoltan K).
 - fix(cnpg-cluster): remove dead createDb typo from wikijs managed role ([037216d](https://github.com/kecsi-san/homelab/commit/037216d8632bf5d37c8c34958b5b5d07c23bdbd1) by Zoltan K).
 - fix(cnpg-cluster): ignore CNPG's reconciliationLoop annotation churn ([ffac236](https://github.com/kecsi-san/homelab/commit/ffac23641cf2356df559cc78d5b305bc81e8c32a) by Zoltan K).
 - fix(sealed-secrets): update Helm repo URL for bitnami-labs -> bitnami org rename ([8edccb9](https://github.com/kecsi-san/homelab/commit/8edccb9fe8ecab514523978ff9a992566ef837ea) by Zoltan K).
