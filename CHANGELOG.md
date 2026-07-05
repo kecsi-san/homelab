@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(aide): codify SILENTREPORTS=yes, applied live earlier this session ([382de87](https://github.com/kecsi-san/homelab/commit/382de87df9100163fe36cca79dd483cd1b14fd17) by Zoltan K).
+- fix(aide): exclude kube dynamic storage paths, poll aideinit properly ([ff95615](https://github.com/kecsi-san/homelab/commit/ff95615747eae18164687f780ea38125d7c2c30e) by Zoltan K).
 - fix(wikijs): correct jqPathExpressions syntax for DB_SSL_CA ignore ([a5bdf44](https://github.com/kecsi-san/homelab/commit/a5bdf44ae297d11a14f530e1598005a977ec749e) by Zoltan K).
 - fix(wikijs): ignore DB_SSL_CA empty-string env value drift ([78c9bce](https://github.com/kecsi-san/homelab/commit/78c9bce2d1177b1ea2b27f503437c44b21d04d1e) by Zoltan K).
 - fix(wikijs): ignore deployment.kubernetes.io/revision annotation ([3f801ac](https://github.com/kecsi-san/homelab/commit/3f801acabde2aa94cdb250ad12304e7eaa5d20bf) by Zoltan K).
