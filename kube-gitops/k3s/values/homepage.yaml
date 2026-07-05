@@ -1,6 +1,9 @@
 ---
 # Homepage values — k3s local dev cluster
 image:
+  # repository pinned so Renovate's helm-values manager can resolve and
+  # track this tag (it needs both fields present to build the image ref)
+  repository: ghcr.io/gethomepage/homepage
   tag: v1.13.2
 
 enableRbac: true

@@ -7,11 +7,22 @@
       "kube-gitops/k3s/apps/.+\\.yaml"
     ]
   },
+  "helm-values": {
+    "fileMatch": [
+      "kube-gitops/k8s/values/.+\\.yaml",
+      "kube-gitops/k3s/values/.+\\.yaml"
+    ]
+  },
   "packageRules": [
     {
       "matchManagers": ["argocd"],
       "groupName": "helm charts",
       "commitMessagePrefix": "chore(helm):"
+    },
+    {
+      "matchManagers": ["helm-values"],
+      "groupName": "app images",
+      "commitMessagePrefix": "chore(images):"
     },
     {
       "matchManagers": ["github-actions"],
