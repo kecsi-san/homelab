@@ -14,6 +14,8 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 
 Recurring maintenance — not one-off tasks; re-verify occasionally rather than checking off.
 
+- **Kubernetes cluster upgrade** — Kubespray pinned to `release-2.31` in `requirements.yml`, running Kubernetes v1.35.4 on all 4 nodes (checked 2026-07-05). Check https://github.com/kubernetes-sigs/kubespray/releases for newer release branches supporting a newer Kubernetes minor version; rerun `ansible-galaxy install -r requirements.yml -f` then `ansible-playbook -b playbooks/k8s.yml` to upgrade. Not Renovate-tracked (git dependency in `requirements.yml`, not a package manager Renovate understands here).
+
 - **ArgoCD version** — `argocd_chart_version` in `roles/setup_argocd/defaults/main.yml` is a plain Ansible default, not tracked by Renovate; the two clusters only upgrade when someone reruns `post-k8s.yml`/`post-k3s.yml` after bumping it, so they can silently drift apart. Check https://github.com/argoproj/argo-helm for newer releases and confirm both clusters still match. Last checked 2026-07-05: k8s v2.14.5 (chart 7.7.5), k3s v2.13.1 (older chart pin — reran less recently).
 
 ## AWS / EC2 & Email
