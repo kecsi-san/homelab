@@ -33,6 +33,11 @@ spec:
         # controller on every rollout, not by us — never present in the
         # git manifest, so it perpetually shows the Deployment OutOfSync.
         - .metadata.annotations."deployment.kubernetes.io/revision"
+        # DB_SSL_CA renders as value: "" from the chart (empty default),
+        # but corev1.EnvVar.Value has an omitempty json tag, so the API
+        # server drops the key entirely on write — the live object can
+        # never match an explicit empty string, causing perpetual drift.
+        - '(.spec.template.spec.containers[] | select(.name == "wiki") | .env[] | select(.name == "DB_SSL_CA")).value'
   syncPolicy:
     automated:
       prune: true
