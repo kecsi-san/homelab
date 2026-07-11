@@ -17,3 +17,13 @@ output "route53_name_servers" {
   description = "NS records per zone — verify with registrar if zones were recreated"
   value       = module.route53.name_servers
 }
+
+output "ec2_edge_public_ip" {
+  description = "Temporary EIP of the new Phase 6 rebuild instance (edge.kecskemethy.net)"
+  value       = module.eip_edge.public_ip
+}
+
+output "ec2_edge_instance_id" {
+  description = "Instance ID of the new Phase 6 rebuild instance"
+  value       = module.ec2_edge.instance_id
+}

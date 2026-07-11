@@ -34,3 +34,48 @@ variable "ingress_rules" {
     description = string
   }))
 }
+
+variable "sg_name" {
+  description = "Security group name (must be unique per VPC)"
+  type        = string
+}
+
+variable "instance_name" {
+  description = "Name tag for the instance and its root volume (root volume gets a \"-root\" suffix)"
+  type        = string
+}
+
+variable "root_volume_type" {
+  description = "Root volume EBS type"
+  type        = string
+}
+
+variable "root_volume_size" {
+  description = "Root volume size in GB"
+  type        = number
+}
+
+variable "root_volume_encrypted" {
+  description = "Whether the root volume is encrypted"
+  type        = bool
+}
+
+variable "legacy_extra_volumes" {
+  description = "Additional volumes declared inline via ebs_block_device, tied to the instance's lifecycle (legacy pattern — matches the imported 2016 instance's real layout). New instances should use data_volumes instead so volumes can be resized independently; see docs/howtos/ec2-ebs-volumes.md."
+  type = map(object({
+    size = number
+    type = string
+  }))
+  default = {}
+}
+
+variable "data_volumes" {
+  description = "Additional volumes declared as standalone aws_ebs_volume + aws_volume_attachment resources, keyed by device name (AWS API name, e.g. \"/dev/sdf\") — resizable independently of the instance. See docs/howtos/ec2-ebs-volumes.md."
+  type = map(object({
+    size      = number
+    type      = string
+    encrypted = bool
+    name      = string
+  }))
+  default = {}
+}

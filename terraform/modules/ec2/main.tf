@@ -17,12 +17,12 @@ data "aws_ami" "debian13" {
 
 # Security group — rules managed via aws_security_group_rule below (no inline blocks).
 resource "aws_security_group" "this" {
-  name        = "homelab-edge"
+  name        = var.sg_name
   description = "Homelab edge node security group"
   vpc_id      = var.vpc_id
 
   tags = {
-    Name = "homelab-edge"
+    Name = var.sg_name
   }
 }
 
@@ -65,22 +65,25 @@ resource "aws_instance" "this" {
   iam_instance_profile   = var.iam_instance_profile
 
   root_block_device {
-    volume_type           = "gp2"
-    volume_size           = 25
-    encrypted             = false
+    volume_type           = var.root_volume_type
+    volume_size           = var.root_volume_size
+    encrypted             = var.root_volume_encrypted
     kms_key_id            = null
     delete_on_termination = false
     tags = {
-      Name = "t3small.linuxbox.hu-root"
+      Name = "${var.instance_name}-root"
     }
   }
 
-  ebs_block_device {
-    device_name           = "/dev/sdf"
-    volume_type           = "standard"
-    volume_size           = 32
-    encrypted             = false
-    delete_on_termination = false
+  dynamic "ebs_block_device" {
+    for_each = var.legacy_extra_volumes
+    content {
+      device_name           = ebs_block_device.key
+      volume_type           = ebs_block_device.value.type
+      volume_size           = ebs_block_device.value.size
+      encrypted             = false
+      delete_on_termination = false
+    }
   }
 
   # Prevent accidental instance replacement when a newer Debian 13 AMI is published.
@@ -89,7 +92,27 @@ resource "aws_instance" "this" {
   }
 
   tags = {
-    Name         = "t3asmall.linuxbox.hu"
-    InstanceType = "t3.small"
+    Name         = var.instance_name
+    InstanceType = var.instance_type
   }
+}
+
+# Data volumes resizable independently of the instance — see docs/howtos/ec2-ebs-volumes.md.
+resource "aws_ebs_volume" "data" {
+  for_each          = var.data_volumes
+  availability_zone = aws_instance.this.availability_zone
+  size              = each.value.size
+  type              = each.value.type
+  encrypted         = each.value.encrypted
+
+  tags = {
+    Name = each.value.name
+  }
+}
+
+resource "aws_volume_attachment" "data" {
+  for_each    = var.data_volumes
+  device_name = each.key
+  volume_id   = aws_ebs_volume.data[each.key].id
+  instance_id = aws_instance.this.id
 }

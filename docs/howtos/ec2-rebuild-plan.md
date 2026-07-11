@@ -10,7 +10,9 @@ The current plan instead: build Ansible roles that capture the *desired* state (
 
 **Exception (2026-07-04):** Two narrow, self-contained fixes were applied directly to the still-live legacy instance ahead of the rebuild, rather than waiting for cutover: a `setup_email-server` cron bug fix (dovecot-fts `%` escaping), and a `configure_duo-ssh` + `setup_aws-ssm-agent` migration of SSH MFA from `ForceCommand login_duo` to PAM-based `pam_duo.so` (the old ForceCommand setup was making routine Ansible/ops work on this box impractically slow, one Duo push per SSH session). These are operational improvements to the box as it exists today — they are **not** progress toward Phase 6 below, and the new instance build should still apply these same roles fresh rather than assume anything carries over.
 
-**Security fix (2026-07-04):** `inventory/group_vars/aws.yml` had `ec2_users`, `apache_certs`, `apache_vhosts`, `apache_server_admin`, and `vault_api_addr` committed in plaintext — real full names, UIDs, domain/vhost topology, and an internal Vault proxy target, directly violating this repo's own documented secrets.yml/vars.yml split. Moved into `secrets.yml` (gitignored). Also added `configure_ssh-hardening` (see Roles Summary below). Full Phase 6 automation (new instance + 4-volume EBS layout + provisioning/migration/cutover orchestration) remains a separate, not-yet-started follow-up.
+**Security fix (2026-07-04):** `inventory/group_vars/aws.yml` had `ec2_users`, `apache_certs`, `apache_vhosts`, `apache_server_admin`, and `vault_api_addr` committed in plaintext — real full names, UIDs, domain/vhost topology, and an internal Vault proxy target, directly violating this repo's own documented secrets.yml/vars.yml split. Moved into `secrets.yml` (gitignored). Also added `configure_ssh-hardening` (see Roles Summary below).
+
+**Phase 6 progress (2026-07-11):** Terraform side of step 1 is done — `module "ec2_edge"` + `module "eip_edge"` in `terraform/aws/main.tf` provision the new instance (`edge.kecskemethy.net`) alongside the legacy one, same SG rule set, plus the 4-volume EBS layout from `docs/howtos/ec2-ebs-volumes.md` (root gp3 20GB + `/home` 40GB + `/var/www` 20GB + `/var/log` 10GB, all encrypted, as standalone resizable `aws_ebs_volume`s). Verified via `terraform plan` that this is purely additive — zero unwanted changes to the live legacy instance. **Not yet applied** — plan is reviewed, `terraform apply` deliberately deferred to run manually. Still missing before step 2 (running the playbooks) can happen: the OS-level mount/fstab step (see "Status" note in `docs/howtos/ec2-ebs-volumes.md`) doesn't exist yet.
 
 **EIP cutover strategy:** When the new instance is ready, swap EIP via `terraform apply`. Route53 points to EIP so DNS is unchanged.
 
@@ -115,7 +117,8 @@ Added to `ec2-core.yml`.
 
 ### Phase 6 — New instance + data migration (est. 2–4h)
 
-1. Terraform: launch new EC2 instance alongside old one (separate resource, same SG)
+1. ✅ Terraform code done (2026-07-11): new EC2 instance alongside old one (separate resource, same SG) + 4-volume EBS layout. `terraform apply` not yet run — pending.
+   - ⬜ OS-level mount/fstab step still needed before step 2 (formats + mounts the 4 volumes) — see `docs/howtos/ec2-ebs-volumes.md`
 2. Run playbooks in order (users before mail — UIDs must exist before data migration):
    ```
    ec2-prerequisite → ec2-core (includes setup_users) → ec2-mail → ec2-web → ec2-vault

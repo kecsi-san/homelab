@@ -19,7 +19,7 @@ Storage design for the new EC2 edge node (email + web server).
 | 3 | `/var/www` | 20 GB | gp3 | Apache web content — 1.15 GB today (linuxbox.hu 852 MB, kecskemethy.hu 295 MB) |
 | 4 | `/var/log` | 10 GB | gp3 | All system and service logs — isolated so log growth never kills root or services |
 
-**Total: 90 GB → ~$7.20/month** (gp3 at $0.08/GB/month, eu-west-1)
+**Total: 90 GB → ~$7.92/month** (gp3 at $0.088/GB-month, eu-west-1, checked via AWS Pricing API 2026-07-11)
 
 ---
 
@@ -58,30 +58,27 @@ This creates confusion about where data actually lives and makes it hard to reas
 
 ## Terraform
 
-EBS volumes are declared as separate `aws_ebs_volume` + `aws_volume_attachment` resources (not root block device) so they can be resized independently.
+**Implemented 2026-07-11.** EBS volumes are declared as separate `aws_ebs_volume` + `aws_volume_attachment` resources (not root block device) so they can be resized independently.
 
-See `terraform/aws/ec2/` for implementation.
+Implementation lives in the reusable `terraform/modules/ec2` module (not a dedicated `terraform/aws/ec2/`, as originally sketched here — the module is shared between the legacy instance and this one). The `data_volumes` variable takes this exact layout; the module call is in `terraform/aws/main.tf` under `module "ec2_edge"`:
 
 ```hcl
-# example — home volume
-resource "aws_ebs_volume" "mail" {
-  availability_zone = aws_instance.ec2.availability_zone
-  size              = 40
-  type              = "gp3"
-  encrypted         = true
-  tags = { Name = "ec2-mail" }
-}
-
-resource "aws_volume_attachment" "mail" {
-  device_name = "/dev/sdf"
-  volume_id   = aws_ebs_volume.mail.id
-  instance_id = aws_instance.ec2.id
+data_volumes = {
+  "/dev/sdf" = { size = 40, type = "gp3", encrypted = true, name = "edge.kecskemethy.net-home" }
+  "/dev/sdg" = { size = 20, type = "gp3", encrypted = true, name = "edge.kecskemethy.net-www" }
+  "/dev/sdh" = { size = 10, type = "gp3", encrypted = true, name = "edge.kecskemethy.net-log" }
 }
 ```
+
+The legacy instance (`module "ec2"`) keeps its original inline-`ebs_block_device` layout via a separate `legacy_extra_volumes` variable on the same module — unencrypted, single `/dev/sdf` 32GB `standard` volume, matching its real imported state. Do not change that call; it mirrors what's actually running on `i-04dba0d34a28a972d` today.
+
+Verified via `terraform plan`: adding the new instance produces zero unwanted diff against the legacy instance (only a pre-existing stale-tag correction, unrelated to this layout work).
 
 ---
 
 ## OS-Level Setup (Ansible)
+
+**Status: not yet implemented (2026-07-11).** Terraform now creates and attaches the 4 volumes (see above), but nothing formats or mounts them yet. Needs an `ec2-storage.yml` playbook (or a `configure_fstab` task in `ec2-core.yml`) run before any other Phase 6 role, since `setup_users`/`setup_email-server`/`setup_apache2` all write to `/home`/`/var/www` immediately.
 
 Mount points are created and `/etc/fstab` entries written by an `ec2-storage.yml` playbook (or a `configure_fstab` task in `ec2-core.yml`) before any other role runs:
 
