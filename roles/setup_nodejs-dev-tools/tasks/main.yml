@@ -1,5 +1,61 @@
 ---
-# Core Node.js tools via Homebrew (cross-platform)
+# Node.js itself is managed by nvm rather than a fixed Homebrew formula, so
+# multiple versions can be installed/switched per-project. nvm is a shell
+# function sourced into interactive shells (not a normal PATH binary), so
+# Ansible drives it via explicit `. nvm.sh` shell tasks rather than modules.
+
+- name: Install nvm via Homebrew
+  community.general.homebrew:
+    name: nvm
+    state: present
+  become: false
+
+- name: Get Homebrew nvm prefix
+  ansible.builtin.command: brew --prefix nvm
+  register: nvm_brew_prefix
+  changed_when: false
+  become: false
+
+- name: Ensure NVM_DIR exists
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.nvm"
+    state: directory
+    mode: '0755'
+  become: false
+
+- name: Add nvm initialization to ~/.bashrc
+  ansible.builtin.blockinfile:
+    dest: "{{ ansible_env.HOME }}/.bashrc"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: nvm"
+    block: |
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "{{ nvm_brew_prefix.stdout }}/nvm.sh" ] && \. "{{ nvm_brew_prefix.stdout }}/nvm.sh"
+      [ -s "{{ nvm_brew_prefix.stdout }}/etc/bash_completion.d/nvm" ] && \. "{{ nvm_brew_prefix.stdout }}/etc/bash_completion.d/nvm"
+  become: false
+
+- name: Check if the target Node.js version is already installed via nvm
+  ansible.builtin.shell:
+    cmd: >
+      export NVM_DIR="{{ ansible_env.HOME }}/.nvm";
+      . "{{ nvm_brew_prefix.stdout }}/nvm.sh";
+      nvm ls {{ nodejs_version }} --no-colors | grep -qv 'N/A'
+  register: nvm_node_installed
+  failed_when: false
+  changed_when: false
+  become: false
+
+- name: Install Node.js via nvm
+  ansible.builtin.shell:
+    cmd: >
+      export NVM_DIR="{{ ansible_env.HOME }}/.nvm";
+      . "{{ nvm_brew_prefix.stdout }}/nvm.sh";
+      nvm install {{ nodejs_version }} && nvm alias default {{ nodejs_version }}
+  become: false
+  changed_when: true
+  when: nvm_node_installed.rc != 0
+
+# pnpm remains a standalone Homebrew binary — it doesn't depend on nvm-managed
+# node (ships as a self-contained binary), so it's installed directly.
 - name: Install Node.js tools via Homebrew
   community.general.homebrew:
     name: "{{ nodejs_brew_packages }}"
@@ -14,12 +70,16 @@
   become: false
   when: nodejs_optional_brew_packages.values() | list | select | list | length > 0
 
-# Global npm packages (tools not in Homebrew or better managed via npm -g)
-- name: Install global npm packages
-  community.general.npm:
-    name: "{{ item }}"
-    global: true
-    state: present
-  loop: "{{ nodejs_npm_global_packages }}"
+# Global npm packages (tools not in Homebrew or better managed via npm -g).
+# Uses a shell task (not community.general.npm) because nvm-managed npm lives
+# under ~/.nvm/versions/node/<version>/bin, not a fixed path the npm module
+# can find without sourcing nvm.sh first.
+- name: Install global npm packages via nvm-managed npm
+  ansible.builtin.shell:
+    cmd: >
+      export NVM_DIR="{{ ansible_env.HOME }}/.nvm";
+      . "{{ nvm_brew_prefix.stdout }}/nvm.sh";
+      npm install -g {{ nodejs_npm_global_packages | join(' ') }}
   become: false
+  changed_when: true
   when: nodejs_npm_global_packages | length > 0

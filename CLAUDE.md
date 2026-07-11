@@ -177,8 +177,8 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | `setup_longhorn` | Installs iSCSI deps, longhornctl, and Longhorn via Helm |
 | `setup_minimal` | Installs base + compression APT packages; optional brew base packages |
 | `setup_network-tools` | Installs network diagnostic tools (APT on Linux, Homebrew on macOS) |
-| `setup_python-uv` | Installs uv CLI tools (checkov, ansible, black, etc.) and Python library packages into `~/.venv/devops` |
-| `setup_kube-extra` | Installs kubectl, helm, argocd, flux, kubeseal via Homebrew; bash completion system-wide (Linux: `/etc/bash_completion.d/`; macOS: `bash-completion@2` + Homebrew completion dir); `k` alias for kubectl |
+| `setup_python-uv` | Installs uv CLI tools (checkov, ansible, black, etc.) and Python library packages into `~/.venv/devops`; optional `pyenv`/`pyenv-virtualenv` and `python-tk@<version>` |
+| `setup_kube-extra` | Installs kubectl, helm (+ `helm-diff`, `helm-docs`), argocd, flux, kubeseal via Homebrew; bash completion system-wide (Linux: `/etc/bash_completion.d/`; macOS: `bash-completion@2` + Homebrew completion dir); `k` alias for kubectl |
 | `setup_traefik` | Installs Traefik ingress controller via Helm; `delegate_to: localhost`; kubeconfig per cluster |
 | `setup_sealed-secrets` | Installs Sealed Secrets controller via Helm; cluster-specific key pair for encrypting secrets safe to commit |
 | `setup_headlamp` | Installs Headlamp Kubernetes dashboard via Helm; captures manual homelab install; flips service to ClusterIP |
@@ -187,11 +187,12 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | `setup_nfs-backup` | Carves LV from existing VG, formats ext4, mounts at `/backups`, installs + configures nfs-kernel-server; used by `backup-nfs.yml` targeting hppd600g6 |
 | `setup_restic-rest-server` | Downloads restic REST server binary from GitHub releases, installs to `/usr/local/bin`, runs as systemd service on `:8000` storing repos in `/backups/restic-repos/`; `--no-auth` (LAN-only); used by `backup-nfs.yml` |
 | `setup_go-dev-tools` | go, gopls, golangci-lint via Homebrew; optional: delve, goreleaser, ko, air |
-| `setup_nodejs-dev-tools` | node, pnpm via Homebrew; optional brew + npm global packages |
+| `setup_nodejs-dev-tools` | Node.js via nvm (multi-version, not a fixed brew formula), pnpm via Homebrew; optional brew + npm global packages |
 | `setup_rust-dev-tools` | rustup + stable toolchain (rustc, cargo, rustfmt, clippy); optional cargo tools |
 | `setup_vscode` | VS Code via apt (Linux) or Homebrew Cask (macOS); installs configured extensions |
 | `upgrade_brew` | `brew update && upgrade && cleanup` — cross-platform (Linux/macOS brew paths via vars/os/) |
 | `upgrade_python-uv` | `uv tool upgrade --all` + `uv pip install --upgrade` in devops venv |
+| `upgrade_nodejs` | Upgrades the nvm-managed Node.js version (`nvm install --reinstall-packages-from=current`) and global npm packages (`npm update -g`) |
 | `upload_fav_bgimages` | Copies wallpapers to `/usr/share/backgrounds/`; generates GNOME background picker XML |
 | `upload_profile_image` | Sets GNOME/GDM profile picture; image path set via `profile_image_src` variable (not stored in repo) |
 
@@ -258,10 +259,10 @@ roles/<role-name>/
 Tags enable selective role execution without running the full playbook:
 - `local-core.yml` tags: `brew`, `apt-repos`, `docker`, `apps`, `minimal`, `network`, `ntp`, `python`, `uv`
 - `local-security.yml` tags: `sudo`, `apt-repos`, `security`, `checkov`
-- `local-dev.yml` tags: `vscode`, `go`, `dev`, `nodejs`, `rust`, `gh`
+- `local-dev.yml` tags: `vscode`, `go`, `dev`, `nodejs`, `rust`, `gh`, `glab`
 - `local-cloud.yml` tags: `iac`, `terraform`, `iac-extra`, `cloud`, `aws`, `azure`, `gcp`
 - `local-kube.yml` tags: `kube`, `kubernetes`, `cloudflared`, `kind`
-- `upgrade-local.yml` tags: `upgrade`, `apt`, `brew`, `uv`
+- `upgrade-local.yml` tags: `upgrade`, `apt`, `brew`, `uv`, `nodejs`
 - `k8s-nodes.yml` tags: `update`, `ssh`, `hosts`, `banner`, `fonts`, `omp`, `fzf`, `gitconfig`, `hibernation`, `ntp`
 
 Always tag new roles consistently so users can run them individually.

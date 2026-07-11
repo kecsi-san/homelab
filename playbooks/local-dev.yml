@@ -27,6 +27,15 @@
         - gh
         - dev
 
+    - name: Install GitLab CLI
+      community.general.homebrew:
+        name: glab
+        state: present
+      become: false
+      tags:
+        - glab
+        - dev
+
     - name: Setup VS Code
       ansible.builtin.import_role:
         name: setup_vscode
@@ -82,8 +91,8 @@
       when: nodejs_dev_enabled
       vars:
         nodejs_dev_enabled: true
+        nodejs_version: "lts/*"
         nodejs_brew_packages:
-          - node
           - pnpm
         nodejs_optional_brew_packages:
           yarn: false

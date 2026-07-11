@@ -86,3 +86,11 @@
     state: present
   become: false
   when: security_tools_enabled
+
+# Hadolint — Dockerfile linter, via Homebrew (cross-platform)
+- name: Install hadolint via Homebrew
+  community.general.homebrew:
+    name: hadolint
+    state: present
+  become: false
+  when: security_tools_enabled

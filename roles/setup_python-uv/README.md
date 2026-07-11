@@ -11,6 +11,8 @@ Covers **Tier 3** of the tool management strategy (Python-only packages). See [T
 3. Creates a shared `~/.venv/devops` virtualenv for library packages
 4. Installs library packages into the devops venv via `uv pip install`
 5. Optionally activates the devops venv automatically in `~/.bashrc`
+6. Optionally installs `pyenv`/`pyenv-virtualenv` for multi-version Python interpreter management (separate concern from uv's tool/library isolation) and wires shell init into `~/.bashrc`
+7. Optionally installs `python-tk@<version>` Tkinter bindings for specific Python versions (needed for GUI/matplotlib Tk backends)
 
 ---
 
@@ -65,6 +67,9 @@ Covers **Tier 3** of the tool management strategy (Python-only packages). See [T
 | `uv_venv_autoactivate` | `true` | Add `source ~/.venv/devops/bin/activate` to `~/.bashrc` |
 | `uv_tools` | see `defaults/main.yml` | List of tools for `uv tool install` |
 | `uv_pip_packages` | see `defaults/main.yml` | List of packages for `uv pip install` |
+| `pyenv_enabled` | `false` | Install `pyenv`/`pyenv-virtualenv` and wire shell init into `~/.bashrc` |
+| `pyenv_brew_packages` | `[pyenv, pyenv-virtualenv]` | Packages installed when `pyenv_enabled` |
+| `python_tk_versions` | `[]` | `python-tk@<version>` Homebrew formulae to install, e.g. `["python-tk@3.12"]` |
 
 ### Tool list item fields
 

@@ -1,0 +1,32 @@
+---
+# Upgrades the nvm-managed Node.js version and its global npm packages.
+# Companion to setup_nodejs-dev-tools (initial install) and upgrade_brew
+# (upgrades the nvm/pnpm Homebrew formulae themselves, not the Node.js
+# version nvm manages).
+
+- name: Get Homebrew nvm prefix
+  ansible.builtin.command: brew --prefix nvm
+  register: nvm_brew_prefix
+  changed_when: false
+  become: false
+
+- name: Upgrade Node.js via nvm (carries over global npm packages)
+  ansible.builtin.shell:
+    cmd: >
+      export NVM_DIR="{{ ansible_env.HOME }}/.nvm";
+      . "{{ nvm_brew_prefix.stdout }}/nvm.sh";
+      nvm install {{ nodejs_version }} --reinstall-packages-from=current &&
+      nvm alias default {{ nodejs_version }} &&
+      nvm cache clear
+  become: false
+  changed_when: true
+
+- name: Upgrade global npm packages
+  ansible.builtin.shell:
+    cmd: >
+      export NVM_DIR="{{ ansible_env.HOME }}/.nvm";
+      . "{{ nvm_brew_prefix.stdout }}/nvm.sh";
+      npm update -g
+  become: false
+  changed_when: true
+  when: nodejs_npm_global_packages | length > 0

@@ -3,6 +3,7 @@ install_base_packages: true
 install_brew_base_packages: true
 
 brew_base_packages:
+  - ffmpeg
   - fzf
   - gcc
   - git-delta

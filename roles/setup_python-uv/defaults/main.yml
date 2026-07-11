@@ -46,3 +46,15 @@ uv_pip_packages:
   - setuptools-scm
   - tfparse
   - tinycss2
+
+# Optional pyenv-based Python version management (alongside uv, which only
+# manages tool/library isolation, not multiple interpreter versions).
+pyenv_enabled: false
+pyenv_brew_packages:
+  - pyenv
+  - pyenv-virtualenv
+
+# Optional Tkinter bindings for specific Python versions (needed for GUI /
+# matplotlib Tk backends). Empty by default — populate per Python version
+# in use, e.g. ["python-tk@3.12", "python-tk@3.13"].
+python_tk_versions: []

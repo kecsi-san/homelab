@@ -52,6 +52,12 @@
     state: present
   become: false
 
+- name: Install helm-docs via Homebrew
+  community.general.homebrew:
+    name: helm-docs
+    state: present
+  become: false
+
 # macOS: install bash-completion@2 and wire it into ~/.bash_profile so all
 # Homebrew-installed tools get their completions loaded automatically.
 - name: Install bash-completion@2 via Homebrew (macOS)

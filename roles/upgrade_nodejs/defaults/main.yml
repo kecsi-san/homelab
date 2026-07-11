@@ -1,0 +1,8 @@
+---
+# Node.js version to upgrade to via nvm — keep in sync with
+# setup_nodejs-dev-tools/defaults/main.yml
+nodejs_version: "lts/*"
+
+# Keep in sync with setup_nodejs-dev-tools — only used to gate the global
+# npm package upgrade step
+nodejs_npm_global_packages: []

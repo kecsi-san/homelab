@@ -5,11 +5,12 @@ Installs Kubernetes CLI tooling, sets up system-wide bash completions, and adds 
 ## What it does
 
 1. Installs `kubectl` via Homebrew
-2. Installs `helm` via Homebrew
+2. Installs `helm` via Homebrew, plus the `helm-diff` plugin and `helm-docs`
 3. Installs `argocd` CLI via Homebrew
 4. Installs `flux` CLI via Homebrew (`fluxcd/tap`)
-5. Generates and installs bash completions system-wide for all four tools (`/etc/bash_completion.d/`)
-6. Creates `/etc/profile.d/kubectl-alias.sh` with `k=kubectl` alias and tab completion for `k`
+5. Installs `kubeseal` CLI via Homebrew
+6. Generates and installs bash completions system-wide for kubectl/helm/argocd/flux/kubeseal (`/etc/bash_completion.d/`)
+7. Creates `/etc/profile.d/kubectl-alias.sh` with `k=kubectl` alias and tab completion for `k`
 
 ## Variables
 

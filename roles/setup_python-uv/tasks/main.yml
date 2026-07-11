@@ -45,3 +45,31 @@
       source {{ uv_venv_path }}/bin/activate
   become: false
   when: uv_venv_autoactivate
+
+# Optional pyenv-based Python version management
+- name: Install pyenv via Homebrew
+  community.general.homebrew:
+    name: "{{ pyenv_brew_packages }}"
+    state: present
+  become: false
+  when: pyenv_enabled
+
+- name: Add pyenv initialization to ~/.bashrc
+  ansible.builtin.blockinfile:
+    dest: "{{ ansible_env.HOME }}/.bashrc"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: pyenv"
+    block: |
+      export PYENV_ROOT="$HOME/.pyenv"
+      export PATH="$PYENV_ROOT/bin:$PATH"
+      eval "$(pyenv init -)"
+      eval "$(pyenv virtualenv-init -)"
+  become: false
+  when: pyenv_enabled
+
+# Optional Tkinter bindings, tied to specific Python versions
+- name: Install python-tk versions via Homebrew
+  community.general.homebrew:
+    name: "{{ python_tk_versions }}"
+    state: present
+  become: false
+  when: python_tk_versions | length > 0

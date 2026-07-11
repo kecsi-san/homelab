@@ -27,3 +27,13 @@
       tags:
         - upgrade
         - uv
+
+    - name: Upgrade Node.js via nvm and global npm packages
+      ansible.builtin.import_role:
+        name: upgrade_nodejs
+      become: false
+      vars:
+        nodejs_version: "lts/*"
+      tags:
+        - upgrade
+        - nodejs

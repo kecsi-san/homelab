@@ -1,9 +1,12 @@
 ---
 nodejs_dev_enabled: true
 
-# Core Node.js tools via Homebrew
+# Node.js version installed and managed via nvm (e.g. "lts/*", "22", "22.10.0")
+nodejs_version: "lts/*"
+
+# Core Node.js tools via Homebrew — standalone binaries, not nvm-managed
+# (node itself is installed via nvm, see tasks/main.yml)
 nodejs_brew_packages:
-  - node
   - pnpm
 
 # Optional Node.js tools — set to true to install

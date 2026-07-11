@@ -35,6 +35,73 @@ Recurring maintenance — not one-off tasks; re-verify occasionally rather than 
 - [ ] **`configure_route53` role** — upsert Route53 A/TXT/MX records via `community.aws.route53` (analogous to `configure_mikrotik-router` + `configure_cloudflare-zone`); credentials via `secrets.yml` (`aws_access_key_id`, `aws_secret_access_key`); `configure-route53.yml` playbook
 - [x] **AWS inventory group**, **`ec2-core.yml`/`ec2-mail.yml`/`ec2-web.yml`/`ec2-vault.yml` playbooks**, **`setup_email-server` role** — all implemented, see `docs/howtos/ec2-rebuild-plan.md`
 
+## Dotfiles migration (archive `../dotfiles`)
+
+Goal: fold everything still-relevant from the old `../dotfiles` repo into this
+repo, move sensitive/work-identifying info into Vault, drop what's dead, then
+archive that repo. Full original analysis in `../dotfiles/TODO.md` (kept
+there until the repo is archived). **Scope decision (2026-07-11, overrides
+the note in `../dotfiles/TODO.md`):** workstation-personal secrets (SSH
+client config, PyPI feed) go into the **real HashiCorp Vault**
+(`vault.kecskemethy.hu`), not `local.yml` Ansible-Vault — needs a new
+workstation/personal KV v2 mount + policy (current `terraform/vault/` scope
+is EC2-only) and a scope-note update in `docs/howtos/vault-secrets-architecture.md`.
+
+### Vault-bound (workstation/personal secrets)
+
+- [ ] Add a workstation/personal KV v2 mount + policy to `terraform/vault/` (mirrors the existing `ec2/` mount)
+- [ ] **`configure_ssh-client` role (new)** — templates `~/.ssh/config` from a var (e.g. `ssh_client_hosts`) sourced via `vault_kv2_get`, not committed as a static file. Source data is `../dotfiles/.ssh/config`; no private key files are in that repo, only the config referencing them. **Confirmed (2026-07-11):** only `Host linuxbox.hu` (`IdentityFile ~/.ssh/linuxbox2016.pem`) is live — it's the EC2 box — so it's the only entry to actually migrate into Vault/the new role. `gitbud.epam.com`, `ssh.dev.azure.com`, `git.epam.com`, `*.us-west-2.prod.hcom-data-science.aws.hcom`, `10.*`, and `127.0.0.1` (`~/.ssh/zk-bdcc`) are all former-employer and dead, drop them. `Host github.com` currently borrows `git.epam.com`'s key — needs a real personal key when the config is rebuilt (not migrated as-is).
+- [x] `.pypirc` (Azure DevOps feed, org `qrdaas`, index-server `data-pkgs`) — confirmed dead (2026-07-11), same former-employer bucket; drop, no migration
+- [ ] `bin/vault_login.sh` / `bin/vault_env.sh` → keep, repoint from dev `localhost:443` to `vault.kecskemethy.hu`
+- [ ] `bin/vault_approle_token_gen.sh` → adapt as a general local AppRole-login convenience script reusing the pattern already built for EC2 (`terraform/vault/` generates `role_id`/`secret_id`)
+
+### New roles to add
+
+- [ ] **`configure_bash-aliases` role (new)** — `ll`, `l`, `alert`, `kx`, `kn`, `apt-maintenance`, `brew-maintenance`, `ecr-login`, `git-reset-author` from `../dotfiles/.bash_aliases`; check overlap with existing `exa`/`la` and `k=kubectl` aliases first
+- [ ] **krew** (kubectl plugin manager) → fold into `setup_kube-extra`
+- [ ] `bin/mc-gruvbox-skin-setup.sh` → fold into `personalise.yml`
+- [ ] **Windows Terminal config role (new)** — deploy `windows/AppData/...` (`settings.json` + icons) from WSL2 to the Windows host side
+- [ ] `.wsl-config` → drop the Dell OpenManage/WSMAN template entirely; capture only the trailing `[wsl2]` `swap=0` setting as a note in a WSL2 setup doc, not a deployed file
+- [ ] **WSL2 systemd enablement** — `bin/WSL2_setup_scripts/02-get_systemd_running_WSL2.sh` is a genuine gap: nothing in homelab codifies `/etc/wsl.conf` (`[boot] command = ...systemd...`) or the `wsl2-systemd` sudoers drop-in. Needs a new task/role (e.g. in `local-core.yml`, Linux/WSL2-only) templating `/etc/wsl.conf` and fetching `00-wsl2-systemd.sh` from `diddledani/one-script-wsl2-systemd`. The other 3 scripts in that dir are already superseded: `00-WSL2-install.txt` is manual PowerShell (pre-Ansible, not automatable — keep only as doc reference if at all), `01-install_docker_in_WSL2.sh` → already covered by `setup_apt_repos` (`docker` tag) in `local-core.yml`, `03-install_k3s_wsl2.sh` → already superseded by `setup_k3s` (and was pinned to obsolete k3s v1.22.7/kubectl 1.23.0 anyway)
+- [x] **Brewfile gaps** — diffed `brew/Brewfile` + `brew/Brewfile.work` against all brew-based roles (2026-07-11). Already covered: `argocd`/`helm`/`kubernetes-cli` (`setup_kube-extra`), `awscli`/`aws-sam-cli` (`setup_cloud-aws`), `fzf`/`gcc`/`git-delta`/`go-task`/`oh-my-posh`/`pre-commit`/`python@3.12`/`uv`/`yq`/`jq`/`gnupg` (`setup_minimal`), `opentofu`/`terragrunt`/`terrascan`/`tfupdate` (`setup_iac-extra`), `terraform-docs`/`tflint`/`trivy` (`setup_iac-terraform`/`setup_security-tools`). Skipped per decision (2026-07-11): `terraformer`, `tfsec`, `hcledit`. **Added (2026-07-11):** `ffmpeg` → `setup_minimal`; `glab` → inline task in `local-dev.yml` (next to `gh`); `pyenv`/`pyenv-virtualenv`/`python-tk@3.12`/`python-tk@3.13` → `setup_python-uv` (new `pyenv_enabled`/`python_tk_versions` vars); `hadolint` → `setup_security-tools`; `helm-docs` → `setup_kube-extra`; `nvm` → **replaced** the direct `node` brew install in `setup_nodejs-dev-tools` (Node.js now installed/managed via `nvm install`, `pnpm` remains a standalone brew binary), plus a new `upgrade_nodejs` role wired into `upgrade-local.yml` to keep the nvm-managed Node version and global npm packages current. Not worth adding (former-employer/work-specific): `amazon-ecs-cli`, `atlantis`, `container-structure-test`, `dotbot`, `git-remote-codecommit`, `grok`, `infracost`, `jfrog-cli`, `bitbucket-cli` (gildas/tap)
+
+### Confirmed dead — delete from dotfiles, no migration
+
+- [ ] zsh + Powerlevel10k (`.zshrc`, `.p10k.zsh`) — superseded by bash + oh-my-posh
+- [ ] Spark/Jupyter (`bin/shutdown_spark.sh`, `bin/startup_spark_and_jupyter.sh`, `.jupyter/jupyter_lab_config.py`, `SPARK_HOME`/`SBT_HOME`/`SONAR_SCANNER_HOME` block in `.bashrc`) — tied to a prior on-prem Spark setup; `jupyter_lab_config.py` is stock boilerplate
+- [ ] `bin/adfs.py`, `bin/adfs-p3.py`, `bin/ec2.py` — former-employer AWS ADFS SAML login + EC2 helper; superseded by Terraform + dynamic inventory
+- [x] `bin/ssh-agent-start.sh` — loaded `~/.ssh/zk-bdcc.pem`; confirmed dead (2026-07-11) along with the `hcom-data-science`/EPAM `.ssh/config` entries it belongs to
+- [x] `bin/crudini.py` — old Python2 boto3 STS AssumeRole helper (misleadingly named after the actual `crudini` INI tool); confirmed dead (2026-07-11), same former-employer AWS access pattern as `adfs.py`/`ec2.py`
+- [x] `.condarc` — confirmed dead (2026-07-11), not using conda anymore
+- [ ] `bin/vault_aws_aim_key_rotate/` (`rotate_keys.sh`, `rotate_mlflow_iam_key_in_vault.sh`, `iam_output.json`, `new_nomad_iam_key.json`) — references Nomad/MLflow, neither exists in homelab; **check the JSON files for live key material before deleting**
+- [ ] Rest of `../dotfiles/TODO.md`'s "Likely dead" list (old Node 15/16/17 apt scripts, `apt-ansible-repo-add-install.sh`, `apt-kubernetes`/`helm`/`hashicorp`/`azure-cli`/`vscode` repo scripts, `apt-liquorix-repo-add.sh`, `apt-overviewer-repo-add.sh`, `apt-jurisic-nextcloud-repo-add.sh`, `.motd_shown`, `.powerline-shell.json`, `LICENSE`) — all already superseded per that repo's analysis, ready to delete
+
+### Already covered — verify then delete from dotfiles
+
+- [ ] `.gitconfig` → `configure_git` role (already a word-for-word superset)
+- [ ] oh-my-posh setup → `configure_oh-my-posh` role (homelab has more theme variants already)
+- [ ] fzf init → `configure_fzf` role
+- [ ] `alias k=kubectl` → already in `setup_kube-extra`
+- [ ] VS Code apt/brew install → `setup_vscode` role
+- [ ] Terraform/Vault CLI + `VAULT_ADDR` → `setup_iac-terraform` role (note: homelab's `VAULT_ADDR` points at the real `vault.kecskemethy.hu`, don't carry over the old dev value)
+- [ ] Azure CLI → `setup_cloud-azure` role
+- [ ] `bin/apt-repo-setup-scripts/*` (12 scripts: docker, grafana, gum/charm, mise, firefox/mozilla, sury-php, gitea, duosecurity, twilio, yarn, microsoft, telegraf) → all superseded 1:1 by `setup_apt_repos`
+- [ ] `apt-cisofy-repo-add-lynis-install.sh` → `setup_security-tools` role
+- [ ] `bin/kubernetes/install-k3s.sh` → `setup_k3s` role; `bin/kubernetes/install-helm.sh` → `setup_kube-extra` (brew-based helm install)
+- [ ] `install_oh_my_posh.sh`, `install_delta.sh` → superseded by the relevant Ansible roles above
+- [ ] `bin/git-prompt.sh` → redundant, oh-my-posh already renders git status in the prompt
+
+- [x] `.claude/settings.local.json` (in the dotfiles repo itself) — Claude Code local session settings, not real dotfiles content; needs no migration, goes away when the repo is archived
+
+### Execution order
+
+1. **Audit fully resolved (2026-07-11)** — all SSH hosts, `.pypirc`, `crudini.py`, `.condarc`, the Brewfile diff, and the WSL2 scripts have been triaged, see sections above.
+2. Stand up the workstation/personal Vault KV mount + `configure_ssh-client` role.
+3. Add the other new roles (`configure_bash-aliases`, Windows Terminal, krew, mc-gruvbox, WSL2 systemd enablement) and wire into `local-core.yml`/`personalise.yml`.
+4. Decide on the Brewfile gap packages (`ffmpeg`, `gh`, `glab`, `pyenv`, etc.) and add to the appropriate existing roles.
+5. Delete superseded/dead files from `../dotfiles` as each piece is confirmed migrated.
+6. Once nothing unique remains, archive the `../dotfiles` repo.
+
 ## Projects / Repos
 
 - [ ] **homelab-notify** (`forgejo.kecskemethy.org/kecsi/homelab-notify`) — typed ntfy CLI wrapper (Python); CI pipeline is red, needs investigation

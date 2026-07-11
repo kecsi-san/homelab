@@ -152,6 +152,7 @@
         install_base_packages: true
         install_brew_base_packages: true
         brew_base_packages:
+          - ffmpeg
           - fzf
           - gcc
           - git-delta
@@ -203,6 +204,10 @@
         name: setup_python-uv
       vars:
         python_version: 3.12
+        pyenv_enabled: true
+        python_tk_versions:
+          - python-tk@3.12
+          - python-tk@3.13
         uv_tools:
           - name: ansible
           - name: ansible-lint
