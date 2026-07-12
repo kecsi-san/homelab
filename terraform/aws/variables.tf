@@ -59,3 +59,15 @@ variable "s3_bucket_names" {
   type        = list(string)
   default     = []
 }
+
+variable "edge_ssh_user" {
+  description = "SSH login user cloud-init creates on edge.kecskemethy.net (renamed from Debian's default sudo user at first boot)"
+  type        = string
+  default     = "kecsi"
+}
+
+variable "vault_address" {
+  description = "Vault server address"
+  type        = string
+  default     = "https://vault.kecskemethy.hu"
+}

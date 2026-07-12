@@ -1,0 +1,21 @@
+#cloud-config
+%{ if user_rename != "" }
+system_info:
+  default_user:
+    name: ${user_rename}
+%{ endif }
+%{ if length(mounts) > 0 }
+fs_setup:
+%{ for m in mounts }
+  - label: ${m.label}
+    filesystem: ext4
+    device: ${m.device_path}
+    partition: none
+    overwrite: false
+%{ endfor }
+
+mounts:
+%{ for m in mounts }
+  - [ "${m.device_path}", "${m.mount_path}", "ext4", "defaults,nofail", "0", "2" ]
+%{ endfor }
+%{ endif }

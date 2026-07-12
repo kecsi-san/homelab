@@ -70,12 +70,19 @@ variable "legacy_extra_volumes" {
 }
 
 variable "data_volumes" {
-  description = "Additional volumes declared as standalone aws_ebs_volume + aws_volume_attachment resources, keyed by device name (AWS API name, e.g. \"/dev/sdf\") — resizable independently of the instance. See docs/howtos/ec2-ebs-volumes.md."
+  description = "Additional volumes declared as standalone aws_ebs_volume + aws_volume_attachment resources, keyed by device name (AWS API name, e.g. \"/dev/sdf\") — resizable independently of the instance. See docs/howtos/ec2-ebs-volumes.md. Set mount_path to have cloud-init format (ext4) and mount the volume at first boot, identified via its stable /dev/disk/by-id path (not the device name, which Nitro instances don't reliably expose as /dev/sdX)."
   type = map(object({
-    size      = number
-    type      = string
-    encrypted = bool
-    name      = string
+    size       = number
+    type       = string
+    encrypted  = bool
+    name       = string
+    mount_path = optional(string, "")
   }))
   default = {}
+}
+
+variable "cloud_init_user_rename" {
+  description = "If non-empty, cloud-init renames the default sudo user to this username at first boot (system_info.default_user.name), inheriting the distro's default sudo/group/shell config under the new name. Empty (default) = no rename, matches legacy Debian \"admin\" behavior — this and data_volumes.*.mount_path being unset are what make the legacy module call render no cloud-init user_data at all."
+  type        = string
+  default     = ""
 }

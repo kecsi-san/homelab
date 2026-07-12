@@ -1,5 +1,9 @@
 # Debian 13 official AMI — queried at plan time; no hardcoded AMI ID.
 # Owner 136693071363 is the Debian official AWS account.
+data "aws_subnet" "this" {
+  id = var.subnet_id
+}
+
 data "aws_ami" "debian13" {
   most_recent = true
   owners      = ["136693071363"]
@@ -91,6 +95,8 @@ resource "aws_instance" "this" {
     ignore_changes = [ami]
   }
 
+  user_data = local.rendered_user_data
+
   tags = {
     Name         = var.instance_name
     InstanceType = var.instance_type
@@ -98,9 +104,12 @@ resource "aws_instance" "this" {
 }
 
 # Data volumes resizable independently of the instance — see docs/howtos/ec2-ebs-volumes.md.
+# AZ comes from the subnet, not the instance, so these don't depend on aws_instance.this —
+# that lets the instance's own user_data reference these volumes' IDs (by-id device paths
+# for cloud-init) without creating a dependency cycle.
 resource "aws_ebs_volume" "data" {
   for_each          = var.data_volumes
-  availability_zone = aws_instance.this.availability_zone
+  availability_zone = data.aws_subnet.this.availability_zone
   size              = each.value.size
   type              = each.value.type
   encrypted         = each.value.encrypted
@@ -108,6 +117,31 @@ resource "aws_ebs_volume" "data" {
   tags = {
     Name = each.value.name
   }
+}
+
+locals {
+  # Only volumes with mount_path set get formatted/mounted by cloud-init.
+  # Identified via /dev/disk/by-id — deterministic, keyed off the volume's own
+  # ID — since Nitro instances don't reliably expose AWS's requested device
+  # names (e.g. /dev/sdf) as such; the kernel may see /dev/nvme1n1 etc.
+  cloud_init_mounts = [
+    for k, v in var.data_volumes : {
+      device_path = "/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_${replace(aws_ebs_volume.data[k].id, "-", "")}"
+      mount_path  = v.mount_path
+      label       = replace(trimprefix(v.mount_path, "/"), "/", "-")
+    }
+    if v.mount_path != ""
+  ]
+
+  needs_cloud_init = var.cloud_init_user_rename != "" || length(local.cloud_init_mounts) > 0
+
+  # null (not "") when there's nothing to render, so the legacy module call
+  # (no rename, no mount_path set) produces exactly the same user_data value
+  # (null) it has today — no diff on the live legacy instance.
+  rendered_user_data = local.needs_cloud_init ? templatefile("${path.module}/templates/cloud-init.yaml.tftpl", {
+    user_rename = var.cloud_init_user_rename
+    mounts      = local.cloud_init_mounts
+  }) : null
 }
 
 resource "aws_volume_attachment" "data" {

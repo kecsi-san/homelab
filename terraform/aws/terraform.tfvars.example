@@ -8,6 +8,9 @@ vpc_id               = "vpc-xxxxxxxx"
 subnet_id            = "subnet-xxxxxxxx"
 iam_instance_profile = "your-instance-profile-name"  # leave empty string if none
 
+# edge_ssh_user = "kecsi"                          # default shown; SSH user cloud-init creates on edge.kecskemethy.net
+# vault_address = "https://vault.kecskemethy.hu"   # default shown
+
 # Domains with Route53 hosted zones — MX, SPF, DMARC records created for each
 route53_domains = ["example.com", "example.net"]
 

@@ -14,7 +14,7 @@ The current plan instead: build Ansible roles that capture the *desired* state (
 
 **Phase 6 progress (2026-07-11):** Terraform side of step 1 is done — `module "ec2_edge"` + `module "eip_edge"` in `terraform/aws/main.tf` provision the new instance (`edge.kecskemethy.net`) alongside the legacy one, same SG rule set, plus the 4-volume EBS layout from `docs/howtos/ec2-ebs-volumes.md` (root gp3 20GB + `/home` 40GB + `/var/www` 20GB + `/var/log` 10GB, all encrypted, as standalone resizable `aws_ebs_volume`s). Verified via `terraform plan` that this is purely additive — zero unwanted changes to the live legacy instance. **Not yet applied** — plan is reviewed, `terraform apply` deliberately deferred to run manually.
 
-**Phase 6 design decisions (2026-07-12):** Bootstrap sequencing, the admin→`kecsi` rename, and the EBS mount step are now fully designed (not yet implemented):
+**Phase 6 design decisions (2026-07-12):** Bootstrap sequencing, the admin→`kecsi` rename, and the EBS mount step are now fully designed **and implemented in Terraform** (`terraform validate` clean; `terraform apply` deliberately not run):
 
 - **First-boot config moves to cloud-init, not Ansible.** The `ec2_edge` module call gains a generated `user_data` (cloud-config) that does two things at first boot, before any playbook ever connects:
   1. **User rename** — `system_info.default_user.name: kecsi` instead of Debian's default `admin`. Cloud-init merges this with the distro's default sudo/group/shell config for the bootstrap user, so `kecsi` comes up with the same NOPASSWD sudo the `admin` user would have had — just under the right name from the start. Avoids a fragile post-hoc rename (Ansible would be renaming the very account it's SSH'd in as, plus a UID clash against `setup_users`' hardcoded `uid: 1000` for `kecsi`). `setup_users`' existing `kecsi` (uid 1000) entry then just idempotently converges extra groups/keys on top — no role changes needed. One thing to verify post-boot: that cloud-init actually assigned UID 1000 (expected on a fresh AMI, but check with `id kecsi` before running `setup_users`).
@@ -28,7 +28,7 @@ The current plan instead: build Ansible roles that capture the *desired* state (
 
 - Terraform-generated `inventory/aws_hosts`'s `[aws_edge]` line needs `ansible_user=kecsi`, not the shared `var.admin_user` (which stays `admin` for the legacy box) — a new `edge_ssh_user` variable, default `"kecsi"`.
 
-Still missing before step 2 (running the playbooks) can happen: the Terraform changes above (not yet written).
+Still missing before step 2 (running the playbooks) can happen: the two manual `vault kv put` calls (`ec2/ssh-edge-bootstrap-public`, `ec2/ssh-edge-bootstrap-private` — the `-public` one is a hard prerequisite for `terraform plan`/`apply` to succeed at all, since `data.vault_kv_secret_v2` fails to read a path that doesn't exist yet), then `terraform apply` itself.
 
 **EIP cutover strategy:** When the new instance is ready, swap EIP via `terraform apply`. Route53 points to EIP so DNS is unchanged.
 

@@ -1,13 +1,13 @@
 locals {
   # ipv6 = false for rules where IPv6 is not applicable (Wireguard)
   ingress_rules = {
-    ssh             = { port = 22,    protocol = "tcp", ipv6 = true,  description = "SSH" }
-    smtp            = { port = 25,    protocol = "tcp", ipv6 = true,  description = "SMTP" }
-    http            = { port = 80,    protocol = "tcp", ipv6 = true,  description = "HTTP" }
-    https           = { port = 443,   protocol = "tcp", ipv6 = true,  description = "HTTPS" }
-    smtps           = { port = 465,   protocol = "tcp", ipv6 = true,  description = "SMTPS (legacy)" }
-    smtp_submission = { port = 587,   protocol = "tcp", ipv6 = true,  description = "SMTP submission (STARTTLS)" }
-    imaps           = { port = 993,   protocol = "tcp", ipv6 = true,  description = "IMAPS" }
+    ssh             = { port = 22, protocol = "tcp", ipv6 = true, description = "SSH" }
+    smtp            = { port = 25, protocol = "tcp", ipv6 = true, description = "SMTP" }
+    http            = { port = 80, protocol = "tcp", ipv6 = true, description = "HTTP" }
+    https           = { port = 443, protocol = "tcp", ipv6 = true, description = "HTTPS" }
+    smtps           = { port = 465, protocol = "tcp", ipv6 = true, description = "SMTPS (legacy)" }
+    smtp_submission = { port = 587, protocol = "tcp", ipv6 = true, description = "SMTP submission (STARTTLS)" }
+    imaps           = { port = 993, protocol = "tcp", ipv6 = true, description = "IMAPS" }
     wireguard       = { port = 51820, protocol = "udp", ipv6 = false, description = "Wireguard VPN" }
   }
 }
@@ -39,6 +39,20 @@ module "eip" {
   instance_id = module.ec2.instance_id
 }
 
+# SSH bootstrap keypair for the edge node — dedicated (not the shared legacy
+# key_pair_name), public half only, read from Vault (never -private; see
+# docs/howtos/vault-secrets-architecture.md's addendum on why the two halves
+# live at separate Vault paths).
+data "vault_kv_secret_v2" "edge_ssh_bootstrap_public" {
+  mount = "ec2"
+  name  = "ssh-edge-bootstrap-public"
+}
+
+resource "aws_key_pair" "edge" {
+  key_name   = "linuxbox2026"
+  public_key = data.vault_kv_secret_v2.edge_ssh_bootstrap_public.data["public_key"]
+}
+
 # Phase 6 rebuild target — new instance built up alongside the legacy box,
 # cut over (EIP swap) once services + data migration are verified.
 module "ec2_edge" {
@@ -46,7 +60,7 @@ module "ec2_edge" {
 
   vpc_id               = var.vpc_id
   subnet_id            = var.subnet_id
-  key_pair_name        = var.key_pair_name
+  key_pair_name        = aws_key_pair.edge.key_name
   instance_type        = var.instance_type
   iam_instance_profile = var.iam_instance_profile
   ingress_rules        = local.ingress_rules
@@ -59,10 +73,15 @@ module "ec2_edge" {
   root_volume_type      = "gp3"
   root_volume_size      = 20
   root_volume_encrypted = true
+
+  # cloud-init renames the default sudo user to edge_ssh_user (kecsi) and
+  # formats/mounts the volumes below at first boot — see
+  # docs/howtos/ec2-rebuild-plan.md's Phase 6 design-decisions section.
+  cloud_init_user_rename = var.edge_ssh_user
   data_volumes = {
-    "/dev/sdf" = { size = 40, type = "gp3", encrypted = true, name = "edge.kecskemethy.net-home" }
-    "/dev/sdg" = { size = 20, type = "gp3", encrypted = true, name = "edge.kecskemethy.net-www" }
-    "/dev/sdh" = { size = 10, type = "gp3", encrypted = true, name = "edge.kecskemethy.net-log" }
+    "/dev/sdf" = { size = 40, type = "gp3", encrypted = true, name = "edge.kecskemethy.net-home", mount_path = "/home" }
+    "/dev/sdg" = { size = 20, type = "gp3", encrypted = true, name = "edge.kecskemethy.net-www", mount_path = "/var/www" }
+    "/dev/sdh" = { size = 10, type = "gp3", encrypted = true, name = "edge.kecskemethy.net-log", mount_path = "/var/log" }
   }
 }
 
@@ -103,7 +122,7 @@ resource "local_file" "ansible_inventory" {
     "${module.eip.public_ip} ansible_user=${var.admin_user}",
     "",
     "[aws_edge]",
-    "${module.eip_edge.public_ip} ansible_user=${var.admin_user}",
+    "${module.eip_edge.public_ip} ansible_user=${var.edge_ssh_user}",
     "",
   ])
   filename        = "${path.root}/../../inventory/aws_hosts"
