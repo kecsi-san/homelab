@@ -76,33 +76,34 @@ Verified via `terraform plan`: adding the new instance produces zero unwanted di
 
 ---
 
-## OS-Level Setup (Ansible)
+## OS-Level Setup (cloud-init, not Ansible)
 
-**Status: not yet implemented (2026-07-11).** Terraform now creates and attaches the 4 volumes (see above), but nothing formats or mounts them yet. Needs an `ec2-storage.yml` playbook (or a `configure_fstab` task in `ec2-core.yml`) run before any other Phase 6 role, since `setup_users`/`setup_email-server`/`setup_apache2` all write to `/home`/`/var/www` immediately.
+**Status: designed, not yet implemented (2026-07-12).** Terraform creates and attaches the 4 volumes (see above); formatting and mounting them happens via cloud-init `user_data` on `ec2_edge`, at first boot, before Ansible ever connects — not a separate `ec2-storage.yml` playbook as originally sketched. This also removes the ordering hazard (`setup_users`/`setup_email-server`/`setup_apache2` writing to `/home`/`/var/www` before they're mounted): cloud-init's `disk_setup`/`mounts` modules run before the `users-groups` module in the default module order, so the volumes are mounted before `kecsi`'s home directory is even created.
 
-Mount points are created and `/etc/fstab` entries written by an `ec2-storage.yml` playbook (or a `configure_fstab` task in `ec2-core.yml`) before any other role runs:
+Devices are identified via `/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_<volume-id-no-dashes>` — deterministic, keyed off each `aws_ebs_volume`'s own ID — rather than matching by disk size or assuming a fixed `/dev/sdX`/`/dev/nvme1n1` mapping (not reliable on Nitro instances without AWS's udev helper, which the stock Debian AMI doesn't ship). This requires `terraform/modules/ec2` to source the data volumes' `availability_zone` from a `data "aws_subnet"` lookup instead of `aws_instance.this.availability_zone`, so the volumes don't depend on the instance and the instance's own `user_data` can reference its volumes' IDs.
+
+Sketch of the generated cloud-config (rendered via `templatefile()` inside the module):
 
 ```yaml
-- name: Create mount points
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
-  loop:
-    - /home
-    - /var/www
-    - /var/log
+#cloud-config
+fs_setup:
+  - label: home
+    filesystem: ext4
+    device: /dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_<home-volume-id>
+    partition: none
+  - label: www
+    filesystem: ext4
+    device: /dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_<www-volume-id>
+    partition: none
+  - label: log
+    filesystem: ext4
+    device: /dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_<log-volume-id>
+    partition: none
 
-- name: Mount EBS volumes
-  ansible.posix.mount:
-    path: "{{ item.path }}"
-    src: "{{ item.device }}"
-    fstype: ext4
-    opts: defaults,nofail
-    state: mounted
-  loop:
-    - { path: /home,     device: /dev/sdf }
-    - { path: /var/www,  device: /dev/sdg }
-    - { path: /var/log,  device: /dev/sdh }
+mounts:
+  - [ "/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_<home-volume-id>", /home, ext4, "defaults,nofail" ]
+  - [ "/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_<www-volume-id>", /var/www, ext4, "defaults,nofail" ]
+  - [ "/dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_<log-volume-id>", /var/log, ext4, "defaults,nofail" ]
 ```
 
-> **Note:** Device names (`/dev/sdf` etc.) are the AWS API names. The kernel may see them as `/dev/nvme1n1` etc. Use UUID-based fstab entries in practice (`blkid` after attach).
+This is combined in the same `user_data` with the `system_info.default_user.name: kecsi` rename — see `docs/howtos/ec2-rebuild-plan.md`'s Phase 6 design-decisions section for the full picture (SSH bootstrap key, Vault storage, rename rationale).

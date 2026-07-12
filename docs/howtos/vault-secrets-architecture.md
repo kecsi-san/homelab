@@ -43,6 +43,12 @@ New root module, separate state from `terraform/aws/` (different blast radius �
 - **No role changes needed.** Replace the static values in `inventory/group_vars/aws.yml` with `community.hashi_vault.vault_kv2_get` lookups under the *same* variable names (`ec2_users`, `apache_certs`, etc., authenticating via the AppRole `role_id`/`secret_id` from `secrets.yml`) — every role still just reads `{{ ec2_users }}` as before, only the source changes from a static file to a live Vault lookup.
 - **Rollout safety:** keep `secrets.yml`'s current EC2 values in place as a fallback during transition — don't delete them until the Vault-lookup path has been verified working end-to-end. Remove the fallback only after that's confirmed, as a separate, later cleanup step.
 
+## Addendum: Terraform reading (not writing) a secret (2026-07-12)
+
+Decision #1 above ("Terraform manages structure only, never secret values") is about Terraform never *creating or managing* secret content as a resource. It doesn't preclude Terraform *reading* an already-existing secret via a `vault` provider data source to consume it during provisioning — e.g. `terraform/aws` reading the edge node's SSH bootstrap public key (`ec2/ssh-edge-bootstrap-public`, see `docs/howtos/ec2-rebuild-plan.md`) into an `aws_key_pair` resource. That's a read, not a write; Terraform still never puts anything into Vault.
+
+The caveat: a `vault_kv_secret_v2` data source's entire `data` map lands in Terraform state, not just whatever fields you reference in `.tf` code — so any secret co-located at the same path as something Terraform reads leaks into that state file too. This is why the SSH bootstrap keypair is split into two separate Vault paths (`...-public` / `...-private`) rather than one entry with both fields: Terraform only ever reads the public one, so the private key never touches `terraform/aws`'s state.
+
 ## Deferred (explicitly out of scope, tracked for later)
 - OIDC auth via Authentik for human login
 - Kubernetes SealedSecrets → Vault migration (needs External Secrets Operator or Vault Agent Injector)
