@@ -21,6 +21,19 @@
   become: true
   when: security_tools_enabled and ansible_system == 'Linux' and 'aide' in security_apt_packages
 
+# AIDE — exclude the NFS backup mount (restic REST server repos) from the
+# catch-all / 0 Full scan rule; same rationale as the Kubernetes exclusion
+# above. Harmless no-op on hosts without /backups (only hppd600g6 has it).
+- name: Deploy AIDE exclusion for NFS backup mount
+  ansible.builtin.copy:
+    src: 50_aide_backups
+    dest: /etc/aide/aide.conf.d/50_aide_backups
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  when: security_tools_enabled and ansible_system == 'Linux' and 'aide' in security_apt_packages
+
 # AIDE — suppress mail reports. dailyaidecheck tries to email its report via
 # mail(1), which fails from the systemd service context on hosts with no MTA
 # configured (none of ours have one — ntfy is this repo's alerting channel),

@@ -1,0 +1,4 @@
+# NFS backup target (restic REST server repos) -- constantly churning
+# pack/index data, not part of the static OS surface AIDE is meant to
+# protect; same rationale as 50_aide_kubernetes.
+-/backups$ 0
