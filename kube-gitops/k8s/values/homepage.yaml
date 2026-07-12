@@ -169,3 +169,7 @@ config:
             icon: si-backstage
             namespace: backstage
             app: backstage
+        - Vault:
+            href: https://vault.kecskemethy.hu
+            description: Secrets management · EC2 edge node
+            icon: vault.png
