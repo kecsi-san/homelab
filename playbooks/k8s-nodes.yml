@@ -247,8 +247,11 @@
       ansible.builtin.import_role:
         name: setup_security-tools
       vars:
+        # aide removed: dailyaidecheck.timer's daily full-filesystem hash cost
+        # 15+ min CPU and a ~20G memory peak on every kube node (see
+        # roles/setup_security-tools/tasks/main.yml for the teardown that runs
+        # in its absence).
         security_apt_packages:
-          - aide
           - fail2ban
           - rkhunter
       tags:

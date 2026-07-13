@@ -60,6 +60,40 @@
   async: 1800
   poll: 30
 
+# AIDE teardown — removed from security_apt_packages after dailyaidecheck.timer's
+# daily full-filesystem hash (sha256 over every file) cost 15+ min CPU and a ~20G
+# memory peak on every kube node. Tears down a previously-installed instance;
+# idempotent no-op on hosts that never had it.
+- name: Stop and disable AIDE daily check timer
+  ansible.builtin.systemd:
+    name: dailyaidecheck.timer
+    state: stopped
+    enabled: false
+  become: true
+  when: security_tools_enabled and ansible_system == 'Linux' and 'aide' not in security_apt_packages
+  ignore_errors: true  # unit doesn't exist on hosts that never had aide installed
+
+- name: Purge AIDE package
+  ansible.builtin.apt:
+    name:
+      - aide
+      - aide-common
+    state: absent
+    purge: true
+  become: true
+  when: security_tools_enabled and ansible_system == 'Linux' and 'aide' not in security_apt_packages
+
+- name: Remove AIDE config fragments and database
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/aide/aide.conf.d/50_aide_kubernetes
+    - /etc/aide/aide.conf.d/50_aide_backups
+    - /var/lib/aide
+  become: true
+  when: security_tools_enabled and ansible_system == 'Linux' and 'aide' not in security_apt_packages
+
 # Lynis — via Cisofy official apt repo (Linux only)
 - name: Download Cisofy GPG key
   ansible.builtin.get_url:
