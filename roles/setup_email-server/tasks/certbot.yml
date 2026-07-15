@@ -5,8 +5,8 @@
       certbot certonly --non-interactive --agree-tos
       --dns-route53
       --email {{ certbot_email }}
-      -d {{ mail_hostname }}
-    creates: "{{ certbot_cert_dir }}/{{ mail_hostname }}/fullchain.pem"
+      -d {{ mail_cert_name }}
+    creates: "{{ certbot_cert_dir }}/{{ mail_cert_name }}/fullchain.pem"
   environment:
     AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
     AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"

@@ -9,7 +9,10 @@ email_apt_packages:
   - rspamd
   - opendmarc
   - certbot
-  - python3-certbot-dns-route53
+  # DNS plugin for automated cert renewal — add when .hu domains move to a supported provider.
+  # Cloudflare (free, python3-certbot-dns-cloudflare) is the likely target;
+  # Route53 can host .hu zones but cannot register them and charges per zone.
+  # - python3-certbot-dns-cloudflare
 
 postfix_config_dir: /etc/postfix
 dovecot_config_dir: /etc/dovecot

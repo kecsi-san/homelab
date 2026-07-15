@@ -65,6 +65,7 @@ apache_vhosts: "{{ lookup('community.hashi_vault.vault_kv2_get', 'vhosts', **vau
 
 mailbox_users: "{{ lookup('community.hashi_vault.vault_kv2_get', 'mail', **vault_ec2_lookup_args)['secret']['mailbox_users'] }}"
 email_domains: "{{ lookup('community.hashi_vault.vault_kv2_get', 'mail', **vault_ec2_lookup_args)['secret']['email_domains'] }}"
+mail_cert_name: linuxbox.hu
 
 # --- HashiCorp Vault ---
 # vault_version: leave empty to install latest from HashiCorp APT repo.

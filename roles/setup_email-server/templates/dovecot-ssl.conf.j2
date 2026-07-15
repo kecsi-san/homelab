@@ -6,6 +6,6 @@ ssl_min_protocol = TLSv1.2
 # ssl_prefer_server_ciphers likewise removed; OpenSSL defaults are secure with TLSv1.2+ minimum.
 
 ssl_server {
-  cert_file = {{ certbot_cert_dir }}/{{ mail_hostname }}/fullchain.pem
-  key_file  = {{ certbot_cert_dir }}/{{ mail_hostname }}/privkey.pem
+  cert_file = {{ certbot_cert_dir }}/{{ mail_cert_name }}/fullchain.pem
+  key_file  = {{ certbot_cert_dir }}/{{ mail_cert_name }}/privkey.pem
 }

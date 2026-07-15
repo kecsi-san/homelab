@@ -1,8 +1,12 @@
 ---
 email_server_enabled: true
 
-# Primary mail hostname — used for TLS cert, SMTP banner, Dovecot
+# Primary mail hostname — used for SMTP banner, Dovecot
 mail_hostname: "mail.{{ email_domains | first }}"
+
+# Let's Encrypt cert directory name — defaults to mail_hostname but can be overridden
+# when using a wildcard cert issued for a parent domain (e.g. linuxbox.hu covers mail.linuxbox.hu)
+mail_cert_name: "{{ mail_hostname }}"
 
 # DKIM selector — change to rotate keys (old selector stays valid until DNS TTL expires)
 dkim_selector: mail
