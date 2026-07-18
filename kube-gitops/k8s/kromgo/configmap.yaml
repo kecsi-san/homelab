@@ -8,50 +8,92 @@ data:
   config.yaml: |
     gallery:
       enabled: true
+    favicon: "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"
     badges:
       - id: debian_version
         query: label_replace(node_os_info{id="debian"}, "version_id", "$1", "version_id", "v(.+)")
-        value: labels["version_id"]
+        valueExpr: labels["version_id"]
       - id: kubernetes_version
         query: label_replace(kubernetes_build_info{service="kubernetes"}, "git_version", "$1", "git_version", "v(.+)")
-        value: labels["git_version"]
+        valueExpr: labels["git_version"]
       - id: cluster_node_count
         query: count(count by (node) (kube_node_status_condition{condition="Ready"}))
-        color: '"green"'
+        colorExpr: '"green"'
         title: Nodes
       - id: cluster_pod_count
         query: sum(kube_pod_status_phase{phase="Running"})
-        value: humanizeNumber(result)
-        color: '"green"'
+        valueExpr: humanizeCommas(result)
+        colorExpr: '"green"'
       - id: cluster_cpu_usage
         query: round(avg(instance:node_cpu_utilisation:rate5m) * 100, 0.1)
-        value: string(result) + "%"
-        color: 'result <= 35 ? "green" : result <= 75 ? "orange" : "red"'
+        valueExpr: string(result) + "%"
+        colorExpr: 'result <= 35 ? "green" : result <= 75 ? "orange" : "red"'
       - id: cluster_memory_usage
         query: round(sum(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / sum(node_memory_MemTotal_bytes) * 100, 0.1)
-        value: string(result) + "%"
-        color: 'result <= 35 ? "green" : result <= 75 ? "orange" : "red"'
+        valueExpr: string(result) + "%"
+        colorExpr: 'result <= 35 ? "green" : result <= 75 ? "orange" : "red"'
       - id: cluster_birth_age
         query: round(time() - min(kube_node_created))
-        value: humanizeDays(result)
-        color: 'result <= 15552000 ? "green" : result <= 31104000 ? "orange" : "red"'
+        valueExpr: humanizeDurationDays(result)
+        colorExpr: 'result <= 15552000 ? "green" : result <= 31104000 ? "orange" : "red"'
       - id: cluster_uptime_age
         query: round(avg(node_time_seconds - node_boot_time_seconds))
-        value: humanizeDays(result)
-        color: 'result <= 15552000 ? "green" : result <= 31104000 ? "orange" : "red"'
+        valueExpr: humanizeDurationDays(result)
+        colorExpr: 'result <= 15552000 ? "green" : result <= 31104000 ? "orange" : "red"'
       - id: cluster_longhorn_storage
         query: round(sum(longhorn_node_storage_usage_bytes) / sum(longhorn_node_storage_capacity_bytes) * 100, 0.1)
-        value: string(result) + "%"
-        color: 'result <= 50 ? "green" : result <= 80 ? "orange" : "red"'
+        valueExpr: string(result) + "%"
+        colorExpr: 'result <= 50 ? "green" : result <= 80 ? "orange" : "red"'
       - id: cluster_argocd_out_of_sync
         query: count(argocd_app_info{sync_status!="Synced"}) or vector(0)
-        color: 'result < 1 ? "green" : "red"'
+        colorExpr: 'result < 1 ? "green" : "red"'
         title: Apps Unsynced
       - id: cluster_failed_pods
         query: sum(kube_pod_status_phase{phase=~"Failed|Unknown"}) or vector(0)
-        color: 'result < 1 ? "green" : "red"'
+        colorExpr: 'result < 1 ? "green" : "red"'
         title: Failed Pods
       - id: cluster_alert_count
         query: count(ALERTS{alertstate="firing",alertname!~"Watchdog|InfoInhibitor"}) or vector(0)
-        color: 'result < 1 ? "green" : "red"'
+        colorExpr: 'result < 1 ? "green" : "red"'
         title: Alerts

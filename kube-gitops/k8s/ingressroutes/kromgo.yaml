@@ -10,12 +10,6 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`kromgo.kecskemethy.org`) && Path(`/favicon.ico`)
-      kind: Rule
-      priority: 20
-      services:
-        - name: kromgo
-          port: 8081
     - match: Host(`kromgo.kecskemethy.org`)
       kind: Rule
       priority: 10
