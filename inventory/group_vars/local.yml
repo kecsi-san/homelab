@@ -83,3 +83,4 @@ extra_hosts:
   - { ip: "{{ k8s_traefik_ip }}", name: "backstage.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "glance.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "kromgo.{{ domain_name }}" }
+  - { ip: "{{ k8s_traefik_ip }}", name: "hubble.{{ domain_name }}" }
