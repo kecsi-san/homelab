@@ -151,9 +151,13 @@ kube_encrypt_secret_data: false
 
 # Graceful Node Shutdown (Kubernetes >= 1.21.0), see https://kubernetes.io/blog/2021/04/21/graceful-node-shutdown-beta/
 # kubelet_shutdown_grace_period had to be greater than kubelet_shutdown_grace_period_critical_pods to allow
-# non-critical podsa to also terminate gracefully
-# kubelet_shutdown_grace_period: 60s
-# kubelet_shutdown_grace_period_critical_pods: 20s
+# non-critical pods to also terminate gracefully
+# Ensures a full-cluster `ansible kube -a "sudo shutdown -h now"` lets kubelet gracefully
+# SIGTERM every pod (incl. Longhorn instance-manager/replicas) before poweroff, instead of
+# systemd tearing down kubelet/containerd on their own timeout and leaving Longhorn replicas
+# dirty (triggers rebuilds on next boot).
+kubelet_shutdown_grace_period: 120s
+kubelet_shutdown_grace_period_critical_pods: 30s
 
 # DNS configuration.
 # Kubernetes cluster name, also will be used as DNS domain
