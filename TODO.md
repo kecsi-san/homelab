@@ -4,6 +4,8 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 
 ## Active / Next up
 
+- [ ] **Cilium Hubble UI** — noticed the container image being pulled during a `k8s.yml` run (Kubespray deploys it as part of the Cilium addon); make it reachable/visible from Homepage instead of leaving it unexposed
+
 - [ ] **Backstage Kubernetes plugin** — shows "Entity context is not available" as a standalone nav item; either configure it for catalog entities (requires annotations) or remove `kubernetesPlugin` from `App.tsx`
 - [x] **Kromgo** — badges live on GitHub README; 12 metrics: versions, nodes, pods, failed pods, CPU, memory, Longhorn storage, birth age, uptime age, alerts, ArgoCD out-of-sync
 - [ ] **VictoriaLogs** — log aggregation (no log storage currently); single-binary replacement for Loki, significantly lower RAM, simpler to operate; community is moving away from Loki toward VictoriaLogs; deploy alongside kube-prometheus-stack; Fluent Bit or Grafana Alloy as log forwarder
