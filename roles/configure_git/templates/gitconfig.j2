@@ -1,12 +1,13 @@
 [user]
     name = {{ git_user_name }}
     email = {{ git_user_email }}
-    # TODO: signingkey references a GPG key ID, but the actual key material isn't
-    # deployed by this role. gpgsign is left off (see [commit] below) until there's a
-    # secure way to distribute the private key to each machine — plan is to pull it
-    # from HashiCorp Vault (see setup_vault role) once Vault is actually initialized
-    # and unsealed. Until then this is a manual, per-machine step.
+    # SSH-format signing key, not GPG -- the actual key material is deployed by
+    # configure_ssh-client (Vault-backed), which must run before this role.
     signingkey = {{ git_user_signingkey }}
+[gpg]
+    format = ssh
+[gpg "ssh"]
+    allowedSignersFile = {{ ansible_env.HOME }}/.ssh/allowed_signers
 [alias]
     st = status
     co = checkout

@@ -37,3 +37,18 @@
   become: false
   tags:
     - gitconfig
+
+- name: Deploy allowed_signers file for local SSH-signature verification
+  ansible.builtin.copy:
+    content: "{{ git_user_email }} {{ lookup('ansible.builtin.file', git_user_signingkey) }}\n"
+    dest: "{{ ansible_env.HOME }}/.ssh/allowed_signers"
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
+    mode: '0644'
+  become: false
+  # Only when signing is actually on (i.e. never on remote k8s-nodes.yml hosts,
+  # which override gpgsign to false -- the file lookup above reads from the
+  # control node, not the remote target, so it wouldn't resolve correctly there).
+  when: git_user_gpgsign | bool
+  tags:
+    - gitconfig

@@ -73,7 +73,10 @@ configured here — the two never share a connection.
    or `workstation/ssh-keys/hosts/{{ ssh_client_machine_name }}/<key_name>`
    (per that entry's `key_scope`) and writes it to `~/.ssh/{{ key_name }}`
    (`mode: '0600'`, `no_log: true` so key material never hits Ansible's logs).
-3. Templates `~/.ssh/config` from the host list, one `Host` block per entry.
+3. Derives each key's public counterpart locally (`ssh-keygen -y`, not stored
+   in Vault — public keys aren't secret) and writes `~/.ssh/{{ key_name }}.pub`
+   (`mode: '0644'`). Used by e.g. `configure_git`'s SSH-format commit signing.
+4. Templates `~/.ssh/config` from the host list, one `Host` block per entry.
 
 ## Variables
 

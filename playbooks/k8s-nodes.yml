@@ -180,6 +180,11 @@
     - name: Configure git
       ansible.builtin.import_role:
         name: configure_git
+      vars:
+        # configure_ssh-client (local-only) never runs on these remote hosts, so
+        # there's no signing key here to point at -- would otherwise break commit
+        # signing (including etckeeper's auto-commits) with a dangling key path.
+        git_user_gpgsign: false
       become: false
       tags:
         - gitconfig

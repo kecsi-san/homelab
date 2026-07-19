@@ -164,7 +164,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | `configure_cloudflare-zone` | Manages Cloudflare zone settings (ECH) and DNS A records (e.g. `minecraft.<domain>`) via REST API; `proxied: false` for UDP services; credentials via `secrets.yml` |
 | `configure_fzf` | Adds fzf initialization to `~/.bashrc` (idempotent) |
 | `configure_ntp` | Disables systemd-timesyncd; installs chrony (Debian 13 dropped ntpd); configures MikroTik router as primary NTP + pool.ntp.org fallback; wired into `k8s-nodes.yml` and `local-core.yml` (Linux only) with `ntp` tag |
-| `configure_git` | Copies `~/.gitconfig` from static file |
+| `configure_git` | Templates `~/.gitconfig`; SSH-format commit signing (`gpg.format = ssh`, reuses the `github.com` key from `configure_ssh-client`, which must run first) — disabled on remote `k8s-nodes.yml` runs where no signing key is deployed |
 | `configure_ssh-client` | Templates `~/.ssh/config` from Vault (`workstation/ssh-config/<machine>`, keyed by `ansible_hostname`); fetches only the specific keys that machine's config references from a shared pool (`workstation/ssh-keys/<key-name>`), not the whole pool; runs interactively via the human's own cached Vault session, no AppRole |
 | `configure_oh-my-posh` | Installs Pluto OMP theme; adds init block to `~/.bashrc` |
 | `configure_ssh` | Deploys SSH authorized key for `ansible_ssh_user` |

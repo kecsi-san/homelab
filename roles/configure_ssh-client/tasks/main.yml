@@ -33,6 +33,27 @@
     label: "{{ item.key_name }}"
   no_log: true
 
+# Public keys aren't secret and are deterministically derivable from the private
+# key, so this derives them locally instead of storing/fetching them from Vault
+# too. Used for e.g. git commit signing (user.signingkey wants a public key path).
+- name: Derive each key's public counterpart
+  ansible.builtin.command:
+    cmd: "ssh-keygen -y -f {{ ansible_env.HOME }}/.ssh/{{ item.key_name }}"
+  loop: "{{ ssh_client_hosts }}"
+  loop_control:
+    label: "{{ item.key_name }}"
+  register: ssh_client_pubkeys
+  changed_when: false
+
+- name: Write public key files
+  ansible.builtin.copy:
+    content: "{{ item.stdout }}\n"
+    dest: "{{ ansible_env.HOME }}/.ssh/{{ item.item.key_name }}.pub"
+    mode: "0644"
+  loop: "{{ ssh_client_pubkeys.results }}"
+  loop_control:
+    label: "{{ item.item.key_name }}"
+
 - name: Template ~/.ssh/config from the Vault-sourced host list
   ansible.builtin.template:
     src: ssh_config.j2
