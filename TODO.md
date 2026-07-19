@@ -66,12 +66,12 @@ is EC2-only) and a scope-note update in `docs/howtos/vault-secrets-architecture.
 - [x] **`github.com` real personal key** — done 2026-07-19, generated a new dedicated key (not borrowed from `git.epam.com.pem`), added to GitHub, migrated into `workstation/ssh-keys/generic/github.com` (generic scope — reusable from other machines later), verified with a real signed+pushed commit
 - [x] **Git commit signing: SSH format, not GPG** — done 2026-07-19, reuses the `github.com` key above rather than the old, never-completed GPG plan (`git_user_signkey`, a now-lost GPG key ID — removed from `local.yml`). See `roles/configure_git/README.md`. Verified: `git log --show-signature` shows `Good "git" signature` on the commit that made this change.
 - [x] `.pypirc` (Azure DevOps feed, org `qrdaas`, index-server `data-pkgs`) — confirmed dead (2026-07-11), same former-employer bucket; drop, no migration
-- [ ] `bin/vault_login.sh` / `bin/vault_env.sh` → keep, repoint from dev `localhost:443` to `vault.kecskemethy.hu`
-- [ ] `bin/vault_approle_token_gen.sh` → adapt as a general local AppRole-login convenience script reusing the pattern already built for EC2 (`terraform/vault/` generates `role_id`/`secret_id`)
+- [x] `bin/vault_login.sh` / `bin/vault_env.sh` — done 2026-07-19, not as scripts: `VAULT_ADDR` was already exported by `setup_iac-terraform` (predates this item, already pointing at the real `vault.kecskemethy.hu`, nothing to do there); added a `vault-login` alias to the same role instead of a script — replaces the old scripts' former-employer-specific LDAP-auth login with the real `-method=userpass` one
+- [x] `bin/vault_approle_token_gen.sh` — decided not needed 2026-07-19: the old script solved a former-employer workflow where humans manually minted AppRole tokens; in this homelab, Ansible's own `community.hashi_vault` lookups handle AppRole auth internally (no manual token step), and the rare case of a human wanting to verify the `ansible` AppRole is already a documented one-off command in `terraform/vault/README.md`'s Verification section — not worth automating into an alias/script
 
 ### New roles to add
 
-- [ ] **`configure_bash-aliases` role (new)** — `ll`, `l`, `alert`, `kx`, `kn`, `apt-maintenance`, `brew-maintenance`, `ecr-login`, `git-reset-author` from `../dotfiles/.bash_aliases`; check overlap with existing `exa`/`la` and `k=kubectl` aliases first
+- [x] **`configure_bash-aliases` role** — done 2026-07-19, verified (all 11 aliases load correctly, `la`/`kx` smoke-tested). `k=kubectl` excluded (already `setup_kube-extra`'s); `eza` (not the unmaintained `exa`) backs `ls`/`ll`/`l`/`la`. Preserved a live-only improvement (`apt-maintenance` using `apt -y upgrade`) that had never been pushed back to `../dotfiles` — the source file there still had the old, interactive version.
 - [ ] **krew** (kubectl plugin manager) → fold into `setup_kube-extra`
 - [ ] `bin/mc-gruvbox-skin-setup.sh` → fold into `personalise.yml`
 - [ ] **Windows Terminal config role (new)** — deploy `windows/AppData/...` (`settings.json` + icons) from WSL2 to the Windows host side
@@ -83,7 +83,7 @@ is EC2-only) and a scope-note update in `docs/howtos/vault-secrets-architecture.
 
 1. **Audit fully resolved (2026-07-11)** — all SSH hosts, `.pypirc`, `crudini.py`, `.condarc`, the Brewfile diff, and the WSL2 scripts have been triaged; dead/already-covered items tracked in `../dotfiles/TODO.md` itself (no action needed in this repo — see scope decision below).
 2. ~~Stand up the workstation/personal Vault KV mount + `configure_ssh-client` role.~~ Done 2026-07-19.
-3. Add the other new roles (`configure_bash-aliases`, Windows Terminal, krew, mc-gruvbox, WSL2 systemd enablement) and wire into `local-core.yml`/`personalise.yml`.
+3. ~~Add `configure_bash-aliases`.~~ Done 2026-07-19. Still open: Windows Terminal, krew, mc-gruvbox, WSL2 systemd enablement.
 4. Decide on the Brewfile gap packages (`ffmpeg`, `gh`, `glab`, `pyenv`, etc.) and add to the appropriate existing roles.
 5. Once steps 2–4 are done, archive `../dotfiles` as-is (2026-07-19 scope decision: no per-file deletion cleanup in that repo first — it's about to be archived and read-only, not worth the churn; the dead/superseded items are already recorded in its own `TODO.md`)
 

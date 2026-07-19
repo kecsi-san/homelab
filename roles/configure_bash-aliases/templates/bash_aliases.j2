@@ -1,0 +1,12 @@
+# Managed by Ansible (configure_bash-aliases role) — do not edit by hand
+alias ls='eza'
+alias ll='ls -alF'
+alias l='ls -F'
+alias la='eza --long --all --group'
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+alias kx='f() { [ "$1" ] && kubectl config use-context $1 || kubectl config current-context ; } ; f'
+alias kn='f() { [ "$1" ] && kubectl config set-context --current --namespace $1 || kubectl config view --minify | grep namespace | cut -d" " -f6 ; } ; f'
+alias apt-maintenance='sudo apt update && sudo apt -y upgrade && sudo apt autoremove && sudo apt autoclean'
+alias brew-maintenance='brew update && brew upgrade && HOMEBREW_CLEANUP_MAX_AGE_DAYS=1 brew cleanup'
+alias ecr-login='aws ecr get-login-password --region {{ bash_aliases_ecr_region }} | docker login --username AWS --password-stdin $(aws sts get-caller-identity | jq -r .Account).dkr.ecr.{{ bash_aliases_ecr_region }}.amazonaws.com'
+alias git-reset-author='git commit --amend --no-edit --reset-author'

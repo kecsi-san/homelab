@@ -165,6 +165,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | `configure_fzf` | Adds fzf initialization to `~/.bashrc` (idempotent) |
 | `configure_ntp` | Disables systemd-timesyncd; installs chrony (Debian 13 dropped ntpd); configures MikroTik router as primary NTP + pool.ntp.org fallback; wired into `k8s-nodes.yml` and `local-core.yml` (Linux only) with `ntp` tag |
 | `configure_git` | Templates `~/.gitconfig`; SSH-format commit signing (`gpg.format = ssh`, reuses the `github.com` key from `configure_ssh-client`, which must run first) — disabled on remote `k8s-nodes.yml` runs where no signing key is deployed |
+| `configure_bash-aliases` | Templates `~/.bash_aliases` (`eza`-based `ls`/`ll`/`l`/`la`, `alert`, `kx`/`kn`, `apt-maintenance`, `brew-maintenance`, `ecr-login`, `git-reset-author`); `k=kubectl` deliberately excluded, already owned by `setup_kube-extra` |
 | `configure_ssh-client` | Templates `~/.ssh/config` from Vault (`workstation/ssh-config/<machine>`, keyed by `ansible_hostname`); fetches only the specific keys that machine's config references from a shared pool (`workstation/ssh-keys/<key-name>`), not the whole pool; runs interactively via the human's own cached Vault session, no AppRole |
 | `configure_oh-my-posh` | Installs Pluto OMP theme; adds init block to `~/.bashrc` |
 | `configure_ssh` | Deploys SSH authorized key for `ansible_ssh_user` |
@@ -258,7 +259,7 @@ roles/<role-name>/
 ### Tagging
 
 Tags enable selective role execution without running the full playbook:
-- `local-core.yml` tags: `brew`, `apt-repos`, `docker`, `apps`, `minimal`, `network`, `ntp`, `python`, `uv`, `ssh-client`
+- `local-core.yml` tags: `brew`, `apt-repos`, `docker`, `apps`, `minimal`, `network`, `ntp`, `python`, `uv`, `ssh-client`, `bash-aliases`
 - `local-security.yml` tags: `sudo`, `apt-repos`, `security`, `checkov`
 - `local-dev.yml` tags: `vscode`, `go`, `dev`, `nodejs`, `rust`, `gh`, `glab`
 - `local-cloud.yml` tags: `iac`, `terraform`, `iac-extra`, `cloud`, `aws`, `azure`, `gcp`

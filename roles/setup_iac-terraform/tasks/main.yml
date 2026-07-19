@@ -21,3 +21,13 @@
     create: false
   become: false
   when: iac_vault_addr | length > 0
+
+- name: Add vault-login alias to ~/.bashrc
+  ansible.builtin.blockinfile:
+    path: "{{ ansible_env.HOME }}/.bashrc"
+    marker: "# {mark} ANSIBLE MANAGED BLOCK — vault login alias"
+    block: |
+      alias vault-login='vault login -method=userpass username={{ admin_user }}'
+    create: false
+  become: false
+  when: iac_vault_addr | length > 0

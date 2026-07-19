@@ -179,6 +179,12 @@
         - gitconfig
         - git
 
+    - name: Configure bash aliases
+      ansible.builtin.import_role:
+        name: configure_bash-aliases
+      tags:
+        - bash-aliases
+
     - name: Configure /etc/hosts
       ansible.builtin.import_role:
         name: configure_etc-hosts

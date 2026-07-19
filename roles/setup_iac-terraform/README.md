@@ -16,14 +16,15 @@ Installs the following via Homebrew (Tier 2 — frequently updated), tapping `ha
 
 > `checkov` (IaC security scanner) is handled by `setup_python-uv` as a `uv tool install` — no need to install it here.
 
-If `iac_vault_addr` is set, exports `VAULT_ADDR` in `~/.bashrc` via an Ansible-managed block. Authentication (`vault login`) is still a manual, one-time step — not something this role does for you.
+If `iac_vault_addr` is set, exports `VAULT_ADDR` in `~/.bashrc` via an Ansible-managed block, and adds a `vault-login` alias (`vault login -method=userpass username={{ admin_user }}`) as a shortcut for the actual login step — replaces the old `../dotfiles` `vault_login.sh`/`vault_env.sh` scripts (which pointed at a former-employer's LDAP-auth dev Vault, not reusable as-is). Authentication itself is still a manual, interactive step (needs your password) — the alias just saves typing the command.
 
 ## Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `iac_brew_packages` | see `defaults/main.yml` | List of Homebrew packages to install |
-| `iac_vault_addr` | `""` | Vault server URL to export as `VAULT_ADDR`. Empty skips the `~/.bashrc` block entirely. |
+| `iac_vault_addr` | `""` | Vault server URL to export as `VAULT_ADDR`. Empty skips both `~/.bashrc` blocks (address and `vault-login` alias) entirely. |
+| `admin_user` | vaulted in `secrets.yml`/`local.yml` | Username baked into the `vault-login` alias |
 
 ## Usage
 
