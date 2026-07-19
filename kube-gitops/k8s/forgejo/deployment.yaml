@@ -67,6 +67,10 @@ spec:
               value: "level"
             - name: GITEA__indexer__ISSUE_INDEXER_TYPE
               value: "bleve"
+            - name: GITEA__cron_update_mirrors__SCHEDULE
+              value: "@every 1m"
+            - name: GITEA__cron_update_mirrors__PULL_LIMIT
+              value: "1"
             - name: GITEA__service__DISABLE_REGISTRATION
               value: "true"
             - name: GITEA__service__ENABLE_REMEMBER_ME
