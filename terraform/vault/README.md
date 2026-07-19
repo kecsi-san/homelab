@@ -13,6 +13,8 @@ the full design rationale.
 - `vault_policy.ec2_admin` — full CRUD on `ec2/*`
 - `vault_auth_backend.approle` + `vault_approle_auth_backend_role.ansible` — machine auth for Ansible, bound to `ec2-ansible-read`
 - `vault_auth_backend.userpass` — human auth method (the actual user is created manually, see step 3 below)
+- `vault_mount.workstation` — KV v2 mount at `workstation/`, for personal/workstation secrets (SSH client config + keys, migrated from `../dotfiles`)
+- `vault_policy.workstation_admin` — full CRUD on `workstation/*`, bound to the same userpass login as `ec2-admin`
 
 ## Setup
 
@@ -46,10 +48,11 @@ vault write -f auth/approle/role/ansible/secret-id
 #   vault_ansible_secret_id: "<secret_id from this command>"
 ```
 
-**3. Create your personal Vault login:**
+**3. Create your personal Vault login** (or update it, if it already exists, to add
+`workstation-admin` alongside `ec2-admin`):
 
 ```bash
-vault write auth/userpass/users/<your-username> password=<choose one> policies=ec2-admin
+vault write auth/userpass/users/<your-username> password=<choose one> policies=ec2-admin,workstation-admin
 ```
 
 **4. Migrate secret data** — one-time `vault kv put` calls, grouped to mirror
@@ -68,6 +71,25 @@ The exact serialization for the list/dict-shaped values (`ec2_users`, `apache_ce
 so nested structures go in as JSON strings. Decide the exact key layout when you do this
 step; the Ansible lookup side (`inventory/group_vars/aws.yml`) needs to match whatever
 you land on here.
+
+**5. Migrate SSH client secrets** — `workstation/` uses a three-path layout: one config
+list per machine, a generic key pool shared across machines, and a per-machine key pool
+for keys that should stay strictly scoped to one machine (e.g. to let OpenSSH default
+filenames like `id_ed25519` be reused across machines without colliding in Vault). See
+`roles/configure_ssh-client/README.md` for the exact schema. Example:
+
+```bash
+# Generic pool -- reusable from any machine's config
+vault kv put workstation/ssh-keys/generic/linuxbox2026 private_key=@$HOME/.ssh/linuxbox2026
+
+# Host-specific pool -- only this machine's config may reference it
+vault kv put workstation/ssh-keys/hosts/<your-wsl2-hostname>/id_ed25519 private_key=@$HOME/.ssh/id_ed25519
+
+# Per-machine host list -- machine name is ansible_hostname (or inventory_hostname
+# for remote targets like the EC2 edge node); each entry's key_scope picks which
+# pool above its key_name comes from
+vault kv put workstation/ssh-config/<your-wsl2-hostname> hosts=@ssh_client_hosts.json
+```
 
 ## Rollout safety
 

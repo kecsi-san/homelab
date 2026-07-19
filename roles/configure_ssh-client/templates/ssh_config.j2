@@ -1,0 +1,28 @@
+{# Managed by Ansible (configure_ssh-client role) — do not edit by hand #}
+{# h.host may be multiple space-separated aliases, e.g. "linuxbox linuxbox.hu 1.2.3.4" #}
+{% for h in ssh_client_hosts %}
+Host {{ h.host }}
+{% if h.hostname is defined %}
+    HostName {{ h.hostname }}
+{% endif %}
+    User {{ h.user }}
+    IdentityFile ~/.ssh/{{ h.key_name }}
+{% if h.port is defined %}
+    Port {{ h.port }}
+{% endif %}
+{% if h.control_master is defined %}
+    ControlMaster {{ h.control_master }}
+{% endif %}
+{% if h.control_path is defined %}
+    ControlPath {{ h.control_path }}
+{% endif %}
+{% if h.control_persist is defined %}
+    ControlPersist {{ h.control_persist }}
+{% endif %}
+{% if h.extra_lines is defined %}
+{% for line in h.extra_lines %}
+    {{ line }}
+{% endfor %}
+{% endif %}
+
+{% endfor %}

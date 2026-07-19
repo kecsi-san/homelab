@@ -173,6 +173,12 @@
         - gitconfig
         - git
 
+    - name: Configure SSH client
+      ansible.builtin.import_role:
+        name: configure_ssh-client
+      tags:
+        - ssh-client
+
     - name: Configure /etc/hosts
       ansible.builtin.import_role:
         name: configure_etc-hosts

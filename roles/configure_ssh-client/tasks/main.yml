@@ -1,0 +1,40 @@
+---
+- name: Load this machine's SSH host list from Vault
+  ansible.builtin.set_fact:
+    ssh_client_hosts: >-
+      {{
+        lookup('community.hashi_vault.vault_kv2_get',
+               'ssh-config/' ~ ssh_client_machine_name,
+               **vault_workstation_lookup_args)['secret']['hosts']
+      }}
+
+- name: Ensure ~/.ssh directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.ssh"
+    state: directory
+    mode: "0700"
+
+# key_scope: host   -> workstation/ssh-keys/hosts/<machine>/<key_name>, strictly this machine's own
+# key_scope: generic (default, or omitted) -> workstation/ssh-keys/generic/<key_name>, shared pool
+- name: Fetch and write each key referenced by this machine's config
+  ansible.builtin.copy:
+    content: >-
+      {{
+        lookup('community.hashi_vault.vault_kv2_get',
+               'ssh-keys/hosts/' ~ ssh_client_machine_name ~ '/' ~ item.key_name
+               if (item.key_scope | default('generic')) == 'host'
+               else 'ssh-keys/generic/' ~ item.key_name,
+               **vault_workstation_lookup_args)['secret']['private_key']
+      }}
+    dest: "{{ ansible_env.HOME }}/.ssh/{{ item.key_name }}"
+    mode: "0600"
+  loop: "{{ ssh_client_hosts }}"
+  loop_control:
+    label: "{{ item.key_name }}"
+  no_log: true
+
+- name: Template ~/.ssh/config from the Vault-sourced host list
+  ansible.builtin.template:
+    src: ssh_config.j2
+    dest: "{{ ansible_env.HOME }}/.ssh/config"
+    mode: "0600"

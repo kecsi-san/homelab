@@ -84,3 +84,12 @@ extra_hosts:
   - { ip: "{{ k8s_traefik_ip }}", name: "glance.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "kromgo.{{ domain_name }}" }
   - { ip: "{{ k8s_traefik_ip }}", name: "hubble.{{ domain_name }}" }
+
+# --- HashiCorp Vault: workstation/personal secrets (SSH client config + keys) ---
+# Uses the human's own cached userpass session (~/.vault-token from `vault login`),
+# not a dedicated AppRole -- this only ever runs interactively on your own machine.
+vault_workstation_lookup_args:
+  url: "{{ vault_api_addr | default('https://vault.kecskemethy.hu') }}"
+  engine_mount_point: workstation
+  auth_method: token
+  token: "{{ lookup('ansible.builtin.file', '~/.vault-token') }}"

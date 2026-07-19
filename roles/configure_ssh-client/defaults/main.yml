@@ -1,0 +1,5 @@
+---
+# Vault config-path segment identifying this machine (workstation/ssh-config/<this>).
+# Defaults to the actual machine's hostname fact so no per-machine var declaration is
+# needed — differs naturally across WSL2 home / macOS work laptop / EC2 edge node.
+ssh_client_machine_name: "{{ ansible_hostname }}"

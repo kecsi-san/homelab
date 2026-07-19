@@ -57,3 +57,31 @@ resource "vault_approle_auth_backend_role" "ansible" {
 resource "vault_auth_backend" "userpass" {
   type = "userpass"
 }
+
+# workstation/ — KV v2 mount holding personal/workstation secrets (SSH client
+# config + keys, PyPI feed, etc.) migrated from the old ../dotfiles repo. Used
+# interactively from whichever machine (WSL2 home, macOS work laptop, EC2 edge
+# node) runs the relevant Ansible role — no AppRole needed, reads happen via
+# the human's own userpass session. See docs/howtos/vault-secrets-architecture.md.
+resource "vault_mount" "workstation" {
+  path        = "workstation"
+  type        = "kv-v2"
+  description = "Workstation/personal secrets (migrated from ../dotfiles)"
+
+  options = {
+    version = "2"
+    type    = "kv-v2"
+  }
+}
+
+# Full CRUD on workstation/* for day-to-day `vault kv put/get` work — bound to
+# the same userpass login as ec2-admin (see README.md bootstrap step 3).
+resource "vault_policy" "workstation_admin" {
+  name = "workstation-admin"
+
+  policy = <<-EOT
+    path "workstation/*" {
+      capabilities = ["create", "read", "update", "delete", "list"]
+    }
+  EOT
+}

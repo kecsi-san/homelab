@@ -15,14 +15,16 @@ Vault is live at `vault.kecskemethy.hu` (installed 2026-07-04, initialized/unsea
 
 ### Mounts (this round)
 - `ec2/` — KV v2, holds everything currently in `secrets.yml` that's EC2/Ansible-specific.
+- `workstation/` — KV v2, holds personal/workstation secrets migrated from `../dotfiles` (SSH client config + keys, PyPI feed, etc.). Added 2026-07-19, see the "Workstation secrets" addendum below.
 
 ### Policies
 - `ec2-ansible-read` — read + list only on `ec2/data/*` and `ec2/metadata/*`. Bound to the Ansible AppRole.
 - `ec2-admin` — full CRUD on `ec2/*`, for day-to-day `vault kv put/get` work — bound to a userpass login, not root.
+- `workstation-admin` — full CRUD on `workstation/*`, bound to the same userpass login as `ec2-admin`.
 
 ### Auth methods
 - `approle` — for Ansible (machine auth). Role `ansible` bound to `ec2-ansible-read`.
-- `userpass` — for the human user, bound to `ec2-admin`. The auth method and policy are Terraform-managed; the actual user+password is created with a manual `vault write auth/userpass/users/<name> password=... policies=ec2-admin` (a credential, so kept out of Terraform per decision #1).
+- `userpass` — for the human user, bound to `ec2-admin` and `workstation-admin`. The auth method and policies are Terraform-managed; the actual user+password is created with a manual `vault write auth/userpass/users/<name> password=... policies=ec2-admin,workstation-admin` (a credential, so kept out of Terraform per decision #1).
 
 ### Terraform module: `terraform/vault/`
 New root module, separate state from `terraform/aws/` (different blast radius — Vault-admin credentials shouldn't be mixed into the same plan/state as AWS infra). Mirrors `terraform/aws/`'s existing backend pattern (same S3 bucket, new state key `vault/terraform.tfstate`; `backend.conf.example` committed, `backend.conf` gitignored).
@@ -48,6 +50,30 @@ New root module, separate state from `terraform/aws/` (different blast radius �
 Decision #1 above ("Terraform manages structure only, never secret values") is about Terraform never *creating or managing* secret content as a resource. It doesn't preclude Terraform *reading* an already-existing secret via a `vault` provider data source to consume it during provisioning — e.g. `terraform/aws` reading the edge node's SSH bootstrap public key (`ec2/ssh-edge-bootstrap-public`, see `docs/howtos/ec2-rebuild-plan.md`) into an `aws_key_pair` resource. That's a read, not a write; Terraform still never puts anything into Vault.
 
 The caveat: a `vault_kv_secret_v2` data source's entire `data` map lands in Terraform state, not just whatever fields you reference in `.tf` code — so any secret co-located at the same path as something Terraform reads leaks into that state file too. This is why the SSH bootstrap keypair is split into two separate Vault paths (`...-public` / `...-private`) rather than one entry with both fields: Terraform only ever reads the public one, so the private key never touches `terraform/aws`'s state.
+
+## Addendum: Workstation secrets — three-path SSH layout (2026-07-19)
+
+`workstation/` is used across multiple machines (WSL2 home, macOS work laptop, EC2 edge
+node), each needing a different subset of SSH hosts and keys — never all keys copied to
+all machines. Three-path layout:
+
+- `workstation/ssh-config/<machine>` — one path per machine (keyed by `ansible_hostname`,
+  or `inventory_hostname` for remote targets like the EC2 edge node), holding that
+  machine's list of SSH host entries. Each entry references a `key_name` (and a
+  `key_scope`, see below), not a literal local path.
+- `workstation/ssh-keys/generic/<key-name>` — the shared key pool, for keys meant to be
+  referenced from more than one machine's config.
+- `workstation/ssh-keys/hosts/<machine>/<key-name>` — keys strictly scoped to one
+  machine. Lets OpenSSH's own default-identity filenames (e.g. `id_ed25519`) be reused
+  across machines without colliding — the generic pool is shared, so two machines both
+  storing a key literally named `id_ed25519` there would overwrite each other; the
+  per-machine namespace here avoids that entirely.
+
+`roles/configure_ssh-client` reads a machine's config first, then for each entry fetches
+its key from whichever pool that entry's `key_scope` (`generic`, the default, or `host`)
+points at — so a given machine only ever gets the keys its own config actually needs, not
+the whole pool. The *local* filename (`~/.ssh/<key_name>`) is identical either way, only
+the Vault source path differs. See the role's own README for the exact schema.
 
 ## Deferred (explicitly out of scope, tracked for later)
 - OIDC auth via Authentik for human login
