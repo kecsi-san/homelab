@@ -105,6 +105,36 @@ data:
           meta_description: Distributed block storage dashboard
           policy_engine_mode: any
 
+  hubble.yaml: |
+    version: 1
+    metadata:
+      name: Hubble Proxy Application
+      labels:
+        blueprints.goauthentik.io/description: Cilium Hubble UI forwardAuth
+        blueprints.goauthentik.io/instantiate: "true"
+    entries:
+      - model: authentik_providers_proxy.proxyprovider
+        state: present
+        identifiers:
+          name: Hubble
+        attrs:
+          name: Hubble
+          authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
+          invalidation_flow: !Find [authentik_flows.flow, [slug, default-provider-invalidation-flow]]
+          mode: forward_single
+          external_host: https://hubble.kecskemethy.org/
+
+      - model: authentik_core.application
+        state: present
+        identifiers:
+          slug: hubble
+        attrs:
+          name: Hubble
+          slug: hubble
+          provider: !Find [authentik_providers_proxy.proxyprovider, [name, Hubble]]
+          meta_description: Cilium network observability
+          policy_engine_mode: any
+
   grafana.yaml: |
     version: 1
     metadata:
@@ -366,3 +396,4 @@ data:
           providers:
             - !Find [authentik_providers_proxy.proxyprovider, [name, Longhorn]]
             - !Find [authentik_providers_proxy.proxyprovider, [name, Traefik]]
+            - !Find [authentik_providers_proxy.proxyprovider, [name, Hubble]]
