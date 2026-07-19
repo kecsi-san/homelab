@@ -1,0 +1,22 @@
+# Managed by Ansible (configure_wsl2 role) — do not edit by hand
+[automount]
+enabled = false
+# root = /mnt
+options = "metadata,uid=1000,gid=1000,umask=077,fmask=11,case=off"
+mountFsTab = true
+
+[network]
+hostname = {{ ansible_hostname }}
+generateHosts = false
+generateResolvConf = false
+
+[interop]
+enabled = false
+appendWindowsPath = false
+
+[user]
+default = {{ admin_user }}
+
+[boot]
+systemd = true
+initTimeout = 10000

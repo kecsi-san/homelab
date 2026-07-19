@@ -64,6 +64,12 @@
     state: present
   become: false
 
+- name: Install krew (kubectl plugin manager) via Homebrew
+  community.general.homebrew:
+    name: krew
+    state: present
+  become: false
+
 - name: Install helm-docs via Homebrew
   community.general.homebrew:
     name: helm-docs

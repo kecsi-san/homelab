@@ -1,0 +1,8 @@
+---
+- name: WSL2 config changed
+  ansible.builtin.debug:
+    msg: >-
+      /etc/wsl.conf changed. This only takes effect after a full WSL2
+      restart -- run 'wsl --shutdown' from PowerShell/cmd.exe on the
+      Windows side (not achievable from within WSL2 itself), then reopen
+      your WSL2 terminal.

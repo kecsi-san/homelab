@@ -1,0 +1,14 @@
+---
+- name: Ensure Midnight Commander skins directory exists
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.local/share/mc/skins"
+    state: directory
+    mode: '0755'
+  become: false
+
+- name: Download gruvbox256 Midnight Commander skin
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/Dornat/midnight-commander-gruvbox-skin/master/gruvbox256.ini
+    dest: "{{ ansible_env.HOME }}/.local/share/mc/skins/gruvbox256.ini"
+    mode: '0644'
+  become: false

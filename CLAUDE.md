@@ -164,6 +164,8 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | `configure_cloudflare-zone` | Manages Cloudflare zone settings (ECH) and DNS A records (e.g. `minecraft.<domain>`) via REST API; `proxied: false` for UDP services; credentials via `secrets.yml` |
 | `configure_fzf` | Adds fzf initialization to `~/.bashrc` (idempotent) |
 | `configure_ntp` | Disables systemd-timesyncd; installs chrony (Debian 13 dropped ntpd); configures MikroTik router as primary NTP + pool.ntp.org fallback; wired into `k8s-nodes.yml` and `local-core.yml` (Linux only) with `ntp` tag |
+| `configure_wsl2` | Templates full `/etc/wsl.conf` (`[automount]`/`[network]`/`[interop]`/`[user]`/`[boot]`, incl. `systemd = true`); WSL2-only (`ansible_kernel` detection), no-op elsewhere; wired into `local-core.yml` |
+| `configure_mc-theme` | Downloads the gruvbox256 Midnight Commander skin to `~/.local/share/mc/skins/`; `mc` itself already installed by `setup_minimal`; wired into `personalise.yml` |
 | `configure_git` | Templates `~/.gitconfig`; SSH-format commit signing (`gpg.format = ssh`, reuses the `github.com` key from `configure_ssh-client`, which must run first) — disabled on remote `k8s-nodes.yml` runs where no signing key is deployed |
 | `configure_bash-aliases` | Templates `~/.bash_aliases` (`eza`-based `ls`/`ll`/`l`/`la`, `alert`, `kx`/`kn`, `apt-maintenance`, `brew-maintenance`, `ecr-login`, `git-reset-author`); `k=kubectl` deliberately excluded, already owned by `setup_kube-extra` |
 | `configure_ssh-client` | Templates `~/.ssh/config` from Vault (`workstation/ssh-config/<machine>`, keyed by `ansible_hostname`); fetches only the specific keys that machine's config references from a shared pool (`workstation/ssh-keys/<key-name>`), not the whole pool; runs interactively via the human's own cached Vault session, no AppRole |
@@ -180,7 +182,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | `setup_minimal` | Installs base + compression APT packages; optional brew base packages |
 | `setup_network-tools` | Installs network diagnostic tools (APT on Linux, Homebrew on macOS) |
 | `setup_python-uv` | Installs uv CLI tools (checkov, ansible, black, etc.) and Python library packages into `~/.venv/devops`; optional `pyenv`/`pyenv-virtualenv` and `python-tk@<version>` |
-| `setup_kube-extra` | Installs kubectl, helm (+ `helm-diff`, `helm-docs`), argocd, flux, kubeseal via Homebrew; bash completion system-wide (Linux: `/etc/bash_completion.d/`; macOS: `bash-completion@2` + Homebrew completion dir); `k` alias for kubectl |
+| `setup_kube-extra` | Installs kubectl, helm (+ `helm-diff`, `helm-docs`), argocd, flux, kubeseal, krew via Homebrew; bash completion system-wide (Linux: `/etc/bash_completion.d/`; macOS: `bash-completion@2` + Homebrew completion dir); `k` alias for kubectl |
 | `setup_traefik` | Installs Traefik ingress controller via Helm; `delegate_to: localhost`; kubeconfig per cluster |
 | `setup_sealed-secrets` | Installs Sealed Secrets controller via Helm; cluster-specific key pair for encrypting secrets safe to commit |
 | `setup_headlamp` | Installs Headlamp Kubernetes dashboard via Helm; captures manual homelab install; flips service to ClusterIP |
@@ -259,7 +261,7 @@ roles/<role-name>/
 ### Tagging
 
 Tags enable selective role execution without running the full playbook:
-- `local-core.yml` tags: `brew`, `apt-repos`, `docker`, `apps`, `minimal`, `network`, `ntp`, `python`, `uv`, `ssh-client`, `bash-aliases`
+- `local-core.yml` tags: `brew`, `apt-repos`, `docker`, `apps`, `minimal`, `network`, `ntp`, `python`, `uv`, `ssh-client`, `bash-aliases`, `wsl2`
 - `local-security.yml` tags: `sudo`, `apt-repos`, `security`, `checkov`
 - `local-dev.yml` tags: `vscode`, `go`, `dev`, `nodejs`, `rust`, `gh`, `glab`
 - `local-cloud.yml` tags: `iac`, `terraform`, `iac-extra`, `cloud`, `aws`, `azure`, `gcp`

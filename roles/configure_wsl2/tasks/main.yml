@@ -1,0 +1,11 @@
+---
+- name: Deploy /etc/wsl.conf
+  ansible.builtin.template:
+    src: wsl.conf.j2
+    dest: /etc/wsl.conf
+    owner: root
+    group: root
+    mode: '0644'
+  become: true
+  when: "'wsl2' in ansible_kernel | lower"
+  notify: WSL2 config changed

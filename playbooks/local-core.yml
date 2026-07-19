@@ -193,6 +193,13 @@
       tags:
         - hosts
 
+    - name: Configure WSL2
+      ansible.builtin.import_role:
+        name: configure_wsl2
+      when: ansible_system == 'Linux'
+      tags:
+        - wsl2
+
     - name: Setup network tools
       ansible.builtin.import_role:
         name: setup_network-tools

@@ -92,6 +92,13 @@
         - gitconfig
         - git
 
+    - name: Configure Midnight Commander theme
+      ansible.builtin.import_role:
+        name: configure_mc-theme
+      tags:
+        - mc-theme
+        - desktop
+
     - name: Upload profile image
       ansible.builtin.import_role:
         name: upload_profile_image

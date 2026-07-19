@@ -29,34 +29,6 @@ Recurring maintenance — not one-off tasks; re-verify occasionally rather than 
 - [ ] **`ec2-wireguard.yml` playbook** — deploy Wireguard hub on EC2 and configure spoke peers
 - [ ] **`configure_route53` role** — upsert Route53 A/TXT/MX records via `community.aws.route53` (analogous to `configure_mikrotik-router` + `configure_cloudflare-zone`); credentials via `secrets.yml` (`aws_access_key_id`, `aws_secret_access_key`); `configure-route53.yml` playbook
 
-## Dotfiles migration (archive `../dotfiles`)
-
-Goal: fold everything still-relevant from the old `../dotfiles` repo into this
-repo, move sensitive/work-identifying info into Vault, drop what's dead, then
-archive that repo. Full original analysis in `../dotfiles/TODO.md` (kept
-there until the repo is archived). **Scope decision (2026-07-11, overrides
-the note in `../dotfiles/TODO.md`):** workstation-personal secrets (SSH
-client config, PyPI feed) go into the **real HashiCorp Vault**
-(`vault.kecskemethy.hu`), not `local.yml` Ansible-Vault — needs a new
-workstation/personal KV v2 mount + policy (current `terraform/vault/` scope
-is EC2-only) and a scope-note update in `docs/howtos/vault-secrets-architecture.md`.
-
-### New roles to add
-
-- [ ] **krew** (kubectl plugin manager) → fold into `setup_kube-extra`
-- [ ] `bin/mc-gruvbox-skin-setup.sh` → fold into `personalise.yml`
-- [ ] **Windows Terminal config role (new)** — deploy `windows/AppData/...` (`settings.json` + icons) from WSL2 to the Windows host side
-- [ ] `.wsl-config` → drop the Dell OpenManage/WSMAN template entirely; capture only the trailing `[wsl2]` `swap=0` setting as a note in a WSL2 setup doc, not a deployed file
-- [ ] **WSL2 systemd enablement** — `bin/WSL2_setup_scripts/02-get_systemd_running_WSL2.sh` is a genuine gap: nothing in homelab codifies `/etc/wsl.conf` (`[boot] command = ...systemd...`) or the `wsl2-systemd` sudoers drop-in. Needs a new task/role (e.g. in `local-core.yml`, Linux/WSL2-only) templating `/etc/wsl.conf` and fetching `00-wsl2-systemd.sh` from `diddledani/one-script-wsl2-systemd`. The other 3 scripts in that dir are already superseded: `00-WSL2-install.txt` is manual PowerShell (pre-Ansible, not automatable — keep only as doc reference if at all), `01-install_docker_in_WSL2.sh` → already covered by `setup_apt_repos` (`docker` tag) in `local-core.yml`, `03-install_k3s_wsl2.sh` → already superseded by `setup_k3s` (and was pinned to obsolete k3s v1.22.7/kubectl 1.23.0 anyway)
-
-### Execution order
-
-1. **Audit fully resolved (2026-07-11)** — all SSH hosts, `.pypirc`, `crudini.py`, `.condarc`, the Brewfile diff, and the WSL2 scripts have been triaged; dead/already-covered items tracked in `../dotfiles/TODO.md` itself (no action needed in this repo — see scope decision below).
-2. ~~Stand up the workstation/personal Vault KV mount + `configure_ssh-client` role.~~ Done 2026-07-19.
-3. ~~Add `configure_bash-aliases`.~~ Done 2026-07-19. Still open: Windows Terminal, krew, mc-gruvbox, WSL2 systemd enablement.
-4. Decide on the Brewfile gap packages (`ffmpeg`, `gh`, `glab`, `pyenv`, etc.) and add to the appropriate existing roles.
-5. Once steps 2–4 are done, archive `../dotfiles` as-is (2026-07-19 scope decision: no per-file deletion cleanup in that repo first — it's about to be archived and read-only, not worth the churn; the dead/superseded items are already recorded in its own `TODO.md`)
-
 ## Projects / Repos
 
 - [ ] **homelab-notify** (`forgejo.kecskemethy.org/kecsi/homelab-notify`) — typed ntfy CLI wrapper (Python); CI pipeline is red, needs investigation
@@ -99,6 +71,11 @@ is EC2-only) and a scope-note update in `docs/howtos/vault-secrets-architecture.
 
 ## Done
 
+- [x] **Dotfiles migration complete, `../dotfiles` ready to archive** — 2026-07-19, closes out the whole "Dotfiles migration" section (removed from this file). Final three items, wrapped up together:
+  - **`configure_wsl2` role** — templates the full `/etc/wsl.conf` (not just the systemd bit), verified live. Turned out far simpler than originally scoped: modern WSL2 just needs `systemd = true` in `[boot]`, no external script (`diddledani/one-script-wsl2-systemd`) or sudoers drop-in needed. `.wsl-config`'s Dell OpenManage/WSMAN content confirmed dead and dropped entirely; its `[wsl2] swap` setting wasn't in the actual live config either, so not carried forward.
+  - **`configure_mc-theme` role** — gruvbox256 Midnight Commander skin, verified live (file already existed on disk from a 2022 manual run of the old script — fetched content matched byte-for-byte, confirming an accurate migration).
+  - **krew** — added to `setup_kube-extra`, verified (`kubectl krew version` works).
+  - **Windows Terminal config role** — explicitly descoped/dropped, not migrated.
 - [x] **`configure_bash-aliases` role** — done 2026-07-19, verified (all 11 aliases load correctly, `la`/`kx` smoke-tested). `k=kubectl` excluded (already `setup_kube-extra`'s); `eza` (not the unmaintained `exa`) backs `ls`/`ll`/`l`/`la`. Preserved a live-only improvement (`apt-maintenance` using `apt -y upgrade`) that had never been pushed back to `../dotfiles` — the source file there still had the old, interactive version.
 - [x] `bin/vault_approle_token_gen.sh` — decided not needed 2026-07-19: the old script solved a former-employer workflow where humans manually minted AppRole tokens; in this homelab, Ansible's own `community.hashi_vault` lookups handle AppRole auth internally (no manual token step), and the rare case of a human wanting to verify the `ansible` AppRole is already a documented one-off command in `terraform/vault/README.md`'s Verification section — not worth automating into an alias/script
 - [x] `bin/vault_login.sh` / `bin/vault_env.sh` — done 2026-07-19, not as scripts: `VAULT_ADDR` was already exported by `setup_iac-terraform` (predates this item, already pointing at the real `vault.kecskemethy.hu`, nothing to do there); added a `vault-login` alias to the same role instead of a script — replaces the old scripts' former-employer-specific LDAP-auth login with the real `-method=userpass` one
