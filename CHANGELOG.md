@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(k8s): track letsencrypt-prod ClusterIssuer in git ([7d49f54](https://github.com/kecsi-san/homelab/commit/7d49f548db86ba4519f8c4d3e5fb809f0149b9ae) by Zoltan K).
 - fix(k3s): add missing letsencrypt-prod ClusterIssuer ([a36b9ee](https://github.com/kecsi-san/homelab/commit/a36b9ee90b3c8a8c499b0ffc54b9d4b6f4709814) by Zoltan K).
 - fix(forgejo-runner): bump PVC 1Gi -> 2Gi to resolve KubePersistentVolumeFillingUp ([fa6d9a7](https://github.com/kecsi-san/homelab/commit/fa6d9a79a5737c27fef6181aaf4322cbcd7d1958) by Zoltan K).
 - fix(setup_email-server): fix Dovecot 2.4 config issues and tidy certbot ([d077794](https://github.com/kecsi-san/homelab/commit/d077794331ae112182da9ac5b216d475ca9e2381) by Zoltan K).
