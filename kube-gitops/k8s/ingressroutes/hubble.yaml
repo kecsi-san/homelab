@@ -4,8 +4,7 @@ kind: IngressRoute
 metadata:
   name: hubble
   namespace: kube-system
-  annotations:
-    external-dns.alpha.kubernetes.io/target: "9fa18953-8d82-424d-a8b5-9941940d4230.cfargotunnel.com"
+  # No external-dns annotation — LAN only, not exposed via Cloudflare Tunnel
 spec:
   entryPoints:
     - websecure
@@ -13,9 +12,6 @@ spec:
     - match: Host(`hubble.kecskemethy.org`)
       kind: Rule
       priority: 10
-      middlewares:
-        - name: authentik-forwardauth
-          namespace: traefik
       services:
         - name: hubble-ui
           port: 80
