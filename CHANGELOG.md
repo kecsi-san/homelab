@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(inventory): add hubble to extra_hosts for local /etc/hosts ([55d8a7a](https://github.com/kecsi-san/homelab/commit/55d8a7a2f35bb2bd472ca74fa1b7f17236fd1325) by Zoltan K).
 - fix(k8s): add Authentik ProxyProvider for Hubble UI ([5dd5cd9](https://github.com/kecsi-san/homelab/commit/5dd5cd9e8783a0f6d277fab6915577fc96745b76) by Zoltan K).
 - fix(k8s): gate Hubble UI behind Authentik SSO ([2721a09](https://github.com/kecsi-san/homelab/commit/2721a09f63a764bd2d6912139863d82235784f79) by Zoltan K).
 - fix(setup_kube-extra): pin helm to @3, was unpinned and drifted to v4 ([77c9efa](https://github.com/kecsi-san/homelab/commit/77c9efab68fe2c1c1c3732f837b6b670d4cee1d0) by Zoltan K).
