@@ -13,6 +13,9 @@ spec:
     - match: Host(`hubble.kecskemethy.org`)
       kind: Rule
       priority: 10
+      middlewares:
+        - name: authentik-forwardauth
+          namespace: traefik
       services:
         - name: hubble-ui
           port: 80
