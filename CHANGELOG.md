@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(setup_kube-extra): pin helm to @3, was unpinned and drifted to v4 ([77c9efa](https://github.com/kecsi-san/homelab/commit/77c9efab68fe2c1c1c3732f837b6b670d4cee1d0) by Zoltan K).
 - fix(k8s): track letsencrypt-prod ClusterIssuer in git ([7d49f54](https://github.com/kecsi-san/homelab/commit/7d49f548db86ba4519f8c4d3e5fb809f0149b9ae) by Zoltan K).
 - fix(k3s): add missing letsencrypt-prod ClusterIssuer ([a36b9ee](https://github.com/kecsi-san/homelab/commit/a36b9ee90b3c8a8c499b0ffc54b9d4b6f4709814) by Zoltan K).
 - fix(forgejo-runner): bump PVC 1Gi -> 2Gi to resolve KubePersistentVolumeFillingUp ([fa6d9a7](https://github.com/kecsi-san/homelab/commit/fa6d9a79a5737c27fef6181aaf4322cbcd7d1958) by Zoltan K).
