@@ -128,7 +128,7 @@ config:
             app: kromgo
         - Hubble:
             href: https://hubble.kecskemethy.org
-            description: Cilium network observability
+            description: Cilium network observability — LAN only
             icon: cilium.png
             namespace: kube-system
             app: hubble-ui
