@@ -126,6 +126,12 @@ config:
             icon: prometheus.png
             namespace: monitoring
             app: kromgo
+        - Hubble:
+            href: https://hubble.kecskemethy.org
+            description: Cilium network observability
+            icon: cilium.png
+            namespace: kube-system
+            app: hubble-ui
     - Apps:
         - Mealie:
             href: https://mealie.kecskemethy.org
