@@ -1,4 +1,4 @@
-ansible==14.1.0
+ansible==14.2.0
 # Needed for community.crypto module
 cryptography==49.0.0
 # Needed for jinja2 json_query templating
