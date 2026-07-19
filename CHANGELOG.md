@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(forgejo-runner): bump PVC 1Gi -> 2Gi to resolve KubePersistentVolumeFillingUp ([fa6d9a7](https://github.com/kecsi-san/homelab/commit/fa6d9a79a5737c27fef6181aaf4322cbcd7d1958) by Zoltan K).
 - fix(setup_email-server): fix Dovecot 2.4 config issues and tidy certbot ([d077794](https://github.com/kecsi-san/homelab/commit/d077794331ae112182da9ac5b216d475ca9e2381) by Zoltan K).
 - fix(setup_security-tools): remove AIDE from kube nodes ([4fba2b9](https://github.com/kecsi-san/homelab/commit/4fba2b999831716c9f9c40db93d1d08f4b436491) by Zoltan K).
 - fix(setup_security-tools): exclude /backups from AIDE scans ([01bbe8f](https://github.com/kecsi-san/homelab/commit/01bbe8f5400cea4fb239f7f57b897a3a064fd563) by Zoltan K).
