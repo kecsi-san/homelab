@@ -4,6 +4,8 @@ Planned work, known issues, and ideas. Check here before starting a new session.
 
 ## Active / Next up
 
+- [ ] **Helm 4 migration** — workstation `helm` was unpinned and silently drifted to v4.2.3 via `brew upgrade` (`upgrade-local.yml`); pinned back to `helm@3` (3.21.3) in `roles/setup_kube-extra/tasks/main.yml` on 2026-07-19 to unblock `post-k3s.yml`. Root cause of the break: Helm 4 enforces strict Kubernetes Server-Side-Apply field-manager ownership instead of Helm 3's lenient 3-way merge — `argocd-cm`/`argocd-rbac-cm` are co-managed by the ArgoCD Helm chart *and* ArgoCD's own self-referential `argocd-config` GitOps Application (writes `oidc.config`/`url`/`policy.csv`), and Helm 4 refuses the overlap. Before ever re-attempting Helm 4: (1) fix the ArgoCD chart values so it stops templating those specific ConfigMap keys, leaving `argocd-config` as sole owner, (2) audit `setup_traefik`/`setup_sealed-secrets`/`setup_headlamp`/`setup_longhorn` for the same class of dual-ownership conflict before their next Helm upgrade — none hit it yet, but all use the same `kubernetes.core.helm` + separate-raw-manifest pattern that caused this. Kubespray's own Helm on the kube nodes (`/usr/local/bin/helm`, v3.18.4) is unaffected — separate install mechanism, already pinned by Kubespray's release branch.
+
 - [ ] **Cilium Hubble UI** — noticed the container image being pulled during a `k8s.yml` run (Kubespray deploys it as part of the Cilium addon); make it reachable/visible from Homepage instead of leaving it unexposed
 
 - [ ] **Backstage Kubernetes plugin** — shows "Entity context is not available" as a standalone nav item; either configure it for catalog entities (requires annotations) or remove `kubernetesPlugin` from `App.tsx`

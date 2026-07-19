@@ -16,9 +16,21 @@
 
 - name: Install helm via Homebrew
   community.general.homebrew:
-    name: helm
+    name: helm@3
     state: present
   become: false
+
+- name: Link helm@3 (keg-only formula)
+  ansible.builtin.command: brew link --force helm@3
+  become: false
+  register: helm_link
+  changed_when: "'Already linked' not in helm_link.stderr"
+
+- name: Pin helm@3 to prevent silent major-version upgrades via brew upgrade
+  ansible.builtin.command: brew pin helm@3
+  become: false
+  register: helm_pin
+  changed_when: "'already pinned' not in helm_pin.stdout"
 
 - name: Check installed helm plugins
   ansible.builtin.command:
