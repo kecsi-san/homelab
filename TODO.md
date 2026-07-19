@@ -59,6 +59,8 @@ Recurring maintenance — not one-off tasks; re-verify occasionally rather than 
 
 ## Low priority / Future
 
+- [ ] **`docs/ansible/roles.md` full audit** — added today's 4 new roles (2026-07-19) but the file was already stale before that (last real update 2026-05-15) and is missing many roles that exist and are already documented in `CLAUDE.md`'s more current role table (e.g. `configure_mikrotik-router`, `configure_cloudflare-zone`, `configure_ntp`, `setup_nfs-backup`, `setup_restic-rest-server`, `configure_duo-ssh`, `configure_ssh-hardening`, `setup_aws-ssm-agent`). Needs a full pass reconciling it against `CLAUDE.md`, not just incremental additions.
+
 - [ ] **LVM / base OS provisioning not codified** — kube node disk layout (VG/LV partitioning: root, var, home, tmp, swap, backup) was set up manually at OS install time, before any Ansible role touches the box; nothing in this repo reproduces it. Surfaced 2026-07-05 when `var` was manually extended via `lvextend`+`resize2fs` on all 4 kube nodes (+35G on hppd600g6, +10G on the other three, to grow Longhorn's usable capacity) — a rebuilt node today would come up with the original LV sizes, not these. Needs either an Ansible role (`community.general.lvg`/`lvol` modules) run during initial provisioning, or at minimum a doc capturing the intended per-node LV layout so a rebuild can replicate it by hand.
 
 - [ ] **Justfile** — create and maintain a repo-level `justfile` as the single entry point for all common commands (Ansible playbooks, Terraform ops, kubectl one-liners, cluster rebuild runbook); replaces scattered README snippets; `just` is already installed via `setup_minimal` brew packages

@@ -4,7 +4,7 @@ type: reference
 status: stable
 scope: [ansible]
 created: 2026-03-30
-updated: 2026-05-15
+updated: 2026-07-19
 tags: [ansible, roles, reference]
 ---
 
@@ -82,7 +82,11 @@ Use `roles/role_template/` as a starting point when creating a new role.
 |------|---------|-------------|
 | `configure_etc-hosts` | Manages `/etc/hosts` with cluster node entries | k8s-nodes.yml |
 | `configure_fzf` | Adds fzf shell integration to `~/.bashrc` | k8s-nodes.yml |
-| `configure_git` | Deploys `~/.gitconfig` | k8s-nodes.yml |
+| `configure_git` | Deploys `~/.gitconfig`; SSH-format commit signing (reuses `configure_ssh-client`'s key), disabled on remote k8s-nodes.yml runs | k8s-nodes.yml, local-core.yml, personalise.yml |
+| `configure_ssh-client` | Templates `~/.ssh/config` from Vault (`workstation/` mount); fetches only the keys a machine's config actually references | local-core.yml |
+| `configure_bash-aliases` | Templates `~/.bash_aliases` (`eza`-based ls family, `alert`, `kx`/`kn`, maintenance aliases, `ecr-login`, `git-reset-author`) | local-core.yml |
+| `configure_wsl2` | Templates full `/etc/wsl.conf`; WSL2-only, no-op elsewhere | local-core.yml |
+| `configure_mc-theme` | Downloads the gruvbox256 Midnight Commander skin | personalise.yml |
 | `configure_oh-my-posh` | Installs Pluto OMP theme and shell init | k8s-nodes.yml |
 | `configure_ssh` | Deploys SSH authorized key | k8s-nodes.yml, prerequisite.yml |
 | `configure_sudo` | Configures passwordless sudo for `admin_user` | k8s-nodes.yml, local-security.yml, prerequisite.yml |
@@ -98,7 +102,7 @@ Use `roles/role_template/` as a starting point when creating a new role.
 | `setup_cloud-aws` | awscli, aws-sam-cli, session-manager-plugin; optional: okta-aws-cli, eksctl, aws-vault | local-cloud.yml |
 | `setup_cloud-azure` | azure-cli; optional: azd, bicep, azcopy, kubelogin | local-cloud.yml |
 | `setup_cloud-gcp` | google-cloud-sdk (gcloud/gsutil/bq); optional: gke-gcloud-auth-plugin, cloud-sql-proxy | local-cloud.yml |
-| `setup_kube-extra` | Installs kubectl, helm, argocd, flux, kubeseal via Homebrew; bash completions (Linux: `/etc/bash_completion.d/`; macOS: `bash-completion@2`); `k=kubectl` alias | local-kube.yml, post-k8s.yml |
+| `setup_kube-extra` | Installs kubectl, helm, argocd, flux, kubeseal, krew via Homebrew; bash completions (Linux: `/etc/bash_completion.d/`; macOS: `bash-completion@2`); `k=kubectl` alias | local-kube.yml, post-k8s.yml |
 | `setup_traefik` | Installs Traefik ingress controller via Helm (delegate_to: localhost); kubeconfig per cluster | post-k8s.yml |
 | `setup_sealed-secrets` | Installs Sealed Secrets controller via Helm; cluster-specific key pair for git-safe encrypted secrets | post-k8s.yml |
 | `setup_headlamp` | Installs Headlamp Kubernetes dashboard via Helm; ClusterIP service (Traefik routes via IngressRoute) | post-k8s.yml |
