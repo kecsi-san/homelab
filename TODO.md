@@ -122,6 +122,7 @@ is EC2-only) and a scope-note update in `docs/howtos/vault-secrets-architecture.
 
 ## Deferred (known blockers)
 
+- [ ] **Hubble UI Authentik SSO** — tried 2026-07-19, reverted, LAN-only again. Hubble's frontend makes background `fetch()` calls for its streaming API (`/api/control-stream`, `/api/service-map-stream`); when ForwardAuth returns a `302` for those calls, `fetch()` tries to auto-follow it cross-origin to `authentik.kecskemethy.org`, which requires CORS that Authentik's `/application/o/authorize/` endpoint doesn't provide (built for top-level navigation, not XHR/fetch) — browser blocks it, Hubble shows "Data streams are reconnecting..." forever. Main page loads fine, no actual functionality works. Longhorn doesn't hit this (no comparable background streaming calls) despite using the identical `authentik-forwardauth` middleware. Would need either a fix on Hubble UI's side (session/credentials handling for its fetch calls) or a different auth approach before retrying — not investigated further.
 - [ ] **Headlamp OIDC** — login works but shows no permissions after OIDC sign-in; next debug steps:
   1. Enable kube-apiserver audit logging to confirm authenticated username in token
   2. Add `offline_access` to OIDC_SCOPES in `headlamp-oidc` SealedSecret (re-seal required)
