@@ -61,8 +61,9 @@ is EC2-only) and a scope-note update in `docs/howtos/vault-secrets-architecture.
 
 ### Vault-bound (workstation/personal secrets)
 
-- [ ] Add a workstation/personal KV v2 mount + policy to `terraform/vault/` (mirrors the existing `ec2/` mount)
-- [ ] **`configure_ssh-client` role (new)** — templates `~/.ssh/config` from a var (e.g. `ssh_client_hosts`) sourced via `vault_kv2_get`, not committed as a static file. Source data is `../dotfiles/.ssh/config`; no private key files are in that repo, only the config referencing them. **Confirmed (2026-07-11):** only `Host linuxbox.hu` (`IdentityFile ~/.ssh/linuxbox2016.pem`) is live — it's the EC2 box — so it's the only entry to actually migrate into Vault/the new role. `gitbud.epam.com`, `ssh.dev.azure.com`, `git.epam.com`, `*.us-west-2.prod.hcom-data-science.aws.hcom`, `10.*`, and `127.0.0.1` (`~/.ssh/zk-bdcc`) are all former-employer and dead, drop them. `Host github.com` currently borrows `git.epam.com`'s key — needs a real personal key when the config is rebuilt (not migrated as-is).
+- [x] Add a workstation/personal KV v2 mount + policy to `terraform/vault/` (mirrors the existing `ec2/` mount) — done 2026-07-19, `vault_mount.workstation` + `vault_policy.workstation_admin`
+- [x] **`configure_ssh-client` role** — done 2026-07-19, templates `~/.ssh/config` from Vault, verified end-to-end (real SSH connection succeeded using the rendered config/keys). Scope grew beyond the original single-host plan once the live config was actually checked — see `roles/configure_ssh-client/README.md` for the final three-path Vault design (per-machine config list + generic key pool + host-scoped key pool, so `id_ed25519`-style default filenames don't collide across machines). Migrated: `linuxbox2026` (current EC2 box; `linuxbox2016.pem` kept archived in Vault but not wired into any active config — superseded, not deleted), `aws-tefl-2016` (`*.tefl.com`), `git-epam-com` (kept deliberately for `gitlab.com`; dropped `github.com`'s borrowed use of it per the original 2026-07-11 audit note — needs a real personal key before re-adding), `id_ed25519` (kube nodes, host-scoped to avoid cross-machine collision)
+- [ ] **`github.com` real personal key** — generate a new key not borrowed from the dead `git.epam.com.pem`, then add a `workstation/ssh-config/penguinaid` entry for it (`key_scope: generic` if it'll also be used from other machines, e.g. the macOS laptop)
 - [x] `.pypirc` (Azure DevOps feed, org `qrdaas`, index-server `data-pkgs`) — confirmed dead (2026-07-11), same former-employer bucket; drop, no migration
 - [ ] `bin/vault_login.sh` / `bin/vault_env.sh` → keep, repoint from dev `localhost:443` to `vault.kecskemethy.hu`
 - [ ] `bin/vault_approle_token_gen.sh` → adapt as a general local AppRole-login convenience script reusing the pattern already built for EC2 (`terraform/vault/` generates `role_id`/`secret_id`)
@@ -80,7 +81,7 @@ is EC2-only) and a scope-note update in `docs/howtos/vault-secrets-architecture.
 ### Execution order
 
 1. **Audit fully resolved (2026-07-11)** — all SSH hosts, `.pypirc`, `crudini.py`, `.condarc`, the Brewfile diff, and the WSL2 scripts have been triaged; dead/already-covered items tracked in `../dotfiles/TODO.md` itself (no action needed in this repo — see scope decision below).
-2. Stand up the workstation/personal Vault KV mount + `configure_ssh-client` role.
+2. ~~Stand up the workstation/personal Vault KV mount + `configure_ssh-client` role.~~ Done 2026-07-19.
 3. Add the other new roles (`configure_bash-aliases`, Windows Terminal, krew, mc-gruvbox, WSL2 systemd enablement) and wire into `local-core.yml`/`personalise.yml`.
 4. Decide on the Brewfile gap packages (`ffmpeg`, `gh`, `glab`, `pyenv`, etc.) and add to the appropriate existing roles.
 5. Once steps 2–4 are done, archive `../dotfiles` as-is (2026-07-19 scope decision: no per-file deletion cleanup in that repo first — it's about to be archived and read-only, not worth the churn; the dead/superseded items are already recorded in its own `TODO.md`)
