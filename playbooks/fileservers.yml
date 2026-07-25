@@ -1,0 +1,9 @@
+---
+- name: Configure standalone file/media servers
+  hosts: fileservers
+  tasks:
+    - name: Setup Node.js
+      ansible.builtin.import_role:
+        name: setup_nodejs-dev-tools
+      tags:
+        - nodejs

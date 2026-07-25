@@ -1,8 +1,16 @@
 ---
-# Node.js version to upgrade to via nvm — keep in sync with
-# setup_nodejs-dev-tools/defaults/main.yml
+# Keep in sync with setup_nodejs-dev-tools/defaults/main.yml
+nodejs_install_method: "homebrew-nvm"
+
+# Node.js version to upgrade to via nvm — only used when
+# nodejs_install_method == "homebrew-nvm".
 nodejs_version: "lts/*"
 
-# Keep in sync with setup_nodejs-dev-tools — only used to gate the global
-# npm package upgrade step
+# Only used when nodejs_install_method == "apt-nodesource" — bump this and
+# re-run the role to move to a new major version.
+nodejs_apt_major_version: "24"
+nodejs_apt_purge_distro_packages: true
+
+# Keep in sync with setup_nodejs-dev-tools — the packages carried/reinstalled
+# across the version bump
 nodejs_npm_global_packages: []

@@ -22,6 +22,7 @@ Each repository is independently controlled by a boolean flag in `defaults/main.
 | `apt_repo_twilio` | `false` | twilio-cli-prod.s3.amazonaws.com | twilio |
 | `apt_repo_yarn` | `false` | dl.yarnpkg.com | yarn (no recommends) |
 | `apt_repo_microsoft` | `false` | packages.microsoft.com | repo only — install packages (VS Code, Azure CLI, etc.) separately |
+| `apt_repo_nodesource` | `false` | deb.nodesource.com | nodejs (see `nodejs_apt_major_version`) — purges Debian's own node packages first, see Notes |
 
 ## Variables
 
@@ -31,6 +32,9 @@ Each repository is independently controlled by a boolean flag in `defaults/main.
 | `docker_packages` | see defaults | Docker CE packages to install |
 | `mozilla_packages` | `[firefox]` | Packages to install from Mozilla repo (e.g. firefox, thunderbird) |
 | `apt_repo_*` | see table above | Enable/disable individual repositories |
+| `nodejs_apt_major_version` | `"24"` | NodeSource major version line to track (e.g. `"24"`, `"22"`) |
+| `nodejs_apt_purge_distro_packages` | `true` | Purge Debian's `nodejs`/`npm`/`nodejs-doc`/`libnode-dev` before installing NodeSource's package |
+| `nodejs_apt_distro_conflict_packages` | see defaults | Package list purged by the above |
 
 ## GPG key handling
 
@@ -49,6 +53,7 @@ All keys are stored in `/etc/apt/keyrings/` using the modern `signed-by=` approa
 | Twilio | `/etc/apt/keyrings/twilio.asc` | ASCII |
 | Yarn | `/etc/apt/keyrings/yarn.asc` | ASCII |
 | Microsoft | `/etc/apt/keyrings/microsoft.asc` | ASCII |
+| NodeSource | `/etc/apt/keyrings/nodesource.gpg` | binary (dearmored from the published ASCII key) |
 
 ## Notes
 
@@ -57,6 +62,7 @@ All keys are stored in `/etc/apt/keyrings/` using the modern `signed-by=` approa
 - **Gitea** and **Sury PHP** add the repo only — install specific packages in a subsequent play.
 - **Microsoft** repo targets Debian only (`packages.microsoft.com/debian/<major>/prod`) — useful as a prerequisite for VS Code, Azure CLI, PowerShell, etc.
 - **Golang**: not managed here — install via Homebrew (`brew install go`) instead of the Ubuntu-only PPA.
+- **NodeSource**: uses the distro-agnostic `nodistro` repo (same URL across Debian/Ubuntu releases). By default also purges Debian's own `nodejs`/`npm`/`nodejs-doc`/`libnode-dev` packages first — third-party repos are normally lower apt priority than the distro's own, so without this NodeSource's package silently loses and the old distro version keeps winning. Set `nodejs_apt_purge_distro_packages: false` to skip the purge (e.g. if you'd rather manage the pin yourself). See `setup_nodejs-dev-tools`/`upgrade_nodejs` for the higher-level roles that call this with `nodejs_install_method: apt-nodesource`.
 - After first Docker run, log out and back in (or `newgrp docker`) for group membership to take effect.
 
 ## Usage

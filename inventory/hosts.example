@@ -3,6 +3,11 @@
 [local]
 127.0.0.1 ansible_connection=local
 
+# Standalone, non-k8s home-server boxes (each running its own discrete
+# services — media server, file server, etc.)
+[fileservers]
+fileserver1.example.com
+
 # Kubernetes bare-metal nodes
 [kube]
 node1.example.com

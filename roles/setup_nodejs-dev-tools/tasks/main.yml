@@ -1,20 +1,26 @@
 ---
-# Node.js itself is managed by nvm rather than a fixed Homebrew formula, so
-# multiple versions can be installed/switched per-project. nvm is a shell
+# Node.js itself is managed either by nvm (per-user, multiple versions —
+# workstations) or by the NodeSource apt repo (system-wide, root-owned single
+# version — servers), selected via nodejs_install_method. nvm is a shell
 # function sourced into interactive shells (not a normal PATH binary), so
-# Ansible drives it via explicit `. nvm.sh` shell tasks rather than modules.
+# Ansible drives it via explicit `. nvm.sh` shell tasks rather than modules;
+# the apt method installs to standard system paths so plain modules suffice.
+
+# --- homebrew-nvm method (workstations) ---
 
 - name: Install nvm via Homebrew
   community.general.homebrew:
     name: nvm
     state: present
   become: false
+  when: nodejs_install_method == 'homebrew-nvm'
 
 - name: Get Homebrew nvm prefix
   ansible.builtin.command: brew --prefix nvm
   register: nvm_brew_prefix
   changed_when: false
   become: false
+  when: nodejs_install_method == 'homebrew-nvm'
 
 - name: Ensure NVM_DIR exists
   ansible.builtin.file:
@@ -22,6 +28,7 @@
     state: directory
     mode: '0755'
   become: false
+  when: nodejs_install_method == 'homebrew-nvm'
 
 - name: Add nvm initialization to ~/.bashrc
   ansible.builtin.blockinfile:
@@ -32,6 +39,7 @@
       [ -s "{{ nvm_brew_prefix.stdout }}/nvm.sh" ] && \. "{{ nvm_brew_prefix.stdout }}/nvm.sh"
       [ -s "{{ nvm_brew_prefix.stdout }}/etc/bash_completion.d/nvm" ] && \. "{{ nvm_brew_prefix.stdout }}/etc/bash_completion.d/nvm"
   become: false
+  when: nodejs_install_method == 'homebrew-nvm'
 
 - name: Check if the target Node.js version is already installed via nvm
   ansible.builtin.shell:
@@ -43,6 +51,7 @@
   failed_when: false
   changed_when: false
   become: false
+  when: nodejs_install_method == 'homebrew-nvm'
 
 - name: Install Node.js via nvm
   ansible.builtin.shell:
@@ -52,7 +61,7 @@
       nvm install {{ nodejs_version }} && nvm alias default {{ nodejs_version }}
   become: false
   changed_when: true
-  when: nvm_node_installed.rc != 0
+  when: nodejs_install_method == 'homebrew-nvm' and nvm_node_installed.rc != 0
 
 # pnpm remains a standalone Homebrew binary — it doesn't depend on nvm-managed
 # node (ships as a self-contained binary), so it's installed directly.
@@ -61,6 +70,7 @@
     name: "{{ nodejs_brew_packages }}"
     state: present
   become: false
+  when: nodejs_install_method == 'homebrew-nvm'
 
 # Optional Node.js tools via Homebrew
 - name: Install optional Node.js tools via Homebrew
@@ -68,7 +78,7 @@
     name: "{{ nodejs_optional_brew_packages | dict2items | selectattr('value', 'equalto', true) | map(attribute='key') | list }}"
     state: present
   become: false
-  when: nodejs_optional_brew_packages.values() | list | select | list | length > 0
+  when: nodejs_install_method == 'homebrew-nvm' and (nodejs_optional_brew_packages.values() | list | select | list | length > 0)
 
 # Global npm packages (tools not in Homebrew or better managed via npm -g).
 # Uses a shell task (not community.general.npm) because nvm-managed npm lives
@@ -82,4 +92,26 @@
       npm install -g {{ nodejs_npm_global_packages | join(' ') }}
   become: false
   changed_when: true
-  when: nodejs_npm_global_packages | length > 0
+  when: nodejs_install_method == 'homebrew-nvm' and (nodejs_npm_global_packages | length > 0)
+
+# --- apt-nodesource method (servers) ---
+# Node/npm land on the normal system PATH, so no shell-sourcing dance is
+# needed and global npm packages can be managed with the community.general.npm
+# module directly, root-owned like any other system package.
+
+- name: Install Node.js from NodeSource apt repo
+  ansible.builtin.import_role:
+    name: setup_apt_repos
+  vars:
+    apt_repo_nodesource: true
+  become: true
+  when: nodejs_install_method == 'apt-nodesource'
+
+- name: Install global npm packages system-wide
+  community.general.npm:
+    name: "{{ item }}"
+    global: true
+    state: present
+  become: true
+  loop: "{{ nodejs_npm_global_packages }}"
+  when: nodejs_install_method == 'apt-nodesource'

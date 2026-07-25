@@ -314,3 +314,85 @@
     state: present
   become: true
   when: apt_repo_microsoft
+
+# --- NodeSource (Node.js) ---
+# Distro-agnostic "nodistro" repo — same URL works across Debian/Ubuntu
+# releases, unlike the old per-codename NodeSource repos.
+
+- name: Download NodeSource GPG key (ASCII-armored)
+  ansible.builtin.get_url:
+    url: https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key
+    dest: /etc/apt/keyrings/nodesource.asc
+    mode: '0644'
+  become: true
+  when: apt_repo_nodesource
+
+- name: Dearmor NodeSource GPG key
+  ansible.builtin.command:
+    cmd: gpg --dearmor --batch --yes -o /etc/apt/keyrings/nodesource.gpg /etc/apt/keyrings/nodesource.asc
+  become: true
+  when: apt_repo_nodesource
+  changed_when: true
+
+- name: Add NodeSource apt repository
+  # A full overwrite (not ansible.builtin.apt_repository, which only
+  # appends a line if it doesn't textually match an existing one) — this
+  # file may already contain a stale line from a prior manual/partial
+  # NodeSource setup (different keyring path and/or major version), which
+  # apt_repository would leave in place alongside ours and apt then refuses
+  # to resolve two conflicting signed-by values for the same repo URL.
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/nodesource.list
+    content: "deb [arch=amd64 signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_{{ nodejs_apt_major_version }}.x nodistro main\n"
+    mode: '0644'
+  become: true
+  when: apt_repo_nodesource
+
+# NodeSource's own default pin (priority 600, applied by their official
+# setup script — this box has leftover evidence of a prior manual run at
+# /etc/apt/preferences.d/nodejs) is NOT enough on hosts with a stronger local
+# pin for the distro's own release (e.g. a `Pin: release a=stable /
+# Pin-Priority: 700` in /etc/apt/preferences.d/my_preferences, as found on
+# prolion 2026-07) — without an explicit override, `apt install nodejs`
+# silently resolves back to the distro's own package even right after
+# purging it. Priority >1000 forces NodeSource to win regardless of any such
+# local pin (apt_preferences(5): >1000 permits even downgrades).
+- name: Remove any stale/prior NodeSource pin files before writing our own
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/apt/preferences.d/nodejs
+    - /etc/apt/preferences.d/nsolid
+  become: true
+  when: apt_repo_nodesource
+
+- name: Pin NodeSource packages above any competing local release pin
+  ansible.builtin.copy:
+    dest: /etc/apt/preferences.d/nodesource
+    content: |
+      Package: nodejs npm libnode*
+      Pin: origin deb.nodesource.com
+      Pin-Priority: 1001
+    mode: '0644'
+  become: true
+  when: apt_repo_nodesource
+
+# Debian ships its own nodejs/npm/libnode packages — purge them so there's
+# no lingering distro-provided version sitting alongside NodeSource's.
+- name: Purge distro-packaged Node.js so NodeSource's package is unambiguous
+  ansible.builtin.apt:
+    name: "{{ nodejs_apt_distro_conflict_packages }}"
+    state: absent
+    purge: true
+    autoremove: true
+  become: true
+  when: apt_repo_nodesource and nodejs_apt_purge_distro_packages
+
+- name: Install Node.js from NodeSource
+  ansible.builtin.apt:
+    name: nodejs
+    state: present
+    update_cache: true
+  become: true
+  when: apt_repo_nodesource

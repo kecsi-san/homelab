@@ -1,8 +1,21 @@
 ---
 nodejs_dev_enabled: true
 
+# How Node.js itself gets installed/managed:
+#   homebrew-nvm  - per-user, nvm-managed, multiple versions switchable
+#                   (workstations — see nodejs_version below)
+#   apt-nodesource - system-wide via the NodeSource apt repo, root-owned
+#                    global npm packages (servers — see nodejs_apt_major_version)
+nodejs_install_method: "homebrew-nvm"
+
 # Node.js version installed and managed via nvm (e.g. "lts/*", "22", "22.10.0")
+# Only used when nodejs_install_method == "homebrew-nvm".
 nodejs_version: "lts/*"
+
+# Only used when nodejs_install_method == "apt-nodesource" — passed straight
+# through to setup_apt_repos (nodejs_apt_major_version / nodejs_apt_purge_distro_packages).
+nodejs_apt_major_version: "24"
+nodejs_apt_purge_distro_packages: true
 
 # Core Node.js tools via Homebrew — standalone binaries, not nvm-managed
 # (node itself is installed via nvm, see tasks/main.yml)

@@ -1,0 +1,13 @@
+---
+# variables for [fileservers] group (group defined at inventory/hosts)
+
+nodejs_install_method: apt-nodesource
+# Pinned to 22 (not the newer 24) — thumbsup's locked better-sqlite3@11.0.0
+# (published 2024-05, ~1 month after Node 22's release) has no prebuilt
+# binary for Node 24's ABI and fails to compile against Node 24's V8
+# headers (real source-level incompatibility, not a missing-build-tools
+# issue). Revisit once thumbsup/better-sqlite3 catch up, or if thumbsup's
+# dependency gets bumped to a build with Node 24 prebuild coverage.
+nodejs_apt_major_version: "22"
+nodejs_npm_global_packages:
+  - thumbsup

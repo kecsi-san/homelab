@@ -3,9 +3,13 @@ hped800g61 ansible_host=192.168.1.36 ip=192.168.1.36
 hped800g62 ansible_host=192.168.1.34 ip=192.168.1.34
 hppd600g6 ansible_host=192.168.1.52 ip=192.168.1.52
 api.k8s ansible_host=192.168.1.100 ip=192.168.1.100
+prolion ansible_host=192.168.1.10 ip=192.168.1.10 # Debian 13, photo gallery + jellyfin + minecraft + transmission
 
 [local]
 127.0.0.1  ansible_connection=local
+
+[fileservers]
+prolion
 
 
 [kube]

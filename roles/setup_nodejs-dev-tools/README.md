@@ -1,11 +1,20 @@
 # setup_nodejs-dev-tools
 
-Installs Node.js development tooling. Node.js itself is managed via **nvm**
-(not a fixed Homebrew formula) so multiple versions can be installed and
-switched per-project; `pnpm` and the optional tools remain standalone
-Homebrew binaries.
+Installs Node.js, selecting between two install methods via
+`nodejs_install_method`:
+
+- **`homebrew-nvm`** (default, workstations) — Node.js managed via **nvm**
+  (not a fixed Homebrew formula) so multiple versions can be installed and
+  switched per-project; `pnpm` and the optional tools remain standalone
+  Homebrew binaries.
+- **`apt-nodesource`** (servers) — Node.js installed system-wide from the
+  NodeSource apt repo, root-owned, single version, no per-project switching.
+  Homebrew-only options (`nodejs_brew_packages`,
+  `nodejs_optional_brew_packages`) don't apply to this method.
 
 ## What it does
+
+### `homebrew-nvm` method
 
 | Tool | Source | Default | Purpose |
 |------|--------|---------|---------|
@@ -19,25 +28,37 @@ Homebrew binaries.
 | `prettier` | brew | optional | Opinionated code formatter |
 | npm global packages | `npm install -g` (nvm-managed npm) | optional | Any packages listed in `nodejs_npm_global_packages` |
 
+### `apt-nodesource` method
+
+| Tool | Source | Default | Purpose |
+|------|--------|---------|---------|
+| Node.js (`nodejs_apt_major_version`) | NodeSource apt repo (via `setup_apt_repos`) | always | Node.js runtime + npm, system-wide; purges Debian's own node packages first |
+| npm global packages | `community.general.npm`, `global: true` | optional | Any packages listed in `nodejs_npm_global_packages` |
+
 ## Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `nodejs_dev_enabled` | `true` | Set to `false` to skip the role entirely |
-| `nodejs_version` | `"lts/*"` | Node.js version installed via nvm (e.g. `"lts/*"`, `"22"`, `"22.10.0"`) |
-| `nodejs_brew_packages` | `[pnpm]` | Standalone Homebrew packages — always installed |
-| `nodejs_optional_brew_packages` | all `false` | Optional tools — flip to `true` to install |
-| `nodejs_npm_global_packages` | `[]` | Extra packages to install globally via npm |
+| `nodejs_install_method` | `"homebrew-nvm"` | `"homebrew-nvm"` or `"apt-nodesource"` |
+| `nodejs_version` | `"lts/*"` | Node.js version installed via nvm — only used for `homebrew-nvm` |
+| `nodejs_apt_major_version` | `"24"` | NodeSource major version line — only used for `apt-nodesource` |
+| `nodejs_apt_purge_distro_packages` | `true` | Passed through to `setup_apt_repos` — only used for `apt-nodesource` |
+| `nodejs_brew_packages` | `[pnpm]` | Standalone Homebrew packages — only used for `homebrew-nvm` |
+| `nodejs_optional_brew_packages` | all `false` | Optional tools — only used for `homebrew-nvm` |
+| `nodejs_npm_global_packages` | `[]` | Extra packages to install globally via npm — both methods |
 
 ## Usage
 
 ```yaml
+# Workstation (default)
 - name: Setup Node.js development tooling
   ansible.builtin.import_role:
     name: setup_nodejs-dev-tools
   when: nodejs_dev_enabled
   vars:
     nodejs_dev_enabled: true
+    nodejs_install_method: homebrew-nvm
     nodejs_version: "lts/*"
     nodejs_optional_brew_packages:
       yarn: false
@@ -51,10 +72,39 @@ Homebrew binaries.
     - dev
 ```
 
+```yaml
+# Server
+- name: Setup Node.js
+  ansible.builtin.import_role:
+    name: setup_nodejs-dev-tools
+  vars:
+    nodejs_install_method: apt-nodesource
+    nodejs_apt_major_version: "24"
+    nodejs_npm_global_packages:
+      - thumbsup
+  tags:
+    - nodejs
+```
+
 ## Notes
 
-- `become: false` — all installs are user-space
-- nvm is a shell function sourced into interactive shells, not a normal `PATH` binary — tasks drive it via explicit `. nvm.sh` shell commands (`nvm_brew_prefix` registered from `brew --prefix nvm`), not an Ansible module. `community.general.npm` isn't used either, for the same reason: nvm-managed `npm` lives under `~/.nvm/versions/node/<version>/bin`, not a path the module can find without sourcing nvm first
-- `pnpm` is preferred over npm for workspace projects — faster installs, content-addressable store
-- `eslint` and `prettier` are usually installed per-project via devDependencies; use global install only for standalone linting scripts
-- Companion role: `upgrade_nodejs` (in `upgrade-local.yml`) upgrades the nvm-managed Node.js version and global npm packages; `upgrade_brew` covers the `nvm`/`pnpm` Homebrew formulae themselves
+- `homebrew-nvm`: `become: false`, all installs are user-space. nvm is a
+  shell function sourced into interactive shells, not a normal `PATH`
+  binary — tasks drive it via explicit `. nvm.sh` shell commands
+  (`nvm_brew_prefix` registered from `brew --prefix nvm`), not an Ansible
+  module. `community.general.npm` isn't used either, for the same reason:
+  nvm-managed `npm` lives under `~/.nvm/versions/node/<version>/bin`, not a
+  path the module can find without sourcing nvm first.
+- `apt-nodesource`: `become: true`, system-wide like any other apt package.
+  Delegates the repo/package work to `setup_apt_repos` (see that role's
+  README for the purge-vs-pin rationale) and installs global npm packages
+  directly via `community.general.npm`, since apt-installed node/npm are
+  already on the normal system `PATH`.
+- `pnpm` is preferred over npm for workspace projects — faster installs,
+  content-addressable store. Homebrew-only, not available under
+  `apt-nodesource`.
+- `eslint` and `prettier` are usually installed per-project via
+  devDependencies; use global install only for standalone linting scripts.
+- Companion role: `upgrade_nodejs` upgrades Node.js and global npm packages
+  via whichever method installed it; `upgrade_brew` covers the `nvm`/`pnpm`
+  Homebrew formulae themselves (only relevant to `homebrew-nvm`).

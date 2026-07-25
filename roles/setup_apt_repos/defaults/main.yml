@@ -15,6 +15,7 @@ apt_repo_duosecurity: false
 apt_repo_twilio: false
 apt_repo_yarn: false
 apt_repo_microsoft: false
+apt_repo_nodesource: false
 
 # Docker CE packages
 docker_packages:
@@ -27,3 +28,15 @@ docker_packages:
 # Firefox packages (apt_repo_mozilla)
 mozilla_packages:
   - firefox
+
+# NodeSource (apt_repo_nodesource) — major version line to track, e.g. "24"
+nodejs_apt_major_version: "24"
+# Purge Debian's own nodejs/npm/libnode packages so NodeSource's package is
+# unambiguously the one apt resolves (rather than fighting it with a stronger
+# pin) — see role README for why.
+nodejs_apt_purge_distro_packages: true
+nodejs_apt_distro_conflict_packages:
+  - nodejs
+  - npm
+  - nodejs-doc
+  - libnode-dev
