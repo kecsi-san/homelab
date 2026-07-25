@@ -123,8 +123,9 @@
       become: false
       vars:
         omp_enabled: true
-        omp_themes_dir: "~/.poshthemes/"
+        omp_themes_dir: "~/.poshthemes"
         default_omp_theme: "debian.omp.yaml"
+        omp_theme_override: "pluto.omp.json"
       tags:
         - omp
         - desktop
