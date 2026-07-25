@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <small>[Compare with latest](https://github.com/kecsi-san/homelab/compare/v0.1.0...HEAD)</small>
 
+### Added
+
+- Add apt-nodesource install method to node roles, onboard prolion ([0360ed0](https://github.com/kecsi-san/homelab/commit/0360ed011a64fb52163d12e33201b4b9a305ceb1) by Zoltan K).
+
 ### Fixed
 
 - fix(inventory): add hubble to extra_hosts for local /etc/hosts ([55d8a7a](https://github.com/kecsi-san/homelab/commit/55d8a7a2f35bb2bd472ca74fa1b7f17236fd1325) by Zoltan K).
