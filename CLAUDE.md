@@ -133,6 +133,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 - `local-kube.yml` — localhost only; Kubernetes tooling (kubectl, helm, argocd, flux, kubeseal) — optional, run after local-core.yml
 - `upgrade-local.yml` — localhost only; upgrades apt, brew, and uv packages
 - `k8s-nodes.yml` — mirrors local-core.yml but targets `kube` group (remote hosts)
+- `fileservers.yml` — targets `fileservers` group (remote hosts); baseline prerequisites/hardening (ssh, sudo, banner, etckeeper, git, ntp, minimal, network-tools, security-tools) plus shell comfort (oh-my-posh, fzf) and app-specific tooling (Node.js/thumbsup for prolion's photo gallery); no desktop/GUI roles (headless boxes)
 - `personalise.yml` — localhost only; taste-driven setup (fonts, shell prompt, wallpapers, profile image)
 - `prerequisite.yml` — must run before `k8s-nodes.yml`; sets up SSH keys and passwordless sudo
 - `k8s.yml` / `reset-k8s.yml` — delegate entirely to the Kubespray collection
@@ -162,25 +163,26 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | `configure_etc-hosts` | Manages `/etc/hosts` with kube group IPs and domain names |
 | `configure_mikrotik-router` | Upserts static DNS records and NAT (dst-nat) rules on MikroTik router via `community.routeros` API; manages API VIP (`api.k8s.<domain>`), k3s wildcard, NFS alias, and port forwards |
 | `configure_cloudflare-zone` | Manages Cloudflare zone settings (ECH) and DNS A records (e.g. `minecraft.<domain>`) via REST API; `proxied: false` for UDP services; credentials via `secrets.yml` |
-| `configure_fzf` | Adds fzf initialization to `~/.bashrc` (idempotent) |
-| `configure_ntp` | Disables systemd-timesyncd; installs chrony (Debian 13 dropped ntpd); configures MikroTik router as primary NTP + pool.ntp.org fallback; wired into `k8s-nodes.yml` and `local-core.yml` (Linux only) with `ntp` tag |
+| `configure_fzf` | Adds fzf initialization to `~/.bashrc` (idempotent); wired into `k8s-nodes.yml` and `fileservers.yml` (both gated by `fzf_enabled`) |
+| `configure_ntp` | Disables systemd-timesyncd; installs chrony (Debian 13 dropped ntpd); configures MikroTik router as primary NTP + pool.ntp.org fallback; wired into `k8s-nodes.yml`, `fileservers.yml`, and `local-core.yml` (Linux only) with `ntp` tag |
 | `configure_wsl2` | Templates full `/etc/wsl.conf` (`[automount]`/`[network]`/`[interop]`/`[user]`/`[boot]`, incl. `systemd = true`); WSL2-only (`ansible_kernel` detection), no-op elsewhere; wired into `local-core.yml` |
 | `configure_mc-theme` | Downloads the gruvbox256 Midnight Commander skin to `~/.local/share/mc/skins/`; `mc` itself already installed by `setup_minimal`; wired into `personalise.yml` |
-| `configure_git` | Templates `~/.gitconfig`; SSH-format commit signing (`gpg.format = ssh`, reuses the `github.com` key from `configure_ssh-client`, which must run first) — disabled on remote `k8s-nodes.yml` runs where no signing key is deployed |
+| `configure_git` | Templates `~/.gitconfig`; SSH-format commit signing (`gpg.format = ssh`, reuses the `github.com` key from `configure_ssh-client`, which must run first) — disabled on remote `k8s-nodes.yml`/`fileservers.yml` runs where no signing key is deployed |
 | `configure_bash-aliases` | Templates `~/.bash_aliases` (`eza`-based `ls`/`ll`/`l`/`la`, `alert`, `kx`/`kn`, `apt-maintenance`, `brew-maintenance`, `ecr-login`, `git-reset-author`); `k=kubectl` deliberately excluded, already owned by `setup_kube-extra` |
 | `configure_ssh-client` | Templates `~/.ssh/config` from Vault (`workstation/ssh-config/<machine>`, keyed by `ansible_hostname`); fetches only the specific keys that machine's config references from a shared pool (`workstation/ssh-keys/<key-name>`), not the whole pool; runs interactively via the human's own cached Vault session, no AppRole |
-| `configure_oh-my-posh` | Installs Pluto OMP theme; adds init block to `~/.bashrc` |
-| `configure_ssh` | Deploys SSH authorized key for `ansible_ssh_user` |
-| `configure_sudo` | Creates `/etc/sudoers.d/{user}` with NOPASSWD (visudo-validated) |
-| `debian_upgrade` | `apt update && upgrade && autoremove --purge` |
+| `configure_oh-my-posh` | Installs Pluto OMP theme; adds init block to `~/.bashrc`; wired into `k8s-nodes.yml` and `fileservers.yml` (both gated by `omp_enabled`) |
+| `configure_ssh` | Deploys SSH authorized key for `ansible_ssh_user`; wired into `k8s-nodes.yml` and `fileservers.yml` |
+| `configure_sudo` | Creates `/etc/sudoers.d/{user}` with NOPASSWD (visudo-validated); wired into `k8s-nodes.yml` and `fileservers.yml` (Linux only) |
+| `debian_upgrade` | `apt update && upgrade && autoremove --purge`; wired into `k8s-nodes.yml` and `fileservers.yml` (both gated by `debian_upgrade_enabled`) |
 | `disable_hibernation` | Creates `/etc/systemd/sleep.conf.d/nosuspend.conf`; masks sleep targets |
 | `install_linuxbrew` | Installs Homebrew via `markosamuli.linuxbrew` (galaxy role, not vendored) |
 | `install_nerd_fonts` | Installs Meslo LG + Fira Code Nerd Fonts via `homebrew_cask` |
-| `setup_etckeeper` | Installs etckeeper; initialises git-backed `/etc` tracking |
-| `setup_legal_banner` | Copies `banner.txt` to `/etc/issue*`; clears MOTD; reloads sshd |
+| `setup_etckeeper` | Installs etckeeper; initialises git-backed `/etc` tracking; wired into `pre-k8s.yml` and `fileservers.yml` |
+| `setup_legal_banner` | Copies `banner.txt` to `/etc/issue*`; clears MOTD; reloads sshd; wired into `k8s-nodes.yml` and `fileservers.yml` (both gated by `legal_banner_enabled`) |
 | `setup_longhorn` | Installs iSCSI deps, longhornctl, and Longhorn via Helm |
-| `setup_minimal` | Installs base + compression APT packages; optional brew base packages |
-| `setup_network-tools` | Installs network diagnostic tools (APT on Linux, Homebrew on macOS) |
+| `setup_minimal` | Installs base + compression APT packages; optional brew base packages; wired into `k8s-nodes.yml` and `fileservers.yml` |
+| `setup_network-tools` | Installs network diagnostic tools (APT on Linux, Homebrew on macOS); wired into `k8s-nodes.yml` and `fileservers.yml` (Linux only) |
+| `setup_security-tools` | fail2ban + rkhunter (APT) + lynis (Cisofy repo) + trivy/hadolint (Homebrew); AIDE optional via `security_apt_packages` but excluded on `k8s-nodes.yml`/`fileservers.yml` — daily full-filesystem hash is too CPU/memory-heavy on kube nodes' dynamic storage and prolion's 7.3TB `/stuff` array |
 | `setup_python-uv` | Installs uv CLI tools (checkov, ansible, black, etc.) and Python library packages into `~/.venv/devops`; optional `pyenv`/`pyenv-virtualenv` and `python-tk@<version>` |
 | `setup_kube-extra` | Installs kubectl, helm (+ `helm-diff`, `helm-docs`), argocd, flux, kubeseal, krew via Homebrew; bash completion system-wide (Linux: `/etc/bash_completion.d/`; macOS: `bash-completion@2` + Homebrew completion dir); `k` alias for kubectl |
 | `setup_traefik` | Installs Traefik ingress controller via Helm; `delegate_to: localhost`; kubeconfig per cluster |
@@ -268,6 +270,7 @@ Tags enable selective role execution without running the full playbook:
 - `local-kube.yml` tags: `kube`, `kubernetes`, `cloudflared`, `kind`
 - `upgrade-local.yml` tags: `upgrade`, `apt`, `brew`, `uv`, `nodejs`
 - `k8s-nodes.yml` tags: `update`, `ssh`, `hosts`, `banner`, `fonts`, `omp`, `fzf`, `gitconfig`, `hibernation`, `ntp`
+- `fileservers.yml` tags: `update`, `ssh`, `sudo`, `banner`, `etckeeper`, `gitconfig`, `ntp`, `minimal`, `network`, `security`, `omp`, `fzf`, `nodejs`
 
 Always tag new roles consistently so users can run them individually.
 

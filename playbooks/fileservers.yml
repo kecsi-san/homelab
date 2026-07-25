@@ -1,7 +1,147 @@
 ---
 - name: Configure standalone file/media servers
   hosts: fileservers
+  become: false
+  remote_user: "{{ ansible_ssh_user }}"
   tasks:
+    - name: Upgrade Debian packages
+      ansible.builtin.import_role:
+        name: debian_upgrade
+      when: debian_upgrade_enabled
+      become: true
+      vars:
+        debian_upgrade_enabled: true
+      tags:
+        - update
+        - maintenance
+
+    - name: Configure SSH
+      ansible.builtin.import_role:
+        name: configure_ssh
+      become: true
+      tags:
+        - ssh
+        - prerequisites
+        - developer
+
+    - name: Configure sudo
+      ansible.builtin.import_role:
+        name: configure_sudo
+      become: true
+      when: ansible_system == 'Linux'
+      tags:
+        - sudo
+        - prerequisites
+        - developer
+
+    - name: Setup legal banner
+      ansible.builtin.import_role:
+        name: setup_legal_banner
+      when: legal_banner_enabled
+      become: true
+      vars:
+        legal_banner_enabled: true
+      tags:
+        - banner
+        - security
+
+    - name: Setup etckeeper
+      ansible.builtin.import_role:
+        name: setup_etckeeper
+      become: true
+      tags:
+        - etckeeper
+
+    - name: Configure git
+      ansible.builtin.import_role:
+        name: configure_git
+      vars:
+        # configure_ssh-client (local-only) never runs on these remote hosts, so
+        # there's no signing key here to point at -- would otherwise break commit
+        # signing (including etckeeper's auto-commits) with a dangling key path.
+        git_user_gpgsign: false
+      become: false
+      tags:
+        - gitconfig
+        - git
+        - developer
+
+    - name: Configure NTP
+      ansible.builtin.import_role:
+        name: configure_ntp
+      become: true
+      tags:
+        - ntp
+        - server
+
+    - name: Setup minimal packages
+      ansible.builtin.import_role:
+        name: setup_minimal
+      become: true
+      vars:
+        install_base_packages: true
+        install_brew_base_packages: true
+        brew_base_packages:
+          - fzf
+          - gcc
+          - git-delta
+          - go-task
+          - just
+          - oh-my-posh
+          - pre-commit
+          - python@3.12
+          - uv
+          - yq
+      tags:
+        - minimal
+
+    - name: Setup network tools
+      ansible.builtin.import_role:
+        name: setup_network-tools
+      become: true
+      when: ansible_system == 'Linux'
+      tags:
+        - network
+
+    - name: Setup security tools
+      ansible.builtin.import_role:
+        name: setup_security-tools
+      vars:
+        # aide excluded: /stuff is a 7.3TB RAID1 array at 94% full -- a daily
+        # full-filesystem hash would cost far more CPU/memory than the kube
+        # nodes' dailyaidecheck problem this same exclusion works around there.
+        security_apt_packages:
+          - fail2ban
+          - rkhunter
+      tags:
+        - security
+
+    - name: Configure oh-my-posh
+      ansible.builtin.import_role:
+        name: configure_oh-my-posh
+      when: omp_enabled
+      become: false
+      vars:
+        omp_enabled: true
+        omp_themes_dir: "~/.poshthemes/"
+        default_omp_theme: "debian.omp.yaml"
+      tags:
+        - omp
+        - desktop
+        - personalise
+
+    - name: Configure fzf
+      ansible.builtin.import_role:
+        name: configure_fzf
+      when: fzf_enabled
+      become: false
+      vars:
+        fzf_enabled: true
+      tags:
+        - fzf
+        - desktop
+        - personalise
+
     - name: Setup Node.js
       ansible.builtin.import_role:
         name: setup_nodejs-dev-tools

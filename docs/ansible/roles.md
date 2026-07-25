@@ -4,7 +4,7 @@ type: reference
 status: stable
 scope: [ansible]
 created: 2026-03-30
-updated: 2026-07-19
+updated: 2026-07-25
 tags: [ansible, roles, reference]
 ---
 
@@ -81,21 +81,21 @@ Use `roles/role_template/` as a starting point when creating a new role.
 | Role | Purpose | Playbook(s) |
 |------|---------|-------------|
 | `configure_etc-hosts` | Manages `/etc/hosts` with cluster node entries | k8s-nodes.yml |
-| `configure_fzf` | Adds fzf shell integration to `~/.bashrc` | k8s-nodes.yml |
-| `configure_git` | Deploys `~/.gitconfig`; SSH-format commit signing (reuses `configure_ssh-client`'s key), disabled on remote k8s-nodes.yml runs | k8s-nodes.yml, local-core.yml, personalise.yml |
+| `configure_fzf` | Adds fzf shell integration to `~/.bashrc` | k8s-nodes.yml, fileservers.yml |
+| `configure_git` | Deploys `~/.gitconfig`; SSH-format commit signing (reuses `configure_ssh-client`'s key), disabled on remote k8s-nodes.yml/fileservers.yml runs | k8s-nodes.yml, fileservers.yml, local-core.yml, personalise.yml |
 | `configure_ssh-client` | Templates `~/.ssh/config` from Vault (`workstation/` mount); fetches only the keys a machine's config actually references | local-core.yml |
 | `configure_bash-aliases` | Templates `~/.bash_aliases` (`eza`-based ls family, `alert`, `kx`/`kn`, maintenance aliases, `ecr-login`, `git-reset-author`) | local-core.yml |
 | `configure_wsl2` | Templates full `/etc/wsl.conf`; WSL2-only, no-op elsewhere | local-core.yml |
 | `configure_mc-theme` | Downloads the gruvbox256 Midnight Commander skin | personalise.yml |
-| `configure_oh-my-posh` | Installs Pluto OMP theme and shell init | k8s-nodes.yml |
-| `configure_ssh` | Deploys SSH authorized key | k8s-nodes.yml, prerequisite.yml |
-| `configure_sudo` | Configures passwordless sudo for `admin_user` | k8s-nodes.yml, local-security.yml, prerequisite.yml |
-| `debian_upgrade` | `apt update && upgrade && autoremove` | k8s-nodes.yml, upgrade.yml, upgrade-local.yml |
+| `configure_oh-my-posh` | Installs Pluto OMP theme and shell init | k8s-nodes.yml, fileservers.yml |
+| `configure_ssh` | Deploys SSH authorized key | k8s-nodes.yml, fileservers.yml, prerequisite.yml |
+| `configure_sudo` | Configures passwordless sudo for `admin_user` | k8s-nodes.yml, fileservers.yml, local-security.yml, prerequisite.yml |
+| `debian_upgrade` | `apt update && upgrade && autoremove` | k8s-nodes.yml, fileservers.yml, upgrade.yml, upgrade-local.yml |
 | `disable_hibernation` | Disables suspend/hibernate via systemd | k8s-nodes.yml |
 | `install_linuxbrew` | Installs Homebrew via `markosamuli.linuxbrew` galaxy role (Linux only) | local-core.yml |
 | `install_nerd_fonts` | Installs Meslo LG + Fira Code Nerd Fonts via Homebrew | k8s-nodes.yml |
-| `setup_legal_banner` | Deploys SSH/login banner; clears MOTD | k8s-nodes.yml |
-| `setup_etckeeper` | Git-backs `/etc` via etckeeper | pre-k8s.yml |
+| `setup_legal_banner` | Deploys SSH/login banner; clears MOTD | k8s-nodes.yml, fileservers.yml |
+| `setup_etckeeper` | Git-backs `/etc` via etckeeper | pre-k8s.yml, fileservers.yml |
 | `setup_apt_repos` | Adds Docker CE apt repo; installs docker-ce + compose plugin; adds user to docker group | local-core.yml |
 | `setup_iac-extra` | Installs opentofu, terragrunt, terrascan, tfupdate via Homebrew | local-cloud.yml |
 | `setup_iac-terraform` | Installs terraform, terraform-docs, tflint via Homebrew; trivy is a role default but omitted in local-cloud.yml (handled by `setup_security-tools`) | local-cloud.yml |
@@ -109,13 +109,13 @@ Use `roles/role_template/` as a starting point when creating a new role.
 | `setup_argocd` | Installs ArgoCD via Helm (argo-helm chart); sets insecure mode for Traefik TLS termination; displays initial admin password | post-k3s.yml |
 | `setup_argocd-apps` | Applies `kube-gitops/{k3s,k8s}/root.yaml` once via kubectl; ArgoCD self-manages all child apps after bootstrap | post-k3s.yml (post-k8s.yml after homelab rebuild) |
 | `setup_longhorn` | Installs Longhorn distributed block storage via Helm | post-k8s.yml |
-| `setup_minimal` | Installs base APT packages; optional Homebrew base packages | k8s-nodes.yml, local-core.yml |
-| `setup_network-tools` | Installs network diagnostic tools (APT on Linux, Homebrew on macOS) | k8s-nodes.yml, local-core.yml |
-| `setup_security-tools` | fail2ban + rkhunter (APT), lynis (Cisofy repo), trivy (Homebrew) | k8s-nodes.yml, local-security.yml |
+| `setup_minimal` | Installs base APT packages; optional Homebrew base packages | k8s-nodes.yml, fileservers.yml, local-core.yml |
+| `setup_network-tools` | Installs network diagnostic tools (APT on Linux, Homebrew on macOS) | k8s-nodes.yml, fileservers.yml, local-core.yml |
+| `setup_security-tools` | fail2ban + rkhunter (APT), lynis (Cisofy repo), trivy (Homebrew); AIDE excluded on k8s-nodes.yml/fileservers.yml (too CPU/memory-heavy on dynamic/large storage) | k8s-nodes.yml, fileservers.yml, local-security.yml |
 | `setup_python-uv` | Installs uv CLI tools and Python library packages | local-core.yml |
 | `setup_k3s` | Single-node k3s local dev cluster (Linux native / macOS via k3d) | k3s.yml |
 | `setup_go-dev-tools` | go, gopls, golangci-lint via Homebrew; optional: delve, goreleaser, ko, air | local-dev.yml |
-| `setup_nodejs-dev-tools` | node, pnpm via Homebrew; optional brew + npm global packages | local-dev.yml |
+| `setup_nodejs-dev-tools` | node, pnpm via Homebrew (macOS/nvm) or NodeSource apt repo (`nodejs_install_method: apt-nodesource`, root-owned servers); optional brew + npm global packages | local-dev.yml, fileservers.yml |
 | `setup_rust-dev-tools` | rustup + stable toolchain (rustc, cargo, rustfmt, clippy); optional cargo tools | local-dev.yml |
 | `upgrade_brew` | `brew update && upgrade && cleanup` — cross-platform (Linux/macOS brew paths via vars/os/) | upgrade.yml, upgrade-local.yml |
 | `upgrade_python-uv` | `uv tool upgrade --all` + `uv pip install --upgrade` in devops venv | upgrade.yml, upgrade-local.yml |
