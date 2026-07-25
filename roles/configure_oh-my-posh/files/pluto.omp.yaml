@@ -3,7 +3,11 @@ palette:
   kube-blue: '#326CE5'
   kube-red: '#FF0000'
   ubu-orange: '#E95420'
+  debian-red: '#A90232'
+  debian-purple: '#D70A53'
   rpi-red: '#c7053d'
+  mac-gray: '#707070'
+  microsoft-blue: '#00A4EF'
 blocks:
   - type: prompt
     alignment: left
@@ -13,6 +17,12 @@ blocks:
         template: ' {{.Icon}} '
         foreground: 'white'
         background: '#E95420'
+        background_templates:
+          - '{{if eq .Icon ""}}p:debian-red{{end}}'
+          - '{{if eq .Icon ""}}p:ubu-orange{{end}}'
+          - '{{if eq .Icon ""}}p:rpi-red{{end}}'
+          - '{{if eq .Icon ""}}p:mac-gray{{end}}'
+          - '{{if .WSL}}p:microsoft-blue{{end}}'
         type: os
         style: powerline
       - properties:
@@ -47,7 +57,7 @@ blocks:
         template: ' {{ .Path }} '
         foreground: '#100e23'
         powerline_symbol: 
-        background: '#fa8128'
+        background: '#458588'
         type: path
         style: powerline
       - properties:

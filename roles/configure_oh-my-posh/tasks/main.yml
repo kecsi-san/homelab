@@ -19,24 +19,15 @@
     mode: '0644'
   become: false
 
-- name: Copy Debian omp theme file
-  ansible.builtin.copy:
-    src: "files/debian.omp.yaml"
-    dest: "{{ omp_themes_dir }}/debian.omp.yaml"
-    mode: '0644'
-  become: false
-  when: ansible_distribution == 'Debian'
-
 - name: Copy default omp theme file
   ansible.builtin.copy:
     src: "files/{{ default_omp_theme }}"
     dest: "{{ omp_themes_dir }}/{{ default_omp_theme }}"
     mode: '0644'
   become: false
-  when: ansible_distribution != 'Debian'
 
-# Explicit per-host/group escape hatch from the EPAM/Debian heuristic below
-# (e.g. a Debian host that still wants a non-debian.omp.yaml theme).
+# Explicit per-host/group escape hatch from the EPAM/default heuristic below
+# (e.g. an EPAM host that still wants a non-epam.omp.yaml theme).
 - name: Copy override omp theme file
   ansible.builtin.copy:
     src: "files/{{ omp_theme_override }}"
@@ -50,8 +41,7 @@
     active_omp_theme: >-
       {{ omp_theme_override | default(
            'epam.omp.yaml' if ansible_hostname.startswith('EP')
-           else ('debian.omp.yaml' if ansible_distribution == 'Debian'
-           else default_omp_theme)) }}
+           else default_omp_theme) }}
 
 - name: Add oh-my-posh init into .bashrc (if it exists)
   block:

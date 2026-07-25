@@ -4,28 +4,26 @@ Installs an oh-my-posh prompt theme and wires it into `~/.bashrc`.
 
 ## What it does
 
-1. Creates the themes directory (`~/.poshthemes/` by default)
-2. Copies the selected theme file from `files/` to the themes directory
-3. Checks if oh-my-posh is already initialised in `~/.bashrc`
-4. If not, appends a managed block: `eval "$(oh-my-posh init bash --config <theme>)"`
+1. Creates the themes directory (`~/.poshthemes` by default)
+2. Copies `epam.omp.yaml`, the selected `default_omp_theme`, and (if set) `omp_theme_override` from `files/` to the themes directory
+3. Selects the active theme: `omp_theme_override` if set, else `epam.omp.yaml` if `ansible_hostname` starts with `EP`, else `default_omp_theme`
+4. Checks if oh-my-posh is already initialised in `~/.bashrc`
+5. If not, appends a managed block: `eval "$(oh-my-posh init bash --config <theme>)"`
 
 ## Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `omp_themes_dir` | `~/.poshthemes/` | Directory where theme files are stored |
-| `default_omp_theme` | `debian.omp.yaml` | Theme filename to deploy and activate |
+| `omp_themes_dir` | `~/.poshthemes` | Directory where theme files are stored |
+| `default_omp_theme` | `pluto.omp.yaml` | Theme filename to deploy and activate |
+| `omp_theme_override` | *(unset)* | Optional per-host/group escape hatch, takes priority over the EPAM/default heuristic (e.g. an EPAM host that still wants a non-epam.omp.yaml theme) |
 | `home` | `{{ ansible_env.HOME }}` | User home directory |
 
 ## Available themes
 
 Theme files are in `roles/configure_oh-my-posh/files/`:
-- `debian.omp.yaml` (default)
-- `pluto.omp.yaml` / `pluto.omp.json`
-- `pluto-deb-red.omp.yaml`
-- `pluto-nocache.omp.yaml`
-- `pluto-ubu-orange.omp.yaml`
-- `epam.omp.yaml` / `epam-deb-red.omp.yaml`
+- `pluto.omp.yaml` (default) — self-adapts its `os` segment background to the actual OS/distro via `background_templates` keyed on `.Icon`/`.WSL` (palette: `debian-red`, `ubu-orange`, `rpi-red`, `mac-gray`, `microsoft-blue`), so one file covers every non-EPAM host instead of maintaining a static theme per OS
+- `epam.omp.yaml` — EPAM-branded variant (own palette, "❮ epam ❯" badge segments), selected automatically for hostnames starting with `EP`
 
 ## Usage
 

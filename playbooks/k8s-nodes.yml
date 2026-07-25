@@ -4,6 +4,13 @@
   become: false
   remote_user: "{{ ansible_ssh_user }}"
   tasks:
+    - name: Install linuxbrew
+      ansible.builtin.import_role:
+        name: install_linuxbrew
+      tags:
+        - brew
+        - always
+
     - name: Upgrade Debian packages
       ansible.builtin.import_role:
         name: debian_upgrade
@@ -159,7 +166,6 @@
       vars:
         omp_enabled: true
         omp_themes_dir: "~/.poshthemes"
-        default_omp_theme: "debian.omp.yaml"
       tags:
         - omp
         - desktop
