@@ -22,18 +22,22 @@ Configures a full-featured personal/family email server with multi-domain suppor
 
 ## Multi-domain routing
 
-All served domains are listed in `mydestination`. A virtual address map (`/etc/postfix/virtual`) routes `user@any-domain` to the local system username. Define this via `mailbox_users` in inventory:
+All served domains are listed in `mydestination`. A virtual address map (`/etc/postfix/virtual`) routes addresses to local system usernames. Define this via `mailbox_users` in inventory — each user's `domains` list controls which domains they receive mail on, and each domain entry can add extra alias local-parts (nicknames, role addresses) beyond the username itself:
 
 ```yaml
 mailbox_users:
-  - name: kecsi
+  - name: alice
     domains:
-      - kecskemethy.hu
-      - kecskemethy.com
-      - kecskemethy.net
-      - kecskemethy.org
-      - linuxbox.hu
+      - name: example.com
+        aliases: [firstname, nickname]   # firstname@, nickname@, and alice@ all route to alice
+      - name: example.net
+        aliases: [firstname, nickname]
+      - name: example.org
+        include_self: false              # alice@example.org is NOT registered — only the aliases below are
+        aliases: [firstname, sales, support]
 ```
+
+Auth is PAM/system-password based (see `ec2_users` in `setup_users`), not a separate password here — `mailbox_users` only controls address-to-user routing.
 
 ## DKIM
 
@@ -56,7 +60,7 @@ To rotate keys: delete the `.key` file for that domain (or change `dkim_selector
 | `postscreen_dnsbl_threshold` | `3` | Score threshold to enforce block |
 | `mailbox_users` | `[]` | Users and their domains (see above) |
 | `aliases_root` | `root` | System user who receives root's mail |
-| `extra_aliases` | `{}` | Additional aliases, e.g. `{fail2ban: kecsi, wiki: kecsi}` |
+| `extra_aliases` | `{}` | Additional aliases, e.g. `{fail2ban: alice, wiki: alice}` |
 
 ## Prerequisites
 

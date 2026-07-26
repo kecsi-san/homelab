@@ -2,6 +2,11 @@
 # Format: user@domain   local_system_user
 {% for user in mailbox_users %}
 {% for domain in user.domains %}
-{{ user.name }}@{{ domain }}   {{ user.name }}
+{% if domain.include_self | default(true) %}
+{{ user.name }}@{{ domain.name }}   {{ user.name }}
+{% endif %}
+{% for alias in domain.aliases | default([]) %}
+{{ alias }}@{{ domain.name }}   {{ user.name }}
+{% endfor %}
 {% endfor %}
 {% endfor %}
