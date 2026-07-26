@@ -19,6 +19,7 @@ Vault is live at `vault.kecskemethy.hu` (installed 2026-07-04, initialized/unsea
 
 ### Policies
 - `ec2-ansible-read` — read + list only on `ec2/data/*` and `ec2/metadata/*`. Bound to the Ansible AppRole.
+- `ec2-dkim-write` — create + update only on `ec2/data/dkim-private/*` and `ec2/data/dkim-public/*`. Bound to the Ansible AppRole alongside `ec2-ansible-read`. See the DKIM addendum below.
 - `ec2-admin` — full CRUD on `ec2/*`, for day-to-day `vault kv put/get` work — bound to a userpass login, not root.
 - `workstation-admin` — full CRUD on `workstation/*`, bound to the same userpass login as `ec2-admin`.
 
@@ -74,6 +75,28 @@ its key from whichever pool that entry's `key_scope` (`generic`, the default, or
 points at — so a given machine only ever gets the keys its own config actually needs, not
 the whole pool. The *local* filename (`~/.ssh/<key_name>`) is identical either way, only
 the Vault source path differs. See the role's own README for the exact schema.
+
+## Addendum: DKIM key backup and Route53 publishing (2026-07-26)
+
+`roles/setup_email-server` generates DKIM key pairs on the mail server itself
+(`rspamadm dkim_keygen`, never leaves the box) and every run now also writes:
+- `ec2/dkim-private/<domain>` (`private_key`) — disaster-recovery backup only, never
+  read by Terraform.
+- `ec2/dkim-public/<domain>` (`public_key`, the full chunked DKIM TXT value) — read by
+  `terraform/aws` (`data "vault_kv_secret_v2" "dkim_public"`) to publish the actual
+  Route53 `*._domainkey.<domain>` TXT record.
+
+Same public/private split rationale as the addendum above (a `vault_kv_secret_v2` data
+source's whole `data` map lands in Terraform state) — Terraform only ever reads the
+`-public` path, so the private key never touches `terraform/aws` state. Terraform
+remains the *only* thing that calls the Route53 API for any record type; Ansible's role
+here is limited to generating the key and publishing its derived value to Vault. This
+replaced an earlier flow where the public key was printed to the Ansible console for a
+human to hand-copy into `terraform.tfvars` — the manual hop that caused a real drift
+incident (a rotated key never got copied over, so Route53 kept serving a stale DKIM
+record). A `terraform apply` in `terraform/aws` is still required after a rotation to
+actually publish the new value — smaller and safer than before (no editing/formatting),
+but not fully zero-touch.
 
 ## Deferred (explicitly out of scope, tracked for later)
 - OIDC auth via Authentik for human login

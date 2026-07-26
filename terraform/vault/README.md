@@ -19,7 +19,8 @@ the full design rationale.
 ## Setup
 
 ```bash
-cp backend.conf.example backend.conf   # fill in your bucket name
+cp backend.conf.example backend.conf     # fill in your bucket name
+cp terraform.tfvars.example terraform.tfvars   # fill in your Vault address
 terraform init -backend-config=backend.conf
 terraform validate
 ```

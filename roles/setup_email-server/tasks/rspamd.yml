@@ -70,25 +70,77 @@
   tags:
     - rspamd
 
-- name: Print DKIM public keys for DNS (add to Route53 as TXT records)
-  ansible.builtin.command:
-    cmd: cat {{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_selector }}.txt
+# Derived from the private key on disk rather than the .txt sidecar file,
+# which isn't guaranteed to exist for keys migrated from the old server.
+- name: Read DKIM private key content
+  ansible.builtin.slurp:
+    src: "{{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_selector }}.key"
   become: true
   loop: "{{ email_domains }}"
-  register: dkim_public_keys
-  changed_when: false
-  failed_when: false
+  register: dkim_private_key_files
   tags:
     - rspamd
     - dkim-dns
 
-- name: Show DKIM public keys
-  ansible.builtin.debug:
-    msg: |
-      === DKIM TXT record for {{ item.item }} ===
-      Name:  {{ dkim_selector }}._domainkey.{{ item.item }}
-      {{ item.stdout | default('(key migrated from old server — .txt file not present; DNS record unchanged)') }}
-  loop: "{{ dkim_public_keys.results }}"
+- name: Derive DKIM public key (base64 DER) from private key
+  ansible.builtin.shell:
+    cmd: set -o pipefail && openssl rsa -in {{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_selector }}.key -pubout -outform DER 2>/dev/null | openssl base64 -A
+    executable: /bin/bash
+  become: true
+  loop: "{{ email_domains }}"
+  register: dkim_public_key_b64
+  changed_when: false
+  check_mode: false
+  tags:
+    - rspamd
+    - dkim-dns
+
+# Vault is a disaster-recovery backup of the on-disk key, not read by Terraform
+# — Terraform only reads dkim-public/* (see terraform/aws/main.tf), keeping
+# the private half out of Terraform state. Runs unconditionally every play
+# since Vault mirrors current disk state rather than acting as its source.
+- name: Back up DKIM private key to Vault
+  community.hashi_vault.vault_kv2_write:
+    url: "{{ vault_ec2_lookup_args.url }}"
+    engine_mount_point: "{{ vault_ec2_lookup_args.engine_mount_point }}"
+    auth_method: "{{ vault_ec2_lookup_args.auth_method }}"
+    role_id: "{{ vault_ec2_lookup_args.role_id }}"
+    secret_id: "{{ vault_ec2_lookup_args.secret_id }}"
+    path: "dkim-private/{{ item.item }}"
+    data:
+      private_key: "{{ item.content | b64decode }}"
+  loop: "{{ dkim_private_key_files.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  delegate_to: localhost
+  become: false
+  tags:
+    - rspamd
+    - dkim-dns
+
+# Chunked into <=255-byte segments, joined with an embedded '" "' separator
+# (not wrapped in quotes at the start/end) — aws_route53_record.records
+# auto-wraps each list element in one outer quote pair, so a value already
+# bookended in quotes here would double up into an invalid `""..."" `
+# string. This is the format Route53 requires for multi-part TXT values.
+- name: Publish DKIM public key to Vault (read by Terraform for the Route53 record)
+  vars:
+    _chunks: "{{ item.stdout | list | batch(220) | map('join') | list }}"
+    _txt_value: "{{ (['v=DKIM1; h=sha256; k=rsa; p=' + _chunks[0]] + _chunks[1:]) | join('\" \"') }}"
+  community.hashi_vault.vault_kv2_write:
+    url: "{{ vault_ec2_lookup_args.url }}"
+    engine_mount_point: "{{ vault_ec2_lookup_args.engine_mount_point }}"
+    auth_method: "{{ vault_ec2_lookup_args.auth_method }}"
+    role_id: "{{ vault_ec2_lookup_args.role_id }}"
+    secret_id: "{{ vault_ec2_lookup_args.secret_id }}"
+    path: "dkim-public/{{ item.item }}"
+    data:
+      public_key: "{{ _txt_value }}"
+  loop: "{{ dkim_public_key_b64.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  delegate_to: localhost
+  become: false
   tags:
     - rspamd
     - dkim-dns

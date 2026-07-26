@@ -37,11 +37,11 @@ mailbox_users:
 
 ## DKIM
 
-Keys are generated at deploy time (2048-bit RSA) per domain using selector `{{ dkim_selector }}` (default: `mail`). After the role runs, DNS TXT records must be added manually — the role prints the required values.
+Keys are generated at deploy time (2048-bit RSA) per domain using selector `{{ dkim_selector }}` (default: `mail`). Every run derives the public key from whatever's on disk and publishes it to Vault at `ec2/dkim-public/<domain>` (and backs up the private key to `ec2/dkim-private/<domain>`, disaster-recovery only, never read by Terraform). `terraform/aws` reads `ec2/dkim-public/<domain>` and publishes the actual Route53 TXT record — Terraform remains the only thing that ever calls the Route53 API. See `docs/howtos/vault-secrets-architecture.md`.
 
 Key files: `/var/lib/rspamd/dkim/<domain>.<selector>.key`
 
-To rotate keys: change `dkim_selector` in vars, re-run the role, update DNS.
+To rotate keys: delete the `.key` file for that domain (or change `dkim_selector`), re-run this role, then run `terraform apply` in `terraform/aws` to publish the new value.
 
 ## Variables
 
@@ -63,7 +63,7 @@ To rotate keys: change `dkim_selector` in vars, re-run the role, update DNS.
 - A local DNSSEC-validating resolver on `127.0.0.1` (see `setup_unbound` role) — required for DANE outbound TLS
 - AWS credentials available to certbot for Route53 DNS-01 validation
 - System users already created on the host
-- DNS: MX records pointing to `mail_hostname`; TLSA records for DANE; DKIM TXT records after first deploy
+- DNS: MX records pointing to `mail_hostname`; TLSA records for DANE. DKIM TXT records are published automatically via `terraform/aws` after Vault has a value (see DKIM section above) — no manual DNS step
 
 ## Tags
 
@@ -73,6 +73,6 @@ To rotate keys: change `dkim_selector` in vars, re-run the role, update DNS.
 | `dovecot` | Dovecot config and FTS cron |
 | `fts` | FTS config and cron only |
 | `rspamd` | Rspamd config and DKIM keys |
-| `dkim-dns` | Print DKIM DNS records |
+| `dkim-dns` | Derive DKIM public key and back up key pair to Vault |
 | `opendmarc` | OpenDMARC config |
 | `certbot` | TLS certificate issuance |

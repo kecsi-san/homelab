@@ -94,13 +94,38 @@ module "eip_edge" {
   name        = "edge.kecskemethy.net"
 }
 
+# DKIM public keys are generated on the mail server (roles/setup_email-server)
+# and backed up to Vault every Ansible run. Reading only the "-public" path
+# here — never "-private" — keeps the private key out of this state file; see
+# docs/howtos/vault-secrets-architecture.md's DKIM addendum.
+data "vault_kv_secret_v2" "dkim_public" {
+  for_each = toset(var.route53_domains)
+  mount    = "ec2"
+  name     = "dkim-public/${each.key}"
+}
+
+locals {
+  # nonsensitive(): the Vault provider marks an entire KV v2 secret's data map
+  # sensitive, but this specific field is a DKIM *public* key — meant to be
+  # published in public DNS, nothing to protect. Declassifying it here also
+  # lets it be used as a for_each key below (sensitive values are disallowed
+  # there) and keeps `terraform plan` output readable for this record instead
+  # of showing "(sensitive value)".
+  # Filters out any domain Vault doesn't have a value for yet, so the record
+  # is simply not created rather than created empty.
+  dkim_keys = {
+    for d in var.route53_domains : d => nonsensitive(data.vault_kv_secret_v2.dkim_public[d].data["public_key"])
+    if nonsensitive(try(data.vault_kv_secret_v2.dkim_public[d].data["public_key"], "")) != ""
+  }
+}
+
 module "route53" {
   source = "../modules/route53-zone"
 
   domains        = var.route53_domains
   mail_public_ip = module.eip.public_ip
   mail_ipv6      = var.mail_ipv6
-  dkim_keys      = var.dkim_keys
+  dkim_keys      = local.dkim_keys
 }
 
 module "s3" {

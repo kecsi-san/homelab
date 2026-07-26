@@ -48,12 +48,6 @@ variable "mail_ipv6" {
   default     = ""
 }
 
-variable "dkim_keys" {
-  description = "Map of domain => full DKIM TXT record value (public key); wildcard *._domainkey record created per entry"
-  type        = map(string)
-  default     = {}
-}
-
 variable "s3_bucket_names" {
   description = "Names of existing S3 buckets to import and manage"
   type        = list(string)
@@ -69,5 +63,4 @@ variable "edge_ssh_user" {
 variable "vault_address" {
   description = "Vault server address"
   type        = string
-  default     = "https://vault.kecskemethy.hu"
 }

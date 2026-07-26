@@ -79,7 +79,9 @@ resource "aws_route53_record" "mail_aaaa" {
 }
 
 # Wildcard DKIM — created only for domains with a key in var.dkim_keys.
-# Run ec2-mail.yml and copy the printed public key here after first deploy.
+# Root module computes this from Vault (ec2/dkim-public/<domain>, written by
+# roles/setup_email-server) rather than a literal tfvars value — see
+# terraform/aws/main.tf and docs/howtos/vault-secrets-architecture.md.
 resource "aws_route53_record" "dkim" {
   for_each = var.dkim_keys
 

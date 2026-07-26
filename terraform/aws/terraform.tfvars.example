@@ -9,7 +9,7 @@ subnet_id            = "subnet-xxxxxxxx"
 iam_instance_profile = "your-instance-profile-name"  # leave empty string if none
 
 # edge_ssh_user = "kecsi"                          # default shown; SSH user cloud-init creates on edge.kecskemethy.net
-# vault_address = "https://vault.kecskemethy.hu"   # default shown
+vault_address = "https://vault.example.com"        # required, no default — keep the real FQDN out of committed files
 
 # Domains with Route53 hosted zones — MX, SPF, DMARC records created for each
 route53_domains = ["example.com", "example.net"]

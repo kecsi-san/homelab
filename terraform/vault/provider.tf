@@ -3,4 +3,8 @@
 # never secret values, so it needs no secret-bearing tfvars at all.
 provider "vault" {
   address = var.vault_address
+  # See terraform/aws/provider.tf for why this is needed: the provider's
+  # default ephemeral child-token creation 403s unless a policy explicitly
+  # grants auth/token/create, which none here do.
+  skip_child_token = true
 }
