@@ -1,13 +1,5 @@
 locals {
   # ipv6 = false for rules where IPv6 is not applicable (Wireguard)
-  #
-  # FLAGGED, NOT ACTED ON (2026-07-26): "smtps" (465) has no matching service in
-  # setup_email-server's postfix-master.cf.j2 — only submission (587, STARTTLS)
-  # is actually implemented. Either a dead open port or a genuinely missing
-  # feature (implicit-TLS SMTPS for legacy clients), needs a human decision, not
-  # a guess — this map is shared by BOTH the legacy instance's SG and the new
-  # aws_edge SG, so removing it here would immediately affect the still-live
-  # production instance's firewall on the next apply, not just the rebuild target.
   ingress_rules = {
     ssh             = { port = 22, protocol = "tcp", ipv6 = true, description = "SSH" }
     smtp            = { port = 25, protocol = "tcp", ipv6 = true, description = "SMTP" }

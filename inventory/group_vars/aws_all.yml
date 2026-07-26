@@ -81,6 +81,11 @@ apache_vhosts: "{{ lookup('community.hashi_vault.vault_kv2_get', 'vhosts', **vau
 
 mailbox_users: "{{ lookup('community.hashi_vault.vault_kv2_get', 'mail', **vault_ec2_lookup_args)['secret']['mailbox_users'] }}"
 email_domains: "{{ lookup('community.hashi_vault.vault_kv2_get', 'mail', **vault_ec2_lookup_args)['secret']['email_domains'] }}"
+# Both match the live legacy server's proven config exactly (confirmed 2026-07-26):
+# myhostname = linuxbox.hu there (bare domain, not the role default's mail.<domain>),
+# and OpenDMARC's default AuthservID (unset -> hostname) plus TrustedAuthservIDs both
+# key off this same value.
+mail_hostname: linuxbox.hu
 mail_cert_name: linuxbox.hu
 
 # --- HashiCorp Vault ---

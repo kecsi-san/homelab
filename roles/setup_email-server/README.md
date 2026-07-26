@@ -6,10 +6,10 @@ Configures a full-featured personal/family email server with multi-domain suppor
 
 | Component | Role |
 |---|---|
-| **Postfix** | MTA — inbound/outbound SMTP, postscreen DNSBL, DANE outbound TLS |
+| **Postfix** | MTA — inbound SMTP (25, postscreen DNSBL), authenticated submission (587 STARTTLS + 465 implicit TLS), DANE outbound TLS |
 | **Dovecot 2.4** | IMAP (IMAPS only, port 993), LMTP delivery, FTS via Xapian |
 | **Rspamd** | DKIM sign/verify, SPF, greylisting, spam scoring |
-| **OpenDMARC** | Inbound DMARC policy enforcement |
+| **OpenDMARC** | Inbound DMARC policy enforcement (port 25 only — skipped on 587/465, no point enforcing DMARC on our own outgoing mail); milter runs over TCP (`inet:127.0.0.1:8893`), not a unix socket, so it's reachable from Postfix's chroot jail |
 | **Certbot** | Reuses the TLS cert `setup_apache2` issues for `mail_cert_name`'s domain (renewal timer + reload hook only — no issuance task here) |
 
 ## Auth and mailbox model

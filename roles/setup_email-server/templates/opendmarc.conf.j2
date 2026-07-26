@@ -1,12 +1,17 @@
 # Managed by Ansible — do not edit manually
-AuthservID OpenDMARC
+# AuthservID left unset (defaults to MTA name / myhostname) rather than hardcoded,
+# matching the live legacy server's proven config exactly.
 TrustedAuthservIDs {{ mail_hostname }}
+IgnoreAuthenticatedClients true
+RequiredHeaders true
+SPFSelfValidate true
 
-Socket local:/run/opendmarc/opendmarc.sock
+# TCP, not a local: unix socket — see postfix-main.cf.j2's smtpd_milters comment
+# for why (chroot jail reachability).
+Socket inet:8893@localhost
 PidFile /run/opendmarc/opendmarc.pid
 Syslog true
 UMask 0002
 UserID opendmarc
 
-# Report failures via headers but do not reject — use RejectFailures true only after monitoring
-RejectFailures false
+RejectFailures true

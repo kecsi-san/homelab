@@ -101,11 +101,16 @@ smtpd_relay_restrictions = permit_mynetworks, permit_sasl_authenticated, defer_u
 
 # Milters:
 #   - Rspamd: spam scoring + DKIM sign/verify + SPF + greylisting (inbound and submission)
-#   - OpenDMARC: inbound DMARC policy enforcement (port 25 only via master.cf override on submission)
+#   - OpenDMARC: inbound DMARC policy enforcement (port 25 only via master.cf override on submission/smtps)
+#     Runs over TCP (inet:127.0.0.1:8893), not a local: unix socket — matches the live
+#     legacy server's proven config; a unix socket would be unreachable from smtpd/smtp/
+#     dnsblog/tlsproxy's chroot jail (Dovecot's sockets get created inside
+#     /var/spool/postfix/private/ for the same reason, but OpenDMARC's own package
+#     doesn't support listening inside a chroot, so TCP sidesteps the problem entirely).
 # milter_default_action = tempfail: if a milter is down, defer rather than silently skip checks
 milter_default_action = tempfail
 milter_protocol = 6
-smtpd_milters = inet:127.0.0.1:11332, local:/run/opendmarc/opendmarc.sock
+smtpd_milters = inet:127.0.0.1:11332, inet:127.0.0.1:8893
 # non_smtpd_milters intentionally empty: locally-injected mail (cron, bounces) bypasses
 # milter processing — rspamd greylists localhost, and opendmarc on outbound is meaningless
 non_smtpd_milters =
