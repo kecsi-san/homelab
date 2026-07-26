@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(lint): suppress false-positive jinja[invalid] on DKIM TXT chunking ([a38c7ee](https://github.com/kecsi-san/homelab/commit/a38c7ee5e7e8486be76916e96dda0ec66efc5e92) by Zoltan K).
 - fix(ci): drop kubespray from lint's collection install, keep it fast ([aee908e](https://github.com/kecsi-san/homelab/commit/aee908e78356ced0f052aa1c422f32b4925250fa) by Zoltan K).
 - fix(ci): install collections from requirements.yml in lint workflow ([ee77939](https://github.com/kecsi-san/homelab/commit/ee77939890898ea061a6730277710eb83a8abe93) by Zoltan K).
 - fix(dkim): make Vault the DKIM value source, fix live Route53 corruption ([3d403e7](https://github.com/kecsi-san/homelab/commit/3d403e796b8e79ef1714873b21080ec45f12813b) by Zoltan K).
