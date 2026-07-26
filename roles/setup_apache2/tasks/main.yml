@@ -41,6 +41,22 @@
 - name: Issue TLS certificates
   ansible.builtin.import_tasks: certbot.yml
 
+# Bare `certbot` package doesn't ship this (only the certbot-apache plugin's
+# code path deploys it, and this role never invokes that plugin) — deployed
+# directly so ssl vhosts' Include doesn't fail Apache's config test.
+- name: Deploy SSL options file (normally created by the certbot apache plugin)
+  ansible.builtin.copy:
+    src: options-ssl-apache.conf
+    dest: /etc/letsencrypt/options-ssl-apache.conf
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Reload apache2
+  tags:
+    - apache2
+    - certbot
+
 - name: Configure vhosts
   ansible.builtin.import_tasks: vhosts.yml
 

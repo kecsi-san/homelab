@@ -1,5 +1,13 @@
 locals {
   # ipv6 = false for rules where IPv6 is not applicable (Wireguard)
+  #
+  # FLAGGED, NOT ACTED ON (2026-07-26): "smtps" (465) has no matching service in
+  # setup_email-server's postfix-master.cf.j2 — only submission (587, STARTTLS)
+  # is actually implemented. Either a dead open port or a genuinely missing
+  # feature (implicit-TLS SMTPS for legacy clients), needs a human decision, not
+  # a guess — this map is shared by BOTH the legacy instance's SG and the new
+  # aws_edge SG, so removing it here would immediately affect the still-live
+  # production instance's firewall on the next apply, not just the rebuild target.
   ingress_rules = {
     ssh             = { port = 22, protocol = "tcp", ipv6 = true, description = "SSH" }
     smtp            = { port = 25, protocol = "tcp", ipv6 = true, description = "SMTP" }
@@ -141,6 +149,12 @@ module "s3" {
 # playbooks target that group, so they are unaffected by the rebuild instance.
 # Target the new box explicitly, e.g.:
 #   ansible-playbook -i inventory/aws_hosts -l aws_edge playbooks/ec2-prerequisite.yml
+#
+# [aws_all:children] makes both groups inherit inventory/group_vars/aws_all.yml
+# (Vault-sourced ec2_users/apache_vhosts/mailbox_users/duo_*, the Duo PAM SSH-args
+# override, etckeeper, etc.) — without it, group_vars/aws_all.yml would only apply
+# to the [aws] group by name and every one of those vars would be undefined for
+# aws_edge, breaking every role and the Duo keyboard-interactive override.
 resource "local_file" "ansible_inventory" {
   content = join("\n", [
     "[aws]",
@@ -148,6 +162,10 @@ resource "local_file" "ansible_inventory" {
     "",
     "[aws_edge]",
     "${module.eip_edge.public_ip} ansible_user=${var.edge_ssh_user}",
+    "",
+    "[aws_all:children]",
+    "aws",
+    "aws_edge",
     "",
   ])
   filename        = "${path.root}/../../inventory/aws_hosts"

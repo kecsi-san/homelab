@@ -66,11 +66,12 @@ ansible-playbook --ask-become-pass -i inventory/aws_hosts playbooks/ec2-prerequi
 # AWS EC2 edge node — base hardening (run after ec2-prerequisite.yml)
 ansible-playbook -i inventory/aws_hosts playbooks/ec2-core.yml
 
-# AWS EC2 edge node — email server (Postfix + Dovecot + OpenDKIM + certbot)
-ansible-playbook -i inventory/aws_hosts playbooks/ec2-mail.yml
-
 # AWS EC2 edge node — web server (Apache2 + ModSecurity + ModEvasive + certbot)
 ansible-playbook -i inventory/aws_hosts playbooks/ec2-web.yml
+
+# AWS EC2 edge node — email server (Postfix + Dovecot + Rspamd + OpenDMARC + certbot)
+# Run after ec2-web.yml — reuses the TLS cert Apache issues for mail_cert_name's domain
+ansible-playbook -i inventory/aws_hosts playbooks/ec2-mail.yml
 
 # AWS EC2 edge node — HashiCorp Vault (run after ec2-web.yml; manually init+unseal after first deploy)
 ansible-playbook -i inventory/aws_hosts playbooks/ec2-vault.yml
@@ -206,7 +207,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | `setup_apache2` | Apache2 + ModSecurity (DetectionOnly) + ModEvasive + certbot DNS-01 via Route53; variable-driven vhosts supporting static sites, reverse proxy, and HTTPS redirect; `apache_vhosts` and `apache_certs` defined in `secrets.yml`; used by `ec2-web.yml` |
 | `setup_users` | Creates named system users with home dirs, optional SSH authorized_keys, optional sudo group membership; `ec2_users` list defined in `secrets.yml`; `ec2_users_absent` removes accounts while preserving home dirs for data migration; wired into `ec2-core.yml` |
 | `setup_vault` | Installs Vault via HashiCorp APT repo; deploys `/etc/vault.d/vault.hcl` (file storage backend, binds to 127.0.0.1:8200 with TLS disabled — Apache terminates TLS); package provides vault user and hardened systemd unit with `CAP_IPC_LOCK`; prints init/unseal instructions on every run; unseal keys and root token are NOT managed by Ansible |
-| `setup_unbound` | Caching/forwarding DNS resolver on 127.0.0.1:53; disables systemd-resolved and writes a static `/etc/resolv.conf`; forwards to AWS VPC resolver (169.254.169.253) then Cloudflare; DNSSEC validation enabled; config validated with `unbound-checkconf` before apply; wired into `ec2-core.yml` |
+| `setup_unbound` | Full recursive, DNSSEC-validating resolver on 127.0.0.1:53 — deliberately no forward-zone (a forward-only resolver like the AWS VPC resolver or Cloudflare can't be trusted to set the `ad` flag correctly, which would silently break DANE TLS verification in Postfix); disables systemd-resolved and writes a static `/etc/resolv.conf`; config validated with `unbound-checkconf` before apply; wired into `ec2-core.yml` |
 | `setup_aws-ssm-agent` | Installs and enables the AWS SSM agent; gives an out-of-band rescue path (AWS Console → Session Manager) independent of sshd; requires `AmazonSSMManagedInstanceCore` attached to the instance's IAM role (not Ansible-managed); wired into `ec2-core.yml` |
 | `configure_duo-ssh` | Migrates SSH MFA from `ForceCommand login_duo` to PAM-based `pam_duo.so`, scoped to sshd only via `/etc/pam.d/sshd` (never `common-auth`); `AuthenticationMethods publickey,keyboard-interactive`; validates with `sshd -t` before reload; `duo_ikey`/`duo_skey`/`duo_api_host` from `secrets.yml`; wired into `ec2-core.yml` |
 | `configure_ssh-hardening` | Codifies sshd connection/session hardening (`MaxAuthTries`, `PermitRootLogin no`, `X11Forwarding no`, no TCP/agent forwarding, etc.) as a drop-in, replacing a hand-applied `lynis`-generated config; validates with `sshd -t` before reload; wired into `ec2-core.yml` |

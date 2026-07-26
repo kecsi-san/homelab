@@ -5,6 +5,15 @@ system_info:
     name: ${user_rename}
 %{ endif }
 %{ if length(mounts) > 0 }
+# aws_volume_attachment is a separate API call issued after the instance is
+# already running, so the by-id device path below may not exist yet by the
+# time this early boot stage runs — poll for it first so fs_setup/mounts
+# below don't silently no-op against a not-yet-attached volume.
+bootcmd:
+%{ for m in mounts }
+  - [ sh, -c, "for i in $(seq 1 30); do [ -e ${m.device_path} ] && break; sleep 2; done" ]
+%{ endfor }
+
 fs_setup:
 %{ for m in mounts }
   - label: ${m.label}

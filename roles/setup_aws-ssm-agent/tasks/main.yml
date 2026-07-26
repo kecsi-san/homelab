@@ -1,4 +1,9 @@
 ---
+# No checksum: param — checked 2026-07-26: AWS's own documented Debian install
+# process (docs.aws.amazon.com "Manually installing SSM Agent on Debian Server
+# instances") is plain wget + dpkg -i with no checksum/signature file published
+# alongside this artifact at all, for any region. TLS to s3.<region>.amazonaws.com
+# is the only integrity guarantee AWS itself provides here.
 - name: Download AWS SSM agent package
   ansible.builtin.get_url:
     url: "{{ aws_ssm_agent_deb_url }}"

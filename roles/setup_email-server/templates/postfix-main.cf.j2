@@ -26,8 +26,8 @@ home_mailbox = Maildir/
 recipient_delimiter = +
 
 # TLS — inbound (smtpd)
-smtpd_tls_cert_file = {{ certbot_cert_dir }}/{{ mail_hostname }}/fullchain.pem
-smtpd_tls_key_file  = {{ certbot_cert_dir }}/{{ mail_hostname }}/privkey.pem
+smtpd_tls_cert_file = {{ certbot_cert_dir }}/{{ mail_cert_name }}/fullchain.pem
+smtpd_tls_key_file  = {{ certbot_cert_dir }}/{{ mail_cert_name }}/privkey.pem
 smtpd_tls_CApath = /etc/ssl/certs
 smtpd_tls_security_level = may
 smtpd_tls_auth_only = yes

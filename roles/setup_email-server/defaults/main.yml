@@ -14,9 +14,6 @@ dkim_selector: mail
 # Rspamd DKIM key directory
 rspamd_dkim_key_dir: /var/lib/rspamd/dkim
 
-# Certbot Let's Encrypt registration email (falls back to acme_email from secrets.yml)
-certbot_email: "{{ acme_email }}"
-
 # Postscreen DNSBL sites and scoring threshold.
 # Format: "hostname*weight" — total weight must reach threshold to trigger action.
 # Spamhaus free DNSBL requires a licence for cloud/datacenter IPs; replace with DQS key if available.

@@ -1,11 +1,17 @@
 # Managed by Ansible — do not edit manually
 # service type  private unpriv  chroot  wakeup  maxproc command
 
+# chroot=n (Debian's own stock default, not a hardening regression): smtpd needs
+# to reach OpenDMARC's local:/run/opendmarc/opendmarc.sock milter, which lives
+# outside any chroot jail. Unlike Dovecot's sockets (deliberately created inside
+# /var/spool/postfix/private/ to work around this same issue), OpenDMARC's own
+# package doesn't support listening inside Postfix's chroot, so chroot=n here is
+# simpler and more robust than trying to bind-mount/relocate a third-party socket.
 # Port 25 — inbound via postscreen
-smtp      inet  n       -       y       -       1       postscreen
-smtpd     pass  -       -       y       -       -       smtpd
-dnsblog   unix  -       -       y       -       0       dnsblog
-tlsproxy  unix  -       -       y       -       0       tlsproxy
+smtp      inet  n       -       n       -       1       postscreen
+smtpd     pass  -       -       n       -       -       smtpd
+dnsblog   unix  -       -       n       -       0       dnsblog
+tlsproxy  unix  -       -       n       -       0       tlsproxy
 
 # Port 587 — authenticated submission
 # Uses Rspamd only (DKIM signing); OpenDMARC is skipped — no point enforcing

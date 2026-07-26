@@ -1,20 +1,17 @@
 ---
 # Deploy the email server stack (Postfix + Dovecot + Rspamd + OpenDMARC + certbot).
 # Requires a validating unbound resolver for DANE to work — set up first.
-# Run after ec2-core.yml. Domains and credentials come from secrets.yml.
+# Run after ec2-web.yml, not just ec2-core.yml: the mail role reuses the TLS cert
+# Apache already issued for mail_cert_name's domain (see setup_apache2's apache_certs)
+# instead of issuing its own — the cert must already exist under
+# {{ certbot_cert_dir }}/{{ mail_cert_name }}/ before Postfix/Dovecot start.
+# Domains and credentials come from secrets.yml.
 # Usage: ansible-playbook -i inventory/aws_hosts playbooks/ec2-mail.yml
 - name: Configure email server
   hosts: aws
   become: false
   remote_user: "{{ ansible_ssh_user }}"
   tasks:
-    - name: Setup unbound (full recursive DNSSEC resolver — required for DANE)
-      ansible.builtin.import_role:
-        name: setup_unbound
-      become: true
-      tags:
-        - unbound
-
     - name: Setup email server
       ansible.builtin.import_role:
         name: setup_email-server

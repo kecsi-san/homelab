@@ -70,7 +70,7 @@ vault kv put ec2/mail mailbox_users=@mailbox_users.json
 The exact serialization for the list/dict-shaped values (`ec2_users`, `apache_certs`,
 `apache_vhosts`, `mailbox_users`) needs a bit of care — KV v2 stores flat key/value pairs,
 so nested structures go in as JSON strings. Decide the exact key layout when you do this
-step; the Ansible lookup side (`inventory/group_vars/aws.yml`) needs to match whatever
+step; the Ansible lookup side (`inventory/group_vars/aws_all.yml`) needs to match whatever
 you land on here.
 
 **5. Migrate SSH client secrets** — `workstation/` uses a three-path layout: one config

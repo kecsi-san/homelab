@@ -32,6 +32,11 @@ Still missing before step 2 (running the playbooks) can happen: the two manual `
 
 **EIP cutover strategy:** When the new instance is ready, swap EIP via `terraform apply`. Route53 points to EIP so DNS is unchanged.
 
+**Two real bugs found and fixed (2026-07-26 evening, via a dedicated on-server audit session against the live legacy instance, cross-checked and fixed from the control node):**
+
+1. **`aws_edge` had zero group_vars — would have broken every playbook run against it.** `inventory/group_vars/aws.yml` only applied to the `[aws]` inventory group by exact name; `[aws_edge]` matched nothing, so every Vault-sourced var (`ec2_users`, `apache_vhosts`, `mailbox_users`, `duo_*`, `vault_version`, etc.) would be undefined, and — the sharpest breakage — the `ansible_ssh_args` override needed for PAM-based Duo (`configure_duo-ssh`) to complete non-interactively would never apply, hanging or failing the Duo challenge on every run after the first. **Fix:** `inventory/aws_hosts`'s Terraform template now emits an `[aws_all:children]` group containing both `aws` and `aws_edge`; the vars file was renamed `group_vars/aws.yml` → `group_vars/aws_all.yml` so both groups inherit it. (The login user/key were *not* split per-group — `ansible_ssh_user` is already globally `kecsi`, and `ec2_ssh_key_file` already points at the `linuxbox2026` key, both already valid against the legacy box today, since the user manually renamed `admin`→`kecsi` there and added the new keypair ahead of time — no divergence to encode.)
+2. **EBS data-volume attach race at first boot, untested.** `aws_volume_attachment.data` is a separate resource created *after* `aws_instance.this`, i.e. issued as its own API call after the instance is already launched — but cloud-init's `fs_setup`/`mounts` modules run early in boot and don't wait or retry for a device to appear. If the volume attaches after that stage runs, the filesystem is silently never created; `nofail` lets boot continue anyway, leaving `/home`, `/var/www`, `/var/log` unmounted with no automatic recovery (cloud-init modules run once). **Fix:** `templates/cloud-init.yaml.tftpl` gained a `bootcmd:` stanza that polls for each device (`/dev/disk/by-id/nvme-...`) to exist before the `fs_setup`/`mounts` stage runs.
+
 ---
 
 ## What's Running (Audit Findings)
@@ -72,7 +77,8 @@ Still missing before step 2 (running the playbooks) can happen: the two manual `
 | DKIM private keys (`/var/lib/rspamd/dkim/`) | tiny | 🔴 Critical — lose these = DKIM breaks |
 | Website content `/var/www/` | ~1.15 GB | 🔴 Critical |
 | Mailboxes `/home/*/Maildir/` | ~5.6 GB | 🔴 Critical |
-| ~~Vault data (`/opt/hashicorp/vault-data/`)~~ | ~172 MB | 🟢 Not migrated — old Vault (v1.4.0) had been dead/unreachable since ~2020, nothing depended on it; new Vault was freshly initialized instead (2026-07-04). Old data left in place, unused. |
+| ~~Old Vault data (`/opt/hashicorp/vault-data/`, v1.4.0)~~ | ~172 MB | 🟢 Not migrated — had been dead/unreachable since ~2020, nothing depended on it; new Vault was freshly initialized instead (2026-07-04). Old data left in place on the legacy box, unused. |
+| **Current live Vault data (`/opt/vault/data/`, initialized 2026-07-04)** | small | 🔴 **Critical, and easy to miss** — unlike the row above, this Vault is genuinely load-bearing now: since the 2026-07-12+ Vault/Ansible secrets migration, `inventory/group_vars/aws_all.yml` sources `ec2_users`/`apache_vhosts`/`apache_certs`/`mailbox_users`/`duo_*`/AWS creds/DKIM backups from it via AppRole lookups. Once the EIP swaps to the new instance, `vault.kecskemethy.hu` starts resolving there — if this data hasn't been migrated first, every Vault-sourced Ansible variable breaks (the plaintext `secrets.yml` fallback values are the only thing that would keep working). See `roles/setup_vault/README.md`'s "Data migration from old server" section — same rsync mechanism as the (skipped) row above, but this time it must actually be done. Do this as part of cutover (stop Vault on the legacy box, rsync, start + unseal on the new box with the original 2026-07-04 unseal keys), not as a "someday" step. |
 | Selected `/home/` user directories | ~8 GB | 🟡 Selective (active users only) |
 | TLS certs `/etc/letsencrypt/` | small | 🟢 Can regenerate via certbot |
 
@@ -89,7 +95,7 @@ Must run **before** `setup_email-server` — the mail stack references system us
 - orsi (1001), peter (1005), tamas (1006): mail-only users, password hash from secrets.yml
 - vault (1008): service account, shell `/bin/false`
 - UIDs 1002–1004 and 1007 skipped (deleted users — do not reuse)
-- See `roles/setup_users/README.md` for full variable reference and `inventory/group_vars/aws.yml` for definitions
+- See `roles/setup_users/README.md` for full variable reference and `inventory/group_vars/aws_all.yml` for definitions
 
 ### Phase 2 — `setup_email-server` role ✅ Done
 
@@ -109,7 +115,7 @@ Role covers all 7 vhosts across both domains:
 - kecskemethy.hu, zoltan.kecskemethy.hu (static), kepek.kecskemethy.hu (static + S3 proxy for /album/), vault.kecskemethy.hu (→ Vault 8200)
 - Certbot HTTP-01 (webroot) for both domains; DNS-01 Route53 available for Route53 zones
 - ModSecurity + ModEvasive; OCSP stapling; HSTS; ServerTokens Prod
-- All vhosts defined in `inventory/group_vars/aws.yml`; see `roles/setup_apache2/README.md`
+- All vhosts defined in `inventory/group_vars/aws_all.yml`; see `roles/setup_apache2/README.md`
 - **Note:** cert issuance (HTTP-01) requires EIP to be swapped to the new instance first
 
 ### Phase 4 — `setup_vault` role ✅ Done
@@ -135,9 +141,11 @@ Added to `ec2-core.yml`.
 
 1. ✅ Terraform code done (2026-07-11): new EC2 instance alongside old one (separate resource, same SG) + 4-volume EBS layout. `terraform apply` not yet run — pending.
    - ⬜ OS-level mount/fstab step still needed before step 2 (formats + mounts the 4 volumes) — see `docs/howtos/ec2-ebs-volumes.md`
-2. Run playbooks in order (users before mail — UIDs must exist before data migration):
+2. Run playbooks in order (users before mail — UIDs must exist before data migration;
+   web before mail — the mail role reuses the TLS cert Apache issues for `mail_cert_name`'s
+   domain rather than issuing its own, see `setup_email-server/tasks/certbot.yml`):
    ```
-   ec2-prerequisite → ec2-core (includes setup_users) → ec2-mail → ec2-web → ec2-vault
+   ec2-prerequisite → ec2-core (includes setup_users) → ec2-web → ec2-mail → ec2-vault
    ```
 3. Migrate data (**after** setup_users has run so UIDs match):
    ```bash
@@ -154,14 +162,23 @@ Added to `ec2-core.yml`.
    rsync -av old-ec2:/home/peter/Maildir/ new-ec2:/home/peter/Maildir/
    rsync -av old-ec2:/home/tamas/Maildir/ new-ec2:/home/tamas/Maildir/
 
-   # Vault data (~172 MB — run after setup_vault so /opt/vault/data exists)
-   # vault:vault (UID 1008) on both servers — ownership correct without chown
-   # Vault will upgrade storage format on first start; unseal with original keys afterward
-   rsync -av old-ec2:/opt/hashicorp/vault-data/ new-ec2:/opt/vault/data/
+   # Current LIVE Vault data (initialized 2026-07-04, genuinely load-bearing —
+   # NOT the old dead /opt/hashicorp/vault-data/ v1.4.0 path, which stays
+   # unmigrated on the legacy box per the "Data to Migrate" table above).
+   # Run after setup_vault so /opt/vault/data exists on the new box.
+   # Stop Vault on the legacy box first for a consistent file-backend copy —
+   # this is one of the very last things done before EIP cutover anyway.
+   ssh old-ec2 sudo systemctl stop vault
+   rsync -av --chown=vault:vault old-ec2:/opt/vault/data/ new-ec2:/opt/vault/data/
+   # vault:vault is UID 1008 on both servers — ownership correct without chown,
+   # --chown is just an explicit safety net
    ```
 4. DNS smoke test: point one vhost to new instance, verify end-to-end
-5. Terraform: swap EIP to new instance (`terraform apply` with updated `instance_id`)
-6. Monitor 24h, then terminate old instance + delete the old rollback SG
+5. Start + unseal Vault on the new instance with the **original 2026-07-04 unseal keys**
+   (not managed by Ansible — see `roles/setup_vault/README.md`), confirm
+   `vault status`/`curl .../sys/health` healthy before proceeding
+6. Terraform: swap EIP to new instance (`terraform apply` with updated `instance_id`)
+7. Monitor 24h, then terminate old instance + delete the old rollback SG
 
 ---
 

@@ -35,7 +35,7 @@ Requires `duo_ikey`, `duo_skey`, `duo_api_host` in `secrets.yml` (copy from the 
 
 ## Required: Ansible must be allowed to use keyboard-interactive
 
-Ansible's ssh connection plugin hardcodes `-o KbdInteractiveAuthentication=no` and drops `keyboard-interactive` from `PreferredAuthentications` whenever no `ansible_password` is set — this silently breaks against any host requiring keyboard-interactive as a second factor (`Permission denied (keyboard-interactive)` right after a successful partial publickey auth). Overriding this via `ansible_ssh_common_args`/`ansible_ssh_extra_args` does **not** work — ssh honors the first occurrence of a repeated `-o` key, and those two land *after* Ansible's own hardcoded flags. Only `ansible_ssh_args` is inserted early enough to win, and it replaces the default rather than appending, so Ansible's own default must be repeated too. See `inventory/group_vars/aws.yml`:
+Ansible's ssh connection plugin hardcodes `-o KbdInteractiveAuthentication=no` and drops `keyboard-interactive` from `PreferredAuthentications` whenever no `ansible_password` is set — this silently breaks against any host requiring keyboard-interactive as a second factor (`Permission denied (keyboard-interactive)` right after a successful partial publickey auth). Overriding this via `ansible_ssh_common_args`/`ansible_ssh_extra_args` does **not** work — ssh honors the first occurrence of a repeated `-o` key, and those two land *after* Ansible's own hardcoded flags. Only `ansible_ssh_args` is inserted early enough to win, and it replaces the default rather than appending, so Ansible's own default must be repeated too. See `inventory/group_vars/aws_all.yml`:
 
 ```yaml
 ansible_ssh_args: >-

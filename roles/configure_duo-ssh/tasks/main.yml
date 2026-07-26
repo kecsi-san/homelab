@@ -30,6 +30,20 @@
   notify: Reload sshd
   tags: [ssh, duo, security]
 
+# lineinfile silently appends at EOF instead of failing when insertafter's regex
+# doesn't match anything — on a PAM auth stack that reorders modules rather than
+# erroring, so verify the anchor exists first rather than assume this comment
+# text is stable across Debian releases/AMIs (confirmed present on the legacy
+# in-place-upgraded box; not yet verified on a stock Debian 13 cloud AMI).
+- name: Verify sshd PAM stack has the expected anchor comment
+  ansible.builtin.command:
+    cmd: grep -qF '# Standard Un*x authentication.' /etc/pam.d/sshd
+  register: pam_anchor_check
+  changed_when: false
+  failed_when: pam_anchor_check.rc != 0
+  become: true
+  tags: [ssh, duo, security]
+
 - name: Add Duo PAM module to sshd auth stack
   ansible.builtin.lineinfile:
     path: /etc/pam.d/sshd

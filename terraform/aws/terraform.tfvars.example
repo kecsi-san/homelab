@@ -12,10 +12,9 @@ iam_instance_profile = "your-instance-profile-name"  # leave empty string if non
 vault_address = "https://vault.example.com"        # required, no default — keep the real FQDN out of committed files
 
 # Domains with Route53 hosted zones — MX, SPF, DMARC records created for each
+# (mail.<domain> A/AAAA records are generated automatically per-domain by
+# terraform/modules/route53-zone — no separate mail hostname variable needed)
 route53_domains = ["example.com", "example.net"]
-
-# FQDN of the mail server; A record created in its parent zone
-mail_hostname = "mail.example.com"
 
 # Existing S3 bucket names to import and manage
 s3_bucket_names = []

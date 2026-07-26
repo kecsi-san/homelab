@@ -1,8 +1,19 @@
 ---
-# Variables for the [aws] group (EC2 edge node)
+# Variables shared by both the legacy [aws] instance and the [aws_edge] rebuild
+# target, via the [aws_all:children] parent group in the Terraform-generated
+# inventory/aws_hosts. Both boxes use the same SSH user (kecsi) and the same
+# linuxbox2026 keypair (the legacy box's authorized_keys already has it added),
+# so nothing here needs to differ per-instance today — if that ever changes,
+# override in a group_vars/aws.yml or group_vars/aws_edge.yml file instead of
+# splitting this one.
 # SSH key path and AWS credentials are in secrets.yml (gitignored)
 
 ansible_ssh_private_key_file: "{{ ec2_ssh_key_file }}"
+# Read by configure_ssh (ec2-prerequisite.yml's first task, before anything
+# else runs against a fresh instance) — was undefined for this group entirely
+# until now (present for local/kube/fileservers only), which would have failed
+# immediately on aws_edge's very first Ansible connection.
+ansible_ssh_pub_key_file: "linuxbox2026.pub"
 ansible_python_interpreter: /usr/bin/python3
 
 # Ansible hardcodes "-o KbdInteractiveAuthentication=no -o PreferredAuthentications=
@@ -26,6 +37,11 @@ ansible_ssh_args: >-
 
 etckeeper: true
 linuxbrew: false   # headless server, not a workstation
+
+# Role default (192.168.1.1) is the home LAN router — unreachable from AWS.
+# 169.254.169.123 is the AWS VPC's own Time Sync Service (link-local, always
+# reachable from any instance in any VPC/subnet, no internet egress needed).
+ntp_primary_server: "169.254.169.123"
 
 # --- System users, Apache vhosts/certs, Duo, AWS creds, mail ---
 # Read live from Vault (see docs/howtos/vault-secrets-architecture.md and
@@ -70,6 +86,8 @@ mail_cert_name: linuxbox.hu
 # --- HashiCorp Vault ---
 # vault_version: leave empty to install latest from HashiCorp APT repo.
 # Pin after first install to prevent unintended upgrades — apt-mark hold is applied automatically when set.
-# Data migration from old server: rsync /opt/hashicorp/vault-data/ → /opt/vault/data/
+# Data migration for Phase 6 cutover: rsync /opt/vault/data/ → /opt/vault/data/ (the
+# CURRENT live Vault, not the old dead /opt/hashicorp/vault-data/ — see
+# roles/setup_vault/README.md's "Data migration" section for why these are different).
 # Files are owned vault:vault on both old and new server — no chown needed after rsync.
 vault_version: ""

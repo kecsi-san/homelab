@@ -1,19 +1,12 @@
 ---
-- name: Issue TLS certificate via DNS-01 (Route53)
-  ansible.builtin.command:
-    cmd: >
-      certbot certonly --non-interactive --agree-tos
-      --dns-route53
-      --email {{ certbot_email }}
-      -d {{ mail_cert_name }}
-    creates: "{{ certbot_cert_dir }}/{{ mail_cert_name }}/fullchain.pem"
-  environment:
-    AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
-    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
-    AWS_DEFAULT_REGION: "{{ aws_region }}"
-  become: true
-  tags:
-    - certbot
+# No cert-issuance task here by design: mail_cert_name (e.g. linuxbox.hu) is one
+# of setup_apache2's apache_certs domains, and that role already issues a cert
+# covering it (webroot/HTTP-01, since linuxbox.hu/kecskemethy.hu aren't
+# Route53-hosted zones — only kecskemethy.com/.net are, so --dns-route53 would
+# fail here regardless). Requires ec2-web.yml to run before ec2-mail.yml so the
+# cert already exists under {{ certbot_cert_dir }}/{{ mail_cert_name }}/ by the
+# time Postfix/Dovecot start. Do not add a second, independent issuance task
+# for the same domain here — see docs/howtos/ec2-rebuild-plan.md's Phase 6 notes.
 
 - name: Install certbot renewal systemd timer
   ansible.builtin.systemd:

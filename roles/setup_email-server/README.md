@@ -10,7 +10,7 @@ Configures a full-featured personal/family email server with multi-domain suppor
 | **Dovecot 2.4** | IMAP (IMAPS only, port 993), LMTP delivery, FTS via Xapian |
 | **Rspamd** | DKIM sign/verify, SPF, greylisting, spam scoring |
 | **OpenDMARC** | Inbound DMARC policy enforcement |
-| **Certbot** | Let's Encrypt TLS cert via Route53 DNS-01 challenge |
+| **Certbot** | Reuses the TLS cert `setup_apache2` issues for `mail_cert_name`'s domain (renewal timer + reload hook only — no issuance task here) |
 
 ## Auth and mailbox model
 
@@ -47,11 +47,11 @@ To rotate keys: delete the `.key` file for that domain (or change `dkim_selector
 
 | Variable | Default | Description |
 |---|---|---|
-| `mail_hostname` | `mail.<first domain>` | SMTP banner, TLS cert CN, Dovecot SSL |
+| `mail_hostname` | `mail.<first domain>` | SMTP banner (`myhostname`) |
+| `mail_cert_name` | `{{ mail_hostname }}` | TLS cert directory name under `certbot_cert_dir` — override to match the domain `setup_apache2`'s `apache_certs` actually issued a cert for (e.g. `linuxbox.hu` covers `mail.linuxbox.hu`) |
 | `email_domains` | *(required)* | List of domains to serve |
 | `dkim_selector` | `mail` | DKIM key selector |
 | `rspamd_dkim_key_dir` | `/var/lib/rspamd/dkim` | DKIM private key directory |
-| `certbot_email` | `{{ acme_email }}` | Let's Encrypt account email |
 | `postscreen_dnsbl_sites` | *(see defaults)* | DNSBL list with weights |
 | `postscreen_dnsbl_threshold` | `3` | Score threshold to enforce block |
 | `mailbox_users` | `[]` | Users and their domains (see above) |
@@ -61,7 +61,7 @@ To rotate keys: delete the `.key` file for that domain (or change `dkim_selector
 ## Prerequisites
 
 - A local DNSSEC-validating resolver on `127.0.0.1` (see `setup_unbound` role) — required for DANE outbound TLS
-- AWS credentials available to certbot for Route53 DNS-01 validation
+- `setup_apache2` must have already run and issued a cert covering `mail_cert_name`'s domain (`ec2-web.yml` before `ec2-mail.yml`) — this role does not issue its own cert
 - System users already created on the host
 - DNS: MX records pointing to `mail_hostname`; TLSA records for DANE. DKIM TXT records are published automatically via `terraform/aws` after Vault has a value (see DKIM section above) — no manual DNS step
 
@@ -75,4 +75,4 @@ To rotate keys: delete the `.key` file for that domain (or change `dkim_selector
 | `rspamd` | Rspamd config and DKIM keys |
 | `dkim-dns` | Derive DKIM public key and back up key pair to Vault |
 | `opendmarc` | OpenDMARC config |
-| `certbot` | TLS certificate issuance |
+| `certbot` | Certbot renewal timer + Postfix/Dovecot reload hook (no issuance — see Prerequisites) |

@@ -33,7 +33,7 @@ The role deploys a global ACME challenge conf (`letsencrypt-webroot.conf`) that 
 
 ## Variables
 
-Defined in `inventory/group_vars/aws.yml`. Sensitive values (`acme_email`) in `secrets.yml`.
+Defined in `inventory/group_vars/aws_all.yml`. Sensitive values (`acme_email`) in `secrets.yml`.
 
 | Variable | Default | Description |
 |----------|---------|-------------|
