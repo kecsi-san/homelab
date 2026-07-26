@@ -5,6 +5,7 @@ apache_apt_packages:
   - modsecurity-crs
   - libapache2-mod-evasive
   - certbot
+  - python3-requests   # required by acme-dns-auth.py's manual-auth-hook
 
 # Modules enabled via a2enmod (creates: guard uses .load file — works for all modules)
 apache_modules_to_enable:

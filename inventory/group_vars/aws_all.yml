@@ -79,6 +79,13 @@ apache_server_admin: "{{ lookup('community.hashi_vault.vault_kv2_get', 'vhosts',
 apache_certs: "{{ lookup('community.hashi_vault.vault_kv2_get', 'vhosts', **vault_ec2_lookup_args)['secret']['apache_certs'] }}"
 apache_vhosts: "{{ lookup('community.hashi_vault.vault_kv2_get', 'vhosts', **vault_ec2_lookup_args)['secret']['apache_vhosts'] }}"
 
+# acme-dns account credentials (linuxbox.hu/kecskemethy.hu wildcard certs) — the full
+# content of /etc/letsencrypt/acmedns.json as one JSON string. Vault-only, deliberately
+# no secrets.yml fallback copy (these are live DNS-modification API credentials, not
+# just topology data) — see roles/setup_apache2/README.md for the one-time
+# `vault kv put ec2/acme-dns acmedns_json=@acmedns.json` bootstrap step.
+acme_dns_json: "{{ lookup('community.hashi_vault.vault_kv2_get', 'acme-dns', **vault_ec2_lookup_args)['secret']['acmedns_json'] }}"
+
 mailbox_users: "{{ lookup('community.hashi_vault.vault_kv2_get', 'mail', **vault_ec2_lookup_args)['secret']['mailbox_users'] }}"
 email_domains: "{{ lookup('community.hashi_vault.vault_kv2_get', 'mail', **vault_ec2_lookup_args)['secret']['email_domains'] }}"
 # New keys added to the ec2/mail Vault path 2026-07-26 (aliases_root, extra_aliases) —

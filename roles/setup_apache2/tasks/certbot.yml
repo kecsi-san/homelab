@@ -10,6 +10,36 @@
     - apache2
     - certbot
 
+# acme-dns credentials + hook script, only if at least one cert uses that method.
+# The hook itself (files/acme-dns-auth.py) is the standard, non-secret joohoi/acme-dns
+# script — only /etc/letsencrypt/acmedns.json (its account credentials, sourced from
+# Vault, never committed) is sensitive.
+- name: Deploy acmedns.json (acme-dns account credentials)
+  ansible.builtin.copy:
+    content: "{{ acme_dns_json }}"
+    dest: /etc/letsencrypt/acmedns.json
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  when: apache_certs | selectattr('method', 'defined') | selectattr('method', 'equalto', 'acme-dns') | list | length > 0
+  tags:
+    - apache2
+    - certbot
+
+- name: Deploy acme-dns-auth.py manual-auth-hook script
+  ansible.builtin.copy:
+    src: acme-dns-auth.py
+    dest: /etc/letsencrypt/acme-dns-auth.py
+    owner: root
+    group: root
+    mode: "0700"
+  become: true
+  when: apache_certs | selectattr('method', 'defined') | selectattr('method', 'equalto', 'acme-dns') | list | length > 0
+  tags:
+    - apache2
+    - certbot
+
 # Webroot dir — serves ACME challenges for all vhosts via the global conf
 - name: Create certbot webroot directory
   ansible.builtin.file:
@@ -72,7 +102,7 @@
   loop: >-
     {{ apache_certs | rejectattr('method', 'defined') | list +
        apache_certs | selectattr('method', 'defined') |
-       rejectattr('method', 'equalto', 'dns-route53') | list }}
+       selectattr('method', 'equalto', 'webroot') | list }}
   tags:
     - certbot
 
@@ -91,6 +121,28 @@
     AWS_DEFAULT_REGION: "{{ aws_region }}"
   become: true
   loop: "{{ apache_certs | selectattr('method', 'defined') | selectattr('method', 'equalto', 'dns-route53') | list }}"
+  tags:
+    - certbot
+
+# Wildcard (-d domain -d *.domain) via the acme-dns.io delegation service — matches
+# the legacy server's proven config exactly for domains with no DNS API access
+# (linuxbox.hu, kecskemethy.hu — same ".hu, no API" limitation as the webroot-issued
+# certs' comment above, but these use wildcards so extra_sans isn't needed/read here).
+# The one-time acme-dns account registration + _acme-challenge CNAME delegation in the
+# real DNS zone is a manual step done ahead of time (see roles/setup_apache2/README.md)
+# — this task only renews/re-validates using the credentials already in acmedns.json.
+- name: Issue wildcard TLS certificates via acme-dns (DNS-01, manual hook)
+  ansible.builtin.command:
+    cmd: >
+      certbot certonly --non-interactive --agree-tos
+      --manual --preferred-challenges dns-01
+      --manual-auth-hook /etc/letsencrypt/acme-dns-auth.py
+      --email {{ certbot_email }}
+      -d {{ item.domain }}
+      -d *.{{ item.domain }}
+    creates: "{{ certbot_cert_dir }}/{{ item.domain }}/fullchain.pem"
+  become: true
+  loop: "{{ apache_certs | selectattr('method', 'defined') | selectattr('method', 'equalto', 'acme-dns') | list }}"
   tags:
     - certbot
 
