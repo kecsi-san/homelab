@@ -48,7 +48,7 @@ Still missing before step 2 (running the playbooks) can happen: the two manual `
 | Dovecot | IMAPS + LMTP delivery, PAM auth, FTS Xapian | ✅ same role |
 | Rspamd | DKIM sign/verify, SPF, greylisting, spam scoring — replaced OpenDKIM + Postgrey + SpamAssassin | ✅ same role |
 | OpenDMARC | DMARC validation milter | ✅ same role |
-| Certbot | Let's Encrypt for all hosted domains; HTTP-01 webroot + DNS-01 Route53 | ✅ `setup_apache2` |
+| Certbot | Let's Encrypt for all hosted domains; HTTP-01 webroot (kecskemethy.com/.net), DNS-01 wildcard via acme-dns.io (linuxbox.hu, kecskemethy.hu — found live 2026-07-26, see below) | ✅ `setup_apache2` |
 | Unbound | Local DNSSEC-validating resolver (required for DANE) | ✅ `setup_unbound` |
 | dnsmasq | Replaced by Unbound | ♻️ decommissioned |
 | Docker | Installed, no containers running | ❌ None |
@@ -113,10 +113,14 @@ Role covers all 7 vhosts across both domains:
 
 - linuxbox.hu, hugo.linuxbox.hu (static), vault.linuxbox.hu (→ Vault 8200)
 - kecskemethy.hu, zoltan.kecskemethy.hu (static), kepek.kecskemethy.hu (static + S3 proxy for /album/), vault.kecskemethy.hu (→ Vault 8200)
-- Certbot HTTP-01 (webroot) for both domains; DNS-01 Route53 available for Route53 zones
+- Certbot: HTTP-01 webroot (kecskemethy.com/.net), DNS-01 wildcard via acme-dns.io
+  (linuxbox.hu, kecskemethy.hu — found live 2026-07-26, see "What's Running" above); DNS-01
+  Route53 also available but not currently used by any cert
 - ModSecurity + ModEvasive; OCSP stapling; HSTS; ServerTokens Prod
 - All vhosts defined in `inventory/group_vars/aws_all.yml`; see `roles/setup_apache2/README.md`
-- **Note:** cert issuance (HTTP-01) requires EIP to be swapped to the new instance first
+- **Note:** HTTP-01 cert issuance requires EIP to be swapped to the new instance first — the
+  acme-dns wildcard certs don't have this restriction (DNS-01 validates independently of where
+  the domain currently resolves), see Phase 6 step 2's cert-timing note below
 
 ### Phase 4 — `setup_vault` role ✅ Done
 
@@ -147,6 +151,15 @@ Added to `ec2-core.yml`.
    ```
    ec2-prerequisite → ec2-core (includes setup_users) → ec2-web → ec2-mail → ec2-vault
    ```
+   **Cert-issuance timing within `ec2-web.yml` differs by method** (see `setup_apache2/README.md`'s
+   "Certbot methods" table): `linuxbox.hu`/`kecskemethy.hu` (`method: acme-dns`, wildcard) validate via
+   a DNS TXT record delegated to acme-dns.io, independent of where the domain's A record currently
+   points — these can issue successfully on the new instance **before** cutover. `kecskemethy.com`/
+   `kecskemethy.net` (webroot/HTTP-01) validate by Let's Encrypt connecting to the domain over the
+   public internet, which still resolves to the **old** instance until the EIP actually swaps — these
+   will fail if issued before cutover. So a pre-cutover `ec2-web.yml` run (e.g. for initial
+   verification) is expected to partially fail: 2 of 4 domains issue fine, the other 2 don't until
+   after step 6 below. Not a bug — re-run `ec2-web.yml` again after the EIP swap to pick those up.
 3. Migrate data (**after** setup_users has run so UIDs match):
    ```bash
    # DKIM keys
