@@ -7,7 +7,12 @@
     groups: "{{ (item.groups | default([])) + (['sudo'] if item.sudo | default(false) else []) }}"
     append: true
     shell: "{{ item.shell | default('/bin/bash') }}"
-    password: "{{ item.password_hash | default('!') }}"
+    # item.password is plaintext (stored that way in Vault deliberately — SSH access
+    # is key-only/password auth disabled, so this only gates PAM-based email login
+    # over SSL, and being able to recover a forgotten password from Vault matters
+    # more here than defense-in-depth against a leak). Hashed here, on the wire to
+    # the target only, never written to disk as plaintext; '!' (locked) if unset.
+    password: "{{ item.password | password_hash('sha512') if item.password is defined else '!' }}"
     create_home: true
     state: present
   become: true

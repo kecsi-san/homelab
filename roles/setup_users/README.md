@@ -6,7 +6,7 @@ Creates and configures named system users on the EC2 edge node.
 
 - Creates system users with pinned UIDs, GECOS, shell, and group memberships
 - Deploys SSH authorized keys (additive — does not remove existing keys)
-- Sets password hashes from secrets.yml (defaults to locked `!` if not provided)
+- Sets passwords from a plaintext value in Vault, hashed at apply time (defaults to locked `!` if not provided)
 - Optionally removes users while preserving home directories for data migration
 
 ## Why UIDs must be pinned
@@ -28,8 +28,9 @@ Skip UIDs of deleted users from the old server entirely — don't reuse them, to
 This role must run **before** `setup_email-server` (which creates Maildirs and references system users) and **after** any role that creates groups referenced in `ec2_users[].groups`:
 
 - `adm`, `mail` — standard Debian base groups, always present
-- `docker` — created by the Docker installation role (run that first)
 - `sudo` — created by the `sudo` package (present after `ec2-prerequisite.yml`)
+
+Any group listed in `ec2_users[].groups` must already exist on the host — `ansible.builtin.user` doesn't create groups itself, only appends users to existing ones. A group reference for software that isn't actually installed (e.g. a since-decommissioned `docker`) will fail this task outright.
 
 ## Variables
 
@@ -51,21 +52,13 @@ This role must run **before** `setup_email-server` (which creates Maildirs and r
 | `sudo`          | no       | If true, appends user to `sudo` group |
 | `shell`         | no       | Login shell (default: `/bin/bash`; use `/bin/false` for service accounts) |
 | `ssh_key`       | no       | SSH public key string — store in `secrets.yml` |
-| `password_hash` | no       | SHA512-CRYPT hash — store in `secrets.yml`; omit to lock account |
+| `password`      | no       | **Plaintext** — store in Vault (`ec2/users`), not `secrets.yml`; hashed by this role at apply time, never written to disk as plaintext; omit to lock the account |
 
-### Generating a password hash
+### Why plaintext, in Vault
 
-```bash
-python3 -c "import crypt; print(crypt.crypt('yourpassword', crypt.mksalt(crypt.METHOD_SHA512)))"
-```
+For this host, SSH is key-only (password auth disabled) — `password` only gates PAM-based logins for things like IMAP/SMTP-AUTH over SSL. Storing the plaintext in Vault (rather than a pre-computed hash) means a forgotten password is *recoverable* from Vault, not just resettable, which matters more here than an extra layer of hash-only defense would. The role hashes it (`password_hash('sha512')` filter) as part of templating the `ansible.builtin.user` call — the plaintext value itself is never written to any file on the target host.
 
-## secrets.yml entries
-
-```yaml
-alice_ssh_key: "ssh-ed25519 AAAA..."
-alice_password_hash: "$6$salt$hash..."
-bob_password_hash: "$6$salt$hash..."
-```
+`secrets.yml`'s `ec2_users` entries reference this indirectly (e.g. `password: "{{ kecsi_password | default(omit) }}"`) purely as a fallback placeholder pattern — the real values live in Vault's `ec2/users` secret alongside the rest of that user's data, not as separate `secrets.yml` variables.
 
 ## Tags
 
