@@ -10,7 +10,7 @@ inet_interfaces = all
 inet_protocols = ipv4
 
 # All served domains — local delivery to system users
-mydestination = $myhostname, localhost{% for d in email_domains %}, {{ d }}, mail.{{ d }}{% endfor %}
+mydestination = $myhostname, localhost, localhost.localdomain{% for d in email_domains %}, {{ d }}, mail.{{ d }}{% endfor %}
 
 # Validate recipients: aliases, system users, virtual address map
 local_recipient_maps = $alias_maps unix:passwd.byname $virtual_maps
