@@ -36,12 +36,11 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ~/.ansible/collections
-          key: ansible-collections-v2-${{ hashFiles('requirements.yml') }}
-          restore-keys: ansible-collections-v2-
+          key: ansible-collections-v3-${{ hashFiles('requirements.yml') }}
 
       - name: Install Ansible collections
         if: steps.cache-collections.outputs.cache-hit != 'true'
-        run: ansible-galaxy collection install -p ~/.ansible/collections community.general ansible.posix kubernetes.core community.routeros
+        run: ansible-galaxy collection install -r requirements.yml -p ~/.ansible/collections
 
       - name: Create vault password file
         id: vault
