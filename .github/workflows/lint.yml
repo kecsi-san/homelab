@@ -36,11 +36,17 @@ jobs:
         uses: actions/cache@v6
         with:
           path: ~/.ansible/collections
-          key: ansible-collections-v3-${{ hashFiles('requirements.yml') }}
+          key: ansible-collections-v4-${{ hashFiles('requirements.yml') }}
 
+      # kubespray is deliberately excluded here — it's a git-hosted collection
+      # only used by playbooks/k8s.yml and reset-k8s.yml, both already excluded
+      # from ansible-lint (see .ansible-lint exclude_paths), and cloning it is slow.
       - name: Install Ansible collections
         if: steps.cache-collections.outputs.cache-hit != 'true'
-        run: ansible-galaxy collection install -r requirements.yml -p ~/.ansible/collections
+        run: >-
+          ansible-galaxy collection install -p ~/.ansible/collections
+          community.general ansible.posix kubernetes.core
+          community.routeros community.hashi_vault
 
       - name: Create vault password file
         id: vault
