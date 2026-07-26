@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(ci): install collections from requirements.yml in lint workflow ([ee77939](https://github.com/kecsi-san/homelab/commit/ee77939890898ea061a6730277710eb83a8abe93) by Zoltan K).
 - fix(dkim): make Vault the DKIM value source, fix live Route53 corruption ([3d403e7](https://github.com/kecsi-san/homelab/commit/3d403e796b8e79ef1714873b21080ec45f12813b) by Zoltan K).
 - Fix oh-my-posh theming for prolion, correct git identity leak ([104e69b](https://github.com/kecsi-san/homelab/commit/104e69bc419533abdfbe0b200ef3aaba1c27c73b) by Zoltan K).
 - fix(inventory): add hubble to extra_hosts for local /etc/hosts ([55d8a7a](https://github.com/kecsi-san/homelab/commit/55d8a7a2f35bb2bd472ca74fa1b7f17236fd1325) by Zoltan K).
