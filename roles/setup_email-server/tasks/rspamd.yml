@@ -123,10 +123,13 @@
 # auto-wraps each list element in one outer quote pair, so a value already
 # bookended in quotes here would double up into an invalid `""..."" `
 # string. This is the format Route53 requires for multi-part TXT values.
+# noqa suppression below: ansible-lint's static jinja check mis-evaluates
+# `item` inside task-level vars, reporting a false "list + str" TypeError;
+# verified correct at actual runtime with realistic input.
 - name: Publish DKIM public key to Vault (read by Terraform for the Route53 record)
   vars:
     _chunks: "{{ item.stdout | list | batch(220) | map('join') | list }}"
-    _txt_value: "{{ (['v=DKIM1; h=sha256; k=rsa; p=' + _chunks[0]] + _chunks[1:]) | join('\" \"') }}"
+    _txt_value: "{{ (['v=DKIM1; h=sha256; k=rsa; p=' + _chunks[0]] + _chunks[1:]) | join('\" \"') }}" # noqa: jinja[invalid]
   community.hashi_vault.vault_kv2_write:
     url: "{{ vault_ec2_lookup_args.url }}"
     engine_mount_point: "{{ vault_ec2_lookup_args.engine_mount_point }}"
