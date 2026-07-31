@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(wsl2): pre-correct clock via [boot] command before systemd starts ([07a689b](https://github.com/kecsi-san/homelab/commit/07a689b672b16abd4502bc5b2dbb4e4e434b9439) by Zoltan K).
 - fix(mail,apache): close aliases/SAN gaps found vs legacy server ([735c5bc](https://github.com/kecsi-san/homelab/commit/735c5bc617dec94265c9f74dd5e1647ade322df9) by Zoltan K).
 - fix(mail): match legacy server's proven SMTPS/DMARC config exactly ([272ccf9](https://github.com/kecsi-san/homelab/commit/272ccf93896ab77b78cdfe6d36bc17334056c21f) by Zoltan K).
 - fix(ec2-rebuild): resolve Phase 6 blockers found in legacy-instance audit ([7f402ad](https://github.com/kecsi-san/homelab/commit/7f402ad511c79f4e6e161d2cb13929f4c6383961) by Zoltan K).
