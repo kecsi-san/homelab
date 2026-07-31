@@ -6,9 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
-## Unreleased
+## [v0.2.0](https://github.com/kecsi-san/homelab/releases/tag/v0.2.0) - 2026-07-31
 
-<small>[Compare with latest](https://github.com/kecsi-san/homelab/compare/v0.1.0...HEAD)</small>
+<small>[Compare with v0.1.0](https://github.com/kecsi-san/homelab/compare/v0.1.0...v0.2.0)</small>
 
 ### Added
 
@@ -162,7 +162,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - fix(gatus): correct env format to dict and set Recreate strategy ([184819c](https://github.com/kecsi-san/homelab/commit/184819c7703a25f3bc91c0d6607f64c31db2c1a3) by Zoltan K).
 - fix(kube-gitops): restore real domain in operational manifests ([3233954](https://github.com/kecsi-san/homelab/commit/32339542cb25c8cd03b7262bb423160c7d47b00d) by Zoltan K).
 
-<!-- insertion marker -->
 ## [v0.1.0](https://github.com/kecsi-san/homelab/releases/tag/v0.1.0) - 2026-05-10
 
 <small>[Compare with first commit](https://github.com/kecsi-san/homelab/compare/c22df6e9f9d59fa012e41442e65b424006cff498...v0.1.0)</small>
