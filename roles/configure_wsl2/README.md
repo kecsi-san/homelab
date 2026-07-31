@@ -28,6 +28,16 @@ effect after a **full WSL2 restart** — `wsl --shutdown` from PowerShell/
 cmd.exe on the **Windows** side, not something achievable from within WSL2
 itself, then reopen your terminal.
 
+Also appends `export BROWSER=/mnt/c/Windows/explorer.exe` to `~/.bashrc`
+via an idempotent `blockinfile` block (same symlink-aware pattern as
+`configure_fzf`/`configure_oh-my-posh`) — also WSL2-gated. Most CLI tools
+that need to open a browser (`gh auth login`, `aws sso login`, `az login`,
+Python's `webbrowser` module, etc.) check `$BROWSER` first;
+`explorer.exe` hands the URL to Windows, which opens it in your default
+Windows browser, instead of failing to launch one inside WSL2. Requires
+`[interop] enabled = true` in `wsl.conf` (see template below) so WSL2 can
+invoke Windows executables.
+
 ## Variables
 
 | Variable | Source | Description |

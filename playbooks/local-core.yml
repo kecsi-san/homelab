@@ -19,16 +19,13 @@
       vars:
         apt_repo_docker: true
         apt_repo_charm: false
-        apt_repo_mozilla: true
+        apt_repo_mozilla: false
         docker_packages:
           - docker-ce
           - docker-ce-cli
           - containerd.io
           - docker-buildx-plugin
           - docker-compose-plugin
-        mozilla_packages:
-          - firefox
-          - thunderbird
       tags:
         - apt-repos
         - docker

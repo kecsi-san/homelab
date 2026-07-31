@@ -9,3 +9,32 @@
   become: true
   when: "'wsl2' in ansible_kernel | lower"
   notify: WSL2 config changed
+
+- name: Open browser links in Windows instead of WSL2
+  when: "'wsl2' in ansible_kernel | lower"
+  block:
+    - name: Set path to .bashrc
+      ansible.builtin.set_fact:
+        bashrc_path: "{{ ansible_env.HOME }}/.bashrc"
+      when: bashrc_path is undefined
+
+    - name: Check whether .bashrc file exists
+      ansible.builtin.stat:
+        path: "{{ bashrc_path }}"
+      register: bashrc_st
+
+    - name: Resolve .bashrc symlink
+      ansible.builtin.set_fact:
+        bashrc_path: "{{ bashrc_st.stat.lnk_source }}"
+      when:
+        - bashrc_st.stat.exists
+        - bashrc_st.stat.islnk
+
+    - name: Set BROWSER to Windows explorer.exe in .bashrc
+      ansible.builtin.blockinfile:
+        dest: "{{ bashrc_path }}"
+        marker: "# {mark} ANSIBLE MANAGED BLOCK: wsl2-browser"
+        block: |
+          export BROWSER=/mnt/c/Windows/explorer.exe
+      become: false
+      when: bashrc_st.stat.exists
