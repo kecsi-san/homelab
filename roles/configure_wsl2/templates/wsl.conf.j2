@@ -20,3 +20,9 @@ default = {{ admin_user }}
 [boot]
 systemd = true
 initTimeout = 10000
+# One-shot clock pre-correction before systemd starts — the WSL2 VM's
+# clock drifts while the Windows host sleeps, and chronyd's normal
+# slew-then-decide-to-step cycle takes 30-60s to catch up, well past
+# initTimeout, producing a cosmetic "Failed to start the systemd user
+# session" warning even though the session starts fine moments later.
+command = chronyd -q

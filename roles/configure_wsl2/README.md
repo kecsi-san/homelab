@@ -51,6 +51,19 @@ itself, then reopen your terminal.
 - `become: true` only on the actual file-write task (system file under
   `/etc`), not the whole role — matches this repo's `become: false` at
   play level / `become: true` per-task-that-needs-it convention.
+- `[boot] command = chronyd -q` pre-corrects the clock before systemd
+  starts. The WSL2 VM's clock drifts while the Windows host sleeps
+  (consistently 28-37s per boot, observed across multiple days in
+  `journalctl`), and `chrony.service` (from `configure_ntp`) normally
+  takes 30-60s to detect and step it — long past `initTimeout`, which
+  produces a cosmetic (non-fatal) `wsl: Failed to start the systemd user
+  session` warning. `chronyd -q` reads the same `/etc/chrony/chrony.conf`
+  and does an immediate one-shot step, then exits; `chrony.service`
+  still starts normally afterward for ongoing sync. This only works if
+  the LAN is reachable that early in boot (true on this workstation —
+  the router is always up); if the network isn't ready that early on
+  some other host, this would silently do nothing and `initTimeout`
+  would need bumping instead.
 - `[automount] options` hardcodes `uid=1000,gid=1000` — correct only if
   your primary WSL2 user is UID/GID 1000 (the default for the first user
   created). Not templated since it's been stable across this workstation's
