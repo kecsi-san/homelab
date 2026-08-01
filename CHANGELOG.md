@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 <small>[Compare with latest](https://github.com/kecsi-san/homelab/compare/v0.2.0...HEAD)</small>
 
+### Fixed
+
+- fix(minecraft): revert LEVEL_NAME to world, alias via PVC symlink ([3bcee07](https://github.com/kecsi-san/homelab/commit/3bcee073748dfb715c40adccd8e978cb0a37da87) by Zoltan K).
+
 <!-- insertion marker -->
 ## [v0.2.0](https://github.com/kecsi-san/homelab/releases/tag/v0.2.0) - 2026-07-31
 
