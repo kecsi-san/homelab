@@ -35,7 +35,7 @@ spec:
             - name: MAX_PLAYERS
               value: "10"
             - name: LEVEL_NAME
-              value: "world"
+              value: "8zWo203w5e0="
             - name: TZ
               value: "Europe/Budapest"
           volumeMounts:
