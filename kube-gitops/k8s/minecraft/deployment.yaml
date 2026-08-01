@@ -38,9 +38,14 @@ spec:
               value: "world"
             - name: TZ
               value: "Europe/Budapest"
+            - name: ALLOW_LIST
+              value: "true"
           volumeMounts:
             - name: data
               mountPath: /data
+            - name: allowlist
+              mountPath: /data/allowlist.json
+              subPath: allowlist.json
           readinessProbe:
             exec:
               command: ["/usr/local/bin/mc-monitor", "status-bedrock", "--host", "127.0.0.1"]
@@ -50,3 +55,6 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: minecraft-data
+        - name: allowlist
+          secret:
+            secretName: minecraft-allowlist
