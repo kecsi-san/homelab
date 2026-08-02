@@ -17,6 +17,6 @@ spec:
     copyMethod: Clone
     storageClassName: longhorn
     accessModes: [ReadWriteOnce]
-  moverSecurityContext:
-    runAsUser: 1000
-    runAsGroup: 1000
+    moverSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
