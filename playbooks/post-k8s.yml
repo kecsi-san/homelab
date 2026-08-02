@@ -103,3 +103,14 @@
         argocd_apps_cluster_type: k8s
       tags:
         - argocd-apps
+
+- name: Configure auto-uncordon after boot (control plane only — needs /etc/kubernetes/admin.conf)
+  hosts: kube_control_plane
+  become: false
+  remote_user: "{{ ansible_ssh_user }}"
+  tasks:
+    - name: Configure auto-uncordon timer
+      ansible.builtin.import_role:
+        name: configure_k8s-auto-uncordon
+      tags:
+        - auto-uncordon

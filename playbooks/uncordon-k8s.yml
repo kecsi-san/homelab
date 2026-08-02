@@ -1,7 +1,8 @@
 ---
-# Companion to shutdown-k8s.yml. Cordon state survives a reboot, so run this
-# after the physical nodes are back up and Ready — otherwise nothing new
-# gets scheduled anywhere.
+# Manual fallback companion to shutdown-k8s.yml. Nodes normally auto-uncordon on
+# their own a few minutes after boot via the configure_k8s-auto-uncordon systemd
+# timer (control-plane nodes, wired into post-k8s.yml). Use this playbook if you
+# don't want to wait for the timer, or it failed and cordon state is stuck.
 
 - name: Uncordon all kube nodes after cluster power-on
   hosts: localhost

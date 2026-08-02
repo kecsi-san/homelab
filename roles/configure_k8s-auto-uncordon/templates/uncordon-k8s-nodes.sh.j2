@@ -1,0 +1,15 @@
+#!/bin/bash
+# Companion to playbooks/shutdown-k8s.yml: cordon state survives a reboot, so
+# each control-plane node runs this shortly after its own boot to uncordon
+# every node once it reports Ready. Per-node (not cluster-wide) waiting so a
+# genuinely stuck node stays cordoned instead of blocking the healthy ones.
+set -uo pipefail
+export KUBECONFIG=/etc/kubernetes/admin.conf
+
+for node in $(kubectl get nodes -o jsonpath='{.items[*].metadata.name}'); do
+  if kubectl wait --for=condition=Ready "node/${node}" --timeout={{ auto_uncordon_node_ready_timeout }}; then
+    kubectl uncordon "${node}" || true
+  else
+    echo "node ${node} did not become Ready within {{ auto_uncordon_node_ready_timeout }}, leaving cordoned" >&2
+  fi
+done

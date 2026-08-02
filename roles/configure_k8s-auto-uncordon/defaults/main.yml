@@ -1,0 +1,5 @@
+---
+# Delay after boot before the uncordon attempt starts (systemd OnBootSec= syntax)
+auto_uncordon_boot_delay: "180"
+# Per-node wait timeout for it to report Ready before giving up on that node (kubectl duration syntax)
+auto_uncordon_node_ready_timeout: "300s"

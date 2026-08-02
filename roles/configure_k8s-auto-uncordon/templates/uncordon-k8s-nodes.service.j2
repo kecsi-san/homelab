@@ -1,0 +1,8 @@
+[Unit]
+Description=Uncordon k8s nodes once they report Ready after boot
+After=kubelet.service
+Wants=kubelet.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/uncordon-k8s-nodes.sh

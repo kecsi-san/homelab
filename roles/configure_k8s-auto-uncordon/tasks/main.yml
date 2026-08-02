@@ -1,0 +1,42 @@
+---
+- name: Install uncordon-k8s-nodes script
+  ansible.builtin.template:
+    src: uncordon-k8s-nodes.sh.j2
+    dest: /usr/local/bin/uncordon-k8s-nodes.sh
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+  tags: [auto-uncordon]
+
+- name: Install uncordon-k8s-nodes systemd service
+  ansible.builtin.template:
+    src: uncordon-k8s-nodes.service.j2
+    dest: /etc/systemd/system/uncordon-k8s-nodes.service
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Reload systemd
+  tags: [auto-uncordon]
+
+- name: Install uncordon-k8s-nodes systemd timer
+  ansible.builtin.template:
+    src: uncordon-k8s-nodes.timer.j2
+    dest: /etc/systemd/system/uncordon-k8s-nodes.timer
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify:
+    - Reload systemd
+    - Restart uncordon-k8s-nodes timer
+  tags: [auto-uncordon]
+
+- name: Enable uncordon-k8s-nodes timer
+  ansible.builtin.service:
+    name: uncordon-k8s-nodes.timer
+    state: started
+    enabled: true
+  become: true
+  tags: [auto-uncordon]

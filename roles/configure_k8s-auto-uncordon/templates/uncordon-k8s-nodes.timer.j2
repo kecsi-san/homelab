@@ -1,0 +1,9 @@
+[Unit]
+Description=Run uncordon-k8s-nodes a few minutes after boot
+
+[Timer]
+OnBootSec={{ auto_uncordon_boot_delay }}
+Persistent=false
+
+[Install]
+WantedBy=timers.target
