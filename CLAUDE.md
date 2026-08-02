@@ -325,6 +325,9 @@ ArgoCD manages all apps via app-of-apps pattern. Root app: `kube-gitops/k8s/root
 | mealie | mealie | Raw manifests (`kube-gitops/k8s/mealie/`) | Self-hosted recipe manager; SQLite; default login changeme@example.com / MyPassword |
 | minecraft | minecraft | Raw manifests (`kube-gitops/k8s/minecraft/`) | Minecraft Bedrock server; `itzg/minecraft-bedrock-server`; UDP 19132 on 192.168.1.110 (kube-vip); 5Gi Longhorn PVC |
 | pod-cleanup | kube-system | Raw manifests (`kube-gitops/k8s/pod-cleanup/`) | Nightly CronJob (03:00) deleting Failed + Succeeded pods cluster-wide; RBAC: list+delete pods |
+| kube-prometheus-stack | monitoring | Helm (prometheus-community) + values file | Prometheus + Alertmanager; scrapes cluster + 4-node Debian `node_exporter`; Alertmanager → ntfy webhook bridge (Watchdog/InfoInhibitor silenced via null route); 50Gi/5Gi Longhorn PVCs |
+| grafana-operator | monitoring | Helm (grafana.github.io) | Grafana via operator CRDs; Authentik OAuth2 login; dashboards: Node summary, Longhorn, Traefik, ArgoCD |
+| kromgo | monitoring | Raw manifests (`kube-gitops/k8s/kromgo/`) | Public status badges (`kromgo.kecskemethy.org`) reading Prometheus/Alertmanager: debian_version, kubernetes_version, alerts, argocd_out_of_sync, failed_pods, cpu, memory, longhorn_storage, node_count, pod_count, birth_age, uptime_age |
 
 **VolSync backup architecture:**
 - Restic REST server runs on hppd600g6 (192.168.1.52:8000) — external to k8s, data on 100G LV at `/backups/restic-repos/`
