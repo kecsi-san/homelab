@@ -1,0 +1,24 @@
+---
+# Companion to shutdown-k8s.yml. Cordon state survives a reboot, so run this
+# after the physical nodes are back up and Ready — otherwise nothing new
+# gets scheduled anywhere.
+
+- name: Uncordon all kube nodes after cluster power-on
+  hosts: localhost
+  connection: local
+  become: false
+  tasks:
+    - name: Wait for all nodes to report Ready
+      ansible.builtin.command: >
+        kubectl --kubeconfig {{ ansible_env.HOME }}/.kube/k8s.yaml
+        wait --for=condition=Ready node/{{ item }} --timeout=300s
+      loop: "{{ groups['kube'] }}"
+      changed_when: false
+
+    - name: Uncordon all kube nodes
+      ansible.builtin.command: >
+        kubectl --kubeconfig {{ ansible_env.HOME }}/.kube/k8s.yaml
+        uncordon {{ item }}
+      loop: "{{ groups['kube'] }}"
+      register: uncordon_result
+      changed_when: "'uncordoned' in uncordon_result.stdout"

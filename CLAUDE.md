@@ -46,6 +46,13 @@ ansible-playbook -b playbooks/k8s.yml
 # Reset/tear down Kubernetes cluster
 ansible-playbook playbooks/reset-k8s.yml
 
+# Gracefully shut down the whole k8s cluster (drains PVC-backed pods via the API
+# using each pod's own terminationGracePeriodSeconds, then powers off all nodes)
+ansible-playbook playbooks/shutdown-k8s.yml
+
+# After physically powering the nodes back on: uncordon (cordon state survives reboot)
+ansible-playbook playbooks/uncordon-k8s.yml
+
 # Post-Kubernetes setup (Longhorn storage, Traefik, etc.)
 ansible-playbook playbooks/post-k8s.yml
 
@@ -143,6 +150,8 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 - `post-k3s.yml` — runs after k3s install; installs ArgoCD then bootstraps GitOps (ArgoCD manages Traefik, Sealed Secrets, Headlamp via kube-gitops/k3s/)
 - `configure-router.yml` — localhost only; upserts MikroTik DNS records and NAT rules via `configure_mikrotik-router` role; **must run before `k8s.yml`** so kubeadm can resolve the API VIP hostname (`api.k8s.<domain>`) during cluster init; also run after changing Traefik LB IPs, domain config, or port forwards
 - `upgrade.yml` — OS package upgrades across all kube hosts
+- `shutdown-k8s.yml` — cordons all kube nodes, gracefully deletes every PVC-backed pod cluster-wide (`kubectl delete pod --wait`, so each pod's own `terminationGracePeriodSeconds` applies instead of the kubelet-capped shutdown budget), then powers off all nodes; primary defense against corrupting stateful workloads (Prometheus WAL, CNPG Postgres) on shutdown — `kubelet_shutdown_grace_period` is the fallback for shutdowns that bypass this
+- `uncordon-k8s.yml` — companion to `shutdown-k8s.yml`; run after the nodes are physically powered back on and report Ready — cordon state survives reboot, nothing schedules until this runs
 - `backup-nfs.yml` — targets hppd600g6; carves 100G LV from existing VG, formats ext4, mounts at `/backups`, exports via NFS to 192.168.1.0/25, installs restic REST server as a systemd service storing repos in `/backups/restic-repos/`
 
 **Playbook naming convention:**

@@ -156,7 +156,15 @@ kube_encrypt_secret_data: false
 # SIGTERM every pod (incl. Longhorn instance-manager/replicas) before poweroff, instead of
 # systemd tearing down kubelet/containerd on their own timeout and leaving Longhorn replicas
 # dirty (triggers rebuilds on next boot).
-kubelet_shutdown_grace_period: 120s
+#
+# 120s previously wasn't enough: kubelet caps every pod's grace period to this shared
+# budget regardless of its own terminationGracePeriodSeconds, and Prometheus (600s) and
+# CNPG Postgres (was 1800s, now capped to 600s via spec.stopDelay in cnpg/cluster.yaml)
+# both got force-killed mid-shutdown, corrupting Prometheus's WAL. 600s covers both with
+# no cap. playbooks/shutdown-k8s.yml is the primary mechanism now (drains PVC-backed pods
+# via the API using each pod's real grace period before physically powering off) — this
+# setting is the backstop for shutdowns/reboots that bypass it.
+kubelet_shutdown_grace_period: 600s
 kubelet_shutdown_grace_period_critical_pods: 30s
 
 # DNS configuration.

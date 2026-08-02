@@ -9,6 +9,11 @@ spec:
 
   imageName: ghcr.io/cloudnative-pg/postgresql:17
 
+  # Default is 1800s (30min) — observed shutdowns take ~30s per instance in practice
+  # (see kubelet nodeshutdown_manager logs), 600s gives ample headroom for a homelab-scale
+  # cluster (a few small databases) while matching kubelet_shutdown_grace_period.
+  stopDelay: 600
+
   postgresql:
     parameters:
       max_connections: "200"

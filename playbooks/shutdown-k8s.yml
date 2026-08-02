@@ -1,0 +1,71 @@
+---
+# Gracefully shut down the entire k8s cluster (all nodes).
+#
+# kubelet's GracefulNodeShutdown (kubelet_shutdown_grace_period in
+# inventory/group_vars/k8s_cluster/k8s-cluster.yml) caps every pod's grace
+# period to a shared per-node budget, regardless of what the pod itself
+# requests via terminationGracePeriodSeconds. Prometheus, for example, asks
+# for 600s to flush its TSDB WAL but only gets ~90s from that budget — not
+# enough, and the result has been corrupted WAL segments after a broadcast
+# `shutdown -h now`.
+#
+# This playbook drains PVC-backed pods through the API first, while the
+# whole cluster (and etcd quorum) is still healthy, giving each one its own
+# real terminationGracePeriodSeconds via `kubectl delete pod --wait`. Only
+# after that succeeds does it power off the nodes; kubelet's own grace
+# period remains as a second line of defense for whatever's left (CNI,
+# ingress, static content — nothing with unflushed on-disk state).
+#
+# Counterpart: run uncordon-k8s.yml after the nodes are back up — cordon
+# state survives a reboot, so nothing will get scheduled until you do.
+
+- name: Cordon nodes and gracefully drain PVC-backed pods
+  hosts: localhost
+  connection: local
+  become: false
+  tasks:
+    - name: Cordon all kube nodes to prevent rescheduling during shutdown
+      ansible.builtin.command: >
+        kubectl --kubeconfig {{ ansible_env.HOME }}/.kube/k8s.yaml
+        cordon {{ item }}
+      loop: "{{ groups['kube'] }}"
+      register: cordon_result
+      changed_when: "'cordoned' in cordon_result.stdout"
+      failed_when: cordon_result.rc != 0 and 'already cordoned' not in cordon_result.stderr
+
+    - name: Get all pods as JSON
+      ansible.builtin.command: >
+        kubectl --kubeconfig {{ ansible_env.HOME }}/.kube/k8s.yaml
+        get pods -A -o json
+      register: all_pods_json
+      changed_when: false
+
+    # Not kubectl drain: PodDisruptionBudgets would block eviction here,
+    # and for a full-cluster shutdown we want every PVC-backed pod to
+    # terminate cleanly in place, not be blocked waiting for a healthy
+    # replica to reschedule to (everything is going down anyway).
+    - name: Gracefully delete PVC-backed pods (each pod's own terminationGracePeriodSeconds applies, not the kubelet shutdown budget)
+      ansible.builtin.command: >
+        kubectl --kubeconfig {{ ansible_env.HOME }}/.kube/k8s.yaml
+        delete pod -n {{ item.metadata.namespace }} {{ item.metadata.name }}
+        --wait=true --timeout=300s
+      loop: "{{ (all_pods_json.stdout | from_json).items }}"
+      loop_control:
+        label: "{{ item.metadata.namespace }}/{{ item.metadata.name }}"
+      when:
+        - item.status.phase == "Running"
+        - item.spec.volumes is defined
+        - item.spec.volumes | selectattr('persistentVolumeClaim', 'defined') | list | length > 0
+      register: pod_delete
+      changed_when: pod_delete.rc == 0
+
+- name: Power off all Kubernetes nodes
+  hosts: kube
+  become: true
+  remote_user: "{{ ansible_ssh_user }}"
+  tasks:
+    - name: Shutdown node
+      ansible.builtin.command: shutdown -h now
+      async: 1
+      poll: 0
+      ignore_errors: true  # SSH connection drops as soon as shutdown is issued
