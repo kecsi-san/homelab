@@ -8,6 +8,10 @@ Ansible automation for setting up and maintaining developer and DevOps environme
 
 ## Common Commands
 
+A `justfile` at the repo root wraps every command below as a `just <recipe>` — run `just --list`
+to see them all grouped by area. The raw `ansible-playbook`/`terraform` invocations are kept here
+as the source of truth the justfile mirrors; use whichever is more convenient.
+
 ```bash
 # Install dependencies
 pip install -r requirements.txt
@@ -306,17 +310,24 @@ Two strategies, two different targets:
 
 ArgoCD manages all apps via app-of-apps pattern. Root app: `kube-gitops/k8s/root.yaml`.
 
+ArgoCD itself is installed by the `setup_argocd` Ansible role (Helm, insecure mode) since it can't bootstrap itself; `argocd-config` below is the GitOps-managed follow-up that layers CM/RBAC/OIDC config on top.
+
 | App | Namespace | Source | Purpose |
 |-----|-----------|--------|---------|
 | traefik | traefik | Helm (traefik) + values file | Ingress controller; LoadBalancer IP 192.168.1.101 via kube-vip |
 | sealed-secrets | sealed-secrets | Helm (sealed-secrets) | Encrypts secrets safe to commit; key backup at `~/sealed-secrets-key-backup.yaml` |
 | headlamp | headlamp | Helm (headlamp) | Kubernetes dashboard |
-| argocd | argocd | Helm (argo-helm) | GitOps controller; insecure mode (Cloudflare terminates TLS) |
+| argocd-config | argocd | Raw manifests (`kube-gitops/k8s/argocd/`) | ArgoCD CM/RBAC config, OIDC SealedSecret, ServiceMonitors — layered on top of the Ansible-installed ArgoCD |
 | longhorn | longhorn-system | Helm (longhorn) | Distributed block storage; default StorageClass |
 | cnpg | cnpg-system | Helm (cloudnative-pg) | PostgreSQL operator; `ServerSideApply=true` required (CRDs exceed 262 KB apply limit); `ignoreDifferences` on terminatingReplicas |
-| cnpg-cluster | postgres | Raw manifests (`kube-gitops/k8s/cnpg/`) | 3-instance PostgreSQL cluster; 2Gi Longhorn PVCs; bootstrap DB `forgejo` owned by `forgejo`; `authentik` DB + role via CNPG managed roles |
+| cnpg-cluster | postgres | Raw manifests (`kube-gitops/k8s/cnpg/`) | 3-instance PostgreSQL cluster; 2Gi Longhorn PVCs; bootstrap DB `forgejo` owned by `forgejo`; DBs for `authentik`/`backstage`/`wikijs` via CNPG managed roles |
 | forgejo | forgejo | Raw manifests (`kube-gitops/k8s/forgejo/`) | Git server + OCI registry + CI; rootless image; `GITEA__` env vars; admin user `kecsi`; `Recreate` rollout strategy (LevelDB queue lock); `ENABLE_REMEMBER_ME=false` |
-| authentik | authentik | Helm (charts.goauthentik.io) 2026.2.3 + raw manifests (`kube-gitops/k8s/authentik/`) | SSO/IDP; standalone redis:7-alpine; Forgejo OAuth2 provider via Blueprint; PostSync job registers Forgejo auth source; `sub_mode: user_username` |
+| forgejo-runner | forgejo-runner | Raw manifests (`kube-gitops/k8s/forgejo-runner/`) | Forgejo Actions CI runner + cache-prune CronJob |
+| authentik | authentik | Helm (charts.goauthentik.io) 2026.5.6 + raw manifests (`kube-gitops/k8s/authentik/`) | SSO/IDP; standalone redis:7-alpine; OAuth2 providers for Forgejo/Backstage/Wiki.js/ArgoCD/Grafana via Blueprint; `sub_mode: user_username` |
+| backstage | backstage | Helm (backstage.github.io/charts) 2.8.2 + raw manifests (`kube-gitops/k8s/backstage/`) | Internal developer portal; custom image built from Forgejo OCI registry via Forgejo Actions CI; Postgres backend; Authentik OIDC login |
+| wikijs | wikijs | Helm (charts.js.wiki) 3.0.0 + raw manifests (`kube-gitops/k8s/wikijs/`) | Self-hosted wiki (replaced Outline); Postgres backend; Authentik OIDC login with a session-fix ConfigMap patch for a `passport-openidconnect` bug |
+| homepage | homepage | Helm (jameswynn/homepage) + values file | Start page dashboard |
+| glance | glance | Raw manifests (`kube-gitops/k8s/glance/`) | Secondary dashboard widget page — weather, markets, Hacker News, Reddit, GitHub trending |
 | ntfy | ntfy | Raw manifests (`kube-gitops/k8s/ntfy/`) | Push notification server; auth `deny-all`; `homelab` admin user |
 | gatus | gatus | Helm (twin/gatus) + values + SealedSecrets dir | Uptime monitoring for 6 services; ntfy alerting |
 | garage | garage | Raw manifests (`kube-gitops/k8s/garage/`) | S3-compatible object storage (Garage v2); `volsync-backups` bucket |
@@ -325,9 +336,16 @@ ArgoCD manages all apps via app-of-apps pattern. Root app: `kube-gitops/k8s/root
 | mealie | mealie | Raw manifests (`kube-gitops/k8s/mealie/`) | Self-hosted recipe manager; SQLite; default login changeme@example.com / MyPassword |
 | minecraft | minecraft | Raw manifests (`kube-gitops/k8s/minecraft/`) | Minecraft Bedrock server; `itzg/minecraft-bedrock-server`; UDP 19132 on 192.168.1.110 (kube-vip); 5Gi Longhorn PVC |
 | pod-cleanup | kube-system | Raw manifests (`kube-gitops/k8s/pod-cleanup/`) | Nightly CronJob (03:00) deleting Failed + Succeeded pods cluster-wide; RBAC: list+delete pods |
+| reloader | reloader | Helm (stakater/reloader) | Rolls pods on ConfigMap/Secret change |
 | kube-prometheus-stack | monitoring | Helm (prometheus-community) + values file | Prometheus + Alertmanager; scrapes cluster + 4-node Debian `node_exporter`; Alertmanager → ntfy webhook bridge (Watchdog/InfoInhibitor silenced via null route); 50Gi/5Gi Longhorn PVCs |
 | grafana-operator | monitoring | Helm (grafana.github.io) | Grafana via operator CRDs; Authentik OAuth2 login; dashboards: Node summary, Longhorn, Traefik, ArgoCD |
+| monitoring-config | monitoring | Raw manifests (`kube-gitops/k8s/monitoring/`) | Grafana instance/dashboard CRDs; ServiceMonitors for Longhorn/Traefik |
 | kromgo | monitoring | Raw manifests (`kube-gitops/k8s/kromgo/`) | Public status badges (`kromgo.kecskemethy.org`) reading Prometheus/Alertmanager: debian_version, kubernetes_version, alerts, argocd_out_of_sync, failed_pods, cpu, memory, longhorn_storage, node_count, pod_count, birth_age, uptime_age |
+| cert-manager-config | cert-manager | Raw manifests (`kube-gitops/k8s/cert-manager/`) | ClusterIssuer (Let's Encrypt DNS01 via Cloudflare) + Cloudflare API token SealedSecret |
+| cloudflared | cloudflared | Raw manifests (`kube-gitops/k8s/cloudflared/`) | Cloudflare Tunnel daemon (2 replicas) routing `*.<your-domain.tld>` → Traefik via `noTLSVerify: true`; see dual-path TLS notes below |
+| external-dns | external-dns | Helm (kubernetes-sigs.github.io/external-dns) + values file | Watches IngressRoute `external-dns.alpha.kubernetes.io/target` annotations and syncs matching Cloudflare CNAME records to the cloudflared tunnel; `policy: sync` (deletes records when IngressRoutes are removed); `--cloudflare-proxied` |
+| external-dns-config | external-dns | Raw manifests (`kube-gitops/k8s/external-dns/`) | Cloudflare API token SealedSecret for external-dns |
+| ingressroutes | argocd | Raw manifests (`kube-gitops/k8s/ingressroutes/`) | All Traefik IngressRoute + cert-manager Certificate objects, one pair per service; carries the external-dns target annotation |
 
 **VolSync backup architecture:**
 - Restic REST server runs on hppd600g6 (192.168.1.52:8000) — external to k8s, data on 100G LV at `/backups/restic-repos/`
@@ -366,7 +384,8 @@ kubectl create secret generic my-secret --namespace my-ns \
 
 **Traffic and TLS architecture (dual-path):**
 - **LAN path (Edge browser):** MikroTik wildcard DNS `*.<your-domain.tld>` → 192.168.1.101 (Traefik); cert-manager issues per-service Let's Encrypt certs via DNS01 (Cloudflare API token); IngressRoutes reference `<service>-tls` secrets; no H2 coalescing since each service has its own cert
-- **Cloudflare path (Firefox + WARP):** Cloudflare WARP routes traffic through Cloudflare edge → cloudflared pod → Traefik via `https://traefik.traefik.svc.cluster.local` with `noTLSVerify: true`; Cloudflare's Universal SSL cert is what the browser sees
+- **Cloudflare path (Firefox + WARP):** Cloudflare WARP routes traffic through Cloudflare edge → Cloudflare Tunnel CNAME (`<tunnel-id>.cfargotunnel.com`) → `cloudflared` pod (2 replicas, `kube-gitops/k8s/cloudflared/`) → Traefik via `https://traefik.traefik.svc.cluster.local` with `noTLSVerify: true`; Cloudflare's Universal SSL cert is what the browser sees
+- **DNS automation for the Cloudflare path:** the `external-dns` app (ArgoCD-managed Helm chart, ArgoCD app `external-dns`) watches every IngressRoute's `external-dns.alpha.kubernetes.io/target: "<tunnel-id>.cfargotunnel.com"` annotation and syncs the matching proxied Cloudflare CNAME record automatically — `policy: sync`, so it also deletes the record if the IngressRoute is removed; every service in `kube-gitops/k8s/ingressroutes/` carries this annotation, so both paths (LAN cert-manager DNS01 + Cloudflare Tunnel CNAME) are provisioned per-service without manual DNS edits
 - cert-manager: installed via ArgoCD app (`cert-manager-config.yaml`); ClusterIssuer uses DNS01 challenge with `cloudflare-api-token` SealedSecret in `cert-manager` namespace
 - ArgoCD runs in insecure mode; TLS terminated at Traefik (LAN) or Cloudflare edge (WARP)
 - MikroTik wildcard DNS entry for `<your-domain.tld>` (match-subdomain) defined in `configure_mikrotik-dns` defaults; run `configure-router.yml` after any IP/domain changes
@@ -377,23 +396,28 @@ ArgoCD manages all apps via app-of-apps pattern. Root app: `kube-gitops/k3s/root
 
 | App | Namespace | Source | Purpose |
 |-----|-----------|--------|---------|
-| traefik | traefik | Helm (traefik) + values file | Ingress controller; `tls: {}` IngressRoutes (k3s default TLS store) |
+| traefik | traefik | Helm (traefik) + values file | Ingress controller; `tls: {}` IngressRoutes (k3s default TLS store); built-in k3s Traefik must be disabled first |
 | sealed-secrets | sealed-secrets | Helm (sealed-secrets) | Secrets encryption; **re-seal against `admin@k3s` context** |
-| headlamp | kube-system | Helm (headlamp) | Kubernetes dashboard |
-| argocd | argocd | Helm (argo-helm) | GitOps controller; insecure mode |
+| headlamp | kube-system | Helm (headlamp) + values file | Kubernetes dashboard |
+| argocd-config | argocd | Raw manifests (`kube-gitops/k3s/argocd/`) | ArgoCD CM/RBAC config, OIDC SealedSecret — layered on top of the Ansible-installed ArgoCD, same pattern as k8s |
 | homepage | homepage | Helm (jameswynn/homepage) + values file | Start page (`kube-gitops/k3s/values/homepage.yaml`) |
-| cert-manager | cert-manager | Helm (cert-manager) + config manifests | Let's Encrypt DNS01 certs via Cloudflare |
+| cert-manager | cert-manager | Helm (cert-manager) + config manifests | Let's Encrypt DNS01 certs via Cloudflare; wildcard cert `*.k3s.<your-domain.tld>` |
+| cert-manager-config | cert-manager | Raw manifests (`kube-gitops/k3s/cert-manager/`) | ClusterIssuer + wildcard Certificate |
 | reloader | reloader | Helm (stakater/reloader) | Rolls pods on ConfigMap/Secret change |
 | cnpg | cnpg-system | Helm (cloudnative-pg) | PostgreSQL operator; same `ServerSideApply=true` + `ignoreDifferences` fixes as k8s |
-| cnpg-cluster | postgres | Raw manifests (`kube-gitops/k3s/cnpg/`) | Single-instance PostgreSQL; `local-path` storage; 2Gi PVC |
-| forgejo | forgejo | Raw manifests (`kube-gitops/k3s/forgejo/`) | Git server; same rootless image + `GITEA__` env var pattern as k8s; domain `forgejo.k3s.kecskemethy.org` |
-| authentik | authentik | Planned | SSO/IDP; to be synced from k8s stack |
+| cnpg-cluster | postgres | Raw manifests (`kube-gitops/k3s/cnpg/`) | Single-instance PostgreSQL; `local-path` storage; 2Gi PVC; DBs for authentik/forgejo/wikijs |
+| forgejo | forgejo | Raw manifests (`kube-gitops/k3s/forgejo/`) | Git server; same rootless image + `GITEA__` env var pattern as k8s; domain `forgejo.k3s.kecskemethy.org`; own IngressRoute inside its app dir (not the shared `ingressroutes/` app) |
+| forgejo-runner | forgejo-runner | Raw manifests (`kube-gitops/k3s/forgejo-runner/`) | Forgejo Actions CI runner |
+| authentik | authentik | Helm (charts.goauthentik.io) 2026.5.6 + raw manifests (`kube-gitops/k3s/authentik/`) | SSO/IDP; fully deployed (own Blueprint ConfigMap, standalone redis, 4 OAuth2 SealedSecrets) — **not** synced from the k8s stack; independent instance, same as k8s architecturally |
+| wikijs | wikijs | Helm (charts.js.wiki) 3.0.0 + raw manifests (`kube-gitops/k3s/wikijs/`) | Wiki; same Authentik OIDC session-fix patch as k8s |
+| ingressroutes | argocd | Raw manifests (`kube-gitops/k3s/ingressroutes/`) | Traefik IngressRoutes + `tlsstore.yaml` for argocd/authentik/headlamp/homepage/traefik-dashboard/wikijs |
 
 **k3s vs k8s differences:**
 - Storage class: `local-path` (not Longhorn) — single node, no replication
 - CNPG: `instances: 1` (single node)
 - IngressRoutes: `tls: {}` (k3s default TLS store, no per-cert secret reference)
-- No VolSync backups, no Garage, no ntfy/gatus/mealie on k3s — dev/IDP stack only
+- No VolSync backups, no Garage, no ntfy/gatus/mealie/minecraft/monitoring/backstage/glance on k3s — dev/IDP stack only
+- No Cloudflare Tunnel/external-dns on k3s — LAN-only, no internet-facing path
 - SealedSecrets sealed with `--context admin@k3s`; incompatible with k8s-sealed secrets
 
 **SealedSecrets workflow (k3s):**

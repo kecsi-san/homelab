@@ -206,5 +206,5 @@ Next debug steps when revisiting:
 
 ## Reference
 
-- [Component research and comparisons](../research/idp-components.md)
+- [Component research and comparisons](../research/homelab-idp-components.md)
 - [User management runbook](user-management.md)

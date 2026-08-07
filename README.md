@@ -23,7 +23,7 @@ This repository tries to follow a modular **LEGO approach**, build up automated 
 
 **k8s** — 4-node bare-metal HA cluster running Kubespray 2.31 + Cilium CNI. Three control plane nodes with kube-vip providing a stable API VIP; one dedicated worker. All applications managed by ArgoCD via an app-of-apps pattern.
 
-**k3s** — Single-node development cluster running on WSL2 (penguinaid). Hosts the IDP stack (Authentik + Forgejo) and a Homepage dashboard for local access. Uses the same GitOps pattern as the bare-metal cluster with a separate ArgoCD root app.
+**k3s** — Single-node development cluster running on WSL2 (penguinaid). Hosts the minimal IDP stack (Authentik, Forgejo + Actions runner, Wiki.js) and a Homepage dashboard for local access — LAN-only, no Cloudflare Tunnel. Uses the same GitOps pattern as the bare-metal cluster with a separate ArgoCD root app.
 
 ## 🧱 Stack
 
@@ -45,17 +45,22 @@ This repository tries to follow a modular **LEGO approach**, build up automated 
 | [Authentik](https://goauthentik.io) | SSO / Identity Provider — OIDC for all platform services | authentik.fqdn |
 | [Forgejo](https://forgejo.org) | Self-hosted Git server, OCI registry, and CI runner | forgejo.fqdn |
 | [Backstage](https://backstage.io) | Internal developer portal — catalog, scaffolder, TechDocs | backstage.fqdn |
-| [Wiki.js](https://js.wiki) | Self-hosted wiki and knowledge base | wiki.fqdn |
+| [Wiki.js](https://js.wiki) | Self-hosted wiki and knowledge base (replaced Outline) | wiki.fqdn |
 | [Mealie](https://mealie.io) | Self-hosted recipe manager | mealie.fqdn |
 | [Homepage](https://gethomepage.dev) | Start page with live cluster and service widgets | homepage.kecskemethy.org |
+| Glance | Secondary dashboard — weather, markets, HN, Reddit, GitHub trending | glance.fqdn |
 | [Headlamp](https://headlamp.dev) | Kubernetes dashboard | headlamp.fqdn |
 | [Prometheus + Grafana](https://prometheus.io) | Cluster metrics collection and dashboards | grafana.fqdn |
 | [Gatus](https://gatus.io) | Uptime monitoring and status page | gatus.fqdn |
+| [Kromgo](https://github.com/home-operations/kromgo) | Public cluster status badges | kromgo.kecskemethy.org |
 | [ntfy](https://ntfy.sh) | Push notification server — alerts from Gatus and VolSync | ntfy.fqdn |
+| Minecraft (Bedrock) | Family Minecraft server | UDP 19132 on 192.168.1.110 |
 | [Longhorn](https://longhorn.io) | Distributed block storage across all 4 nodes | — |
-| [CloudNativePG](https://cloudnative-pg.io) | PostgreSQL operator — shared cluster for Forgejo, Authentik, Outline | — |
+| [CloudNativePG](https://cloudnative-pg.io) | PostgreSQL operator — shared cluster for Forgejo, Authentik, Backstage, Wiki.js | — |
 | [VolSync](https://volsync.readthedocs.io) | PVC backup operator — daily restic snapshots to NFS backup server | — |
 | [Garage](https://garagehq.deuxfleurs.fr) | S3-compatible object storage | — |
+| [cloudflared](https://github.com/cloudflare/cloudflared) | Cloudflare Tunnel daemon — internet access without open router ports | — |
+| [external-dns](https://github.com/kubernetes-sigs/external-dns) | Syncs Cloudflare DNS records from IngressRoute annotations | — |
 
 > k8s is the primary homelab cluster. k3s is a development/experimentation mirror but mostly for lightweight services.
 
@@ -164,6 +169,10 @@ flowchart LR
 | [Quick Start](docs/ansible/quickstart.md) | Prerequisites and playbook commands for all three scenarios |
 | [Roles](docs/ansible/roles.md) | Role naming conventions, structure, and full role inventory |
 | [CI/CD](docs/ansible/ci-cd.md) | CI pipeline, linting, pre-commit hooks, and changelog automation |
+
+> Every command in the guides above is also available as a `just <recipe>` — run
+> `just --list` at the repo root for the full, discoverable set (setup, playbooks,
+> Terraform, lint, cluster rebuild runbook).
 | [All docs](docs/README.md) | Full documentation index |
 
 ---

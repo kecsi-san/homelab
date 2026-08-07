@@ -46,6 +46,10 @@ the cluster, combined with **Cloudflare WARP** on client devices for the VPN pat
 - Tunnel established from `cloudflared` pod → Cloudflare edge (outbound-only; no
   inbound ports opened on the home router)
 - Cloudflare DNS: `*.kecskemethy.org` → Cloudflare Tunnel (CNAME to `<uuid>.cfargotunnel.com`)
+- DNS records are not managed by hand: the `external-dns` ArgoCD app watches the
+  `external-dns.alpha.kubernetes.io/target` annotation on every IngressRoute
+  (`kube-gitops/k8s/ingressroutes/`) and syncs the matching proxied CNAME automatically —
+  `policy: sync`, so records are also deleted when an IngressRoute is removed
 - Traffic path: Browser → Cloudflare Edge → Cloudflare Tunnel → `cloudflared` pod →
   `https://traefik.traefik.svc.cluster.local` → Traefik → in-cluster service
 - `noTLSVerify: true` on the `cloudflared` → Traefik connection (Traefik presents

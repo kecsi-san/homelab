@@ -13,6 +13,9 @@ tags: [ansible, workstation, setup, devenv]
 Ansible automation for setting up a local developer or DevOps workstation.
 Targets `localhost` and supports both **macOS** and **Debian/Ubuntu under WSL2** (Windows).
 
+> A `justfile` at the repo root wraps every command on this page as `just <recipe>` —
+> run `just --list` to see them all.
+
 ---
 
 ## Prerequisites
@@ -40,6 +43,7 @@ Foundation for everything else. Always run this first.
 
 ```bash
 ansible-playbook playbooks/local-core.yml
+# or: just local-core
 ```
 
 | What | macOS | Linux (WSL2) |
@@ -57,6 +61,7 @@ ansible-playbook playbooks/local-core.yml
 
 ```bash
 ansible-playbook playbooks/local-security.yml
+# or: just local-security
 ```
 
 Installs: passwordless sudo (`configure_sudo`), Duo Security repo, fail2ban, rkhunter, lynis, trivy.
@@ -67,6 +72,7 @@ Installs: passwordless sudo (`configure_sudo`), Duo Security repo, fail2ban, rkh
 
 ```bash
 ansible-playbook playbooks/local-dev.yml
+# or: just local-dev
 ```
 
 Installs: VS Code, Go + gopls + golangci-lint, Node.js + pnpm, Rust + cargo toolchain, GitHub CLI.
@@ -77,6 +83,7 @@ Installs: VS Code, Go + gopls + golangci-lint, Node.js + pnpm, Rust + cargo tool
 
 ```bash
 ansible-playbook playbooks/local-cloud.yml
+# or: just local-cloud
 ```
 
 Installs: Terraform, OpenTofu, Terragrunt, Trivy, AWS CLI, Azure CLI, Google Cloud SDK.
@@ -87,6 +94,7 @@ Installs: Terraform, OpenTofu, Terragrunt, Trivy, AWS CLI, Azure CLI, Google Clo
 
 ```bash
 ansible-playbook playbooks/local-kube.yml
+# or: just local-kube
 ```
 
 Installs: kubectl, helm, argocd, flux, kubeseal. Bash completions wired up. `k` alias for kubectl.
@@ -97,6 +105,7 @@ Installs: kubectl, helm, argocd, flux, kubeseal. Bash completions wired up. `k` 
 
 ```bash
 ansible-playbook playbooks/upgrade-local.yml
+# or: just upgrade-local
 ```
 
 Runs `brew upgrade`, `uv tool upgrade --all`, and on Linux `apt upgrade`.
@@ -107,6 +116,7 @@ Runs `brew upgrade`, `uv tool upgrade --all`, and on Linux `apt upgrade`.
 
 ```bash
 ansible-playbook playbooks/personalise.yml
+# or: just personalise
 ```
 
 Installs Nerd Fonts, Oh My Posh shell prompt, sets user profile picture, uploads wallpapers (Linux).
@@ -133,6 +143,8 @@ ansible-playbook -t terraform,aws playbooks/local-cloud.yml
 ```bash
 ansible-playbook --check playbooks/local-core.yml
 ansible-playbook --syntax-check playbooks/local-core.yml
+# or: just check playbooks/local-core.yml
+#     just syntax-check playbooks/local-core.yml
 ```
 
 ---

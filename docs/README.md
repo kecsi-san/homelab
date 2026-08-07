@@ -27,7 +27,7 @@ rationale live in [Research → IDP Components](research/homelab-idp-components.
 | [Outline](IDP/outline.md) | Documentation strategy: what goes in Outline vs Git; operational notes |
 | [CI Pipelines](IDP/ci-pipelines.md) | Forgejo Actions setup; Python template adaptation; Semgrep + Trivy (planned) |
 | CD Pipelines | *(planned)* Push-to-main → ArgoCD sync; deployment workflow for Python apps |
-| Backstage | *(planned)* Service catalog — after minimal IDP is stable on k8s |
+| Backstage | ✅ Deployed on k8s (see [Status](IDP/status.md)) — service catalog; custom image built via Forgejo Actions CI |
 
 ## Ansible Workflows
 
@@ -47,6 +47,9 @@ Cross-cutting operational procedures and runbooks.
 | Doc | Description |
 |-----|-------------|
 | [k8s Rebuild + Cilium Migration](howtos/cilium-migration.md) | Full cluster rebuild runbook and Cilium CNI migration plan |
+| [EC2 Rebuild Plan](howtos/ec2-rebuild-plan.md) | Replacing the original 2016 EC2 edge node with a fully codified instance; phased migration plan |
+| [EC2 EBS Volumes](howtos/ec2-ebs-volumes.md) | Storage/volume layout design for the new EC2 edge node |
+| [Vault Secrets Architecture](howtos/vault-secrets-architecture.md) | Vault mount/policy design and the `secrets.yml` → Vault migration plan |
 
 ## Research
 

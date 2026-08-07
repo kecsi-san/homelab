@@ -19,7 +19,10 @@ Two GitHub Actions workflows run automatically on pushes to `main`:
 | `lint.yml` | push + pull_request to `main` | Validate YAML formatting and Ansible best practices |
 | `changelog.yml` | push to `main` | Generate and commit `CHANGELOG.md` from conventional commits |
 
-No deployment automation — all cluster and workstation changes are applied manually via `ansible-playbook`.
+No deployment automation — all cluster and workstation changes are applied manually via `ansible-playbook`
+(or the equivalent `just <recipe>` — see the repo-root `justfile`, `just --list`).
+
+CI parity locally: `just lint-yaml` / `just lint-ansible` / `just lint` run the same checks as `lint.yml` below.
 
 ---
 

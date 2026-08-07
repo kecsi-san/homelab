@@ -35,10 +35,12 @@ Kubeconfig is written to `~/.kube/k3s.yaml`, appended to `KUBECONFIG` in `~/.bas
 ```bash
 # 1. Install k3s (native on WSL2, k3d on macOS)
 ansible-playbook playbooks/k3s.yml
+# or: just k3s
 
 # 2. Bootstrap GitOps — installs ArgoCD, then ArgoCD manages everything else
 #    (Traefik, Sealed Secrets, Headlamp, cert-manager via kube-gitops/k3s/)
 ansible-playbook playbooks/post-k3s.yml
+# or: just post-k3s
 ```
 
 After `post-k3s.yml` completes, ArgoCD is running and will automatically sync the
@@ -48,6 +50,7 @@ app-of-apps from `kube-gitops/k3s/`. All further changes are GitOps-driven.
 
 ```bash
 ansible-playbook playbooks/reset-k3s.yml
+# or: just reset-k3s
 ```
 
 ---

@@ -83,19 +83,34 @@ ArgoCD manages all apps via an app-of-apps pattern. Root app: `kube-gitops/k8s/r
 |-----|-----------|---------|
 | traefik | traefik | Ingress controller; LoadBalancer IP 192.168.1.101 via kube-vip |
 | sealed-secrets | sealed-secrets | Encrypts secrets safe to commit |
-| cert-manager + config | cert-manager | LE certs via DNS-01 challenge (Cloudflare API) |
-| argocd | argocd | GitOps controller; insecure mode (Traefik terminates TLS) |
+| cert-manager-config | cert-manager | LE certs via DNS-01 challenge (Cloudflare API) |
+| argocd-config | argocd | CM/RBAC/OIDC config layered on the Ansible-installed ArgoCD; insecure mode (Traefik terminates TLS) |
 | longhorn | longhorn-system | Distributed block storage; default StorageClass |
+| cnpg + cnpg-cluster | cnpg-system / postgres | PostgreSQL operator + 3-instance cluster |
+| forgejo + forgejo-runner | forgejo / forgejo-runner | Git server, OCI registry, CI runner |
+| authentik | authentik | SSO/IDP; OAuth2 for Forgejo/Backstage/Wiki.js/ArgoCD/Grafana |
+| backstage | backstage | Internal developer portal / service catalog |
+| wikijs | wikijs | Self-hosted wiki (replaced Outline) |
 | cloudflared | cloudflared | Cloudflare Tunnel (internet access, no open ports) |
-| external-dns | external-dns | Auto-creates Cloudflare DNS records from IngressRoute annotations |
+| external-dns + config | external-dns | Auto-creates Cloudflare DNS records from IngressRoute annotations |
+| ingressroutes | argocd | Shared IngressRoute + Certificate manifests for every service |
 | reloader | reloader | Rolling restarts on ConfigMap/Secret changes |
 | headlamp | headlamp | Kubernetes dashboard |
 | homepage | homepage | Service dashboard |
+| glance | glance | Secondary dashboard — weather, markets, HN, Reddit, GitHub trending |
 | ntfy | ntfy | Push notification server |
 | gatus | gatus | Uptime monitoring; alerts via ntfy |
 | mealie | mealie | Self-hosted recipe manager |
+| minecraft | minecraft | Minecraft Bedrock server |
 | garage | garage | S3-compatible object storage |
 | volsync + config | volsync-system | PVC backup operator |
+| kube-prometheus-stack + grafana-operator + monitoring-config | monitoring | Prometheus, Alertmanager, Grafana |
+| kromgo | monitoring | Public status badges |
+| pod-cleanup | kube-system | Nightly Failed/Succeeded pod cleanup |
+
+> Full per-app detail (source, chart version, purpose) lives in [CLAUDE.md](../../CLAUDE.md)'s
+> "GitOps App Stack" tables — that's the canonical, most current listing; this page gives the
+> architectural overview.
 
 ### GitOps Directory Structure
 
@@ -216,6 +231,10 @@ ansible-playbook -b playbooks/k8s.yml
 ansible-playbook playbooks/post-k8s.yml
 ```
 
+Equivalent `just` recipes: `just configure-router`, `just prerequisite`, `just k8s-nodes`,
+`just pre-k8s`, `just k8s`, `just post-k8s` — or run the whole thing (minus `prerequisite`,
+which only needs to run once ever) via `just rebuild-k8s` (see Rebuild Runbook below).
+
 After `post-k8s.yml`, ArgoCD is running and syncing the full app stack from `kube-gitops/k8s/`.
 
 ### Maintenance
@@ -223,9 +242,11 @@ After `post-k8s.yml`, ArgoCD is running and syncing the full app stack from `kub
 ```bash
 # OS package upgrades on all nodes
 ansible-playbook playbooks/upgrade.yml
+# or: just upgrade
 
 # Tear down cluster (destructive)
 ansible-playbook playbooks/reset-k8s.yml
+# or: just reset-k8s
 ```
 
 ### Running specific roles via tags
@@ -235,6 +256,9 @@ ansible-playbook --ask-become-pass -t ssh,sudo playbooks/prerequisite.yml
 ansible-playbook -t hosts,banner,fonts playbooks/k8s-nodes.yml
 ansible-playbook -t update playbooks/k8s-nodes.yml
 ```
+
+Equivalent: `just tags playbooks/k8s-nodes.yml hosts,banner,fonts` (the `prerequisite.yml`
+line always needs `--ask-become-pass`, so run it directly rather than via `just tags`).
 
 **k8s-nodes.yml tags:** `update`, `ssh`, `hosts`, `banner`, `fonts`, `omp`, `fzf`, `gitconfig`, `hibernation`
 
@@ -268,6 +292,10 @@ kubectl rollout restart deployment sealed-secrets -n sealed-secrets
 #    Delete SiteSecurityServiceState.bin from Firefox profile folder
 #    (about:support → Open Profile Folder) after a rebuild to clear stale HSTS state
 ```
+
+Steps 1–4 are chained in a single `just rebuild-k8s`, which also prints steps 5–6 (plus
+the Longhorn smoke test from [CLAUDE.md](../../CLAUDE.md)) as a reminder once it finishes —
+those remaining steps are manual/interactive and deliberately not scripted.
 
 ---
 
