@@ -6,6 +6,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Ansible automation for setting up and maintaining developer and DevOps environments. Uses a modular "LEGO" approach: each Ansible role is self-contained and independently runnable. Supports both local workstation setup and a distributed Kubernetes cluster (via Kubespray).
 
+## Working Conventions
+
+- **Solo repo, no branches/PRs**: this repo has a single maintainer. Commit and push directly to `main` — don't create feature branches or open PRs unless explicitly asked to.
+- **Conventional Commits**: subject lines follow the `type(scope): description` format (`feat`, `fix`, `docs`, `chore`, etc. — see git log for examples). No JIRA/ticket reference; `git-changelog` parses these for `CHANGELOG.md`.
+- **GitOps app inventory can drift from this file**: the app tables below are hand-maintained and can lag behind reality. When auditing or reconciling the app stack, verify against `kube-gitops/{k8s,k3s}/apps/*.yaml` directly (`spec.source`/`spec.sources` for Helm chart+repo vs raw manifest path, `spec.syncPolicy.automated` to confirm it's actually live) rather than trusting this file alone.
+
 ## Common Commands
 
 A `justfile` at the repo root wraps every command below as a `just <recipe>` — run `just --list`
