@@ -49,7 +49,7 @@
         kubectl --kubeconfig {{ ansible_env.HOME }}/.kube/k8s.yaml
         delete pod -n {{ item.metadata.namespace }} {{ item.metadata.name }}
         --wait=true --timeout=300s
-      loop: "{{ (all_pods_json.stdout | from_json).items }}"
+      loop: "{{ (all_pods_json.stdout | from_json)['items'] }}"
       loop_control:
         label: "{{ item.metadata.namespace }}/{{ item.metadata.name }}"
       when:
