@@ -19,6 +19,7 @@ Ansible automation for setting up and maintaining developer and DevOps environme
 - **For live-cluster maintenance with real blast radius** (data migration, scaling, GitOps sync state changes): state the plan before executing, and prefer blocking calls (`kubectl wait`) over background-then-poll-then-kill patterns. For the EC2 edge node specifically — a single production instance with no staging copy — confirm before *any* connection attempt, including read-only/`--check`.
 - **Prefer a narrow, live, read-only check over trusting static review alone** when auditing config-drift-prone systems (EC2, any hand-configured host) — static analysis can only compare what's written against what's written elsewhere, not what a system actually does at runtime.
 - **Keep `README.md` and this file in sync** with role/playbook changes — they're the source of truth for repo structure. (There is no separate `ROLES.md` — the detailed per-role table lives in `docs/ansible/roles.md`, which has its own staleness risk since it's not cross-checked automatically; verify against the Roles Reference table below or `roles/` directly if in doubt.)
+- **Run the `humanizer` plugin on every newly created Markdown doc** (`docs/**/*.md`, `README.md`, role `README.md` files) before it's committed — this file (`CLAUDE.md`) is exempt.
 
 ## Public Repository — Personal Data Policy
 

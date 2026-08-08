@@ -34,7 +34,7 @@ Survey of popular homelab Kubernetes GitHub repositories (≥100 stars), coverin
 
 ---
 
-## 2. Platform Layer — What People Typically Run
+## 2. Platform Layer: What People Typically Run
 
 ### GitOps
 
@@ -51,7 +51,7 @@ Survey of popular homelab Kubernetes GitHub repositories (≥100 stars), coverin
 |------|-------|-------|
 | **ingress-nginx** | 5/13 | Traditional workhorse. Simple, widely documented. Used by szinn, toboshii, lisenet. |
 | **Traefik** | 3/13 | Used by this repo, khuedoan (early), some Proxmox setups. Good dashboard, native Let's Encrypt integration. |
-| **Envoy Gateway** | 3/13 | Growing fast. Implements Kubernetes Gateway API. Used by onedr0p, buroa, xunholy. The `onedr0p/cluster-template` defaults to Envoy Gateway as of 2024–2025. |
+| **Envoy Gateway** | 3/13 | Growing fast. Implements Kubernetes Gateway API. Used by onedr0p, buroa, xunholy. The `onedr0p/cluster-template` defaults to Envoy Gateway as of 2024-2025. |
 | **Cilium (Gateway API)** | 2/13 | Cilium itself can serve as a Gateway API implementation, eliminating a separate ingress controller. Used by mitchross and some Cilium-only setups. |
 
 ### TLS / Certificate Management
@@ -69,7 +69,7 @@ Survey of popular homelab Kubernetes GitHub repositories (≥100 stars), coverin
 | **Cilium** | 9/13 | Has largely replaced Flannel and Calico in modern homelab repos. eBPF-based, replaces kube-proxy, supports Gateway API, network policies, Hubble for observability. |
 | **Calico** | 2/13 | Used in older or kubeadm-based setups (lisenet, khuedoan original). |
 | **Flannel / default k3s** | 1/13 | Rare in sophisticated repos; mostly early-stage single-node k3s. |
-| **Multus** | 2/13 | Used for multi-homed pods — IoT VLAN separation, Zigbee USB passthrough, etc. Typically added on top of Cilium. |
+| **Multus** | 2/13 | Used for multi-homed pods; IoT VLAN separation, Zigbee USB passthrough, etc. Typically added on top of Cilium. |
 
 ### Load Balancer (bare metal)
 
@@ -132,7 +132,7 @@ See Section 4 for detailed breakdown.
 
 ---
 
-## 3. Application Services — What People Typically Deploy
+## 3. Application Services: What People Typically Deploy
 
 ### Media Automation ("arr stack")
 
@@ -229,14 +229,14 @@ See Section 4 for detailed breakdown.
 
 ---
 
-## 4. Persistence Layer — Detailed Breakdown
+## 4. Persistence Layer: Detailed Breakdown
 
 ### Storage Solutions
 
 | Solution | Repos using it | Profile |
 |----------|----------------|---------|
-| **Rook-Ceph** | 7/13 | Most capable. Provides block (RBD), filesystem (CephFS), and S3-compatible object (RGW). Required for `ReadWriteMany` volumes without NFS. Resource-hungry: 1–2 GB RAM per OSD node. Used by onedr0p, buroa, billimek, xunholy, toboshii, szinn, nicolerenee. Typical setup: 3+ nodes with dedicated SSDs as OSDs. |
-| **Longhorn** | 3/13 | Simpler distributed block storage from Rancher. Built-in UI, S3/NFS backup, lower resource overhead (200–400 MB/node). Does not provide S3 object storage or CephFS. Used by mitchross, this repo's peer setups. Good for 1–3 node clusters. |
+| **Rook-Ceph** | 7/13 | Most capable. Provides block (RBD), filesystem (CephFS), and S3-compatible object (RGW). Required for `ReadWriteMany` volumes without NFS. Resource-hungry: 1-2 GB RAM per OSD node. Used by onedr0p, buroa, billimek, xunholy, toboshii, szinn, nicolerenee. Typical setup: 3+ nodes with dedicated SSDs as OSDs. |
+| **Longhorn** | 3/13 | Simpler distributed block storage from Rancher. Built-in UI, S3/NFS backup, lower resource overhead (200-400 MB/node). Does not provide S3 object storage or CephFS. Used by mitchross, this repo's peer setups. Good for 1-3 node clusters. |
 | **OpenEBS (local-hostpath / Mayastor)** | 3/13 | `local-path` (single-node) or `openebs-hostpath` for fast local storage; Mayastor for high-performance NVMe replication. bjw-s uses OpenEBS; nickclyde's homelab uses it via onedr0p template. |
 | **NFS (TrueNAS / Synology)** | 8/13 | Used alongside block storage for media, bulk files, `ReadWriteMany` volumes. TrueNAS SCALE (ZFS) is the most common NAS backend. democratic-csi or nfs-subdir-external-provisioner provision PVCs from NFS shares. |
 | **local-path-provisioner** | 5/13 | k3s default. Simple hostPath provisioner. Fine for single-node or ephemeral workloads; no redundancy. |
@@ -253,16 +253,16 @@ See Section 4 for detailed breakdown.
 
 ### Storage Architecture Patterns
 
-**Pattern 1 — Rook-Ceph + VolSync (most common in Talos/Flux repos)**  
+**Pattern 1; Rook-Ceph + VolSync (most common in Talos/Flux repos)**  
 Rook-Ceph provides RBD block storage for databases and CephFS for shared volumes. VolSync backs up PVCs to B2 or S3 using Restic. CloudNativePG handles database backups separately via Barman.
 
-**Pattern 2 — Longhorn + NFS**  
+**Pattern 2; Longhorn + NFS**  
 Longhorn handles block storage for apps requiring replication; NFS (TrueNAS) handles media and large files. Longhorn's built-in backup sends snapshots to S3/NFS. Lower cluster resource overhead than Rook-Ceph.
 
-**Pattern 3 — OpenEBS local-path + NFS**  
+**Pattern 3; OpenEBS local-path + NFS**  
 OpenEBS hostpath for fast local PVCs on each node; NFS for shared/large storage. Cheapest resource profile. No inter-node replication for local volumes (no HA). Used in smaller or single-node setups.
 
-**Pattern 4 — local-path + NFS (k3s default)**  
+**Pattern 4; local-path + NFS (k3s default)**  
 Simplest option: k3s local-path for app configs, TrueNAS/Synology NFS for everything else. No distributed storage overhead. Used in less-complex setups or when starting out.
 
 ---
@@ -273,7 +273,7 @@ Current stack: ArgoCD, Traefik, Longhorn, cert-manager, Sealed Secrets, External
 
 ### High-value additions (common across 8+ repos)
 
-**1. Monitoring stack — kube-prometheus-stack**  
+**1. Monitoring stack; kube-prometheus-stack**  
 Absent from the current stack. Almost universal (8/13 repos). Deploy via `kube-prometheus-stack` Helm chart. Gives Prometheus, Grafana, Alertmanager, node-exporter, and kube-state-metrics in one release. Add community dashboards for Longhorn, Traefik, ArgoCD. Alert routing to Slack or ntfy for disk pressure, pod crash loops, certificate expiry.
 
 **2. Gatus for service uptime**  
@@ -288,7 +288,7 @@ Absent from the current stack. Almost universal (8/13 repos). Deploy via `kube-p
 **5. Authentik or Authelia for SSO**  
 5/13 repos. Forward auth for Traefik: single login protects all internal services. Authentik is heavier but supports OIDC/SAML for apps like Immich, Gitea. Authelia is lighter and simpler if only forward-auth is needed. Both integrate with Traefik via ForwardAuth middleware.
 
-### Medium-priority (common in 4–7 repos)
+### Medium-priority (common in 4-7 repos)
 
 **6. Immich for photo management**  
 7/13 repos. Fastest-growing self-hosted app. Requires PostgreSQL (CNPG), Redis (Dragonfly), and ~2 GB RAM. Provides Google Photos-equivalent features: face recognition, smart albums, mobile backup app.
@@ -332,20 +332,20 @@ Additional repos found outside the initial 13. Stars accurate as of May 2026.
 
 | Repo | Stars | OS | GitOps | CNI | Storage | Notable |
 |------|-------|----|--------|-----|---------|---------|
-| [techno-tim/k3s-ansible](https://github.com/techno-tim/k3s-ansible) | 3.0k | Debian/Ubuntu/Rocky | n/a (provisioning tool) | Calico or Cilium | — | Ansible playbook for HA k3s with kube-vip + MetalLB. Single-command cluster bootstrap. Molecule test suite. Galaxy collection. |
-| [onedr0p/cluster-template](https://github.com/onedr0p/cluster-template) | 2.7k | Talos | Flux | Cilium | — | The community's canonical starting point. TOML config validated by CUE renders all manifests via makejinja. Defaults: Flux, Cilium, cert-manager, Envoy Gateway, External-DNS, Spegel, Reloader, Cloudflared. |
-| [budimanjojo/talhelper](https://github.com/budimanjojo/talhelper) | 644 | Talos | n/a (tool) | — | — | CLI tool that generates Talos machine configs in a GitOps-friendly way. SOPS-native. Widely used across Talos repos alongside the cluster-template. |
+| [techno-tim/k3s-ansible](https://github.com/techno-tim/k3s-ansible) | 3.0k | Debian/Ubuntu/Rocky | n/a (provisioning tool) | Calico or Cilium | n/a | Ansible playbook for HA k3s with kube-vip + MetalLB. Single-command cluster bootstrap. Molecule test suite. Galaxy collection. |
+| [onedr0p/cluster-template](https://github.com/onedr0p/cluster-template) | 2.7k | Talos | Flux | Cilium | n/a | The community's canonical starting point. TOML config validated by CUE renders all manifests via makejinja. Defaults: Flux, Cilium, cert-manager, Envoy Gateway, External-DNS, Spegel, Reloader, Cloudflared. |
+| [budimanjojo/talhelper](https://github.com/budimanjojo/talhelper) | 644 | Talos | n/a (tool) | n/a | n/a | CLI tool that generates Talos machine configs in a GitOps-friendly way. SOPS-native. Widely used across Talos repos alongside the cluster-template. |
 | [ricsanfre/pi-cluster](https://github.com/ricsanfre/pi-cluster) | 539 | Ubuntu (hybrid ARM+x86) | Flux | Cilium | Longhorn | Hybrid Raspberry Pi + mini-PC cluster. Ansible + Terraform provisioning. Full observability: Prometheus, Grafana, Loki, Elasticsearch. Vault, Keycloak, Kafka via Strimzi, Istio service mesh. Dedicated Pi running OpenWRT as cluster firewall. Comprehensive docs at picluster.ricsanfre.com. |
-| [bjw-s-labs/helm-charts](https://github.com/bjw-s-labs/helm-charts) | 1.0k | — | — | — | — | The `app-template` chart (requires Kubernetes ≥1.28). Wraps a common library to deploy any app without a dedicated chart. Near-universal in community Flux repos. Successor to the deprecated k8s-at-home/charts. |
-| [carpenike/k8s-gitops](https://github.com/carpenike/k8s-gitops) | 312 | Talos | Flux v2 | — | — | git-crypt + SOPS dual secrets strategy. Pre-commit hooks. Home Operations Discord contributor. Archived Sep 2025; successor in progress. |
+| [bjw-s-labs/helm-charts](https://github.com/bjw-s-labs/helm-charts) | 1.0k | n/a | n/a | n/a | n/a | The `app-template` chart (requires Kubernetes ≥1.28). Wraps a common library to deploy any app without a dedicated chart. Near-universal in community Flux repos. Successor to the deprecated k8s-at-home/charts. |
+| [carpenike/k8s-gitops](https://github.com/carpenike/k8s-gitops) | 312 | Talos | Flux v2 | n/a | n/a | git-crypt + SOPS dual secrets strategy. Pre-commit hooks. Home Operations Discord contributor. Archived Sep 2025; successor in progress. |
 | [vehagn/homelab](https://github.com/vehagn/homelab) | 388 | Proxmox VMs → Talos | ArgoCD | Cilium | Proxmox CSI + TrueNAS | OpenTofu (open-source Terraform fork) for infra provisioning. Kustomized Helm with ArgoCD. Gateway API instead of Ingress. CloudNativePG. The blog at blog.stonegarden.dev covers Talos+Proxmox+OpenTofu and BGP/Cilium in depth. |
 | [brettinternet/homeops](https://github.com/brettinternet/homeops) | 257 | Talos (bare-metal) | Flux | Cilium | Rook-Ceph + MergerFS | Hybrid: 5× Raspberry Pi 4B (USB SSD) + bare-metal nodes. Rook-Ceph distributed storage. Cilium L4 LB (no MetalLB). CloudNativePG, Authelia OIDC, K8s Gateway for local DNS. go-task for ops shortcuts. |
 | [budimanjojo/home-cluster](https://github.com/budimanjojo/home-cluster) | 248 | Talos | Flux | Cilium | Rook-Ceph + NFS | talhelper-built. Cilium as CNI + LB (no MetalLB). OPNsense → Envoy Gateway traffic path. SOPS+age. Intel GPU plugin. Dynamic Grafana dashboard via ConfigMap sidecar pattern. |
-| [gruberdev/homelab](https://github.com/gruberdev/homelab) | 247 | Talos | ArgoCD | — | democratic-csi (ZFS) | argocd-image-updater for automatic image promotion back to git. Reflector for cross-namespace Secret/ConfigMap sync. Descheduler for pod balance. kube-fledged for pre-caching images. Wavy for VNC-in-browser on containers via annotations. Vault for secrets. |
+| [gruberdev/homelab](https://github.com/gruberdev/homelab) | 247 | Talos | ArgoCD | n/a | democratic-csi (ZFS) | argocd-image-updater for automatic image promotion back to git. Reflector for cross-namespace Secret/ConfigMap sync. Descheduler for pod balance. kube-fledged for pre-caching images. Wavy for VNC-in-browser on containers via annotations. Vault for secrets. |
 | [danmanners/homelab-kube-cluster](https://github.com/danmanners/homelab-kube-cluster) | 234 | Ubuntu + Talos | ArgoCD | Cilium (eBPF) | Rook-Ceph + NFS | Argo Events + Argo Workflows alongside ArgoCD. Tekton for cloud-native CI. Dex IDP. Maddy mail server. Harbor private registry. WikiJS. Archived Sep 2025. |
-| [wrmilling/k3s-gitops](https://github.com/wrmilling/k3s-gitops) | 227 | NixOS nodes | Flux v2 | — | Rook-Ceph | NixOS for reproducible node config (rare in homelab k8s repos). Mini-PC nodes (Minisforum UN100C + BMax B4) + TrueNAS master VM. |
-| [angelnu/k8s-gitops](https://github.com/angelnu/k8s-gitops) | 181 | CentOS 10 Stream (Proxmox VMs) | Flux v2 | — | — | Migration in progress from k3s to OKD (open-source OpenShift). Terraform + cloud-init for VM templates. Separate service VM (management layer) for installer orchestration. |
-| [auricom/home-ops](https://github.com/auricom/home-ops) | 206 | Talos | Flux v2 | — | — | Python (22%) + Just (16%) for operations tooling, alongside Flux manifests. RenovateBot. |
+| [wrmilling/k3s-gitops](https://github.com/wrmilling/k3s-gitops) | 227 | NixOS nodes | Flux v2 | n/a | Rook-Ceph | NixOS for reproducible node config (rare in homelab k8s repos). Mini-PC nodes (Minisforum UN100C + BMax B4) + TrueNAS master VM. |
+| [angelnu/k8s-gitops](https://github.com/angelnu/k8s-gitops) | 181 | CentOS 10 Stream (Proxmox VMs) | Flux v2 | n/a | n/a | Migration in progress from k3s to OKD (open-source OpenShift). Terraform + cloud-init for VM templates. Separate service VM (management layer) for installer orchestration. |
+| [auricom/home-ops](https://github.com/auricom/home-ops) | 206 | Talos | Flux v2 | n/a | n/a | Python (22%) + Just (16%) for operations tooling, alongside Flux manifests. RenovateBot. |
 
 ### Smaller but architecturally interesting repos
 
@@ -358,7 +358,7 @@ Additional repos found outside the initial 13. Stars accurate as of May 2026.
 
 ---
 
-## 7. New Findings — Tools and Patterns Not Well Represented in Round 1
+## 7. New Findings: Tools and Patterns Not Well Represented in Round 1
 
 ### 7.1 Tooling Infrastructure
 
@@ -366,25 +366,25 @@ Additional repos found outside the initial 13. Stars accurate as of May 2026.
 
 **talhelper** (644 stars) fills the gap between Talos's `talosctl genconfig` and GitOps. It reads a `talconfig.yaml` with SOPS-encrypted secrets and renders per-node machine configs. Widely used with the cluster-template. The `talhelper gensecret` command initialises the Talos PKI and secrets file in one step.
 
-**kubesearch.dev** — community search engine indexing HelmRelease configurations from public homelab repos. Useful for finding real-world `values.yaml` patterns for any chart across hundreds of repos. Complements the Helm chart docs.
+**kubesearch.dev**: community search engine indexing HelmRelease configurations from public homelab repos. Useful for finding real-world `values.yaml` patterns for any chart across hundreds of repos. Complements the Helm chart docs.
 
-**app-template (bjw-s-labs/helm-charts)** — the replacement for the deprecated `k8s-at-home/charts`. A single generic Helm chart that renders any app's Deployment/Service/Ingress/PVC from a structured values file. Requires Kubernetes ≥1.28. 1,000+ stars. Used in nearly every active Flux community repo.
+**app-template (bjw-s-labs/helm-charts)**: the replacement for the deprecated `k8s-at-home/charts`. A single generic Helm chart that renders any app's Deployment/Service/Ingress/PVC from a structured values file. Requires Kubernetes ≥1.28. 1,000+ stars. Used in nearly every active Flux community repo.
 
 ### 7.2 Networking Shifts
 
-**Cilium BGP control plane replacing MetalLB** is the dominant new pattern in 2025–2026. Instead of MetalLB L2/BGP + Cilium CNI, most new repos run Cilium alone with `BGPPeeringPolicy` CRDs advertising LoadBalancer IPs to a router (UniFi, OPNsense, VyOS). Eliminates a component and gives native eBPF path for LB traffic. blog.stonegarden.dev documents the migration from MetalLB to Cilium L2 and then to BGP peering with UniFi. Key config: `externalTrafficPolicy: Cluster` vs `Local` tradeoffs still apply.
+**Cilium BGP control plane replacing MetalLB** is the dominant new pattern in 2025-2026. Instead of MetalLB L2/BGP + Cilium CNI, most new repos run Cilium alone with `BGPPeeringPolicy` CRDs advertising LoadBalancer IPs to a router (UniFi, OPNsense, VyOS). Eliminates a component and gives native eBPF path for LB traffic. blog.stonegarden.dev documents the migration from MetalLB to Cilium L2 and then to BGP peering with UniFi. Key config: `externalTrafficPolicy: Cluster` vs `Local` tradeoffs still apply.
 
-**Ingress-NGINX end-of-life (March 2026)** — the official ingress-nginx maintainers announced EOL. The community is migrating to Gateway API implementations. `onedr0p/cluster-template` already defaults to **Envoy Gateway**. Cilium's Gateway API implementation is the other common choice (no extra component if Cilium is already the CNI). The CNCF `ingress2gateway` tool (v1.0, March 2026) converts existing Ingress objects to Gateway API resources and handles 30+ common annotations.
+**Ingress-NGINX end-of-life (March 2026)**: the official ingress-nginx maintainers announced EOL. The community is migrating to Gateway API implementations. `onedr0p/cluster-template` already defaults to **Envoy Gateway**. Cilium's Gateway API implementation is the other common choice (no extra component if Cilium is already the CNI). The CNCF `ingress2gateway` tool (v1.0, March 2026) converts existing Ingress objects to Gateway API resources and handles 30+ common annotations.
 
-**Sidero Omni** — Siderolabs' commercial-but-free-tier (or self-hostable) control plane for Talos clusters. GUI for cluster lifecycle, node allocation, upgrades, and kubeconfig distribution. `fenio/homelab` demonstrates Omni managing the same Talos cluster that Flux manages the workloads on. Self-host option via the open-source `siderolabs/omni` repo. Useful when managing more than one cluster or when non-technical co-owners need to restart nodes.
+**Sidero Omni**: Siderolabs' commercial-but-free-tier (or self-hostable) control plane for Talos clusters. GUI for cluster lifecycle, node allocation, upgrades, and kubeconfig distribution. `fenio/homelab` demonstrates Omni managing the same Talos cluster that Flux manages the workloads on. Self-host option via the open-source `siderolabs/omni` repo. Useful when managing more than one cluster or when non-technical co-owners need to restart nodes.
 
-### 7.3 Storage — New and Diverging Patterns
+### 7.3 Storage: New and Diverging Patterns
 
-**Piraeus / LINSTOR** — DRBD-based block storage managed by the Piraeus Operator (CNCF sandbox). Backed by ZFS or LVM. Lower RAM overhead than Rook-Ceph; no object storage or CephFS, but synchronous replication is faster for database workloads. `prankstr/homelab` uses it. LINBIT maintains an official homelab blog post. Alternative to Longhorn for users with ZFS-capable nodes.
+**Piraeus / LINSTOR**: DRBD-based block storage managed by the Piraeus Operator (CNCF sandbox). Backed by ZFS or LVM. Lower RAM overhead than Rook-Ceph; no object storage or CephFS, but synchronous replication is faster for database workloads. `prankstr/homelab` uses it. LINBIT maintains an official homelab blog post. Alternative to Longhorn for users with ZFS-capable nodes.
 
-**Garage (self-hosted S3)** — MinIO's AGPLv3 relicensing in 2025 and subsequent stripping of the community GUI has driven homelabbers to **Garage** (Rust, ~50 MB binary, MIT licence). Garage provides S3-compatible object storage for VolSync targets, Loki/Mimir/Tempo chunks, and Longhorn backups. `meroxdotdev/infrastructure` uses Garage on a VPS as the off-site backup target. Migration guides from MinIO to Garage proliferated across homelab blogs in late 2025.
+**Garage (self-hosted S3)**: MinIO's AGPLv3 relicensing in 2025 and subsequent stripping of the community GUI has driven homelabbers to **Garage** (Rust, ~50 MB binary, MIT licence). Garage provides S3-compatible object storage for VolSync targets, Loki/Mimir/Tempo chunks, and Longhorn backups. `meroxdotdev/infrastructure` uses Garage on a VPS as the off-site backup target. Migration guides from MinIO to Garage proliferated across homelab blogs in late 2025.
 
-**democratic-csi with TrueNAS** — remains popular for NFS/iSCSI provisioning from TrueNAS SCALE. `gruberdev/homelab` and `rafaribe/home-ops` use it with ZFS-backed datasets. Provides both `ReadWriteOnce` iSCSI block and `ReadWriteMany` NFS volumes from the same appliance.
+**democratic-csi with TrueNAS**: remains popular for NFS/iSCSI provisioning from TrueNAS SCALE. `gruberdev/homelab` and `rafaribe/home-ops` use it with ZFS-backed datasets. Provides both `ReadWriteOnce` iSCSI block and `ReadWriteMany` NFS volumes from the same appliance.
 
 ### 7.4 Observability Trends
 
@@ -392,19 +392,19 @@ Additional repos found outside the initial 13. Stars accurate as of May 2026.
 
 **VictoriaMetrics** continues gaining ground over kube-prometheus-stack in resource-constrained homelab nodes. The `victoria-metrics-k8s-stack` Helm chart is a drop-in replacement bundling the VictoriaMetrics operator, VMAgent, VMAlert, and Grafana. `nicolerenee/infra` and `fenio/homelab` use it. VictoriaLogs is the companion log store replacing Loki for lower RAM usage. `prankstr/homelab` runs VictoriaMetrics as its full observability stack.
 
-**Coroot** — application-level APM for Kubernetes based on eBPF. No code instrumentation needed. Surfaces RED metrics (Rate, Errors, Duration) per service automatically. `fenio/homelab` runs Coroot alongside VictoriaMetrics and Hubble.
+**Coroot**: application-level APM for Kubernetes based on eBPF. No code instrumentation needed. Surfaces RED metrics (Rate, Errors, Duration) per service automatically. `fenio/homelab` runs Coroot alongside VictoriaMetrics and Hubble.
 
-### 7.5 Secret Management — Newer Patterns
+### 7.5 Secret Management: Newer Patterns
 
-**External Secrets + Bitwarden/Vaultwarden** — an alternative to the 1Password ESO backend for those without a 1Password subscription. A Bitwarden CLI pod acts as a webhook provider for ESO's `ClusterSecretStore`. Self-hosted Vaultwarden can serve as the backend. Morey.tech documents the integration.
+**External Secrets + Bitwarden/Vaultwarden**: an alternative to the 1Password ESO backend for those without a 1Password subscription. A Bitwarden CLI pod acts as a webhook provider for ESO's `ClusterSecretStore`. Self-hosted Vaultwarden can serve as the backend. Morey.tech documents the integration.
 
-**Akeyless** — cloud-hosted secrets manager with a free tier that `rafaribe/home-ops` uses as an alternative to HashiCorp Vault. ESO has a native Akeyless provider.
+**Akeyless**: cloud-hosted secrets manager with a free tier that `rafaribe/home-ops` uses as an alternative to HashiCorp Vault. ESO has a native Akeyless provider.
 
 ### 7.6 AI/Edge Patterns (Emerging)
 
-**Heterogeneous compute on Turing Pi 2** — `tylertitsworth/ai-cluster` runs Turing RK1 (ARM SoC with NPU) + Jetson Orin Nano (GPU) nodes on a single Turing Pi 2 board. Custom device plugins expose NPU resources as Kubernetes-schedulable resources. PyTorch Lightning distributed training via Gloo backend (avoids NCCL P2P requirements). Flyte for ML workflow orchestration.
+**Heterogeneous compute on Turing Pi 2**: `tylertitsworth/ai-cluster` runs Turing RK1 (ARM SoC with NPU) + Jetson Orin Nano (GPU) nodes on a single Turing Pi 2 board. Custom device plugins expose NPU resources as Kubernetes-schedulable resources. PyTorch Lightning distributed training via Gloo backend (avoids NCCL P2P requirements). Flyte for ML workflow orchestration.
 
-**Ollama + ROCm GPU** — `fenio/homelab` runs Ollama with AMD ROCm GPU support on Talos. The AMD GPU operator is available but less mature than NVIDIA's; requires `amdgpu` kernel module loaded via Talos extensions.
+**Ollama + ROCm GPU**: `fenio/homelab` runs Ollama with AMD ROCm GPU support on Talos. The AMD GPU operator is available but less mature than NVIDIA's; requires `amdgpu` kernel module loaded via Talos extensions.
 
 ---
 
@@ -412,9 +412,9 @@ Additional repos found outside the initial 13. Stars accurate as of May 2026.
 
 ### Primary Communities
 
-**Home Operations Discord** (formerly k8s-at-home) — the central community for homelab Kubernetes. Thousands of members share configs, debug issues, and maintain shared tooling (the cluster-template, helm-charts, containers image repo). Invite link via [k8s-at-home.com](https://k8s-at-home.com/).
+**Home Operations Discord** (formerly k8s-at-home); the central community for homelab Kubernetes. Thousands of members share configs, debug issues, and maintain shared tooling (the cluster-template, helm-charts, containers image repo). Invite link via [k8s-at-home.com](https://k8s-at-home.com/).
 
-**h3mmy/awesome-home-kubernetes** — curated GitHub list of homelab Kubernetes repos, Helm chart collections, and tooling. More up-to-date than most awesome lists for this niche.
+**h3mmy/awesome-home-kubernetes**: curated GitHub list of homelab Kubernetes repos, Helm chart collections, and tooling. More up-to-date than most awesome lists for this niche.
 
 ### Template Starting Points
 
@@ -431,19 +431,19 @@ Additional repos found outside the initial 13. Stars accurate as of May 2026.
 | [blog.stonegarden.dev](https://blog.stonegarden.dev/) | Talos+Proxmox+OpenTofu series; MetalLB→Cilium migration; BGP with UniFi+Cilium; Gateway API with Cilium and cert-manager; Cilium Direct Server Return. Corresponds to `vehagn/homelab` repo. |
 | [picluster.ricsanfre.com](https://picluster.ricsanfre.com/) | Full documentation site for `ricsanfre/pi-cluster`. ARM/x86 hybrid cluster, Ansible automation, Cilium, Longhorn, Vault, Keycloak, Kafka, Istio. Most comprehensive free homelab k8s guide available. |
 | [technotim.com](https://technotim.com/) | YouTube+blog. k3s-ansible, Renovate setup, "What I'm Running in My Homelab 2026" app survey. Accessible for beginners. |
-| [merox.dev/blog](https://merox.dev/blog/homelab-tour/) | "Homelab 2026" tour: Proxmox cluster, Talos, Flux, full rebuild in 8–9 minutes. |
+| [merox.dev/blog](https://merox.dev/blog/homelab-tour/) | "Homelab 2026" tour: Proxmox cluster, Talos, Flux, full rebuild in 8-9 minutes. |
 | [blog.azaurus.dev](https://blog.azaurus.dev/how-i-host-my-homelab/) | GitOps-first homelab walkthrough using VictoriaMetrics for observability. |
 
 ### Useful Search and Discovery Tools
 
-- **[kubesearch.dev](https://kubesearch.dev/)** — search HelmRelease configs from hundreds of public homelab repos. Filter by chart, version, and repo stars. Best way to find real-world `values.yaml` for any chart.
-- **[home-operations/containers](https://github.com/home-operations/containers)** (396 stars) — community-maintained container images with automated Renovate-compatible tagging. Used when upstream images lack semantic versioning.
+- **[kubesearch.dev](https://kubesearch.dev/)**: search HelmRelease configs from hundreds of public homelab repos. Filter by chart, version, and repo stars. Best way to find real-world `values.yaml` for any chart.
+- **[home-operations/containers](https://github.com/home-operations/containers)** (396 stars); community-maintained container images with automated Renovate-compatible tagging. Used when upstream images lack semantic versioning.
 
 ### Key Tooling Repos (not homelab configs, but used universally)
 
 | Tool | Stars | Purpose |
 |------|-------|---------|
-| [spegel-org/spegel](https://github.com/spegel-org/spegel) | — | Stateless peer-to-peer in-cluster OCI mirror. GA in k3s since Dec 2024. |
-| [backube/volsync](https://github.com/backube/volsync) | — | PVC backup/restore operator. Restic, Rclone, rsync backends. |
+| [spegel-org/spegel](https://github.com/spegel-org/spegel) | n/a | Stateless peer-to-peer in-cluster OCI mirror. GA in k3s since Dec 2024. |
+| [backube/volsync](https://github.com/backube/volsync) | n/a | PVC backup/restore operator. Restic, Rclone, rsync backends. |
 | [cloudnative-pg/cloudnative-pg](https://github.com/cloudnative-pg/cloudnative-pg) | 5k+ | PostgreSQL operator. HA, failover, Barman WAL archiving. |
-| [piraeusdatastore/piraeus-operator](https://github.com/piraeusdatastore/piraeus-operator) | — | LINSTOR/DRBD block storage for k8s. CNCF sandbox. ZFS-backed. |
+| [piraeusdatastore/piraeus-operator](https://github.com/piraeusdatastore/piraeus-operator) | n/a | LINSTOR/DRBD block storage for k8s. CNCF sandbox. ZFS-backed. |

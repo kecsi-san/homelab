@@ -5,7 +5,7 @@
 
 ## Decision
 
-**Chosen: `kube-prometheus-stack`** — Prometheus + Grafana + AlertManager + node-exporter + kube-state-metrics via the `prometheus-community/kube-prometheus-stack` Helm chart.
+**Chosen: `kube-prometheus-stack`**: Prometheus + Grafana + AlertManager + node-exporter + kube-state-metrics via the `prometheus-community/kube-prometheus-stack` Helm chart.
 
 See TODO.md for implementation tasks.
 
@@ -23,7 +23,7 @@ Single Helm chart bundling the full observability stack:
 - kube-state-metrics
 - Pre-configured dashboards and alerting rules
 
-**Resource footprint:** Prometheus ~500m CPU / 2Gi RAM baseline; Grafana ~300m CPU / 512Mi RAM. Storage: ~50Gi for 15-day retention. Acceptable on this cluster (each node has ~79–83 GB free on /var).
+**Resource footprint:** Prometheus ~500m CPU / 2Gi RAM baseline; Grafana ~300m CPU / 512Mi RAM. Storage: ~50Gi for 15-day retention. Acceptable on this cluster (each node has ~79-83 GB free on /var).
 
 **Kubespray / bare-metal:** Fully compatible, no known issues.
 
@@ -40,13 +40,13 @@ Drop-in Prometheus-compatible stack with VictoriaMetrics as the time-series back
 
 **Why not chosen (for now):** Adds operational complexity without clear benefit at homelab scale. The 4-node cluster has headroom. **Revisit if Prometheus memory pressure becomes an issue**, or if long-term retention (beyond 15 days) is needed.
 
-**Upgrade path:** VictoriaMetrics supports Prometheus remote-write — can switch backends without losing dashboards or alert rules.
+**Upgrade path:** VictoriaMetrics supports Prometheus remote-write; can switch backends without losing dashboards or alert rules.
 
 ### Other Options Considered
 
 | Option | Verdict |
 |--------|---------|
-| **Thanos** | Long-term object storage sidecar for Prometheus. Relevant if retention >15 days is needed — Garage (already deployed, S3-compatible) is a ready target. Add later, not needed initially. |
+| **Thanos** | Long-term object storage sidecar for Prometheus. Relevant if retention >15 days is needed; Garage (already deployed, S3-compatible) is a ready target. Add later, not needed initially. |
 | **Grafana Mimir** | Enterprise-grade, horizontally scalable, multi-tenant. Overkill for a homelab. |
 | **InfluxDB** | Less Kubernetes-native, weaker Prometheus ecosystem integration. Skip. |
 | **Grafana Alloy** | Successor to Grafana Agent (EOL Nov 2025); unified OTel collector for metrics + logs + traces. Overkill for metrics-only homelab. Skip unless adding distributed tracing later. |
@@ -70,8 +70,8 @@ Drop-in Prometheus-compatible stack with VictoriaMetrics as the time-series back
 
 Garage is already deployed as an S3-compatible object store with a `volsync-backups` bucket. When 15-day Prometheus retention becomes limiting:
 
-1. **Option A — Thanos sidecar:** Add Thanos sidecar to Prometheus; ship blocks to Garage. Keeps kube-prometheus-stack as-is.
-2. **Option B — Switch to VictoriaMetrics:** Remote-write from Prometheus to VictoriaMetrics, or replace kube-prometheus-stack with victoria-metrics-k8s-stack entirely.
+1. **Option A; Thanos sidecar:** Add Thanos sidecar to Prometheus; ship blocks to Garage. Keeps kube-prometheus-stack as-is.
+2. **Option B; Switch to VictoriaMetrics:** Remote-write from Prometheus to VictoriaMetrics, or replace kube-prometheus-stack with victoria-metrics-k8s-stack entirely.
 
 No new storage infrastructure needed for either path.
 
@@ -79,11 +79,11 @@ No new storage infrastructure needed for either path.
 
 ## Kromgo
 
-[kashalls/kromgo](https://github.com/kashalls/kromgo) — lightweight Go app that exposes named Prometheus queries as simple HTTP endpoints. Used to display live cluster metrics as tiles in the Homepage dashboard (replaces the broken Kubernetes metrics widget removed earlier).
+[kashalls/kromgo](https://github.com/kashalls/kromgo): lightweight Go app that exposes named Prometheus queries as simple HTTP endpoints. Used to display live cluster metrics as tiles in the Homepage dashboard (replaces the broken Kubernetes metrics widget removed earlier).
 
 **Typical metrics to expose:** cluster CPU%, cluster RAM%, pod count, node count, Longhorn volume health.
 
-**Alternative:** gethomepage.dev's native Grafana widget — simpler if you just want a panel embed, but Kromgo gives more control over individual metric values.
+**Alternative:** gethomepage.dev's native Grafana widget; simpler if you just want a panel embed, but Kromgo gives more control over individual metric values.
 
 **Dependency:** Requires the monitoring stack (Prometheus endpoint) to be deployed first.
 

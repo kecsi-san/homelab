@@ -13,7 +13,7 @@ tags: [ansible, workstation, setup, devenv]
 Ansible automation for setting up a local developer or DevOps workstation.
 Targets `localhost` and supports both **macOS** and **Debian/Ubuntu under WSL2** (Windows).
 
-> A `justfile` at the repo root wraps every command on this page as `just <recipe>` —
+> A `justfile` at the repo root wraps every command on this page as `just <recipe>`;
 > run `just --list` to see them all.
 
 ---
@@ -35,9 +35,9 @@ Edit `secrets.yml` to set `admin_user`, `ansible_ssh_user`, `acme_email`, and Mi
 
 ## Playbook Sequence
 
-Run in order. Each playbook is independently re-runnable — skip what you don't need.
+Run in order. Each playbook is independently re-runnable, so skip what you don't need.
 
-### 1. Core system — `local-core.yml`
+### 1. Core system: `local-core.yml`
 
 Foundation for everything else. Always run this first.
 
@@ -57,7 +57,7 @@ ansible-playbook playbooks/local-core.yml
 
 **Tags:** `brew`, `apt-repos`, `docker`, `apps`, `minimal`, `network`, `python`, `uv`
 
-### 2. Security hardening — `local-security.yml`
+### 2. Security hardening: `local-security.yml`
 
 ```bash
 ansible-playbook playbooks/local-security.yml
@@ -68,7 +68,7 @@ Installs: passwordless sudo (`configure_sudo`), Duo Security repo, fail2ban, rkh
 
 **Tags:** `sudo`, `apt-repos`, `security`, `checkov`
 
-### 3. Developer tooling — `local-dev.yml` *(optional)*
+### 3. Developer tooling: `local-dev.yml` *(optional)*
 
 ```bash
 ansible-playbook playbooks/local-dev.yml
@@ -79,7 +79,7 @@ Installs: VS Code, Go + gopls + golangci-lint, Node.js + pnpm, Rust + cargo tool
 
 **Tags:** `vscode`, `go`, `nodejs`, `rust`, `gh`, `dev`
 
-### 4. Cloud tooling — `local-cloud.yml` *(optional)*
+### 4. Cloud tooling: `local-cloud.yml` *(optional)*
 
 ```bash
 ansible-playbook playbooks/local-cloud.yml
@@ -90,7 +90,7 @@ Installs: Terraform, OpenTofu, Terragrunt, Trivy, AWS CLI, Azure CLI, Google Clo
 
 **Tags:** `iac`, `terraform`, `iac-extra`, `cloud`, `aws`, `azure`, `gcp`
 
-### 5. Kubernetes tooling — `local-kube.yml` *(optional)*
+### 5. Kubernetes tooling: `local-kube.yml` *(optional)*
 
 ```bash
 ansible-playbook playbooks/local-kube.yml
@@ -101,7 +101,7 @@ Installs: kubectl, helm, argocd, flux, kubeseal. Bash completions wired up. `k` 
 
 **Tags:** `kube`, `kubernetes`
 
-### Maintenance — `upgrade-local.yml`
+### Maintenance: `upgrade-local.yml`
 
 ```bash
 ansible-playbook playbooks/upgrade-local.yml
@@ -112,7 +112,7 @@ Runs `brew upgrade`, `uv tool upgrade --all`, and on Linux `apt upgrade`.
 
 **Tags:** `upgrade`, `apt`, `brew`, `uv`
 
-### Personalisation — `personalise.yml`
+### Personalisation: `personalise.yml`
 
 ```bash
 ansible-playbook playbooks/personalise.yml
@@ -152,7 +152,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 ## macOS Notes
 
 - **Homebrew** must be installed before running `local-core.yml` (install manually via `brew.sh` if not present)
-- **Colima** is used as the Docker runtime instead of Docker Desktop — started automatically at login (`colima_autostart: true` in `group_vars/local.yml`)
+- **Colima** is used as the Docker runtime instead of Docker Desktop, started automatically at login (`colima_autostart: true` in `group_vars/local.yml`)
 - **Python interpreter** is pinned to `/usr/bin/python3` (Xcode CLT) in `group_vars/local.yml` to avoid compatibility issues with Homebrew Python versions
 - **Bash completions** for docker, colima, and kube tools are wired into `~/.bash_profile` via `bash-completion@2`
 
@@ -160,4 +160,4 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 
 - Linuxbrew is installed at `/home/linuxbrew/.linuxbrew/`
 - Docker CE is installed via the official APT repo (not Docker Desktop)
-- VS Code runs on Windows — the extension install step in `setup_vscode` may not work under WSL2 (disabled by default in `local-dev.yml`)
+- VS Code runs on Windows, so the extension install step in `setup_vscode` may not work under WSL2 (disabled by default in `local-dev.yml`)

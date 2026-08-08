@@ -15,7 +15,7 @@ The primary is always reachable at `postgres-rw.postgres.svc.cluster.local:5432`
 
 ## Connect as superuser
 
-Peer auth is enabled inside the pod — no password required:
+Peer auth is enabled inside the pod, so no password is required:
 
 ```bash
 kubectl exec -it -n postgres postgres-1 -- psql -U postgres

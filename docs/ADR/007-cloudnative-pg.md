@@ -1,5 +1,5 @@
 ---
-title: "007 — CloudNativePG for PostgreSQL"
+title: "007: CloudNativePG for PostgreSQL"
 type: adr
 status: accepted
 scope: [k8s, k3s]
@@ -8,7 +8,7 @@ updated: 2026-05-17
 tags: [postgresql, cnpg, database, operator]
 ---
 
-# 007 — CloudNativePG for PostgreSQL
+# 007: CloudNativePG for PostgreSQL
 
 ## Status
 
@@ -50,7 +50,7 @@ field to prevent ArgoCD drift detection false positives.
 
 | Option | Reason rejected |
 |---|---|
-| **Standalone PostgreSQL Deployment** | No streaming replication; no operator-managed failover; credentials managed entirely manually; no `Database` or `Role` CRs — everything done via `psql` by hand |
+| **Standalone PostgreSQL Deployment** | No streaming replication; no operator-managed failover; credentials managed entirely manually; no `Database` or `Role` CRs, everything done via `psql` by hand |
 | **Zalando postgres-operator** | Older, less active maintenance; Patroni-based (adds complexity); `CRD` model is less ergonomic than CNPG's; CNPG has become the community standard since CNCF incubation |
 | **CrunchyData PGO** | Enterprise-focused, complex; PGO v5 requires a significant learning investment; the community edition has limitations; overkill for a homelab |
 | **Bitnami PostgreSQL Helm chart** | StatefulSet without an operator; no `Database` or `Role` CRs; backups require manual configuration; no automated failover |
@@ -59,7 +59,7 @@ field to prevent ArgoCD drift detection false positives.
 ## Consequences
 
 **Positive:**
-- `Database` and `Role` CRs enable declarative database provisioning — adding a new
+- `Database` and `Role` CRs enable declarative database provisioning: adding a new
   application database is a 20-line manifest, not a `psql` session
 - Streaming replication on k8s (3 instances) provides read scalability and automatic
   failover if the primary fails
@@ -75,9 +75,9 @@ field to prevent ArgoCD drift detection false positives.
   changes how ArgoCD applies all CNPG manifests, which can cause unexpected behavior
   if not understood
 - `ignoreDifferences` for `terminatingReplicas` is a workaround for CNPG's internal
-  state management — if CNPG changes this field's semantics, the ignore rule may mask
+  state management. If CNPG changes this field's semantics, the ignore rule may mask
   real drift
 - Superuser access requires `kubectl exec` into the primary pod (peer auth, no password);
-  there is no external superuser endpoint — all admin work goes through the pod
+  there is no external superuser endpoint, and all admin work goes through the pod
 - App credentials stored in SealedSecrets per namespace: sealing must happen against
   the correct cluster context; a k3s-sealed secret will not decrypt on k8s

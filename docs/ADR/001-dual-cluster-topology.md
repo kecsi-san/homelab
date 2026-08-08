@@ -1,5 +1,5 @@
 ---
-title: "001 — Dual Cluster Topology: k8s + k3s"
+title: "001: Dual Cluster Topology: k8s + k3s"
 type: adr
 status: accepted
 scope: [k8s, k3s]
@@ -8,7 +8,7 @@ updated: 2026-05-17
 tags: [architecture, cluster, k8s, k3s, topology]
 ---
 
-# 001 — Dual Cluster Topology: k8s + k3s
+# 001: Dual Cluster Topology: k8s + k3s
 
 ## Status
 
@@ -18,10 +18,10 @@ Accepted
 
 The homelab needed a Kubernetes environment that served two distinct purposes:
 
-1. **Production-grade homelab services** — always-on services (monitoring, git, wiki,
+1. **Production-grade homelab services**: always-on services (monitoring, git, wiki,
    SSO, recipe manager, etc.) running on physical hardware with real storage, proper HA,
    and Cloudflare tunnel access.
-2. **Local development and experimentation** — a fast, disposable cluster on the
+2. **Local development and experimentation**: a fast, disposable cluster on the
    developer workstation (WSL2/macOS) for testing new manifests, debugging deployments,
    and learning new IDP components before promoting to production.
 
@@ -39,8 +39,8 @@ Maintain two completely separate clusters:
 
 | Cluster | Runtime | Nodes | Purpose |
 |---|---|---|---|
-| **k8s** | Kubespray 2.31 + k8s 1.35 + Cilium | 4 bare-metal nodes | Production homelab — always-on services + full IDP + Backstage |
-| **k3s** | k3s native (WSL2) / k3d (macOS) | 1 node (localhost) | Development — IDP stack mirror, manifest testing, CI experimentation |
+| **k8s** | Kubespray 2.31 + k8s 1.35 + Cilium | 4 bare-metal nodes | Production homelab: always-on services + full IDP + Backstage |
+| **k3s** | k3s native (WSL2) / k3d (macOS) | 1 node (localhost) | Development: IDP stack mirror, manifest testing, CI experimentation |
 
 Both clusters are managed by ArgoCD with the same app-of-apps GitOps pattern, pointing
 to separate paths in the repo (`kube-gitops/k8s/` and `kube-gitops/k3s/`).
@@ -70,7 +70,7 @@ to separate paths in the repo (`kube-gitops/k8s/` and `kube-gitops/k3s/`).
   needs manifests in both `kube-gitops/k8s/` and `kube-gitops/k3s/`)
 - SealedSecrets must be sealed separately for each cluster
   (`--context admin@k8s` vs `--context admin@k3s`)
-- k3s lags behind k8s in IDP component deployment — the mirroring is manual and
+- k3s lags behind k8s in IDP component deployment. The mirroring is manual and
   happens in a second pass
 - WSL2 k3s networking has known limitations with port mapping; k3d (macOS) requires
   explicit `--port` flags

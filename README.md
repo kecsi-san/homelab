@@ -21,46 +21,46 @@ This repository tries to follow a modular **LEGO approach**, build up automated 
 
 ## <a id="kube"></a>⎈ Clusters
 
-**k8s** — 4-node bare-metal HA cluster running Kubespray 2.31 + Cilium CNI. Three control plane nodes with kube-vip providing a stable API VIP; one dedicated worker. All applications managed by ArgoCD via an app-of-apps pattern.
+**k8s**: 4-node bare-metal HA cluster running Kubespray 2.31 + Cilium CNI. Three control plane nodes with kube-vip providing a stable API VIP; one dedicated worker. All applications managed by ArgoCD via an app-of-apps pattern.
 
-**k3s** — Single-node development cluster running on WSL2 (penguinaid). Hosts the minimal IDP stack (Authentik, Forgejo + Actions runner, Wiki.js) and a Homepage dashboard for local access — LAN-only, no Cloudflare Tunnel. Uses the same GitOps pattern as the bare-metal cluster with a separate ArgoCD root app.
+**k3s**: Single-node development cluster running on WSL2 (penguinaid). Hosts the minimal IDP stack (Authentik, Forgejo + Actions runner, Wiki.js) and a Homepage dashboard for local access; LAN-only, no Cloudflare Tunnel. Uses the same GitOps pattern as the bare-metal cluster with a separate ArgoCD root app.
 
 ## 🧱 Stack
 
 ### Core Components
 
-- **[Kubespray](https://kubespray.io)** — Kubernetes cluster provisioning on bare metal
-- **[Cilium](https://cilium.io)** — CNI with eBPF-based networking and network policy
-- **[kube-vip](https://kube-vip.io)** — Control plane HA; API server VIP and Traefik load balancer VIP
-- **[ArgoCD](https://argo-cd.readthedocs.io)** — GitOps controller; app-of-apps, two independent cluster stacks
-- **[cert-manager](https://cert-manager.io)** — Automated Let's Encrypt certificates via DNS01 (Cloudflare)
-- **[Traefik](https://traefik.io)** — Ingress controller; dual-path: LAN cert-manager TLS + Cloudflare Tunnel
-- **[Sealed Secrets](https://sealed-secrets.netlify.app)** — Encrypted secrets safe to commit; separate key pairs per cluster
-- **[Ansible](https://www.ansible.com)** — Node provisioning, workstation setup, cluster lifecycle management
+- **[Kubespray](https://kubespray.io)**: Kubernetes cluster provisioning on bare metal
+- **[Cilium](https://cilium.io)**: CNI with eBPF-based networking and network policy
+- **[kube-vip](https://kube-vip.io)**: Control plane HA; API server VIP and Traefik load balancer VIP
+- **[ArgoCD](https://argo-cd.readthedocs.io)**: GitOps controller; app-of-apps, two independent cluster stacks
+- **[cert-manager](https://cert-manager.io)**: Automated Let's Encrypt certificates via DNS01 (Cloudflare)
+- **[Traefik](https://traefik.io)**: Ingress controller; dual-path: LAN cert-manager TLS + Cloudflare Tunnel
+- **[Sealed Secrets](https://sealed-secrets.netlify.app)**: Encrypted secrets safe to commit; separate key pairs per cluster
+- **[Ansible](https://www.ansible.com)**: Node provisioning, workstation setup, cluster lifecycle management
 
 ### Applications
 
 | Service | Purpose | Access |
 |---------|---------|--------|
-| [Authentik](https://goauthentik.io) | SSO / Identity Provider — OIDC for all platform services | authentik.fqdn |
+| [Authentik](https://goauthentik.io) | SSO / Identity Provider; OIDC for all platform services | authentik.fqdn |
 | [Forgejo](https://forgejo.org) | Self-hosted Git server, OCI registry, and CI runner | forgejo.fqdn |
-| [Backstage](https://backstage.io) | Internal developer portal — catalog, scaffolder, TechDocs | backstage.fqdn |
+| [Backstage](https://backstage.io) | Internal developer portal; catalog, scaffolder, TechDocs | backstage.fqdn |
 | [Wiki.js](https://js.wiki) | Self-hosted wiki and knowledge base (replaced Outline) | wiki.fqdn |
 | [Mealie](https://mealie.io) | Self-hosted recipe manager | mealie.fqdn |
 | [Homepage](https://gethomepage.dev) | Start page with live cluster and service widgets | homepage.kecskemethy.org |
-| Glance | Secondary dashboard — weather, markets, HN, Reddit, GitHub trending | glance.fqdn |
+| Glance | Secondary dashboard; weather, markets, HN, Reddit, GitHub trending | glance.fqdn |
 | [Headlamp](https://headlamp.dev) | Kubernetes dashboard | headlamp.fqdn |
 | [Prometheus + Grafana](https://prometheus.io) | Cluster metrics collection and dashboards | grafana.fqdn |
 | [Gatus](https://gatus.io) | Uptime monitoring and status page | gatus.fqdn |
 | [Kromgo](https://github.com/home-operations/kromgo) | Public cluster status badges | kromgo.kecskemethy.org |
-| [ntfy](https://ntfy.sh) | Push notification server — alerts from Gatus and VolSync | ntfy.fqdn |
+| [ntfy](https://ntfy.sh) | Push notification server; alerts from Gatus and VolSync | ntfy.fqdn |
 | Minecraft (Bedrock) | Family Minecraft server | UDP 19132 on 192.168.1.110 |
-| [Longhorn](https://longhorn.io) | Distributed block storage across all 4 nodes | — |
-| [CloudNativePG](https://cloudnative-pg.io) | PostgreSQL operator — shared cluster for Forgejo, Authentik, Backstage, Wiki.js | — |
-| [VolSync](https://volsync.readthedocs.io) | PVC backup operator — daily restic snapshots to NFS backup server | — |
-| [Garage](https://garagehq.deuxfleurs.fr) | S3-compatible object storage | — |
-| [cloudflared](https://github.com/cloudflare/cloudflared) | Cloudflare Tunnel daemon — internet access without open router ports | — |
-| [external-dns](https://github.com/kubernetes-sigs/external-dns) | Syncs Cloudflare DNS records from IngressRoute annotations | — |
+| [Longhorn](https://longhorn.io) | Distributed block storage across all 4 nodes | n/a |
+| [CloudNativePG](https://cloudnative-pg.io) | PostgreSQL operator; shared cluster for Forgejo, Authentik, Backstage, Wiki.js | n/a |
+| [VolSync](https://volsync.readthedocs.io) | PVC backup operator; daily restic snapshots to NFS backup server | n/a |
+| [Garage](https://garagehq.deuxfleurs.fr) | S3-compatible object storage | n/a |
+| [cloudflared](https://github.com/cloudflare/cloudflared) | Cloudflare Tunnel daemon; internet access without open router ports | n/a |
+| [external-dns](https://github.com/kubernetes-sigs/external-dns) | Syncs Cloudflare DNS records from IngressRoute annotations | n/a |
 
 > k8s is the primary homelab cluster. k3s is a development/experimentation mirror but mostly for lightweight services.
 
@@ -132,12 +132,12 @@ flowchart LR
 | hped800g62 | HP EliteDesk 800 G6 Micro | Intel i5-10500T (6C) | 24 GB | Control Plane + etcd |
 | hppd600g6 | HP ProDesk 600 G6 Micro | Intel i5-10500T (6C) | 32 GB | Control Plane + etcd + NFS |
 | hped800g61 | HP EliteDesk 800 G6 Micro | Intel i5-10500T (6C) | 16 GB | Worker |
-| penguinaid | Dev workstation (WSL2) | — | — | k3s single-node |
+| penguinaid | Dev workstation (WSL2) | n/a | n/a | k3s single-node |
 
 ### Storage
 
-- **Longhorn** — distributed block storage striped across all 4 kube nodes; default `StorageClass`
-- **NFS backup server** — hppd600g6 hosts a 100 GiB LVM volume at `/backups`; restic REST server on `:8000`; daily VolSync snapshots from ntfy, Gatus, and Mealie PVCs
+- **Longhorn**: distributed block storage striped across all 4 kube nodes; default `StorageClass`
+- **NFS backup server**: hppd600g6 hosts a 100 GiB LVM volume at `/backups`; restic REST server on `:8000`; daily VolSync snapshots from ntfy, Gatus, and Mealie PVCs
 
 ### Network
 
@@ -158,7 +158,7 @@ flowchart LR
 
 | Guide | Description |
 |-------|-------------|
-| [Dev/DevOps Workstation](docs/ansible/devenv.md) | Set up a local workstation — macOS or Debian/WSL2 |
+| [Dev/DevOps Workstation](docs/ansible/devenv.md) | Set up a local workstation; macOS or Debian/WSL2 |
 | [Local k3s Cluster](docs/ansible/k3s.md) | Single-node k3s cluster for local development (WSL2 + macOS) |
 | [4-Node Homelab Cluster](docs/ansible/k8s-homelab.md) | Bare-metal HA cluster, GitOps stack, Cloudflare Tunnel |
 
@@ -170,7 +170,7 @@ flowchart LR
 | [Roles](docs/ansible/roles.md) | Role naming conventions, structure, and full role inventory |
 | [CI/CD](docs/ansible/ci-cd.md) | CI pipeline, linting, pre-commit hooks, and changelog automation |
 
-> Every command in the guides above is also available as a `just <recipe>` — run
+> Every command in the guides above is also available as a `just <recipe>`: run
 > `just --list` at the repo root for the full, discoverable set (setup, playbooks,
 > Terraform, lint, cluster rebuild runbook).
 | [All docs](docs/README.md) | Full documentation index |
@@ -181,7 +181,7 @@ flowchart LR
 
 | Method | macOS | Linux | When to use |
 |--------|-------|-------|-------------|
-| **APT** | — | ✓ | System-level, rarely changing packages; well-maintained in Debian repos |
+| **APT** | n/a | ✓ | System-level, rarely changing packages; well-maintained in Debian repos |
 | **Homebrew** | ✓ formula + cask | ✓ Linuxbrew formula | Frequently updated tools; tools not in APT or lagging upstream |
 | **uv** | ✓ | ✓ | Python CLI tools and library packages |
 

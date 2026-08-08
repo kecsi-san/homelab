@@ -1,5 +1,5 @@
 ---
-title: "CI Pipelines — Forgejo Actions"
+title: "CI Pipelines: Forgejo Actions"
 type: how-to
 status: stable
 scope: [k8s]
@@ -8,7 +8,7 @@ updated: 2026-05-17
 tags: [forgejo, ci-cd, actions, python, cookiecutter, semgrep, trivy]
 ---
 
-# CI Pipelines — Forgejo Actions
+# CI Pipelines: Forgejo Actions
 
 Forgejo Actions uses GitHub Actions-compatible YAML syntax. Workflows live in
 `.forgejo/workflows/` (not `.github/workflows/`). The in-cluster runner picks up
@@ -21,7 +21,7 @@ containers via DinD.
 
 ### Template source
 
-`homelab/cookiecutter-uv` — a Forgejo-adapted fork of
+`homelab/cookiecutter-uv`, a Forgejo-adapted fork of
 [osprey-oss/cookiecutter-uv](https://github.com/osprey-oss/cookiecutter-uv).
 
 **Adaptations made from upstream:**
@@ -72,7 +72,7 @@ main.yml
 │   ├── setup-python-env (composite action)
 │   └── make check   (pre-commit + deptry + uv lock check)
 │
-├── tests-and-type-check   matrix: python 3.10–3.14
+├── tests-and-type-check   matrix: python 3.10-3.14
 │   ├── checkout
 │   ├── setup-python-env
 │   ├── pytest (+ coverage if codecov=y)
@@ -93,7 +93,7 @@ Python via `mirrors/setup-python` and uv via `mirrors/setup-uv`, then runs
 ## Action Mirrors
 
 All `uses:` references in workflows must point to the Forgejo `mirrors` org using
-full URLs. See [forgejo.md — mirrors org](forgejo.md#mirrors-org--action-mirrors)
+full URLs. See [forgejo.md: mirrors org](forgejo.md#mirrors-org-action-mirrors)
 for the full mirror table.
 
 Pattern for referencing a mirrored action:
@@ -107,7 +107,7 @@ uses: https://forgejo.kecskemethy.org/mirrors/<action-name>@<ref>
 
 ### Semgrep OSS (SAST)
 
-Add as a job in `main.yml` after `quality`. Zero idle RAM — runs in a pipeline pod:
+Add as a job in `main.yml` after `quality`. Zero idle RAM: runs in a pipeline pod:
 
 ```yaml
   semgrep:

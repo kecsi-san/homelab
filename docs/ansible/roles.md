@@ -10,7 +10,7 @@ tags: [ansible, roles, reference]
 
 # Roles
 
-For current playbook wiring and a terser per-role summary, see `CLAUDE.md`'s "Roles Reference" section at the repo root — the two are maintained separately and can drift, so cross-check both when auditing.
+For current playbook wiring and a terser per-role summary, see `CLAUDE.md`'s "Roles Reference" section at the repo root. The two are maintained separately and can drift, so cross-check both when auditing.
 
 Status legend: ✅ Done | 🔧 Implemented (not wired) | 🚧 Incomplete | 📋 Planned
 
@@ -78,7 +78,7 @@ Use `roles/role_template/` as a starting point when creating a new role.
 
 ---
 
-## ✅ Done — implemented and wired into a playbook
+## ✅ Done: implemented and wired into a playbook
 
 | Role | Purpose | Playbook(s) |
 |------|---------|-------------|
@@ -122,10 +122,10 @@ Use `roles/role_template/` as a starting point when creating a new role.
 | `setup_go-dev-tools` | go, gopls, golangci-lint via Homebrew; optional: delve, goreleaser, ko, air | local-dev.yml |
 | `setup_nodejs-dev-tools` | node, pnpm via Homebrew (macOS/nvm) or NodeSource apt repo (`nodejs_install_method: apt-nodesource`, root-owned servers); optional brew + npm global packages | local-dev.yml, fileservers.yml |
 | `setup_rust-dev-tools` | rustup + stable toolchain (rustc, cargo, rustfmt, clippy); optional cargo tools | local-dev.yml |
-| `upgrade_brew` | `brew update && upgrade && cleanup` — cross-platform (Linux/macOS brew paths via vars/os/) | upgrade.yml, upgrade-local.yml |
+| `upgrade_brew` | `brew update && upgrade && cleanup`, cross-platform (Linux/macOS brew paths via vars/os/) | upgrade.yml, upgrade-local.yml |
 | `upgrade_python-uv` | `uv tool upgrade --all` + `uv pip install --upgrade` in devops venv | upgrade.yml, upgrade-local.yml |
 | `upload_fav_bgimages` | Copies wallpapers to `/usr/share/backgrounds/`; generates GNOME XML descriptor (Linux only) | k8s-nodes.yml |
-| `upload_profile_image` | Sets user profile picture — GNOME/GDM via AccountsService (Linux); macOS account picture via `dsimport`/`dscl`; source path set via `profile_image_src` | personalise.yml, k8s-nodes.yml |
+| `upload_profile_image` | Sets user profile picture: GNOME/GDM via AccountsService (Linux); macOS account picture via `dsimport`/`dscl`; source path set via `profile_image_src` | personalise.yml, k8s-nodes.yml |
 | `setup_users` | Creates named EC2 system users with pinned UIDs (critical for data migration), SSH authorized keys, password hashes, group memberships; removes absent users while preserving home dirs | ec2-core.yml |
 | `setup_email-server` | Full email stack: Postfix (multi-domain, PAM/system users, LMTP, postscreen, DNSBL, DANE), Dovecot (IMAPS, PAM auth, FTS Xapian), Rspamd (DKIM 2048-bit, SPF, greylisting), OpenDMARC | ec2-mail.yml |
 | `setup_unbound` | Installs Unbound as local DNSSEC-validating caching resolver; disables systemd-resolved; writes static `/etc/resolv.conf`; forwards to AWS VPC resolver then Cloudflare | ec2-core.yml |
@@ -139,19 +139,19 @@ Use `roles/role_template/` as a starting point when creating a new role.
 
 ---
 
-## 🚧 Incomplete — needs work before use
+## 🚧 Incomplete: needs work before use
 
 | Role | Purpose | Notes |
 |------|---------|-------|
-| `setup_vscode` | Installs VS Code (apt on Linux, Homebrew Cask on macOS) and configures extensions | On WSL2 VS Code runs on Windows, not Linux — extension install step may not work as expected. Enabled is `false` by default in `local-dev.yml` until this is resolved. | 
+| `setup_vscode` | Installs VS Code (apt on Linux, Homebrew Cask on macOS) and configures extensions | On WSL2 VS Code runs on Windows, not Linux, so the extension install step may not work as expected. Enabled is `false` by default in `local-dev.yml` until this is resolved. | 
 
 ---
 
-## 📋 Planned — empty placeholders
+## 📋 Planned: empty placeholders
 
 | Role | Intended Purpose |
 |------|-----------------|
-| `setup_bichon` | Self-hosted email archive (Bichon — Rust, IMAP pull, React UI); see `docs/research/email-archive-software.md` |
+| `setup_bichon` | Self-hosted email archive (Bichon, Rust, IMAP pull, React UI); see `docs/research/email-archive-software.md` |
 | `setup_email-tools` | Email client tools |
 | `setup_mlops-tools` | MLOps tooling (MLflow, DVC, ZenML, Prefect, etc.) |
 | `setup_aiops-tools` | AIOps tooling (OpenTelemetry, Prometheus, Grafana CLI, etc.) |

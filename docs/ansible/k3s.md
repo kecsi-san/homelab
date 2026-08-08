@@ -11,12 +11,12 @@ tags: [k3s, wsl2, macos, ansible, setup]
 # Workflow: Local k3s Cluster (WSL2 / macOS)
 
 Single-node Kubernetes cluster on localhost for local development and GitOps experimentation.
-No remote inventory or SSH required — everything targets `127.0.0.1`.
+No remote inventory or SSH required; everything targets `127.0.0.1`.
 
 | Platform | Implementation |
 |----------|---------------|
 | Linux (WSL2) | Native k3s via official installer (`get.k3s.io`) |
-| macOS | k3s via k3d (k3s in Docker) via Homebrew — requires Colima, Docker Desktop, or OrbStack |
+| macOS | k3s via k3d (k3s in Docker) via Homebrew; requires Colima, Docker Desktop, or OrbStack |
 
 Kubeconfig is written to `~/.kube/k3s.yaml`, appended to `KUBECONFIG` in `~/.bashrc`, and the context is automatically renamed to `admin@k3s`.
 
@@ -64,10 +64,10 @@ applied in `kube-gitops/k3s/values/traefik.yaml`.
 **Environment assumed:** WSL2 (Debian), `networkingMode=Mirrored` in `~/.wslconfig`,
 Windows 11, WSL2 node IP `192.168.1.25` directly on the LAN.
 
-### Problem 1 — k3s servicelb uses DNAT, not real listeners
+### Problem 1: k3s servicelb uses DNAT, not real listeners
 
 k3s's built-in load balancer (`servicelb`) creates nftables DNAT rules to forward
-ports — no process ever binds to port 80 or 443 on the host. WSL2 mirrored mode
+ports, but no process ever binds to port 80 or 443 on the host. WSL2 mirrored mode
 only forwards traffic for ports with a real `listen()` socket, so DNAT-based ports
 are invisible to Windows and other LAN devices.
 
@@ -87,16 +87,16 @@ ss -tlnp | grep -E ":80 |:443 "
 # LISTEN 0  4096  *:80   *:*
 ```
 
-### Problem 2 — Rolling updates impossible with hostNetwork on single node
+### Problem 2: Rolling updates impossible with hostNetwork on single node
 
 With `hostNetwork: true`, a rolling update tries to start the new pod before killing
-the old one — both pods declare the same host ports, so the new pod stays `Pending`:
+the old one, and both pods declare the same host ports, so the new pod stays `Pending`:
 
 ```
 0/1 nodes are available: 1 node(s) didn't have free ports for the requested pod ports.
 ```
 
-**Solution:** `updateStrategy.type: Recreate` — terminates old pod first. Brief
+**Solution:** `updateStrategy.type: Recreate`, which terminates the old pod first. Brief
 downtime is acceptable for a LAN-only dev cluster.
 
 If ArgoCD syncs a change and a pod gets stuck `Pending`, unblock it:
@@ -104,14 +104,14 @@ If ArgoCD syncs a change and a pod gets stuck `Pending`, unblock it:
 kubectl delete pod -n traefik --all
 ```
 
-### Problem 3 — Metrics port 9100 conflicts with node-exporter
+### Problem 3: Metrics port 9100 conflicts with node-exporter
 
 Traefik's default metrics port (`9100`) conflicts with `prometheus-node-exporter`
 already running on the WSL2 host.
 
 **Solution:** `ports.metrics.port: 9101` in Traefik values.
 
-### Problem 4 — NET_BIND_SERVICE not honoured for non-root on WSL2
+### Problem 4: NET_BIND_SERVICE not honoured for non-root on WSL2
 
 Traefik runs non-root by default. `NET_BIND_SERVICE` capability (needed to bind
 ports < 1024) is not honoured by WSL2's kernel for non-root containers.
@@ -131,13 +131,13 @@ podSecurityContext:
   runAsGroup: 0
 ```
 
-### Problem 5 — Windows cannot reach WSL2 via its own LAN IP
+### Problem 5: Windows cannot reach WSL2 via its own LAN IP
 
 Even with all fixes above, `homepage.k3s.<your-domain.tld>` fails in Firefox on
 the Windows host. Other LAN devices (phone, other laptops) work fine.
 
 **Root cause:** When Windows connects to `192.168.1.25` (its own LAN IP), the
-packet never enters WSL2's network namespace — Windows handles it internally.
+packet never enters WSL2's network namespace; Windows handles it internally.
 `localhost` / `127.0.0.1` works because WSL2 mirrored mode explicitly handles the
 loopback path.
 
@@ -153,7 +153,7 @@ loopback path.
 MikroTik DNS continues to return `192.168.1.25` for all other LAN devices.
 The Windows hosts file overrides only the local machine.
 
-**Verify hosts file is applied** (`nslookup` bypasses it — use `ping` or `Resolve-DnsName`):
+**Verify hosts file is applied** (`nslookup` bypasses it, use `ping` or `Resolve-DnsName`):
 ```powershell
 ping -n 1 homepage.k3s.<your-domain.tld>
 # Reply from 127.0.0.1  ← correct

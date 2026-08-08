@@ -14,7 +14,7 @@ Research into self-hosted wiki and documentation platforms for the homelab.
 Hard requirements: OIDC integration with Authentik, Kubernetes deployment,
 PostgreSQL preferred (CNPG already running).
 
-Current install: **Outline 1.7.1** — working but under review (BSL 1.1 license, community Helm chart only).
+Current install: **Outline 1.7.1**: working but under review (BSL 1.1 license, community Helm chart only).
 
 ---
 
@@ -32,13 +32,13 @@ Current install: **Outline 1.7.1** — working but under review (BSL 1.1 license
 ## Previously Evaluated and Rejected
 
 ### Docmost CE
-- **OIDC is Enterprise Edition (paid) only** — Community Edition is email/password only.
+- **OIDC is Enterprise Edition (paid) only**: Community Edition is email/password only.
   This was only discovered after deployment when OIDC settings were absent from the UI.
 - Deployed briefly, then removed.
 - Reference: https://docmost.com/docs/editions
 
 ### BookStack
-- **Requires MySQL/MariaDB — no PostgreSQL support.**
+- **Requires MySQL/MariaDB; no PostgreSQL support.**
 - PHP/Laravel stack diverges from the Go/Node ecosystem used in this homelab.
 - No real-time collaboration.
 
@@ -47,7 +47,7 @@ Current install: **Outline 1.7.1** — working but under review (BSL 1.1 license
 - Community frustration is high. Not a viable option until it actually ships.
 
 ### Git + Markdown (docs/)
-- In use for ADRs, research notes, runbooks — appropriate for that purpose.
+- In use for ADRs, research notes, runbooks; appropriate for that purpose.
 - Not suitable as a living team wiki: no real-time editing, no rich-text experience,
   PR review overhead for casual notes.
 
@@ -55,12 +55,12 @@ Current install: **Outline 1.7.1** — working but under review (BSL 1.1 license
 
 ## Active Candidates
 
-### Outline (current install — v1.7.1)
+### Outline (current install: v1.7.1)
 
 | Attribute | Detail |
 |---|---|
 | License | BSL 1.1 (source-available; auto-converts to Apache 2.0 after 4 years) |
-| OIDC | Built-in, mandatory — no login without OIDC/SAML. Authentik integration working. |
+| OIDC | Built-in, mandatory; no login without OIDC/SAML. Authentik integration working. |
 | Database | PostgreSQL + Redis |
 | Storage | Local PVC or S3/MinIO |
 | Kubernetes | Community Helm charts only (encircle360, kubitodev). No official chart. |
@@ -71,8 +71,8 @@ Current install: **Outline 1.7.1** — working but under review (BSL 1.1 license
 Active development. Good search. Real-time collaboration.
 
 **Cons:** BSL 1.1 is not OSI-approved open source (restricts commercial re-hosting,
-not personal self-hosting). No official Helm chart — community charts may lag releases.
-Redis required as a separate dependency. Editor is a Notion clone — unusual feel if you
+not personal self-hosting). No official Helm chart; community charts may lag releases.
+Redis required as a separate dependency. Editor is a Notion clone; unusual feel if you
 are used to traditional wiki tools. Design is minimal; dark mode is very high-contrast
 (no theme customisation in CE).
 
@@ -92,13 +92,13 @@ homelab, not a legal one.
 | Database | PostgreSQL (preferred), MySQL, MariaDB, SQLite |
 | Kubernetes | Official Helm chart: `helm repo add requarks https://charts.js.wiki` |
 | Editor | Block editor + Markdown + visual editor + AsciiDoc |
-| Status | **Maintenance mode** — security and bug fixes only; feature development stopped pending v3. Latest: v2.5.314 (May 2026). |
+| Status | **Maintenance mode**: security and bug fixes only; feature development stopped pending v3. Latest: v2.5.314 (May 2026). |
 
 **Pros:** AGPL-3.0 (genuinely open source). PostgreSQL. Official Helm chart.
 Official Authentik integration documentation. Lightweight (~200 MB RAM).
 Multiple editor modes (Markdown, visual, block).
 
-**Cons:** Feature-frozen — no new features will ship on v2. v3 is still alpha with no ETA;
+**Cons:** Feature-frozen; no new features will ship on v2. v3 is still alpha with no ETA;
 if it never ships, a future migration would be needed again. Editor is competent but
 not as polished as Outline's block editor.
 
@@ -111,17 +111,17 @@ not as polished as Outline's block editor.
 | Attribute | Detail |
 |---|---|
 | License | LGPL 2.1 |
-| OIDC | Official OIDC Authenticator extension (`xwiki-contrib/oidc`) — free, open source. Authentik integration is feasible via community documentation. |
+| OIDC | Official OIDC Authenticator extension (`xwiki-contrib/oidc`); free, open source. Authentik integration is feasible via community documentation. |
 | Database | PostgreSQL (also MySQL/MariaDB) |
 | Kubernetes | Official Helm chart: `xwiki-contrib/xwiki-helm`. Actively maintained. |
 | Editor | WYSIWYG + Markdown + wiki syntax. Traditional wiki model, not Notion-style blocks. |
 | Status | Mature 20-year project. Active. Strong enterprise adoption. |
 
 **Pros:** LGPL (truly open source). PostgreSQL. Official Helm chart. Extremely extensible
-(macros, scripting, apps marketplace). Very stable — 20 years of active development.
+(macros, scripting, apps marketplace). Very stable; 20 years of active development.
 Granular page/space permissions.
 
-**Cons:** Java application — heavier than Node.js alternatives (512 MB–1 GB+ RAM).
+**Cons:** Java application; heavier than Node.js alternatives (512 MB to 1 GB+ RAM).
 Editor is functional but not modern-feeling compared to Notion-style tools.
 Structured wiki model (spaces/pages) rather than free-form nesting.
 Bitnami chart dependency in transition post-Aug 2025 Docker Hub restriction.
@@ -133,14 +133,14 @@ Bitnami chart dependency in transition post-Aug 2025 Docker Hub restriction.
 | Attribute | Detail |
 |---|---|
 | License | MIT |
-| OIDC | Supported in self-hosted (admin panel → Settings → OAuth). Broken in v0.25.7 (Dec 2025 — issue #14083); unclear if resolved. |
+| OIDC | Supported in self-hosted (admin panel → Settings → OAuth). Broken in v0.25.7 (Dec 2025; issue #14083); unclear if resolved. |
 | Database | PostgreSQL only + Redis |
 | Kubernetes | **No official Helm chart.** Community chart reported abandoned. Docker Compose is the only officially supported deployment. |
-| Editor | Richest feature set — document editor + infinite canvas whiteboard + database/kanban views. |
+| Editor | Richest feature set; document editor + infinite canvas whiteboard + database/kanban views. |
 | Status | Pre-1.0 (v0.26.x as of 2026). 45k+ GitHub stars. Very active. Breaking changes between minor versions. |
 
 **Not ready for this homelab today:** No Kubernetes/Helm support, pre-1.0 stability,
-recent OIDC regression. Most compelling long-term option — revisit when a stable Helm
+recent OIDC regression. Most compelling long-term option; revisit when a stable Helm
 chart ships and OIDC is consistently working.
 
 ---
@@ -150,9 +150,9 @@ chart ships and OIDC is consistently working.
 | Tool | Reason |
 |---|---|
 | **AppFlowy** | No OIDC support (feature request open, unshipped as of 2026-05) |
-| **Siyuan Notes** | No OIDC, no multi-user accounts — personal tool only |
+| **Siyuan Notes** | No OIDC, no multi-user accounts; personal tool only |
 | **DokuWiki** | Flat-file storage (no DB), dated editor, OIDC via third-party plugin only |
-| **Docusaurus / MkDocs** | Static site generators — read-only, wrong category |
+| **Docusaurus / MkDocs** | Static site generators; read-only, wrong category |
 | **Confluence DC** | Paid enterprise licensing, inappropriate for homelab |
 
 ---

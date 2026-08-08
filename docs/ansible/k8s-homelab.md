@@ -97,7 +97,7 @@ ArgoCD manages all apps via an app-of-apps pattern. Root app: `kube-gitops/k8s/r
 | reloader | reloader | Rolling restarts on ConfigMap/Secret changes |
 | headlamp | headlamp | Kubernetes dashboard |
 | homepage | homepage | Service dashboard |
-| glance | glance | Secondary dashboard — weather, markets, HN, Reddit, GitHub trending |
+| glance | glance | Secondary dashboard: weather, markets, HN, Reddit, GitHub trending |
 | ntfy | ntfy | Push notification server |
 | gatus | gatus | Uptime monitoring; alerts via ntfy |
 | mealie | mealie | Self-hosted recipe manager |
@@ -109,7 +109,7 @@ ArgoCD manages all apps via an app-of-apps pattern. Root app: `kube-gitops/k8s/r
 | pod-cleanup | kube-system | Nightly Failed/Succeeded pod cleanup |
 
 > Full per-app detail (source, chart version, purpose) lives in [CLAUDE.md](../../CLAUDE.md)'s
-> "GitOps App Stack" tables — that's the canonical, most current listing; this page gives the
+> "GitOps App Stack" tables, the canonical, most current listing; this page gives the
 > architectural overview.
 
 ### GitOps Directory Structure
@@ -232,7 +232,7 @@ ansible-playbook playbooks/post-k8s.yml
 ```
 
 Equivalent `just` recipes: `just configure-router`, `just prerequisite`, `just k8s-nodes`,
-`just pre-k8s`, `just k8s`, `just post-k8s` — or run the whole thing (minus `prerequisite`,
+`just pre-k8s`, `just k8s`, `just post-k8s`, or run the whole thing (minus `prerequisite`,
 which only needs to run once ever) via `just rebuild-k8s` (see Rebuild Runbook below).
 
 After `post-k8s.yml`, ArgoCD is running and syncing the full app stack from `kube-gitops/k8s/`.
@@ -293,8 +293,8 @@ kubectl rollout restart deployment sealed-secrets -n sealed-secrets
 #    (about:support → Open Profile Folder) after a rebuild to clear stale HSTS state
 ```
 
-Steps 1–4 are chained in a single `just rebuild-k8s`, which also prints steps 5–6 (plus
-the Longhorn smoke test from [CLAUDE.md](../../CLAUDE.md)) as a reminder once it finishes —
+Steps 1-4 are chained in a single `just rebuild-k8s`, which also prints steps 5-6 (plus
+the Longhorn smoke test from [CLAUDE.md](../../CLAUDE.md)) as a reminder once it finishes;
 those remaining steps are manual/interactive and deliberately not scripted.
 
 ---
@@ -302,7 +302,7 @@ those remaining steps are manual/interactive and deliberately not scripted.
 ## TLS / Certificate Management
 
 cert-manager handles all certificate lifecycle via DNS-01 challenge against the Cloudflare API.
-HTTP-01 is not viable — the cluster is LAN-only and not reachable from the internet.
+HTTP-01 is not viable: the cluster is LAN-only and not reachable from the internet.
 
 ```
 cert-manager  →  Cloudflare API (DNS-01)  →  Let's Encrypt

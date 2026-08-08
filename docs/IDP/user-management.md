@@ -15,14 +15,14 @@ connected apps (Forgejo, and future services).
 
 ## Create a user
 
-### Option A — Web UI (simplest)
+### Option A: Web UI (simplest)
 
 1. Go to **https://authentik.kecskemethy.org** → log in as `akadmin`
 2. **Admin interface** → **Directory** → **Users** → **Create**
 3. Fill in: Username, Name, Email → **Create**
 4. Open the user → **Set password**
 
-### Option B — CLI via `ak shell`
+### Option B: CLI via `ak shell`
 
 ```bash
 kubectl exec -n authentik --context admin@k8s deployment/authentik-worker -- ak shell -c "
@@ -43,7 +43,7 @@ else:
 ```
 
 Replace `alice`, `Alice Example`, and `alice@example.com` with the real values.
-Share the printed password with the user — they can change it after first login.
+Share the printed password with the user; they can change it after first login.
 
 ## Reset a user's password
 
@@ -76,7 +76,7 @@ or **Delete** (permanent).
 
 ## Notes
 
-- `akadmin` is the bootstrap admin — keep its password in the `authentik-credentials`
+- `akadmin` is the bootstrap admin; keep its password in the `authentik-credentials`
   SealedSecret only; do not use it for day-to-day logins
 - Regular users should not have Authentik admin access unless they need to manage the IDP
 - `DISABLE_REGISTRATION = true` is set in Forgejo; users must be created in Authentik first

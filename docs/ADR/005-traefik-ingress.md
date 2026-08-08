@@ -1,5 +1,5 @@
 ---
-title: "005 — Traefik as Ingress Controller"
+title: "005: Traefik as Ingress Controller"
 type: adr
 status: accepted
 scope: [k8s, k3s]
@@ -8,7 +8,7 @@ updated: 2026-05-17
 tags: [traefik, ingress, networking, tls, forwardauth]
 ---
 
-# 005 — Traefik as Ingress Controller
+# 005: Traefik as Ingress Controller
 
 ## Status
 
@@ -58,7 +58,7 @@ at the IngressRoute level, not at the Traefik entrypoint.
 - `IngressRoute` CRDs provide clean, readable routing configuration with middleware
   composition (e.g. a route can reference `authentik-forwardauth` middleware in one line)
 - The `forwardAuth` middleware enables Authentik SSO for any service without modifying
-  the service itself — simply add the middleware reference to its IngressRoute
+  the service itself: add the middleware reference to its IngressRoute
 - Traefik dashboard at `traefik.kecskemethy.org` (protected by forwardAuth) shows
   all active routes, middleware, and entrypoints at a glance
 - cert-manager integration is straightforward: Certificate CR → TLS secret → IngressRoute

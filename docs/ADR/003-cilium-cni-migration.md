@@ -1,5 +1,5 @@
 ---
-title: "003 — Cilium CNI (Migration from Calico)"
+title: "003: Cilium CNI (Migration from Calico)"
 type: adr
 status: accepted
 scope: [k8s]
@@ -8,7 +8,7 @@ updated: 2026-05-17
 tags: [cni, cilium, calico, networking, ebpf]
 ---
 
-# 003 — Cilium CNI (Migration from Calico)
+# 003: Cilium CNI (Migration from Calico)
 
 ## Status
 
@@ -20,8 +20,8 @@ The cluster launched with **Calico** as the CNI plugin (the Kubespray default). 
 is a mature, widely-used CNI with solid network policy support. Over time, the following
 limitations became relevant:
 
-- **No native observability**: Calico has no equivalent to Cilium's Hubble — understanding
-  pod-to-pod traffic required external tooling or tcpdump
+- **No native observability**: Calico has no equivalent to Cilium's Hubble, so
+  understanding pod-to-pod traffic required external tooling or tcpdump
 - **iptables-based**: Calico uses iptables/ipvs for packet processing; as pod count grows
   this becomes a scalability bottleneck (O(n) iptables rules)
 - **No built-in load balancer**: external load balancing is handled by kube-proxy / iptables
@@ -37,9 +37,9 @@ was documented at `docs/research/rebuild_cilium_migration_plan.md`.
 Migrate to **Cilium** (via Kubespray's `kube_network_plugin: cilium`) with:
 
 - **Hubble** observability enabled (in-cluster metrics + UI)
-- **kube-proxy replacement** mode (`kubeProxyReplacement: true`) — Cilium replaces
-  kube-proxy entirely using eBPF
-- **eBPF-based dataplane** — kernel-level packet processing without iptables
+- **kube-proxy replacement** mode (`kubeProxyReplacement: true`), replacing
+  kube-proxy entirely with eBPF
+- **eBPF-based dataplane**: kernel-level packet processing without iptables
 
 Cilium is deployed via Kubespray's built-in Cilium support; no separate Helm chart
 or CRD management required for the CNI itself.

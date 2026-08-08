@@ -1,5 +1,5 @@
 ---
-title: "004 — Longhorn for Distributed Block Storage"
+title: "004: Longhorn for Distributed Block Storage"
 type: adr
 status: accepted
 scope: [k8s]
@@ -8,7 +8,7 @@ updated: 2026-05-17
 tags: [storage, longhorn, persistent-volumes, csi]
 ---
 
-# 004 — Longhorn for Distributed Block Storage
+# 004: Longhorn for Distributed Block Storage
 
 ## Status
 
@@ -22,7 +22,7 @@ nodes do not have a SAN, dedicated NVMe arrays, or cloud-provided block storage.
 are limited to what can be provisioned from the existing local disks on each node.
 
 The NFS server on `hppd600g6` (a 100 GB LV at `/backups`) exists but is used for
-backups, not for primary storage — using it for PVCs would create a single point of
+backups, not for primary storage. Using it for PVCs would create a single point of
 failure (all storage on one node).
 
 Requirements:
@@ -41,7 +41,7 @@ Use **Longhorn** as the default `StorageClass` across the k8s cluster:
 - Storage reserved: 2 GB per disk (`storageReserved`)
 - Over-provisioning: 100% (`storageOverProvisioningPercentage`)
 - Minimum available: 25% (`storageMinimalAvailablePercentage`)
-- Each node contributes `/var` (100 GB LV, ~79–83 GB free post-setup)
+- Each node contributes `/var` (100 GB LV, ~79-83 GB free post-setup)
 
 Longhorn volumes are used by: CNPG PVCs, Forgejo data, Authentik Redis, Outline data,
 ntfy, gatus, mealie, Longhorn-backed VolSync snapshots.
@@ -60,7 +60,7 @@ ntfy, gatus, mealie, Longhorn-backed VolSync snapshots.
 
 **Positive:**
 - Longhorn UI at `longhorn.kecskemethy.org` provides a clear view of volume health,
-  node storage usage, and replica placement — invaluable for debugging
+  node storage usage, and replica placement, useful for debugging
 - VolumeSnapshot support enables VolSync `Clone` copy method for backup source snapshots
 - Replica count per volume is adjustable (currently 2); can increase to 3 for
   more critical volumes
@@ -68,13 +68,13 @@ ntfy, gatus, mealie, Longhorn-backed VolSync snapshots.
 - `longhornctl` installed on all nodes for offline diagnostics
 
 **Negative / Trade-offs:**
-- Longhorn adds ~300–400 MB RAM overhead per node (manager + engine DaemonSets)
+- Longhorn adds ~300-400 MB RAM overhead per node (manager + engine DaemonSets)
 - Write amplification with 2 replicas: every write hits 2 nodes, halving effective
   write throughput vs local storage
 - The Longhorn UI is protected by Authentik forwardAuth (deployed 2026-05-16); a
   broken Authentik deployment temporarily blocks Longhorn UI access
 - VolumeSnapshot with `copyMethod: Clone` requires that the source volume is not
-  mounted by a pod using `ReadWriteOnce` — VolSync handles this via a snapshot
+  mounted by a pod using `ReadWriteOnce`. VolSync handles this via a snapshot
   intermediate; `copyMethod: Snapshot` requires a configured Longhorn backup target
   which is not set up (using restic REST server instead)
 - Longhorn upgrades occasionally require specific upgrade paths (minor version must

@@ -1,5 +1,5 @@
 ---
-title: "012 — Cloudflare Tunnel + WARP for External Access"
+title: "012: Cloudflare Tunnel + WARP for External Access"
 type: adr
 status: accepted
 scope: [k8s]
@@ -8,7 +8,7 @@ updated: 2026-05-17
 tags: [cloudflare, tunnel, warp, networking, remote-access, tls]
 ---
 
-# 012 — Cloudflare Tunnel + WARP for External Access
+# 012: Cloudflare Tunnel + WARP for External Access
 
 ## Status
 
@@ -48,8 +48,8 @@ the cluster, combined with **Cloudflare WARP** on client devices for the VPN pat
 - Cloudflare DNS: `*.kecskemethy.org` → Cloudflare Tunnel (CNAME to `<uuid>.cfargotunnel.com`)
 - DNS records are not managed by hand: the `external-dns` ArgoCD app watches the
   `external-dns.alpha.kubernetes.io/target` annotation on every IngressRoute
-  (`kube-gitops/k8s/ingressroutes/`) and syncs the matching proxied CNAME automatically —
-  `policy: sync`, so records are also deleted when an IngressRoute is removed
+  (`kube-gitops/k8s/ingressroutes/`) and syncs the matching proxied CNAME automatically
+  using `policy: sync`, so records are also deleted when an IngressRoute is removed
 - Traffic path: Browser → Cloudflare Edge → Cloudflare Tunnel → `cloudflared` pod →
   `https://traefik.traefik.svc.cluster.local` → Traefik → in-cluster service
 - `noTLSVerify: true` on the `cloudflared` → Traefik connection (Traefik presents
@@ -77,14 +77,14 @@ the cluster, combined with **Cloudflare WARP** on client devices for the VPN pat
 | **Port forwarding + DDNS** | Exposes home IP directly; requires firewall rules per service; ISP may block port 443; dynamic IP updates add complexity; no CDN/DDoS protection |
 | **Tailscale** | Excellent WireGuard-based mesh VPN; no tunnel needed; however, requires installing Tailscale on every client and every cluster node; not suitable for browser-only access by guests; adds Tailscale dependency |
 | **WireGuard (self-hosted)** | Full control; however, requires a static IP or DDNS endpoint for the WireGuard server; running WireGuard in k8s adds networking complexity; client config management is manual |
-| **Cloudflare Access (Zero Trust)** | Cloudflare's identity-aware proxy; adds Cloudflare Access policy on top of the tunnel; however, adds another authentication layer (Cloudflare login before reaching Authentik); the homelab already has Authentik for SSO — double authentication is poor UX |
+| **Cloudflare Access (Zero Trust)** | Cloudflare's identity-aware proxy; adds Cloudflare Access policy on top of the tunnel; however, adds another authentication layer (Cloudflare login before reaching Authentik); the homelab already has Authentik for SSO, so double authentication is poor UX |
 | **ngrok** | Simple tunnel but rate-limited on free tier; paid plans required for custom domains; not k8s-native; less control than `cloudflared` |
 | **SSH tunnels / sshuttle** | Manual, fragile, not persistent; not suitable for production-like homelab services |
 
 ## Consequences
 
 **Positive:**
-- Zero inbound ports on the home router — the attack surface is minimal; `cloudflared`
+- Zero inbound ports on the home router, so the attack surface is minimal; `cloudflared`
   only makes outbound connections
 - Services reachable from anywhere via WARP with no client configuration beyond
   installing the WARP app; the same `*.kecskemethy.org` URLs work on-LAN and off-LAN
@@ -97,7 +97,7 @@ the cluster, combined with **Cloudflare WARP** on client devices for the VPN pat
 - **Dual TLS paths create inconsistency**: LAN clients see a cert-manager-issued
   Let's Encrypt cert; WARP/external clients see Cloudflare Universal SSL. The
   certificate CN is different; HSTS state in browsers can cause confusion after switching
-  paths — notably Firefox caches HSTS entries and after cluster rebuilds (new LE certs)
+  paths. Firefox notably caches HSTS entries and, after cluster rebuilds (new LE certs),
   shows SSL errors until `SiteSecurityServiceState.bin` is deleted from the Firefox
   profile
 - **`noTLSVerify: true`**: The segment from `cloudflared` to Traefik skips TLS

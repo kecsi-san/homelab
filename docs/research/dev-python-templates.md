@@ -1,5 +1,5 @@
 ---
-title: "Modern Python Project Templates for 2025–2026"
+title: "Modern Python Project Templates for 2025-2026"
 type: research
 status: stable
 scope: [general]
@@ -8,7 +8,7 @@ updated: 2026-05-17
 tags: [python, uv, templates, ci, tooling]
 ---
 
-# Modern Python Project Templates for 2025–2026
+# Modern Python Project Templates for 2025-2026
 
 **Scope:** Seven actively maintained Python project templates evaluated for homelab and internal
 tooling use, with background on the tool choices that underpin them.
@@ -38,13 +38,13 @@ The Python packaging ecosystem went through a major consolidation between 2023 a
 Three forces drove it:
 
 - **uv** (Astral, written in Rust) landed in 2024 and by 2025 had replaced most serious use
-  of pip+venv, pipenv, and Poetry for new projects. It is 10–100x faster than pip, ships its
+  of pip+venv, pipenv, and Poetry for new projects. It is 10-100x faster than pip, ships its
   own Python installer, produces cross-platform lock files, and unifies `pip`, `venv`, `pipx`,
   `pyenv`, and `pip-tools` into a single binary.
 - **ruff** (also Astral, also Rust) replaced the black+flake8+isort+pydocstyle+pyupgrade stack
   with a single sub-millisecond tool that is configuration-compatible with each of those tools.
 - **ty** (Astral again, announced 2025, alpha as of May 2026) is challenging mypy and pyright
-  as the type checker of record, advertising 10–100x speed improvements.
+  as the type checker of record, advertising 10-100x speed improvements.
 
 All six templates surveyed here have converged on uv+ruff. They diverge meaningfully on type
 checker choice, template engine, CI target, documentation tooling, and opinionatedness level.
@@ -68,7 +68,7 @@ what you asked for.
 
 Maintained under the `osprey-oss` organisation. Has its own CI tooling
 (`cookiecutter_uv/cicd/`) that auto-updates dependency versions inside the template on a
-schedule — a rare and genuinely useful feature.
+schedule; a rare and genuinely useful feature.
 
 ### Tool Stack
 
@@ -132,7 +132,7 @@ After generation: `make install` sets up the virtualenv and pre-commit hooks.
 
 1. **`quality`** (ubuntu-latest): `uv lock --locked`, pre-commit hooks (ruff), type
    checker, optional deptry
-2. **`tests-and-type-check`** (matrix: Python 3.10–3.14): pytest + coverage, optional
+2. **`tests-and-type-check`** (matrix: Python 3.10-3.14): pytest + coverage, optional
    Codecov upload on Python 3.11 only
 3. **`check-docs`** (if docs selected): `uv run mkdocs build -s`
 
@@ -144,8 +144,8 @@ template via `cookiecutter_uv/cicd/`.
 
 ### Pros
 
-- Largest community (1,294 stars, 189 forks) — most likely to have existing answers
-- Widest feature surface, all optional — you get exactly what you ask for
+- Largest community (1,294 stars, 189 forks); most likely to have existing answers
+- Widest feature surface, all optional; you get exactly what you ask for
 - `tox-uv` for multi-Python testing rare among these templates; valuable for libraries
 - `update-dependencies.yml` keeps pinned versions current automatically
 - Zensical docs support added April 2026
@@ -182,7 +182,7 @@ template logic yourself.
 he moved from Poetry to uv. The README explicitly commits to keeping the template readable
 in about 10 minutes (~300 lines of template code total).
 
-Uses **Copier** — the most important architectural decision: generated projects can pull
+Uses **Copier**: the most important architectural decision: generated projects can pull
 future template improvements back in via `copier update`.
 
 ### Tool Stack
@@ -190,7 +190,7 @@ future template improvements back in via `copier update`.
 | Concern | Tool | Notes |
 |---|---|---|
 | Package manager | uv | src layout |
-| Linter | ruff | Curated subset: E, F, UP, B, I — intentionally not exhaustive |
+| Linter | ruff | Curated subset: E, F, UP, B, I; intentionally not exhaustive |
 | Formatter | ruff format | Black-compatible |
 | Type checker | BasedPyright | Explicitly chosen over mypy and standard Pyright |
 | Spell checker | codespell | Drop-in, no configuration required |
@@ -286,7 +286,7 @@ Copier's update mechanism, and prefer to understand every line of their tooling.
 
 The maintainer's own production template used across many of his OSS projects. The README
 is upfront: "This copier template is mainly for my own usage." The template reflects one
-expert developer's complete, integrated workflow — not a community consensus approach.
+expert developer's complete, integrated workflow; not a community consensus approach.
 
 **Professional-grade developer experience with every tool integrated**: conventional commits
 → automatic changelog → automated API breaking-change detection → duty task runner →
@@ -358,7 +358,7 @@ copier update --trust
 **`ci.yml`** triggers on push to `main` and `test-me-*` branches, and PRs.
 
 `quality` job matrix: `os: [ubuntu-latest, macos-latest, windows-latest]` × Python
-3.10–3.14 plus `3.15-dev`. For each: `make setup`, `make check-docs`,
+3.10-3.14 plus `3.15-dev`. For each: `make setup`, `make check-docs`,
 `make check-quality`, `make check-types`, `make check-api` (griffe breaking changes).
 
 `tests` job (depends on quality): same OS/Python matrix, pytest + coverage.
@@ -368,7 +368,7 @@ copier update --trust
 ### Pros
 
 - `duty` tasks are Python functions: testable, IDE-navigable, self-documenting
-- griffe API break detection: fails CI on accidental public API breakage — unique feature
+- griffe API break detection: fails CI on accidental public API breakage; unique feature
 - Auto-changelog from conventional commits eliminates manual release notes
 - Copier-based with full update capability
 - Cross-platform CI including macOS, Windows, and `3.15-dev`
@@ -382,7 +382,7 @@ copier update --trust
 - pdm-backend is non-standard in 2026; `uv_build` or hatchling would be more conventional
 - `--trust` flag for copier is a security consideration in automated pipelines
 - GitHub-only CI (no Forgejo/GitLab support in copier.yml)
-- Conventional commits requirement is implicit — no hard enforcement at commit time
+- Conventional commits requirement is implicit; no hard enforcement at commit time
 
 ### Best Suited For
 
@@ -401,7 +401,7 @@ teams new to Python packaging.
 
 ### Description and Philosophy
 
-**Not a template generator** — a **reference boilerplate repository** you clone and adapt.
+**Not a template generator**: a **reference boilerplate repository** you clone and adapt.
 Always updated to the **absolute bleeding edge**: Python 3.14, uv 0.11.x, ruff 0.15.x,
 and uniquely **both mypy and ty run simultaneously** as blocking type checkers. Also uses
 `uv_build` (newest build backend), `oxfmt` (Rust-based OXC formatter for YAML/JSON/MD),
@@ -428,7 +428,7 @@ and bandit for security scanning.
 
 ### How to Use It
 
-Not a generator — clone and rename:
+Not a generator; clone and rename:
 
 ```bash
 git clone https://github.com/smarlhens/python-boilerplate.git my-project
@@ -450,19 +450,19 @@ warnings as errors), bandit, pytest + coverage, `uv build`, Docker build validat
 ### Pros
 
 - Fastest to adopt: clone, rename, start coding
-- Bleeding-edge tooling choices — useful as a reference for where the ecosystem is heading
+- Bleeding-edge tooling choices; useful as a reference for where the ecosystem is heading
 - Running both mypy and ty simultaneously is uniquely valuable during ty's alpha period
 - Renovate for automatic dependency PRs (better than Dependabot for Python packages)
 - CodeQL security scanning absent from most templates
 - oxfmt for non-Python files (YAML, JSON, Markdown) fills a gap others ignore
-- `uv_build` build backend — fully in the Astral ecosystem
+- `uv_build` build backend; fully in the Astral ecosystem
 
 ### Cons
 
 - No generator: no prompts; manually edit everything to suit your project
 - No update mechanism
 - Python 3.14 requirement narrows compatibility
-- No multi-Python CI — single version only
+- No multi-Python CI; single version only
 - No task runner, docs tooling, or template community
 - Running both mypy and ty doubles type-checking time (both are fast, but still)
 - `uv_build` strict version pin (`<0.12.0`) needs frequent updating
@@ -488,7 +488,7 @@ config and Renovate setup).
 A **Rust-native CLI generator** distributed as a compiled binary. The generator itself is
 not Python code. Unique feature: **queries PyPI's API at generation time** to get current
 latest versions of ruff, mypy, pytest-cov, etc. and writes them into the generated
-`pyproject.toml` — no stale pinned versions.
+`pyproject.toml`: no stale pinned versions.
 
 Supports three project types: pure Python, Python+Rust (PyO3/maturin), and FastAPI
 (the most complete FastAPI scaffold of any template here: asyncpg, Pydantic, Granian,
@@ -529,7 +529,7 @@ Dependabot, multi-OS CI, docs inclusion, release drafter.
 - Rust binary: no Python/pip/virtualenv needed to run the generator
 - Live PyPI version checking: generated files have actual latest versions at creation time
 - FastAPI scaffold is uniquely complete: full async application stack
-- PyO3/maturin support for Python+Rust extensions — unique among these templates
+- PyO3/maturin support for Python+Rust extensions; unique among these templates
 - Actively maintained: 3 releases in May 2026 alone
 
 ### Cons
@@ -558,7 +558,7 @@ and are comfortable installing a Rust binary.
 ### Description and Philosophy
 
 A **Cookiecutter template** targeting teams who use **both GitHub and GitLab**. Dual
-platform CI support is the differentiating feature — generated projects include both
+platform CI support is the differentiating feature; generated projects include both
 `.github/workflows/lint-test.yml` and `.gitlab-ci.yml`.
 
 Comprehensive Makefile (~80 targets) as the task runner. ruff with `select = ["ALL"]` is
@@ -570,7 +570,7 @@ the mypy pydantic plugin, and typeguard for runtime type checking in tests.
 | Concern | Tool | Notes |
 |---|---|---|
 | Package manager | uv | `package = false` by default (application-oriented) |
-| Build backend | None | No `[build-system]` — app only |
+| Build backend | None | No `[build-system]`: app only |
 | Linter | ruff | `select = ["ALL"]` with targeted ignores |
 | Formatter | ruff format | |
 | Type checker | mypy (strict) | Optional pydantic-mypy plugin |
@@ -591,11 +591,11 @@ cookiecutter gh:a1d4r/python-project-template --checkout main
 ```
 
 Prompts: project/package name, git platform (github/gitlab), username, Python version
-(3.9–3.13), line length, install pydantic (y/n).
+(3.9-3.13), line length, install pydantic (y/n).
 
 ### CI Workflow
 
-**GitHub Actions `lint-test.yml`** — two parallel jobs:
+**GitHub Actions `lint-test.yml`**: two parallel jobs:
 
 `lint`: uv sync, `uv lock --check` + deptry, ruff format check, ruff check (GitHub
 annotation output), mypy (strict).
@@ -612,18 +612,18 @@ integration for GitLab's built-in code quality reports.
 - Pydantic + mypy plugin integration out of the box
 - typeguard in tests catches type errors not caught by static analysis alone
 - safety dependency vulnerability scanning
-- ruff with `select = ["ALL"]` — highest lint bar of any template here
+- ruff with `select = ["ALL"]`: highest lint bar of any template here
 - docker-compose for local development practical for apps talking to databases
 - Coverage PR comments (sticky-pull-request-comment)
 
 ### Cons
 
-- **Flat layout** (not src) — Python Packaging Authority now recommends src layout
+- **Flat layout** (not src); Python Packaging Authority now recommends src layout
 - Cookiecutter-based: no update mechanism
-- No licence specified — legally awkward to copy/redistribute
+- No licence specified; legally awkward to copy/redistribute
 - No ty support; no docs tooling
 - safety requires paid account for reliable CVE data since 2023
-- Python 3.9–3.13 only; no 3.14 support
+- Python 3.9-3.13 only; no 3.14 support
 - No dynamic versioning
 
 ### Best Suited For
@@ -650,7 +650,7 @@ scratch on any machine, and that same container image is pushed to GitHub Contai
 Registry as part of CI.
 
 The target audience is developers who want a reproducible, container-first development
-environment — not just a reproducible build, but a reproducible *workspace*.
+environment; not just a reproducible build, but a reproducible *workspace*.
 
 ### Tool Stack
 
@@ -688,7 +688,7 @@ python-uv/
 ### Distinctive Features
 
 **Dev Container as first-class citizen:** The `.devcontainer/` setup is more than a
-convenience — it is the official development environment. The `devcontainer.json`
+convenience; it is the official development environment. The `devcontainer.json`
 specifies VS Code extensions, settings, and post-create commands so every contributor
 gets an identical environment without local tool installation.
 
@@ -723,7 +723,7 @@ risky for anything requiring stability.
 - Dev Container + GHCR publishing is a distinctive, production-quality CI pattern not
   found in the other templates; directly applicable to homelab services running in k8s
   (same image used for dev and deployment)
-- Clean src layout, uv, ruff — aligns with the recommended toolchain
+- Clean src layout, uv, ruff; aligns with the recommended toolchain
 - Very low boilerplate: starter code is minimal; structure enforces good habits without
   adding noise
 - Small and readable: easy to understand every file in the template
@@ -744,7 +744,7 @@ dev container is also the deployment container (no separate Dockerfile needed).
 
 **Verdict for this homelab**: Worth adding as a reference / secondary pattern. The GHCR
 publishing workflow translates directly to Forgejo's built-in OCI registry
-(`forgejo.kecskemethy.org/<user>/<repo>`) — change the registry URL and swap GHCR login
+(`forgejo.kecskemethy.org/<user>/<repo>`); change the registry URL and swap GHCR login
 for Forgejo token auth. Not the primary recommendation because of the no-scaffolding
 friction and ty alpha risk, but the Dev Container + OCI publish pattern is worth borrowing.
 
@@ -756,8 +756,8 @@ friction and ty alpha risk, but the Dev Container + OCI publish pattern is worth
 
 The consensus in the Python community by 2025 has strongly shifted toward uv:
 
-- **Speed**: 10–100x faster than pip for dependency resolution and installation. `pip install`
-  can take 60–90 seconds in CI; `uv sync` takes 2–5 seconds for the same environment.
+- **Speed**: 10-100x faster than pip for dependency resolution and installation. `pip install`
+  can take 60-90 seconds in CI; `uv sync` takes 2-5 seconds for the same environment.
 - **Unification**: replaces pip, venv, pyenv, pipx, pip-tools, and parts of Poetry with one
   binary. `uv python install` manages Python itself (via python-build-standalone).
 - **Lock files**: cross-platform (`uv.lock`); Poetry's `poetry.lock` and pip's
@@ -769,7 +769,7 @@ The consensus in the Python community by 2025 has strongly shifted toward uv:
 GitHub Dependabot does not yet update `uv.lock` (Renovate does); corporate proxies sometimes
 struggle with uv's parallel download strategy.
 
-**Bottom line**: for new projects in 2025–2026, uv is the correct choice.
+**Bottom line**: for new projects in 2025-2026, uv is the correct choice.
 
 ### ruff vs black+isort
 
@@ -787,21 +787,21 @@ or regulatory requirements mandating specific tool provenance.
 
 **All seven templates** in this survey use ruff for both linting and formatting.
 
-### mypy vs pyright vs ty in 2025–2026
+### mypy vs pyright vs ty in 2025-2026
 
 This is the most actively shifting debate as of May 2026:
 
 **mypy**: Original, most widely deployed. Mature plugin ecosystem (pydantic-mypy,
-sqlalchemy-stubs, django-stubs). Runs in 30–120 seconds on large projects. Reference
+sqlalchemy-stubs, django-stubs). Runs in 30-120 seconds on large projects. Reference
 implementation for PEP 484/526/544 compliance.
 
-**Pyright** (Microsoft): 5–10x faster than mypy. Powers Pylance (VS Code). Strong type
+**Pyright** (Microsoft): 5-10x faster than mypy. Powers Pylance (VS Code). Strong type
 narrowing and protocol support. Limited plugin ecosystem compared to mypy.
 
 **BasedPyright**: Community fork of Pyright with more aggressive defaults. Used by
 `simple-modern-uv`. Carries the risk of falling out of sync with upstream Pyright.
 
-**ty** (Astral, alpha as of May 2026): Written in Rust. Claims 10–100x faster than mypy
+**ty** (Astral, alpha as of May 2026): Written in Rust. Claims 10-100x faster than mypy
 and Pyright. Has a language server for IDE integration. Missing some advanced type features
 in alpha (complex overloads, certain metaclass patterns) but covers the vast majority of
 everyday code.
@@ -809,7 +809,7 @@ everyday code.
 **Traction trajectory:**
 - mypy: declining for new projects; retained for codebases with heavy plugin use
 - Pyright/BasedPyright: stable; good for VS Code-heavy teams
-- ty: rapidly gaining — `copier-uv` switched to ty as primary; `cookiecutter-uv` added ty
+- ty: rapidly gaining; `copier-uv` switched to ty as primary; `cookiecutter-uv` added ty
   as an alternative; `python-boilerplate` runs both mypy and ty simultaneously
 
 **Practical recommendation**: In 2026, for new projects without mypy plugin dependencies
@@ -825,9 +825,9 @@ The key functional difference is **template update capability**:
 |---|---|---|
 | Template engine | Jinja2 | Jinja2 |
 | Config format | `cookiecutter.json` | `copier.yml` (YAML, comments allowed) |
-| Update mechanism | None (cruft adds it with friction) | `copier update` — three-way merge |
+| Update mechanism | None (cruft adds it with friction) | `copier update`: three-way merge |
 | Answer persistence | None | `.copier-answers.yml` |
-| Community | Larger, 10+ years | Growing fast, strong 2022–2024 |
+| Community | Larger, 10+ years | Growing fast, strong 2022-2024 |
 | Trust flag | Not needed | Required when templates use Python extensions |
 
 For homelab/internal tooling: Copier's update mechanism is particularly valuable because
@@ -848,7 +848,7 @@ internal projects need to adopt security fixes and tool updates from the templat
 | **Security scan** | No | No | No | bandit + CodeQL | No | safety | No |
 | **Task runner** | Makefile | Makefile (thin) | duty (Python) | None | None | Makefile (comprehensive) | Makefile |
 | **Pre-commit** | Yes | No | No | Yes | No | Yes | No |
-| **Multi-Python CI** | Yes (3.10–3.14) | Yes (3.11–3.14) | Yes (3 OS × 3.10–3.14+dev) | No | Optional | No | No (3.14 only) |
+| **Multi-Python CI** | Yes (3.10-3.14) | Yes (3.11-3.14) | Yes (3 OS × 3.10-3.14+dev) | No | Optional | No | No (3.14 only) |
 | **Docs** | MkDocs/Zensical/none | Markdown only | Zensical | None | MkDocs optional | None | None |
 | **Docker** | Optional | No | No | Yes | FastAPI only | Yes + docker-compose | Dev Container + GHCR |
 | **src layout** | Yes or flat | Yes (fixed) | Yes (fixed) | Yes (fixed) | Yes | No (flat, fixed) | Yes (fixed) |
@@ -866,19 +866,18 @@ internal projects need to adopt security fixes and tool updates from the templat
 **Profile**: Building homelab and internal tooling apps (not publishing to PyPI), using
 Forgejo for CI, valuing clean well-documented code over minimalism.
 
-### Primary Recommendation: cookiecutter-uv — adapted for Forgejo
+### Primary Recommendation: cookiecutter-uv: adapted for Forgejo
 
 **Why it wins for this use case:**
 
 1. **Largest community**: 1,294 stars / 189 forks → answers exist for most problems.
 2. **Configurable**: prompt away PyPI publishing, Codecov, tox; keep Docker, devcontainer,
    pre-commit, and docs. You get what internal tooling needs without the library overhead.
-3. **Type checker choice**: mypy vs ty prompt — start stable, switch later.
-4. **deptry**: catches imports present in the environment but missing from pyproject.toml —
-   a problem that bites at containerisation time.
+3. **Type checker choice**: mypy vs ty prompt; start stable, switch later.
+4. **deptry**: catches imports present in the environment but missing from pyproject.toml;    a problem that bites at containerisation time.
 5. **Docker + devcontainer**: optional but included; essential for k8s deployment.
 
-**Forgejo CI adaptation** — Forgejo Actions is compatible with GitHub Actions syntax.
+**Forgejo CI adaptation**: Forgejo Actions is compatible with GitHub Actions syntax.
 The main change needed is the uv setup action:
 
 ```yaml
@@ -927,7 +926,7 @@ and the Renovate configuration, are worth borrowing directly.
 | copier-uv (pawamoy) | duty + griffe + pdm-backend overkill for internal apps |
 | python-project-generator | Requires Rust install; no Forgejo CI; no update path |
 | python-project-template (a1d4r) | Flat layout; no licence; safety CVE data concerns |
-| python-uv (a5chin) | No scaffolding (manual rename); ty in alpha; Python 3.14 target needs downgrading — **use as reference for Dev Container + GHCR pattern, not as primary template** |
+| python-uv (a5chin) | No scaffolding (manual rename); ty in alpha; Python 3.14 target needs downgrading; **use as reference for Dev Container + GHCR pattern, not as primary template** |
 
 ### Suggested toolchain for new homelab projects in 2026
 

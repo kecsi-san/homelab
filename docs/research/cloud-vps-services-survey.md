@@ -1,5 +1,5 @@
 ---
-title: "Cloud VPS Services in Homelab Repos — Survey"
+title: "Cloud VPS Services in Homelab Repos: Survey"
 type: research
 status: stable
 scope: [general]
@@ -9,7 +9,7 @@ updated: 2026-06-05
 tags: [cloud, vps, email, wireguard, vpn, aws, hetzner, route53, dns]
 ---
 
-# Cloud VPS Services in Homelab Repos — Survey
+# Cloud VPS Services in Homelab Repos: Survey
 
 Survey of 18+ popular homelab/homeops GitHub repositories to identify which services are
 hosted on cloud VPS instances (as opposed to purely on-premises hardware), and which
@@ -25,24 +25,24 @@ Only verified setups are listed.
 
 | Repo | Stars | Cloud Provider | VPS Services | VPN / Connectivity | DNS Provider | Notes |
 |------|-------|----------------|--------------|-------------------|--------------|-------|
-| [khuedoan/homelab](https://github.com/khuedoan/homelab) | 9.3k | None | — | Tailscale + Cloudflare Tunnel | Cloudflare | Pure on-premises; 4× NEC SFF |
+| [khuedoan/homelab](https://github.com/khuedoan/homelab) | 9.3k | None | n/a | Tailscale + Cloudflare Tunnel | Cloudflare | Pure on-premises; 4× NEC SFF |
 | [onedr0p/home-ops](https://github.com/onedr0p/home-ops) | 2.8k | GCP (minimal) | None (Google Assistant integration) | Cloudflare Tunnel | Cloudflare | ~$10/month cloud; self-hosted first philosophy |
-| [bjw-s-labs/home-ops](https://github.com/bjw-s-labs/home-ops) | 834 | None disclosed | — | Not disclosed | Not disclosed | On-premises; limited README detail |
-| [lisenet/kubernetes-homelab](https://github.com/lisenet/kubernetes-homelab) | 502 | None | — | None (OpenVPN noted in blog) | Bind DNS (self-hosted `.test` zone) | Pure on-premises; Dell + TrueNAS + MikroTik |
-| [szinn/k8s-homelab](https://github.com/szinn/k8s-homelab) | 296 | None | — | Wireguard + cloudflared | Cloudflare | DDNS via Cloudflare |
-| [joryirving/home-ops](https://github.com/joryirving/home-ops) | 216 | None | — | Cloudflare Tunnel | Cloudflare | Proxmox on-prem; explicit cost minimisation (~$40-80/yr cloud) |
-| [budimanjojo/home-cluster](https://github.com/budimanjojo/home-cluster) | 246 | None disclosed | — | Not disclosed | Not disclosed | Talos OS cluster |
-| [gruberdev/homelab](https://github.com/gruberdev/homelab) | 248 | None | — | Tailscale-operator (mesh) | Not disclosed | Talos-based |
+| [bjw-s-labs/home-ops](https://github.com/bjw-s-labs/home-ops) | 834 | None disclosed | n/a | Not disclosed | Not disclosed | On-premises; limited README detail |
+| [lisenet/kubernetes-homelab](https://github.com/lisenet/kubernetes-homelab) | 502 | None | n/a | None (OpenVPN noted in blog) | Bind DNS (self-hosted `.test` zone) | Pure on-premises; Dell + TrueNAS + MikroTik |
+| [szinn/k8s-homelab](https://github.com/szinn/k8s-homelab) | 296 | None | n/a | Wireguard + cloudflared | Cloudflare | DDNS via Cloudflare |
+| [joryirving/home-ops](https://github.com/joryirving/home-ops) | 216 | None | n/a | Cloudflare Tunnel | Cloudflare | Proxmox on-prem; explicit cost minimisation (~$40-80/yr cloud) |
+| [budimanjojo/home-cluster](https://github.com/budimanjojo/home-cluster) | 246 | None disclosed | n/a | Not disclosed | Not disclosed | Talos OS cluster |
+| [gruberdev/homelab](https://github.com/gruberdev/homelab) | 248 | None | n/a | Tailscale-operator (mesh) | Not disclosed | Talos-based |
 | [mchestr/home-cluster](https://github.com/mchestr/home-cluster) | 163 | AWS (SES only) | Email relay via SES | Cloudflare Tunnel | Cloudflare | ~$150/yr cloud; Talos cluster |
-| [nicolerenee/infra](https://github.com/nicolerenee/infra) | 108 | None | — | Tailscale + Cloudflare Tunnel | Cloudflare | Colo + home cluster; ~€14-15/month infra |
-| [x86-39/homelab_v1](https://github.com/x86-39/homelab_v1) | — | Hetzner Cloud | Reverse proxy / VPN gateway | Wireguard (home→cloud bridge) | Cloudflare | Hybrid: TrueNAS SCALE + Hetzner edge node |
-| [catdevops1/homelab-vpn](https://github.com/catdevops1/homelab-vpn) | — | Generic VPS | Headscale control plane + Tailscale exit node | Headscale + Wireguard mesh | — | VPS hosts Headscale; homelab is exit node |
-| [av1155/homelab](https://github.com/av1155/homelab) | — | Cloudflare R2 | Backups (object storage) | Wireguard (WG-Easy) + Cloudflare ZT | Cloudflare + AdGuard Home | On-premises Proxmox; R2 for off-site backups |
-| [jakejarvis/homelab](https://github.com/jakejarvis/homelab) | — | DigitalOcean | Reverse proxy | Wireguard (Mullvad client) | — | Raspberry Pi + DO VPS for routing; Traefik + Authelia |
-| [hobby-kube/guide](https://github.com/hobby-kube/guide) | — | Hetzner, DO, Scaleway | Full k8s workloads (MinIO, cert-manager, etc.) | Wireguard | Cloudflare / Google / AWS / DO | €13.50-18/month; full k8s on cheap cloud |
+| [nicolerenee/infra](https://github.com/nicolerenee/infra) | 108 | None | n/a | Tailscale + Cloudflare Tunnel | Cloudflare | Colo + home cluster; ~€14-15/month infra |
+| [x86-39/homelab_v1](https://github.com/x86-39/homelab_v1) | n/a | Hetzner Cloud | Reverse proxy / VPN gateway | Wireguard (home→cloud bridge) | Cloudflare | Hybrid: TrueNAS SCALE + Hetzner edge node |
+| [catdevops1/homelab-vpn](https://github.com/catdevops1/homelab-vpn) | n/a | Generic VPS | Headscale control plane + Tailscale exit node | Headscale + Wireguard mesh | n/a | VPS hosts Headscale; homelab is exit node |
+| [av1155/homelab](https://github.com/av1155/homelab) | n/a | Cloudflare R2 | Backups (object storage) | Wireguard (WG-Easy) + Cloudflare ZT | Cloudflare + AdGuard Home | On-premises Proxmox; R2 for off-site backups |
+| [jakejarvis/homelab](https://github.com/jakejarvis/homelab) | n/a | DigitalOcean | Reverse proxy | Wireguard (Mullvad client) | n/a | Raspberry Pi + DO VPS for routing; Traefik + Authelia |
+| [hobby-kube/guide](https://github.com/hobby-kube/guide) | n/a | Hetzner, DO, Scaleway | Full k8s workloads (MinIO, cert-manager, etc.) | Wireguard | Cloudflare / Google / AWS / DO | €13.50-18/month; full k8s on cheap cloud |
 | [sovereign/sovereign](https://github.com/sovereign/sovereign) | 10.5k | Any Linux VPS (Linode typical) | **Full stack:** Postfix + Dovecot, VPN, Webmail, IRC, CalDAV/CardDAV, Git | Wireguard | Self-configured | Ansible playbooks; batteries-included VPS email+VPN suite |
 | [trailofbits/algo](https://github.com/trailofbits/algo) | 30.3k | AWS, Azure, GCP, DO, Hetzner, Linode, Vultr, Scaleway | Wireguard / IKEv2 VPN server | Wireguard + IKEv2 IPsec | Cloud provider DNS | Pure VPN deployment tool; 11+ cloud provider targets |
-| [octelium/octelium](https://github.com/octelium/octelium) | — | DO, Hetzner, AWS EC2, Vultr | Zero-trust gateway + optional app hosting | Wireguard + QUIC tunnels | — | Modern unified zero-trust platform; $5-10/month VPS viable |
+| [octelium/octelium](https://github.com/octelium/octelium) | n/a | DO, Hetzner, AWS EC2, Vultr | Zero-trust gateway + optional app hosting | Wireguard + QUIC tunnels | n/a | Modern unified zero-trust platform; $5-10/month VPS viable |
 
 ---
 
@@ -52,12 +52,12 @@ Only verified setups are listed.
 
 70% of the primary surveyed repos use no cloud VPS at all. The dominant pattern in 2026
 is on-premises Kubernetes (Talos, k3s, Kubespray) with Cloudflare Tunnel for public
-web-service exposure — no VPS required. When cloud appears, it is usually for:
+web-service exposure; no VPS required. When cloud appears, it is usually for:
 
-1. **NAT traversal / reverse proxy** — small $5-10/month VPS bridges a home NAT to the internet
-2. **VPN control plane** — Headscale or Wireguard gateway hosted on a VPS
-3. **Email relay** — Postfix smarthost on a VPS, or AWS SES, rather than full IMAP stack
-4. **Off-site backups** — object storage (Cloudflare R2, S3) rather than a running VPS
+1. **NAT traversal / reverse proxy**: small $5-10/month VPS bridges a home NAT to the internet
+2. **VPN control plane**: Headscale or Wireguard gateway hosted on a VPS
+3. **Email relay**: Postfix smarthost on a VPS, or AWS SES, rather than full IMAP stack
+4. **Off-site backups**: object storage (Cloudflare R2, S3) rather than a running VPS
 
 ### Wireguard dominates VPN; Cloudflare Tunnel dominates public web access
 
@@ -84,7 +84,7 @@ No surveyed repos run Maddy or Stalwart (newer Rust-based email servers) as a pr
 
 ### Hetzner and DigitalOcean are the preferred cloud VPS providers for homelabs
 
-When a VPS is used, the choices are almost always Hetzner Cloud or DigitalOcean — both
+When a VPS is used, the choices are almost always Hetzner Cloud or DigitalOcean; both
 offer €/$ 4-6/month entry instances. AWS EC2 appears only in tools like Algo or Octelium
 that explicitly target multiple providers. No surveyed homelab repo uses AWS EC2 as its
 primary VPS.
@@ -123,7 +123,7 @@ even in repos that run no VPS compute. R2 in particular is attractive at zero eg
 
 ## Notable Reference Projects
 
-- **[sovereign/sovereign](https://github.com/sovereign/sovereign)** — 10.5k stars; Ansible playbooks for a complete self-hosted VPS: Postfix, Dovecot, DKIM, SpamAssassin, Roundcube webmail, Wireguard, CalDAV, Git. Reference for bare-metal email approach.
-- **[docker-mailserver/docker-mailserver](https://github.com/docker-mailserver/docker-mailserver)** — 18.3k stars; containerised Postfix+Dovecot+Rspamd+ClamAV stack. Analysed and rejected in favour of bare-metal; see [cloud-email-server-components.md](cloud-email-server-components.md).
-- **[trailofbits/algo](https://github.com/trailofbits/algo)** — 30.3k stars; the definitive Wireguard/IKEv2 VPN deployment tool; supports 11 cloud providers. Reference for `configure_wireguard`.
-- **[hobby-kube/guide](https://github.com/hobby-kube/guide)** — detailed cost-effective k8s on Hetzner/DO with Wireguard networking; useful if cloud k8s node is ever added.
+- **[sovereign/sovereign](https://github.com/sovereign/sovereign)**: 10.5k stars; Ansible playbooks for a complete self-hosted VPS: Postfix, Dovecot, DKIM, SpamAssassin, Roundcube webmail, Wireguard, CalDAV, Git. Reference for bare-metal email approach.
+- **[docker-mailserver/docker-mailserver](https://github.com/docker-mailserver/docker-mailserver)**: 18.3k stars; containerised Postfix+Dovecot+Rspamd+ClamAV stack. Analysed and rejected in favour of bare-metal; see [cloud-email-server-components.md](cloud-email-server-components.md).
+- **[trailofbits/algo](https://github.com/trailofbits/algo)**: 30.3k stars; the definitive Wireguard/IKEv2 VPN deployment tool; supports 11 cloud providers. Reference for `configure_wireguard`.
+- **[hobby-kube/guide](https://github.com/hobby-kube/guide)**: detailed cost-effective k8s on Hetzner/DO with Wireguard networking; useful if cloud k8s node is ever added.

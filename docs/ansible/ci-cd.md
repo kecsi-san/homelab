@@ -19,8 +19,8 @@ Two GitHub Actions workflows run automatically on pushes to `main`:
 | `lint.yml` | push + pull_request to `main` | Validate YAML formatting and Ansible best practices |
 | `changelog.yml` | push to `main` | Generate and commit `CHANGELOG.md` from conventional commits |
 
-No deployment automation — all cluster and workstation changes are applied manually via `ansible-playbook`
-(or the equivalent `just <recipe>` — see the repo-root `justfile`, `just --list`).
+No deployment automation: all cluster and workstation changes are applied manually via `ansible-playbook`
+(or the equivalent `just <recipe>`, see the repo-root `justfile`, `just --list`).
 
 CI parity locally: `just lint-yaml` / `just lint-ansible` / `just lint` run the same checks as `lint.yml` below.
 
@@ -43,12 +43,12 @@ rather than queuing redundant jobs.
 
 ### Runner
 
-`ubuntu-24.04` — pinned to a specific Ubuntu version so the environment does not change
+`ubuntu-24.04`: pinned to a specific Ubuntu version so the environment does not change
 silently when GitHub updates `ubuntu-latest`.
 
 ### Timeout
 
-`timeout-minutes: 10` — prevents a hung step (e.g. a stalled `ansible-galaxy` download)
+`timeout-minutes: 10`: prevents a hung step (e.g. a stalled `ansible-galaxy` download)
 from blocking the shared runner indefinitely.
 
 ---
@@ -108,11 +108,11 @@ Configured via `.ansible-lint` (project root):
 
 | Setting | Value | Reason |
 |---------|-------|--------|
-| `profile` | `moderate` | Balanced — catches real issues without noise |
+| `profile` | `moderate` | Balanced: catches real issues without noise |
 | `offline` | `true` | Skips galaxy role downloads; roles are mocked |
-| `mock_roles` | `markosamuli.linuxbrew` | Vendored galaxy role — prevents "role not found" error |
+| `mock_roles` | `markosamuli.linuxbrew` | Vendored galaxy role: prevents "role not found" error |
 | `exclude_paths` | `.venv/`, `collections/`, `roles/markosamuli.linuxbrew/`, `playbooks/k8s.yml`, `playbooks/reset-k8s.yml`, `kube-gitops/` | Kubespray collection and plain Kubernetes YAML not for ansible-lint |
-| `skip_list` | `yaml[line-length]`, `var-naming[no-role-prefix]`, `role-name` | Intentional deviations — see ROLES.md for naming conventions |
+| `skip_list` | `yaml[line-length]`, `var-naming[no-role-prefix]`, `role-name` | Intentional deviations, see `docs/ansible/roles.md` for naming conventions |
 
 Ansible collections required by the playbooks (`community.general`, `ansible.posix`,
 `kubernetes.core`) are installed at lint time. The Kubespray collection is excluded
@@ -128,7 +128,7 @@ Pre-commit is configured in `.pre-commit-config.yaml` and uses system-installed 
 | Hook | Runs on | Notes |
 |------|---------|-------|
 | `yamllint` | every commit | Fast (~1s); catches YAML errors before push |
-| `ansible-lint` | CI only | ~70s locally — too slow for pre-commit; runs in GitHub Actions instead |
+| `ansible-lint` | CI only | ~70s locally, too slow for pre-commit; runs in GitHub Actions instead |
 
 Install hooks once after cloning:
 
@@ -168,14 +168,14 @@ uv tool list          # see current local versions
 
 ### Concurrency
 
-Same `${{ github.workflow }}-${{ github.ref }}` group with `cancel-in-progress: true` — a
+Same `${{ github.workflow }}-${{ github.ref }}` group with `cancel-in-progress: true`, so a
 rapid series of commits produces one changelog update, not several racing ones.
 
 ### What it does
 
-1. Checks out the full git history (`fetch-depth: 0` — required to read all commits)
+1. Checks out the full git history (`fetch-depth: 0`, required to read all commits)
 2. Installs [`git-changelog`](https://pawamoy.github.io/git-changelog/) via pip
-3. Runs `git-changelog -o CHANGELOG.md` — parses conventional commits and renders `CHANGELOG.md`
+3. Runs `git-changelog -o CHANGELOG.md`: parses conventional commits and renders `CHANGELOG.md`
 4. Commits the result back to `main` only if the file changed, using the message
    `docs: update CHANGELOG.md [skip ci]`
 

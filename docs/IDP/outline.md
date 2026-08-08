@@ -1,5 +1,5 @@
 ---
-title: "Outline — Role and Operational Guide"
+title: "Outline: Role and Operational Guide"
 type: how-to
 status: superseded
 scope: [k8s]
@@ -11,7 +11,7 @@ tags: [outline, wiki, documentation, knowledge-base]
 > **Superseded (2026-05-31):** Outline has been replaced by Wiki.js v2 on k8s.
 > This document is retained for historical reference only.
 
-# Outline — Role and Operational Guide
+# Outline: Role and Operational Guide
 
 **Instance:** `https://outline.kecskemethy.org` *(decommissioned)*
 **Login:** Authentik SSO (Authentik credentials; no separate Outline password)
@@ -27,10 +27,10 @@ The homelab uses **two documentation layers** that complement each other:
 
 **What goes here:** Technical documentation that lives alongside the code.
 
-- Architecture Decision Records (`docs/ADR/`) — decisions and their rationale
-- Research notes (`docs/research/`) — evaluations, comparisons, tool selection
-- Operational runbooks (`docs/IDP/`, `docs/ansible/`) — how to operate the cluster
-- Standards (`docs/STANDARDS.md`) — documentation conventions
+- Architecture Decision Records (`docs/ADR/`): decisions and their rationale
+- Research notes (`docs/research/`): evaluations, comparisons, tool selection
+- Operational runbooks (`docs/IDP/`, `docs/ansible/`): how to operate the cluster
+- Standards (`docs/STANDARDS.md`): documentation conventions
 
 **Why Git:** These docs are reviewed like code (PR-gated), version-controlled with the
 infrastructure they describe, diff-able, and always in sync with the codebase. When a
@@ -46,13 +46,13 @@ Markdown in a code editor or on GitHub.
 **What goes here:** Living, collaborative documentation independent of any one codebase.
 
 - **Onboarding guides** for new people to the homelab environment
-- **Project notes and working documents** — exploratory ideas not yet committed to a
+- **Project notes and working documents**: exploratory ideas not yet committed to a
   decision; meeting notes; in-progress planning that changes daily
-- **Process documentation** — recurring workflows, checklists, SOPs that non-engineers
+- **Process documentation**: recurring workflows, checklists, SOPs that non-engineers
   might reference (e.g. "how to add a user to the homelab")
-- **Knowledge that crosses repositories** — content that doesn't belong in any single
+- **Knowledge that crosses repositories**: content that doesn't belong in any single
   repo's `docs/` folder
-- **Rich-content docs** — embeds, diagrams (Draw.io, Mermaid inline), images, tables
+- **Rich-content docs**: embeds, diagrams (Draw.io, Mermaid inline), images, tables
   where WYSIWYG editing is faster than Markdown
 
 **Why Outline:** Collaborative editing without a PR; search across all documents; real-time
@@ -84,7 +84,7 @@ than to reconstruct history from Outline.
 ### Login
 
 Navigate to `https://outline.kecskemethy.org` and click **Continue with OIDC**.
-You will be redirected to Authentik — log in with your homelab credentials.
+You will be redirected to Authentik; log in with your homelab credentials.
 First login creates your Outline user automatically.
 
 ### Backup
@@ -98,7 +98,7 @@ strategy.
 
 ```bash
 kubectl rollout restart deployment/outline -n outline
-# Recreate strategy — brief downtime (~10 seconds)
+# Recreate strategy: brief downtime (~10 seconds)
 ```
 
 ### Check Logs
@@ -110,9 +110,9 @@ kubectl logs -n outline deployment/outline --tail=100 -f
 ### Environment / Secrets
 
 Key secrets in `outline` namespace:
-- `outline-secret` (SealedSecret) — `SECRET_KEY`, `UTILS_SECRET`
-- `outline-db` (SealedSecret) — `DATABASE_URL` (CNPG connection string)
-- `outline-oidc` (SealedSecret) — `OIDC_CLIENT_SECRET`
+- `outline-secret` (SealedSecret): `SECRET_KEY`, `UTILS_SECRET`
+- `outline-db` (SealedSecret): `DATABASE_URL` (CNPG connection string)
+- `outline-oidc` (SealedSecret): `OIDC_CLIENT_SECRET`
 
 To rotate `SECRET_KEY` or `UTILS_SECRET`: generate new random values
 (`openssl rand -hex 32`), re-seal, commit, and restart. Rotating these invalidates

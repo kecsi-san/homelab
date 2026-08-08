@@ -18,7 +18,7 @@ Deploy a minimal IDP to **k3s** and the same minimal IDP **plus Backstage** to *
 
 ## Component Plan
 
-### Minimal IDP — both clusters (k3s + k8s)
+### Minimal IDP: both clusters (k3s + k8s)
 
 | Component | Tool | Layer | k8s | k3s |
 |---|---|---|---|---|
@@ -31,7 +31,7 @@ Deploy a minimal IDP to **k3s** and the same minimal IDP **plus Backstage** to *
 | Code analysis (SAST) | Semgrep OSS (CI step) | Quality | Planned | Planned |
 | Vulnerability scanning | Trivy (CI step) | Quality | Planned | Planned |
 
-### k8s only — additions on top of minimal
+### k8s only: additions on top of minimal
 
 | Component | Tool | Layer | Status |
 |---|---|---|---|
@@ -52,21 +52,21 @@ Deploy a minimal IDP to **k3s** and the same minimal IDP **plus Backstage** to *
 
 Both clusters follow the same sequence for the minimal IDP:
 
-1. **CloudNativePG** — shared PostgreSQL cluster; everything stateful depends on it
-2. **Forgejo** — git + OCI registry + Actions runner; foundations for all pipelines
-3. **Authentik** — SSO; wire Forgejo OIDC on install; gates all subsequent UIs
-4. **Wiki.js** — wiki; shares PostgreSQL with Authentik, gains OIDC from Authentik
-5. **Semgrep + Trivy** — add as Forgejo Actions pipeline steps; zero new services
+1. **CloudNativePG**: shared PostgreSQL cluster; everything stateful depends on it
+2. **Forgejo**: git + OCI registry + Actions runner; foundations for all pipelines
+3. **Authentik**: SSO; wire Forgejo OIDC on install; gates all subsequent UIs
+4. **Wiki.js**: wiki; shares PostgreSQL with Authentik, gains OIDC from Authentik
+5. **Semgrep + Trivy**: add as Forgejo Actions pipeline steps; zero new services
 
-k8s only — after minimal IDP is stable:
+k8s only, after minimal IDP is stable:
 
-6. **Backstage** — service catalog; PostgreSQL shared with step 1
+6. **Backstage**: service catalog; PostgreSQL shared with step 1
 
 ---
 
 ## Achievements Log
 
-### 2026-06-03 — Wiki.js, ArgoCD OIDC, and Forgejo Actions runner on k3s
+### 2026-06-03: Wiki.js, ArgoCD OIDC, and Forgejo Actions runner on k3s
 
 - **ArgoCD OIDC** wired to Authentik: `argocd-k3s` provider; `homelab-admins → role:admin` RBAC;
   `argocd-config` ArgoCD app managing `kube-gitops/k3s/argocd/`. **Verified working.**
@@ -74,7 +74,7 @@ k8s only — after minimal IDP is stable:
     or ArgoCD silently ignores the secret and sends an empty client_secret → `invalid_client`
 - **Wiki.js** deployed via Helm (charts.js.wiki 2.2.24); CNPG `wikijs` role + Database CR;
   session-fix configmap (passport-openidconnect patch); Authentik `wikijs-k3s` blueprint.
-  **OIDC login verified** — `kecsi` authenticated via Authentik, assigned Administrators group.
+  **OIDC login verified**: `kecsi` authenticated via Authentik, assigned Administrators group.
   - Redirect URI UUID: `394c8518-0693-47c0-8bcc-b25f31d6f2e7` (tightened to `strict` in blueprint)
   - ⚠ Gotcha: CNPG managed role `passwordSecret` needs both `username` and `password` keys
     for newly added roles (existing roles only need `password`); workaround: create role manually
@@ -83,34 +83,34 @@ k8s only — after minimal IDP is stable:
 - **Forgejo Actions runner** deployed and verified: `k3s-runner`, DinD sidecar, capacity 2,
   `ubuntu-latest` label, 1Gi `local-path` PVC. Push job picked up and executed in `node:20-bookworm`.
 
-### 2026-06-01 — Authentik deployed on k3s
+### 2026-06-01: Authentik deployed on k3s
 
 - **Authentik 2026.5.0** deployed on k3s; same blueprint pattern as k8s
-- **Forgejo OAuth2 login verified** — `kecsi` user authenticated via Authentik OIDC on k3s
+- **Forgejo OAuth2 login verified**: `kecsi` user authenticated via Authentik OIDC on k3s
 - **PostSync job** registers Forgejo auth source after each ArgoCD sync (same pattern as k8s)
-- **Note:** ArgoCD OIDC on k3s not yet wired up — next step
+- **Note:** ArgoCD OIDC on k3s not yet wired up; next step
 
-### 2026-05-31 — Wiki.js replaces Outline on k8s
+### 2026-05-31: Wiki.js replaces Outline on k8s
 
-- **Outline removed** — replaced by **Wiki.js v2** (`kube-gitops/k8s/wikijs/`)
+- **Outline removed**: replaced by **Wiki.js v2** (`kube-gitops/k8s/wikijs/`)
 - Wiki.js provides equivalent OIDC/SSO support with a more actively maintained codebase
 - PostgreSQL backend via CNPG; OIDC via Authentik
 - ADR 011 superseded; see `docs/ADR/011-outline-wiki.md`
 
-### 2026-05-29 — ArgoCD RBAC group-based (k8s)
+### 2026-05-29: ArgoCD RBAC group-based (k8s)
 
 - Switched from email-based RBAC to **group-based**: `homelab-admins` Authentik group → `role:admin`
 - Authentik blueprint adds `Groups` scope mapping; ArgoCD provider gets `groups` claim
 - `argocd-rbac-cm.yaml`: `g, homelab-admins, role:admin`
 - Login via Authentik → homelab-admins group → full ArgoCD admin access verified
 
-### 2026-05-20 — ArgoCD Authentik OIDC (k8s)
+### 2026-05-20: ArgoCD Authentik OIDC (k8s)
 
 - **ArgoCD OIDC sign-in** wired to Authentik (`per_provider` issuer mode)
 - Authentik blueprint creates ArgoCD OAuth2 provider; OIDC secret managed as SealedSecret
 - Initial setup used email-based RBAC subject; migrated to group-based on 2026-05-29
 
-### 2026-05-17 — Forgejo Actions runner deployed (k8s)
+### 2026-05-17: Forgejo Actions runner deployed (k8s)
 
 - **act_runner v12.10.1** deployed in `forgejo-runner` namespace
 - **DinD sidecar** (`docker:27-dind`): runner executes workflow steps in
@@ -122,13 +122,13 @@ k8s only — after minimal IDP is stable:
   (init-data container `chmod 777 /data` + register init container; `workingDir: /data`)
 - **Registration token**: SealedSecret in `forgejo-runner` namespace
 
-### 2026-05-16 — Outline wiki deployed with Authentik OIDC (k8s)
+### 2026-05-16: Outline wiki deployed with Authentik OIDC (k8s)
 
-- *Subsequently replaced by Wiki.js on 2026-05-31 — see entry above*
+- *Subsequently replaced by Wiki.js on 2026-05-31, see entry above*
 - **Outline 1.7.1** deployed; Authentik OIDC login confirmed working
 - CNPG `outline` managed role + `Database` CR
 
-### 2026-05-16 — Authentik forwardAuth + Headlamp OIDC (k8s)
+### 2026-05-16: Authentik forwardAuth + Headlamp OIDC (k8s)
 
 - **Longhorn UI** protected with Authentik `forwardAuth` middleware
   - Proxy provider + application added to blueprint (`longhorn.yaml`)
@@ -141,21 +141,21 @@ k8s only — after minimal IDP is stable:
   - ClusterRoleBinding (`headlamp-oidc-kecsi`) grants `cluster-admin` to OIDC user `kecsi`
   - Token lifetimes extended: `access_token_validity: hours=24`, `refresh_token_validity: days=30`
     (default 60 min caused silent session expiry with no refresh token)
-  - **⚠ TODO**: Headlamp shows "no permissions" for all resources after OIDC login —
+  - **⚠ TODO**: Headlamp shows "no permissions" for all resources after OIDC login;
     root cause unresolved (token forwarding to kube-apiserver not confirmed); debug deferred
 - **Traefik dashboard** protected with Authentik `forwardAuth` middleware
   - Proxy provider + application added to blueprint (`traefik-dashboard.yaml`)
 
-### 2026-05-16 — Forgejo fixes
+### 2026-05-16: Forgejo fixes
 
-- **`Recreate` rollout strategy** added to Forgejo deployment — LevelDB queue at
+- **`Recreate` rollout strategy** added to Forgejo deployment: LevelDB queue at
   `/var/lib/gitea/queues/common` can only be locked by one process; `RollingUpdate`
   caused `CrashLoopBackOff` in the new pod during rollout
-- **`ENABLE_REMEMBER_ME=false`** — browser `fetch()` does not flush `Set-Cookie`
+- **`ENABLE_REMEMBER_ME=false`**: browser `fetch()` does not flush `Set-Cookie`
   headers before navigation fires; long-term `gitea_incredible` token survived sign-out
   and silently recreated the session
 
-### 2026-05-15 — k8s Authentik deployed and integrated
+### 2026-05-15: k8s Authentik deployed and integrated
 
 - **Authentik 2026.2.3** deployed on k8s with standalone `redis:7-alpine`
   (Bitnami images removed from Docker Hub; official redis image used instead)
@@ -167,10 +167,10 @@ k8s only — after minimal IDP is stable:
   the Authentik auth source in Forgejo's DB after each ArgoCD sync; idempotent
   - Writes minimal `app.ini` to `/var/lib/gitea/custom/conf/` (image GITEA_CUSTOM default)
 - **Forgejo `kecsi` admin** account linked to Authentik `kecsi` user via OAuth2
-  (`sub_mode: user_username` — Authentik username maps to Forgejo username on first login)
+  (`sub_mode: user_username`: Authentik username maps to Forgejo username on first login)
 - **User management runbook** at `docs/IDP/user-management.md`
 
-### 2026-05-15 — NTP / chrony
+### 2026-05-15: NTP / chrony
 
 - **`configure_ntp` Ansible role** replaced ntpd with chrony (Debian 13 dropped the
   `ntp` package); MikroTik router as primary NTP, pool.ntp.org as fallback
@@ -182,7 +182,7 @@ k8s only — after minimal IDP is stable:
 
 ### Headlamp OIDC permissions (k8s)
 
-All config verified correct — kube-apiserver flags, Authentik provider, ClusterRoleBinding —
+All config verified correct (kube-apiserver flags, Authentik provider, ClusterRoleBinding),
 but Headlamp shows "no permissions" after OIDC login. Likely Headlamp is not forwarding the
 OIDC ID token to kube-apiserver (falling through to anonymous).
 

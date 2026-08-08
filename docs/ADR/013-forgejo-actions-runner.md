@@ -1,5 +1,5 @@
 ---
-title: "013 — Forgejo Actions Runner with Docker-in-Docker"
+title: "013: Forgejo Actions Runner with Docker-in-Docker"
 type: adr
 status: accepted
 scope: [k8s]
@@ -8,7 +8,7 @@ updated: 2026-05-17
 tags: [forgejo, ci-cd, runner, docker-in-docker, actions]
 ---
 
-# 013 — Forgejo Actions Runner with Docker-in-Docker
+# 013: Forgejo Actions Runner with Docker-in-Docker
 
 ## Status
 
@@ -16,7 +16,7 @@ Accepted
 
 ## Context
 
-Forgejo Actions requires a **runner** — an agent that polls the Forgejo instance for
+Forgejo Actions requires a **runner**: an agent that polls the Forgejo instance for
 queued jobs and executes them. Forgejo Actions jobs are defined in YAML workflows
 (GitHub Actions-compatible syntax). Most real-world CI jobs require Docker: building
 container images, running service containers, or executing jobs inside a specified
@@ -57,7 +57,7 @@ Pod: forgejo-runner
    the connection is pod-local (loopback only; not exposed outside the pod).
 
 3. **Wait loop for DinD readiness**: The runner container uses a `wget` ping loop
-   before starting the daemon — DinD takes ~2 seconds to initialize, and the runner
+   before starting the daemon: DinD takes ~2 seconds to initialize, and the runner
    image is Alpine-based (no `docker` CLI available to use `docker info`):
    ```sh
    until wget -qO- http://localhost:2375/_ping 2>/dev/null | grep -q OK; do
@@ -98,7 +98,7 @@ Pod: forgejo-runner
 
 **Positive:**
 - Full Docker support in CI jobs: `docker build`, `docker push` to the Forgejo
-  registry, multi-stage builds, service containers — all work as expected
+  registry, multi-stage builds, and service containers all work as expected
 - Registration is idempotent: the `init-data` + `register` init container pattern
   means the runner pod can restart without creating duplicate registrations in Forgejo
   (`.runner` file presence check prevents re-registration)
@@ -110,14 +110,14 @@ Pod: forgejo-runner
 **Negative / Trade-offs:**
 - **Privileged container**: DinD requires `privileged: true`; this gives the DinD
   container full Linux capabilities and the ability to mount filesystems; it is a
-  security risk if the runner executes untrusted code — acceptable in a homelab with
-  known-trusted repos
+  security risk if the runner executes untrusted code, though it's acceptable in a
+  homelab with known-trusted repos
 - **TCP DinD without TLS**: The Docker daemon is accessible at `tcp://localhost:2375`
   within the pod; another container in the same pod could connect to it; since the pod
   has only two containers (runner + dind) and both are trusted, this is acceptable but
   would be a concern in a multi-tenant environment
 - **Longhorn PVC permissions**: Fresh Longhorn PVCs have `root:root` ownership with
-  mode 755; the init container workaround (`chmod 777`) is a patch, not a fix —
+  mode 755; the init container workaround (`chmod 777`) is a patch, not a fix.
   Longhorn does not support `fsGroup` at the StorageClass level; a proper fix would
   be configuring `securityContext.fsGroup` in the pod spec (tried; inconsistent results
   with Longhorn RWO volumes)

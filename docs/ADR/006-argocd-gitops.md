@@ -1,5 +1,5 @@
 ---
-title: "006 — ArgoCD for GitOps"
+title: "006: ArgoCD for GitOps"
 type: adr
 status: accepted
 scope: [k8s, k3s]
@@ -8,7 +8,7 @@ updated: 2026-05-17
 tags: [argocd, gitops, ci-cd, deployment]
 ---
 
-# 006 — ArgoCD for GitOps
+# 006: ArgoCD for GitOps
 
 ## Status
 
@@ -16,7 +16,7 @@ Accepted
 
 ## Context
 
-All cluster workloads should be managed declaratively from a Git repository — any
+All cluster workloads should be managed declaratively from a Git repository. Any
 manual `kubectl apply` that is not committed to Git is invisible, unrepeatable, and
 lost on cluster rebuild. This requires a GitOps controller that:
 
@@ -70,7 +70,7 @@ Source repository: `https://github.com/kecsi-san/homelab.git` (public; no creden
   `ignoreDifferences` for fields that Kubernetes controllers mutate after apply
 - ArgoCD insecure mode: the API server is accessible without TLS at the pod level;
   Traefik TLS termination provides encryption in transit but the ArgoCD API pod itself
-  does not validate TLS — acceptable behind Traefik but not in a multi-tenant environment
+  does not validate TLS, which is acceptable behind Traefik but not in a multi-tenant environment
 - GitHub as the source repo means ArgoCD requires internet access to poll for changes;
   an outage blocks new deployments (but does not affect running workloads)
 - The ArgoCD admin password is auto-generated and stored in a k8s Secret; it is printed

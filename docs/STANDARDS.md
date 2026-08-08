@@ -12,7 +12,7 @@ tags: [meta, documentation, standards]
 
 This document defines the documentation standard for the homelab repository. Every file
 under `docs/` follows these conventions so that docs remain navigable, searchable, and
-useful over time — especially when imported into Outline or rendered by a static site
+useful over time, especially when imported into Outline or rendered by a static site
 generator.
 
 ---
@@ -73,9 +73,9 @@ tags: [tag1, tag2]                              # at least one
 
 ### Status semantics
 
-- **draft** — being written or not yet verified against a running system; do not rely on it
-- **stable** — accurate as of `updated` date; verified against a running system or confirmed by review
-- **deprecated** — the information is outdated, superseded, or the system no longer exists;
+- **draft**: being written or not yet verified against a running system; do not rely on it
+- **stable**: accurate as of `updated` date; verified against a running system or confirmed by review
+- **deprecated**: the information is outdated, superseded, or the system no longer exists;
   add a note at the top pointing to the replacement
 
 ---
@@ -132,7 +132,7 @@ Examples: `cilium-migration.md`, `cluster-rebuild.md`.
 
 ### Topic folder files (`ansible/`, `IDP/`, `homelab/`)
 
-No prescribed prefix — the folder provides the context. Use a descriptive lowercase name:
+No prescribed prefix. The folder provides the context; use a descriptive lowercase name:
 `k8s-homelab.md`, `forgejo.md`, `ci-cd.md`.
 
 ---
@@ -157,10 +157,10 @@ One-sentence description of what this document covers and who it is for.
 
 ### Headings
 
-- `#` (H1) — document title only; one per file; matches `title` in front-matter
-- `##` (H2) — major sections
-- `###` (H3) — sub-sections
-- `####` (H4) — use sparingly; prefer restructuring over deep nesting
+- `#` (H1): document title only; one per file; matches `title` in front-matter
+- `##` (H2): major sections
+- `###` (H3): sub-sections
+- `####` (H4): use sparingly; prefer restructuring over deep nesting
 
 ### Tables
 
@@ -203,7 +203,7 @@ Store ADRs in `docs/ADR/` with the naming convention `NNN-short-title.md`
 
 ```markdown
 ---
-title: "NNN — Short title"
+title: "NNN: Short title"
 type: adr
 status: accepted | proposed | deprecated | superseded-by NNN
 scope: [...]
@@ -212,7 +212,7 @@ updated: YYYY-MM-DD
 tags: [...]
 ---
 
-# NNN — Short title
+# NNN: Short title
 
 ## Status
 
@@ -245,7 +245,7 @@ What follow-up decisions does this create?
 ## Update Process
 
 - **Update `updated:` date** whenever you make a meaningful content change (not typo fixes).
-- **Do not update `created:`** — it records the origin date.
+- **Do not update `created:`**: it records the origin date.
 - If a doc becomes inaccurate but you cannot update it immediately, change `status: draft`
   and add a `> ⚠ Under revision — content may be outdated.` blockquote at the top.
 - When a doc is fully superseded, change `status: deprecated`, add a note at the top
@@ -255,11 +255,11 @@ What follow-up decisions does this create?
 
 ## What Not to Document
 
-- **Code comments** — inline code explains *what*; docs explain *why* and *how* at system
+- **Code comments**: inline code explains *what*; docs explain *why* and *how* at system
   level. Do not duplicate what the code already says.
-- **Transient state** — do not document "current sprint tasks" or "TODO this week" in docs
+- **Transient state**: do not document "current sprint tasks" or "TODO this week" in docs
   files; those live in issues or the conversation.
-- **Git history** — who changed what and when is in `git log`. Do not replicate it in docs.
+- **Git history**: who changed what and when is in `git log`. Do not replicate it in docs.
 
 ---
 

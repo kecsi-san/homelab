@@ -1,5 +1,5 @@
 ---
-title: "Forgejo — Operational Guide"
+title: "Forgejo: Operational Guide"
 type: how-to
 status: stable
 scope: [k8s]
@@ -8,7 +8,7 @@ updated: 2026-05-17
 tags: [forgejo, git, ci-cd, oci-registry, tea-cli, runners, mirrors]
 ---
 
-# Forgejo — Operational Guide
+# Forgejo: Operational Guide
 
 **Instance:** `https://forgejo.kecskemethy.org`
 **Admin user:** `kecsi`
@@ -164,7 +164,7 @@ Then re-register the runner (delete `.runner` and restart).
 ### Offline / Duplicate Runner Cleanup
 
 After failed restarts (pre-PVC persistence), stale offline runners accumulate.
-Delete them at `https://forgejo.kecskemethy.org/-/admin/runners` — click each
+Delete them at `https://forgejo.kecskemethy.org/-/admin/runners`, click each
 offline runner → Delete.
 
 ---
@@ -173,7 +173,7 @@ offline runner → Delete.
 
 ### Access the Admin Panel
 
-`https://forgejo.kecskemethy.org/-/admin/` — requires login as `kecsi`.
+`https://forgejo.kecskemethy.org/-/admin/`. Requires login as `kecsi`.
 
 ### Database Access
 
@@ -188,7 +188,7 @@ kubectl exec -n postgres -it \
 
 ```bash
 kubectl rollout restart deployment/forgejo -n forgejo
-# Note: Recreate strategy — brief downtime (~15 seconds) during restart
+# Note: Recreate strategy: brief downtime (~15 seconds) during restart
 ```
 
 ### Check Logs
@@ -233,7 +233,7 @@ URL: `https://argocd.kecskemethy.org/api/webhook`
 | `mirrors` | Read-only mirrors of upstream GitHub Actions for offline CI use |
 | `kecsi` | Personal repositories and experiments |
 
-### mirrors org — Action Mirrors
+### mirrors org: Action Mirrors
 
 Forgejo Actions workflows reference actions via full URL
 (`https://forgejo.kecskemethy.org/mirrors/<name>@<ref>`) instead of the GitHub
@@ -257,10 +257,10 @@ set owner to `mirrors` → enable "This repository will be a mirror".
 
 ## Planned
 
-- **SSH access** — Forgejo SSH (port 22) not yet exposed; needs a separate TCP
+- **SSH access**: Forgejo SSH (port 22) not yet exposed; needs a separate TCP
   LoadBalancer service or Traefik TCP entrypoint; currently using HTTPS + credential store
-- **Semgrep OSS + Trivy** — as CI pipeline steps; see [CI Pipelines](ci-pipelines.md)
-- **CD pipeline** — push-to-main triggers ArgoCD sync via webhook; covered once
+- **Semgrep OSS + Trivy**: as CI pipeline steps; see [CI Pipelines](ci-pipelines.md)
+- **CD pipeline**: push-to-main triggers ArgoCD sync via webhook; covered once
   the first Python project is in use
-- **Forgejo LFS → Garage S3** — `forgejo` bucket on the existing Garage instance;
+- **Forgejo LFS → Garage S3**: `forgejo` bucket on the existing Garage instance;
   avoids large file storage on Longhorn PVC

@@ -1,5 +1,5 @@
 ---
-title: "011 — Outline as Team Wiki"
+title: "011: Outline as Team Wiki"
 type: adr
 status: superseded
 scope: [k8s]
@@ -8,11 +8,11 @@ updated: 2026-06-03
 tags: [outline, wiki, documentation, oidc, knowledge-base]
 ---
 
-# 011 — Outline as Team Wiki
+# 011: Outline as Team Wiki
 
 ## Status
 
-Superseded (2026-05-31) — Outline replaced by **Wiki.js v2**. Wiki.js provides equivalent
+Superseded (2026-05-31). Outline replaced by **Wiki.js v2**, which provides equivalent
 OIDC support with a more actively maintained codebase. Manifests moved to
 `kube-gitops/k8s/wikijs/`.
 
@@ -67,7 +67,7 @@ after deployment:
 **Docmost's OIDC/SSO requires the Enterprise Edition (EE) license.**
 
 The Community Edition of Docmost supports only email/password and "magic link" (email
-link) authentication. OIDC integration — required for Authentik SSO — is gated behind
+link) authentication. OIDC integration, required for Authentik SSO, is gated behind
 EE. This was not clearly communicated on the project website or Helm chart
 documentation at the time of evaluation; it was discovered during OIDC configuration
 when the OIDC settings were absent from the UI and the GitHub issue tracker confirmed
@@ -79,7 +79,7 @@ Outline's Community Edition includes full OIDC support at no cost.
 
 | Option | Reason rejected |
 |---|---|
-| **Docmost** | Initially deployed; removed after discovering OIDC SSO requires EE license; Community Edition limited to email/password auth only — incompatible with the Authentik SSO requirement |
+| **Docmost** | Initially deployed; removed after discovering OIDC SSO requires EE license; Community Edition limited to email/password auth only, incompatible with the Authentik SSO requirement |
 | **Wiki.js** | Feature-rich wiki with OIDC support; however, requires MongoDB or PostgreSQL; the v3 rewrite (Karma) has been in development for years with no stable release; v2 is mature but the uncertain roadmap is a risk |
 | **BookStack** | PHP/Laravel-based; familiar MediaWiki-like structure; SSO via SAML2/OIDC supported; however, PHP stack diverges from the Go/Node ecosystem in this homelab; less modern editor experience than Outline |
 | **Confluence** | Industry standard; expensive; SaaS or self-hosted (Data Center tier); not suitable for a homelab |
@@ -92,7 +92,7 @@ Outline's Community Edition includes full OIDC support at no cost.
 - Outline Community Edition includes full OIDC; Authentik SSO works out of the box
   with the standard `openid email profile` scope set
 - Real-time collaborative editing; document search across all content; nested
-  collections with emoji icons — significantly better UX than raw Markdown for
+  collections with emoji icons, a better UX than raw Markdown for
   operational runbooks and team-facing documentation
 - Outline at `outline.kecskemethy.org` is SSO-protected; users must authenticate
   via Authentik before accessing any document
@@ -105,6 +105,6 @@ Outline's Community Edition includes full OIDC support at no cost.
   not replicated beyond Longhorn's 2-replica setup. Migrating to Garage S3 would
   improve durability but requires additional configuration.
 - Outline does not have a CLI or GitOps-friendly import; documents cannot be managed
-  declaratively via manifests — content is stored in the PostgreSQL database
+  declaratively via manifests; content is stored in the PostgreSQL database
 - Outline's `latest` tag can introduce breaking changes; pinning to a specific version
   tag is recommended once the deployment is stable

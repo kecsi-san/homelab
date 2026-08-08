@@ -6,7 +6,7 @@ scope: [local, k3s, k8s]
 
 # Quick Start
 
-> A `justfile` at the repo root wraps every command on this page as `just <recipe>` —
+> A `justfile` at the repo root wraps every command on this page as `just <recipe>`;
 > run `just --list` to see them all. Both forms are shown below; use whichever you prefer.
 
 ## Prerequisites

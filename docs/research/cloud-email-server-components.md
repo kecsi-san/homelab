@@ -1,5 +1,5 @@
 ---
-title: "Self-Hosted Email Server — Component Analysis"
+title: "Self-Hosted Email Server: Component Analysis"
 type: research
 status: draft
 scope: [general, ansible]
@@ -8,13 +8,13 @@ updated: 2026-06-05
 tags: [email, postfix, dovecot, rspamd, dkim, dmarc, spf, tls, certbot, vps, aws, debian]
 ---
 
-# Self-Hosted Email Server — Component Analysis
+# Self-Hosted Email Server: Component Analysis
 
 Analysis of email server component choices for a self-hosted deployment on a VPS.
 Covers deployment approach, MTA, IMAP daemon, spam filtering, DKIM/DMARC, TLS automation,
 and external DNS requirements. Intended to grow as components are evaluated and decided.
 
-**Target platform:** AWS EC2 (Debian 13, bare-metal systemd — no containers).
+**Target platform:** AWS EC2 (Debian 13, bare-metal systemd; no containers).
 **IaC approach:** Ansible role `setup_email-server`; native systemd integration.
 
 ---
@@ -23,8 +23,8 @@ and external DNS requirements. Intended to grow as components are evaluated and 
 
 ### Decision: bare-metal wins for this repo
 
-Email service on a VPS touches many external concerns — DNS records, TLS certificates,
-data persistence, spam reputation, fail2ban, and system-level port binding — that do not
+Email service on a VPS touches many external concerns; DNS records, TLS certificates,
+data persistence, spam reputation, fail2ban, and system-level port binding; that do not
 fit cleanly inside a container boundary. Each of these either leaks out to the host or
 requires a volume/network workaround that adds complexity without adding value.
 
@@ -38,20 +38,19 @@ The specific issues with containers here:
 
 ### docker-mailserver: reference analysis
 
-**[docker-mailserver/docker-mailserver](https://github.com/docker-mailserver/docker-mailserver)** —
-18.3k stars, 2k forks, ~3–4 releases/year. Ships Postfix + Dovecot + Rspamd + ClamAV +
+**[docker-mailserver/docker-mailserver](https://github.com/docker-mailserver/docker-mailserver)**: 18.3k stars, 2k forks, ~3-4 releases/year. Ships Postfix + Dovecot + Rspamd + ClamAV +
 OpenDKIM + OpenDMARC + Fail2ban in a single image. Config via 100+ env vars; file-based
 storage (no SQL).
 
 | Dimension | docker-mailserver (container) | Bare-metal + Ansible |
 |-----------|------------------------------|----------------------|
-| Setup complexity | Low — one `docker-compose up` | Higher — coordinate 5+ packages |
-| Ansible integration | Weak — no official playbooks | Strong — full idempotency |
-| Hot-reload | No — restart required for user/config changes | Yes — `systemctl reload postfix/dovecot` |
+| Setup complexity | Low; one `docker-compose up` | Higher; coordinate 5+ packages |
+| Ansible integration | Weak; no official playbooks | Strong; full idempotency |
+| Hot-reload | No; restart required for user/config changes | Yes; `systemctl reload postfix/dovecot` |
 | TLS cert renewal | Host cron required; not self-contained | Ansible role handles end-to-end |
-| Debugging | Harder — supervisord inside container | Native `journalctl`, direct process inspection |
+| Debugging | Harder; supervisord inside container | Native `journalctl`, direct process inspection |
 | Customisation ceiling | Moderate (`user-patches.sh` overrides) | Unlimited |
-| Reproducibility | High — image version pins stack | Medium — Debian package versions |
+| Reproducibility | High; image version pins stack | Medium; Debian package versions |
 | Upgrades | `docker pull` + restart | `apt upgrade` per service |
 
 **Verdict:** docker-mailserver is a valid fast-start option; bare-metal is the right
@@ -129,8 +128,8 @@ for inbound DMARC enforcement and reporting.
 
 | Option | Notes |
 |--------|-------|
-| ClamAV | Open-source; integrates with Postfix via Amavis or directly via clamav-milter; auto-updates signatures; ~500–850 MB RAM cost |
-| — | Skip entirely on a low-resource VPS; most dangerous attachments are caught by recipient-side AV; reputation-based spam filters catch most malware-carrying mail |
+| ClamAV | Open-source; integrates with Postfix via Amavis or directly via clamav-milter; auto-updates signatures; ~500-850 MB RAM cost |
+| n/a | Skip entirely on a low-resource VPS; most dangerous attachments are caught by recipient-side AV; reputation-based spam filters catch most malware-carrying mail |
 
 **Deferred.** ClamAV's RAM cost is significant on a small EC2 instance. Skip initially;
 add if deliverability or security requirements change.
@@ -139,7 +138,7 @@ add if deliverability or security requirements change.
 
 ### Webmail (optional)
 
-Webmail is not required — a standard IMAP client (Thunderbird, Apple Mail) works against
+Webmail is not required; a standard IMAP client (Thunderbird, Apple Mail) works against
 Dovecot directly. Only needed if browser-based access is a requirement.
 
 | Option | Notes |
@@ -171,20 +170,20 @@ with Route53 already being used for DNS.
 
 ## External DNS Requirements
 
-Every DNS record is a hard dependency — mail will silently fail or be rejected without them.
+Every DNS record is a hard dependency; mail will silently fail or be rejected without them.
 
 | Record | Type | Example value | Purpose |
 |--------|------|---------------|---------|
 | `mail.example.com` | A | `<EC2 EIP>` | Hostname for the mail server |
 | `example.com` | MX | `10 mail.example.com` | Inbound mail routing |
 | `<EC2 EIP>` | PTR | `mail.example.com` | Reverse DNS; required for deliverability; set in AWS console (contact support or use Elastic IP reverse DNS feature) |
-| `example.com` | TXT | `v=spf1 mx -all` | SPF — authorises `mail.example.com` to send |
+| `example.com` | TXT | `v=spf1 mx -all` | SPF; authorises `mail.example.com` to send |
 | `<selector>._domainkey.example.com` | TXT | (Rspamd-generated key) | DKIM public key |
 | `_dmarc.example.com` | TXT | `v=DMARC1; p=quarantine; rua=mailto:...` | DMARC policy |
 | `_mta-sts.example.com` | TXT | `v=STSv1; id=<timestamp>` | MTA-STS policy (optional but recommended) |
 | `_smtp._tls.example.com` | TXT | `v=TLSRPTv1; rua=mailto:...` | TLSRPT reporting (optional) |
 
-PTR record is the most commonly missed — AWS requires a support request or uses the
+PTR record is the most commonly missed; AWS requires a support request or uses the
 "Reverse DNS" field on the Elastic IP in the EC2 console.
 
 ---
@@ -207,7 +206,7 @@ PTR record is the most commonly missed — AWS requires a support request or use
 
 ## Reference Projects
 
-- **[sovereign/sovereign](https://github.com/sovereign/sovereign)** — 10.5k stars; Ansible playbooks for full self-hosted VPS mail: Postfix + Dovecot + SpamAssassin + OpenDKIM + Roundcube. Closest match to the bare-metal Ansible approach, though uses SpamAssassin over Rspamd.
-- **[docker-mailserver/docker-mailserver](https://github.com/docker-mailserver/docker-mailserver)** — 18.3k stars; containerised reference for how the components wire together; useful for config cross-reference even if not used directly.
-- **[Rspamd documentation](https://rspamd.com/doc/)** — canonical reference for Rspamd + DKIM setup.
-- **[Postfix documentation](https://www.postfix.org/documentation.html)** — canonical Postfix config reference.
+- **[sovereign/sovereign](https://github.com/sovereign/sovereign)**: 10.5k stars; Ansible playbooks for full self-hosted VPS mail: Postfix + Dovecot + SpamAssassin + OpenDKIM + Roundcube. Closest match to the bare-metal Ansible approach, though uses SpamAssassin over Rspamd.
+- **[docker-mailserver/docker-mailserver](https://github.com/docker-mailserver/docker-mailserver)**: 18.3k stars; containerised reference for how the components wire together; useful for config cross-reference even if not used directly.
+- **[Rspamd documentation](https://rspamd.com/doc/)**: canonical reference for Rspamd + DKIM setup.
+- **[Postfix documentation](https://www.postfix.org/documentation.html)**: canonical Postfix config reference.

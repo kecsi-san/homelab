@@ -16,21 +16,21 @@ Shortlist of apps to consider adding. Distilled from `homelab-research.md` (surv
 
 ---
 
-## Priority 1 — High value, common, low risk
+## Priority 1: High value, common, low risk
 
 | App | What it does | Effort | Needs |
 |-----|-------------|--------|-------|
 | **kube-prometheus-stack** | Prometheus + Grafana + Alertmanager + node-exporter. Biggest gap in current stack. 8/13 Round 1 repos. | Low | Longhorn PVC |
 | **VictoriaMetrics stack** | Drop-in Prometheus replacement. ~50% lower RAM than kube-prometheus-stack. `victoria-metrics-k8s-stack` chart bundles operator + Grafana. | Low | Longhorn PVC |
-| **Gatus** | Endpoint uptime monitor, config-as-code YAML, generates public status page. ~30 MB RAM. 5/13 repos. | Very low | — |
-| **ntfy** | Self-hosted push notifications. Alert sink for Gatus, Alertmanager, scripts. | Very low | — |
+| **Gatus** | Endpoint uptime monitor, config-as-code YAML, generates public status page. ~30 MB RAM. 5/13 repos. | Very low | n/a |
+| **ntfy** | Self-hosted push notifications. Alert sink for Gatus, Alertmanager, scripts. | Very low | n/a |
 | **VolSync** | Incremental PVC backups via Restic to S3/NFS. Works with Longhorn VolumeSnapshots. Near-universal in active repos. | Medium | S3 target (see below) |
 
 > **S3 target for VolSync:** Community has moved away from MinIO (AGPLv3 relicensed 2025, GUI removed). **Garage** (Rust, MIT, ~50 MB binary) is the current favourite for self-hosted S3. Backblaze B2 is the popular cheap cloud option.
 
 ---
 
-## Priority 2 — High value, moderate complexity
+## Priority 2: High value, moderate complexity
 
 | App | What it does | Effort | Needs |
 |-----|-------------|--------|-------|
@@ -42,21 +42,21 @@ Shortlist of apps to consider adding. Distilled from `homelab-research.md` (surv
 
 ---
 
-## Priority 3 — Useful, situational
+## Priority 3: Useful, situational
 
 | App | What it does | Effort | Needs |
 |-----|-------------|--------|-------|
 | **Paperless-ngx** | Document scanner + OCR archive. Full-text search over scanned PDFs. | Low | CNPG |
 | **Jellyfin** | Open-source media server. No phone-home, no cost. Dominant in community (9/18 Round 2 repos). | Low | NAS/NFS for media |
-| **AdGuard Home** | DNS-level ad/tracker blocking. Replacing Pi-hole in newer setups. | Very low | — |
-| **Coroot** | eBPF-based APM. Zero instrumentation — surfaces RED metrics per service automatically. Pairs with VictoriaMetrics. | Low | VictoriaMetrics |
-| **Mealie** | Self-hosted recipe manager with meal planning. Low resource. | Very low | — |
+| **AdGuard Home** | DNS-level ad/tracker blocking. Replacing Pi-hole in newer setups. | Very low | n/a |
+| **Coroot** | eBPF-based APM. Zero instrumentation; surfaces RED metrics per service automatically. Pairs with VictoriaMetrics. | Low | VictoriaMetrics |
+| **Mealie** | Self-hosted recipe manager with meal planning. Low resource. | Very low | n/a |
 | **Vikunja** | Self-hosted task/project manager (Todoist alternative). | Very low | CNPG or SQLite |
-| **Actual Budget** | Personal finance / budgeting. Local-first, no cloud required. | Very low | — |
+| **Actual Budget** | Personal finance / budgeting. Local-first, no cloud required. | Very low | n/a |
 
 ---
 
-## Priority 4 — Nice to have, lower urgency
+## Priority 4: Nice to have, lower urgency
 
 | App | What it does | Effort | Notes |
 |-----|-------------|--------|-------|
@@ -64,11 +64,11 @@ Shortlist of apps to consider adding. Distilled from `homelab-research.md` (surv
 | **qBittorrent + Gluetun** | Torrent client behind VPN sidecar. | Low | VPN subscription |
 | **Home Assistant** | Home automation hub. Best on a dedicated VM (USB device access). | Medium | Separate VM recommended |
 | **Miniflux** | Minimalist RSS reader. Postgres-backed. | Very low | CNPG |
-| **Searxng** | Self-hosted metasearch (private Google alternative). | Very low | — |
+| **Searxng** | Self-hosted metasearch (private Google alternative). | Very low | n/a |
 | **n8n** | Workflow automation (self-hosted Zapier). | Low | CNPG or SQLite |
-| **IT-Tools** | Browser-based developer utilities (hash, encode, diff, format). | Very low | — |
+| **IT-Tools** | Browser-based developer utilities (hash, encode, diff, format). | Very low | n/a |
 | **Nextcloud** | File sync + calendar + contacts. Heavy but comprehensive. | High | CNPG, Redis, NFS |
-| **Music Assistant** | Multi-provider music player (Spotify, Tidal, local files). | Very low | — |
+| **Music Assistant** | Multi-provider music player (Spotify, Tidal, local files). | Very low | n/a |
 | **Ollama + Open WebUI** | Local LLM inference + ChatGPT-style frontend. CPU-only is slow for 7B+ models. | Low | GPU recommended |
 
 ---
@@ -83,29 +83,29 @@ Shortlist of apps to consider adding. Distilled from `homelab-research.md` (surv
 | **Spegel** | P2P in-cluster OCI image mirror. Reduces Docker Hub pull load on multi-node. GA in k3s since Dec 2024. | Low priority |
 | **System Upgrade Controller** | Declarative k3s/node OS upgrades driven by Renovate PRs. | When node upgrades become tedious |
 | **Grafana Alloy** | Replaces Grafana Agent (deprecated early 2024). OpenTelemetry-compatible collector for metrics + logs. | When adding monitoring stack |
-| **Envoy Gateway** | Gateway API replacement for Traefik. `onedr0p/cluster-template` default since 2025. ingress-nginx EOL March 2026 (not relevant — we use Traefik). | Low priority for now |
+| **Envoy Gateway** | Gateway API replacement for Traefik. `onedr0p/cluster-template` default since 2025. ingress-nginx EOL March 2026 (not relevant; we use Traefik). | Low priority for now |
 
 ---
 
 ## Recommended deploy order
 
-1. **kube-prometheus-stack** or **VictoriaMetrics** — visibility first; pick VictoriaMetrics if RAM is a concern
-2. **Gatus** + **ntfy** — status page + alerting sink
-3. **VolSync** + **Garage** — backup before adding stateful apps
-4. **CloudNativePG** — database operator prerequisite
-5. **Vaultwarden** — password manager; enables ESO migration later
-6. **Authentik** or **Authelia** — SSO before exposing more services
-7. **Immich** — photo management
-8. **Paperless-ngx** — document archive
-9. **Jellyfin** + arr stack — media (if desired)
+1. **kube-prometheus-stack** or **VictoriaMetrics**: visibility first; pick VictoriaMetrics if RAM is a concern
+2. **Gatus** + **ntfy**: status page + alerting sink
+3. **VolSync** + **Garage**: backup before adding stateful apps
+4. **CloudNativePG**: database operator prerequisite
+5. **Vaultwarden**: password manager; enables ESO migration later
+6. **Authentik** or **Authelia**: SSO before exposing more services
+7. **Immich**: photo management
+8. **Paperless-ngx**: document archive
+9. **Jellyfin** + arr stack; media (if desired)
 
 ---
 
 ## Useful discovery tools
 
-- **[kubesearch.dev](https://kubesearch.dev/)** — search real-world `values.yaml` across hundreds of homelab repos. Best way to find working Helm config for any chart.
-- **[home-operations/containers](https://github.com/home-operations/containers)** — community container images with Renovate-compatible semver tags, for upstreams that don't publish them.
+- **[kubesearch.dev](https://kubesearch.dev/)**: search real-world `values.yaml` across hundreds of homelab repos. Best way to find working Helm config for any chart.
+- **[home-operations/containers](https://github.com/home-operations/containers)**: community container images with Renovate-compatible semver tags, for upstreams that don't publish them.
 
 ---
 
-*Sources: `docs/homelab-research.md` — survey of 31 repos including khuedoan/homelab, onedr0p/home-ops, bjw-s-labs/home-ops, ricsanfre/pi-cluster, vehagn/homelab, techno-tim/k3s-ansible and 25 others.*
+*Sources: `docs/homelab-research.md`: survey of 31 repos including khuedoan/homelab, onedr0p/home-ops, bjw-s-labs/home-ops, ricsanfre/pi-cluster, vehagn/homelab, techno-tim/k3s-ansible and 25 others.*

@@ -13,7 +13,7 @@ tags: [dashboard, kubernetes, comparison]
 Comparison of self-hosted dashboard options evaluated against the current homelab stack
 (Kubernetes 1.35 + ArgoCD + Traefik, 4-node bare-metal cluster).
 
-**Current:** Homepage v1.13 — deployed, working, RBAC-integrated.
+**Current:** Homepage v1.13; deployed, working, RBAC-integrated.
 
 ---
 
@@ -22,7 +22,7 @@ Comparison of self-hosted dashboard options evaluated against the current homela
 | Tool | Keep / Add / Skip | Reason |
 |------|-------------------|--------|
 | **Homepage** | **Keep (primary)** | Best k8s integration, 100+ service APIs, already configured |
-| **Glance** | Add if you want feeds | RSS/news/Reddit aggregation — different purpose, not a replacement |
+| **Glance** | Add if you want feeds | RSS/news/Reddit aggregation; different purpose, not a replacement |
 | **Homarr** | Skip | Good GUI, but no advantage over Homepage for YAML-GitOps workflows |
 | **Dashy** | Skip | Weaker k8s story, higher resource use than Homepage |
 | **Hajimari** | Skip | Abandoned since 2022 |
@@ -40,7 +40,7 @@ Comparison of self-hosted dashboard options evaluated against the current homela
 | **Pod health / stats** | ✅ Label selector | ❌ | ✅ (Metrics Server) | ❌ | ✅ |
 | **Service integrations** | 100+ APIs | ~15 | 40+ | 50 widgets | Ingress-based |
 | **RSS / news feeds** | ❌ | ✅ Core feature | ❌ | ❌ | ❌ |
-| **Feed sources** | — | RSS, Reddit, HN, YouTube, Twitch, GitHub releases | — | — | — |
+| **Feed sources** | n/a | RSS, Reddit, HN, YouTube, Twitch, GitHub releases | n/a | n/a | n/a |
 | **Built-in auth** | ❌ (by design) | ❌ | ✅ (OIDC, LDAP) | ✅ (SHA-256, Keycloak) | ❌ |
 | **Config method** | YAML files | Single YAML | Drag-and-drop GUI | YAML + visual editor | K8s annotations + CRDs |
 | **GitOps-friendly** | ✅ | ✅ | ⚠️ (state in DB) | ✅ | ✅ |
@@ -56,34 +56,34 @@ Comparison of self-hosted dashboard options evaluated against the current homela
 
 ## Per-Tool Detail
 
-### Homepage — current choice
+### Homepage: current choice
 
 **Strengths for this stack:**
 - Native Kubernetes RBAC: discovers pods/services by label selector, shows real CPU/memory per app
 - 100+ first-party service integrations (Longhorn, ArgoCD, Traefik all have dedicated widgets)
-- YAML config lives in git alongside ArgoCD app manifests — single source of truth
+- YAML config lives in git alongside ArgoCD app manifests; single source of truth
 - API keys proxied server-side (browser never sees credentials)
-- Statically generated — near-instant page loads
+- Statically generated; near-instant page loads
 
 **Weaknesses:**
-- No built-in auth — fine for LAN-only, Traefik handles this
+- No built-in auth; fine for LAN-only, Traefik handles this
 - No RSS/news/feed aggregation
 - Single-page only (no multi-tab layout)
-- Unofficial Helm chart (jameswynn) — works but not maintained by core team
+- Unofficial Helm chart (jameswynn); works but not maintained by core team
 
 ---
 
-### Glance — complementary option
+### Glance: complementary option
 
 **Strengths:**
 - Purpose-built for feed aggregation: RSS, Reddit, Hacker News, YouTube, Twitch, GitHub releases, weather, stocks
 - Extremely lightweight (<50MB RAM, single Go binary)
-- Multiple pages — can mix feed widgets and service links on different tabs
+- Multiple pages; can mix feed widgets and service links on different tabs
 - Good for a "what's happening" personal dashboard alongside the infra dashboard
 
 **Weaknesses:**
-- Zero native Kubernetes integration — no pod health, no service discovery
-- No official Helm chart — would need raw manifests
+- Zero native Kubernetes integration; no pod health, no service discovery
+- No official Helm chart; would need raw manifests
 - Duplicates what Homepage already does for service links
 - AGPL-3.0 license
 
@@ -94,8 +94,8 @@ Comparison of self-hosted dashboard options evaluated against the current homela
 ### Homarr
 
 **Strengths:**
-- Drag-and-drop GUI — no YAML editing required
-- Built-in auth (OIDC, LDAP) — useful for multi-user setups
+- Drag-and-drop GUI; no YAML editing required
+- Built-in auth (OIDC, LDAP); useful for multi-user setups
 - Has an official Helm chart
 - *arr stack integration depth
 
@@ -106,7 +106,7 @@ Comparison of self-hosted dashboard options evaluated against the current homela
 - Weaker k8s story than Homepage despite partial support
 - At 4k stars it's less battle-tested than Homepage/Dashy
 
-**Verdict:** Good tool for teams that don't want YAML. Not a fit here — GitOps YAML is the workflow.
+**Verdict:** Good tool for teams that don't want YAML. Not a fit here; GitOps YAML is the workflow.
 
 ---
 
@@ -114,12 +114,12 @@ Comparison of self-hosted dashboard options evaluated against the current homela
 
 **Strengths:**
 - Built-in auth (SHA-256, Keycloak SSO, multi-user)
-- Visual JSON editor + YAML — best of both worlds for config
+- Visual JSON editor + YAML; best of both worlds for config
 - PWA with offline access
 - 50 widgets, 25+ languages
 
 **Weaknesses:**
-- No native Kubernetes integration — no pod health or service discovery
+- No native Kubernetes integration; no pod health or service discovery
 - Higher RAM than Homepage for equivalent service-link features
 - Weaker widget ecosystem depth than Homepage for homelab APIs
 - No Helm chart
@@ -136,10 +136,10 @@ Comparison of self-hosted dashboard options evaluated against the current homela
 - Lightweight Go + Svelte
 
 **Weaknesses:**
-- **Last release: October 2022 — effectively abandoned**
+- **Last release: October 2022; effectively abandoned**
 - No built-in auth
 - Very limited widget ecosystem
-- Only 822 stars — small community
+- Only 822 stars; small community
 
 **Verdict:** Architecturally elegant but dead project. Skip.
 
@@ -152,9 +152,9 @@ The only combination that makes practical sense for this homelab:
 **Homepage (infra) + Glance (personal feeds)**
 
 - Homepage: service health, cluster stats, links to all k8s apps
-- Glance: RSS feeds, GitHub releases, news, weather, HN — personal "what's new" page
+- Glance: RSS feeds, GitHub releases, news, weather, HN; personal "what's new" page
 - Both are YAML-configured and GitOps-friendly
-- Combined RAM: ~250MB — acceptable
+- Combined RAM: ~250MB; acceptable
 - Each has a distinct purpose with zero overlap
 
 All other combinations add complexity without filling a gap.

@@ -1,5 +1,5 @@
 ---
-title: "009 — Authentik as Identity Provider / SSO"
+title: "009: Authentik as Identity Provider / SSO"
 type: adr
 status: accepted
 scope: [k8s, k3s]
@@ -8,7 +8,7 @@ updated: 2026-05-17
 tags: [authentik, sso, oidc, idp, oauth2, authentication]
 ---
 
-# 009 — Authentik as Identity Provider / SSO
+# 009: Authentik as Identity Provider / SSO
 
 ## Status
 
@@ -17,7 +17,7 @@ Accepted
 ## Context
 
 The homelab IDP (Identity Platform) goal is a single set of credentials that works
-across all internal services — Forgejo, Outline, Longhorn UI, ArgoCD, Traefik
+across all internal services: Forgejo, Outline, Longhorn UI, ArgoCD, Traefik
 dashboard, and future services. Without SSO, each service maintains its own user
 database, password rotation is per-service, and there is no central audit log.
 
@@ -26,7 +26,7 @@ Requirements:
 - **Forward authentication**: Traefik middleware can protect services that have no
   built-in auth (Longhorn UI, Traefik dashboard) via `forwardAuth`
 - **Declarative configuration**: blueprints or IaC for providers, flows, and property
-  mappings — avoid click-ops that is lost on rebuild
+  mappings, avoiding click-ops that is lost on rebuild
 - **Self-hosted**: no SaaS dependency; all identity data stays on-cluster
 - **Kubernetes-native**: runs as a Pod; managed by ArgoCD
 - **Single-operator friendly**: manageable without a full-time IAM team
@@ -61,25 +61,25 @@ Key operational notes:
 
 | Option | Reason rejected |
 |---|---|
-| **Keycloak** | Most feature-complete open-source IdP; enterprise-grade OIDC/SAML/LDAP; however, JVM-based — high memory footprint (~512 MB–1 GB minimum); complex realm/client/flow configuration UI; steep learning curve for a homelab; overkill for ~5 services |
+| **Keycloak** | Most feature-complete open-source IdP; enterprise-grade OIDC/SAML/LDAP; however, JVM-based with a high memory footprint (~512 MB to 1 GB minimum); complex realm/client/flow configuration UI; steep learning curve for a homelab; overkill for ~5 services |
 | **Kanidm** | Rust-based, modern, performant IdP; excellent LDAP support; however, smaller community, fewer pre-built integrations; OIDC/OAuth2 support is less battle-tested than Keycloak or Authentik; documentation quality lower |
 | **Zitadel** | Modern, cloud-native IdP; good OIDC support; however, Go-based with its own CockroachDB or PostgreSQL dependency; less homelab community adoption; fewer blog posts and examples for the specific Forgejo + Outline integration |
-| **Authelia** | Lightweight authentication + authorization proxy; excellent for `forwardAuth` use case; however, not a full OIDC IdP for app-level OIDC flows — it can act as an OIDC provider but with limitations; primarily designed as a reverse proxy auth layer |
-| **Dex** | Lightweight OIDC connector that proxies to upstream providers (LDAP, GitHub, Google); not a standalone IdP — requires an upstream; not suitable as the primary identity store |
+| **Authelia** | Lightweight authentication + authorization proxy; excellent for `forwardAuth` use case; however, not a full OIDC IdP for app-level OIDC flows, it can act as an OIDC provider but with limitations; primarily designed as a reverse proxy auth layer |
+| **Dex** | Lightweight OIDC connector that proxies to upstream providers (LDAP, GitHub, Google); not a standalone IdP, requires an upstream; not suitable as the primary identity store |
 | **Basic Auth / per-service accounts** | No SSO; credential sprawl; no central audit; not scalable beyond 2-3 services |
 
 ## Consequences
 
 **Positive:**
-- Single login for all homelab services — Forgejo, Outline, Longhorn UI, Traefik
+- Single login for all homelab services: Forgejo, Outline, Longhorn UI, Traefik
   dashboard all use Authentik credentials
 - `forwardAuth` middleware enables SSO for services with no built-in OIDC support;
   adding auth to a new service is one line in its IngressRoute
-- Blueprint-based provider configuration survives cluster rebuilds — declarative,
+- Blueprint-based provider configuration survives cluster rebuilds: declarative,
   committed to Git, re-applied automatically
 - Authentik's admin UI at `authentik.kecskemethy.org` provides flow debugging, event
   logs, and user management without SSH access
-- Python/Django-based — `ak shell` provides a full Python REPL against the live
+- Python/Django-based, so `ak shell` provides a full Python REPL against the live
   database for administrative tasks that the UI doesn't expose (user creation, bulk ops)
 
 **Negative / Trade-offs:**
@@ -94,7 +94,7 @@ Key operational notes:
   update (or manual `ak apply_blueprint` invocation)
 - **`akadmin` is not a regular user**: the bootstrap admin cannot be used for OIDC
   logins to Forgejo or Outline; regular users must be created separately via `ak shell`
-- Authentik adds ~200–300 MB RAM overhead (server + worker + Redis); on a 3-node cluster
+- Authentik adds ~200-300 MB RAM overhead (server + worker + Redis); on a 3-node cluster
   this is acceptable but would constrain a single-node setup
 - If Authentik is down, `forwardAuth`-protected services (Longhorn UI, Traefik dashboard)
   become inaccessible; this was the rationale for ensuring Authentik is a healthy, stable

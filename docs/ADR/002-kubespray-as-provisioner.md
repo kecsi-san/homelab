@@ -1,5 +1,5 @@
 ---
-title: "002 — Kubespray as k8s Cluster Provisioner"
+title: "002: Kubespray as k8s Cluster Provisioner"
 type: adr
 status: accepted
 scope: [k8s, ansible]
@@ -8,7 +8,7 @@ updated: 2026-05-17
 tags: [kubernetes, kubespray, provisioner, ansible]
 ---
 
-# 002 — Kubespray as k8s Cluster Provisioner
+# 002: Kubespray as k8s Cluster Provisioner
 
 ## Status
 

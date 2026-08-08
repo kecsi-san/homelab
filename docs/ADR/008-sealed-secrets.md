@@ -1,5 +1,5 @@
 ---
-title: "008 — SealedSecrets for Secret Management"
+title: "008: SealedSecrets for Secret Management"
 type: adr
 status: accepted
 scope: [k8s, k3s]
@@ -8,7 +8,7 @@ updated: 2026-05-17
 tags: [secrets, sealed-secrets, security, gitops]
 ---
 
-# 008 — SealedSecrets for Secret Management
+# 008: SealedSecrets for Secret Management
 
 ## Status
 
@@ -17,7 +17,7 @@ Accepted
 ## Context
 
 A GitOps workflow requires all cluster state to be committed to a Git repository.
-Kubernetes `Secret` objects contain base64-encoded (not encrypted) values — committing
+Kubernetes `Secret` objects contain base64-encoded (not encrypted) values. Committing
 them directly to a public repository would expose credentials, API tokens, and
 connection strings. The homelab needed a way to store secrets safely in Git while
 still allowing ArgoCD to sync them into the cluster.
@@ -57,15 +57,15 @@ Long encrypted data lines get `# yamllint disable-line rule:line-length` comment
 | Option | Reason rejected |
 |---|---|
 | **HashiCorp Vault** | Full secrets management platform; requires Vault server, HA setup, unsealing procedure, agent sidecar or CSI driver; enormous operational overhead for a homelab; overkill when all secrets are static credentials |
-| **External Secrets Operator (ESO)** | Syncs secrets from external providers (AWS SSM, GCP Secret Manager, Azure Key Vault, Vault); requires an external backend — adds a cloud dependency or Vault dependency; no external backend available on this homelab |
-| **SOPS + AGE / GPG** | File-level encryption committed to Git; requires SOPS tooling in the CI/CD pipeline; ArgoCD has a SOPS plugin (helm-secrets) but it's not natively supported — adds complexity; `AGE` keys must be distributed to every operator workstation |
+| **External Secrets Operator (ESO)** | Syncs secrets from external providers (AWS SSM, GCP Secret Manager, Azure Key Vault, Vault); requires an external backend, adding a cloud or Vault dependency; no external backend available on this homelab |
+| **SOPS + AGE / GPG** | File-level encryption committed to Git; requires SOPS tooling in the CI/CD pipeline; ArgoCD has a SOPS plugin (helm-secrets) but it's not natively supported, adding complexity; `AGE` keys must be distributed to every operator workstation |
 | **Kubernetes Secrets (plain, base64)** | Zero encryption; base64 is trivially reversible; completely unacceptable for a public repo |
 | **Doppler / 1Password Secrets Automation** | SaaS-based; adds external service dependency; requires internet connectivity for every Secret reconciliation; SaaS cost for a homelab |
 
 ## Consequences
 
 **Positive:**
-- `SealedSecret` CRs are safe to commit to a public GitHub repo — the encrypted blob
+- `SealedSecret` CRs are safe to commit to a public GitHub repo: the encrypted blob
   is decryptable only by the specific cluster's controller private key
 - No external dependencies: decryption happens entirely in-cluster; no internet access
   required for secret reconciliation after initial bootstrap
@@ -80,7 +80,7 @@ Long encrypted data lines get `# yamllint disable-line rule:line-length` comment
   it (cluster rebuild without restore) means all SealedSecrets become permanently
   undecryptable; the `~/sealed-secrets-key-backup.yaml` file must be backed up externally
 - **Re-sealing required per cluster**: any secret that must exist on both k8s and k3s
-  must be sealed twice — once against each cluster context; there is no shared key
+  must be sealed twice, once against each cluster context; there is no shared key
 - **One-way encryption**: you cannot "view" a sealed secret; to retrieve the original
   value you must `kubectl get secret` on the live cluster (the controller decrypts it
   into a native Secret)

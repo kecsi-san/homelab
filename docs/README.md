@@ -27,14 +27,14 @@ rationale live in [Research → IDP Components](research/homelab-idp-components.
 | [Outline](IDP/outline.md) | Documentation strategy: what goes in Outline vs Git; operational notes |
 | [CI Pipelines](IDP/ci-pipelines.md) | Forgejo Actions setup; Python template adaptation; Semgrep + Trivy (planned) |
 | CD Pipelines | *(planned)* Push-to-main → ArgoCD sync; deployment workflow for Python apps |
-| Backstage | ✅ Deployed on k8s (see [Status](IDP/status.md)) — service catalog; custom image built via Forgejo Actions CI |
+| Backstage | ✅ Deployed on k8s (see [Status](IDP/status.md)); service catalog; custom image built via Forgejo Actions CI |
 
 ## Ansible Workflows
 
 | Doc | Description |
 |-----|-------------|
-| [Quick Start](ansible/quickstart.md) | First-time setup guide — where to begin |
-| [Dev/DevOps Workstation](ansible/devenv.md) | Set up a local workstation — macOS or Debian/WSL2 |
+| [Quick Start](ansible/quickstart.md) | First-time setup guide; where to begin |
+| [Dev/DevOps Workstation](ansible/devenv.md) | Set up a local workstation; macOS or Debian/WSL2 |
 | [Local k3s Cluster](ansible/k3s.md) | Single-node k3s cluster for local development (WSL2 + macOS) |
 | [4-Node Homelab Cluster](ansible/k8s-homelab.md) | Bare-metal HA cluster, GitOps stack, Cloudflare Tunnel |
 | [Roles Reference](ansible/roles.md) | Role naming conventions, structure, and full role inventory |
@@ -65,25 +65,25 @@ Cross-cutting operational procedures and runbooks.
 | [Cloud VPS Services Survey](research/cloud-vps-services-survey.md) | Cloud/VPS usage in homelab repos: VPN, email, DNS, provider trends (18 repos) |
 | [Email Server Components](research/cloud-email-server-components.md) | Self-hosted email stack: Postfix, Dovecot, Rspamd, TLS, DNS requirements |
 | [Python Project Templates](research/dev-python-templates.md) | uv-based Python project template comparison and recommendation (7 templates) |
-| [Secret Store Comparison](research/homelab-secret-store-comparison.md) | HashiCorp Vault vs OpenBao — license, feature parity, ecosystem maturity |
+| [Secret Store Comparison](research/homelab-secret-store-comparison.md) | HashiCorp Vault vs OpenBao; license, feature parity, ecosystem maturity |
 
 ## Architecture Decisions
 
 | Doc | Description |
 |-----|-------------|
-| [001 — Dual Cluster Topology](ADR/001-dual-cluster-topology.md) | k8s (bare-metal HA) + k3s (local dev) dual cluster rationale |
-| [002 — Kubespray as Provisioner](ADR/002-kubespray-as-provisioner.md) | Kubespray vs kubeadm, k0s, RKE2, Talos for cluster provisioning |
-| [003 — Cilium CNI Migration](ADR/003-cilium-cni-migration.md) | Cilium eBPF + Hubble, migrated from Calico |
-| [004 — Longhorn Storage](ADR/004-longhorn-storage.md) | Longhorn distributed block storage vs NFS/OpenEBS/Rook-Ceph |
-| [005 — Traefik Ingress](ADR/005-traefik-ingress.md) | Traefik v3 with forwardAuth + cert-manager vs nginx/HAProxy/Istio |
-| [006 — ArgoCD GitOps](ADR/006-argocd-gitops.md) | ArgoCD app-of-apps pattern vs Flux/Fleet |
-| [007 — CloudNativePG](ADR/007-cloudnative-pg.md) | CNPG operator for PostgreSQL vs standalone/Zalando/CrunchyData |
-| [008 — SealedSecrets](ADR/008-sealed-secrets.md) | SealedSecrets for GitOps-safe secrets vs Vault/ESO/SOPS+AGE |
-| [009 — Authentik IdP](ADR/009-authentik-idp.md) | Authentik as SSO/OIDC IdP vs Keycloak/Kanidm/Zitadel/Authelia |
-| [010 — Forgejo Git Server](ADR/010-forgejo-git-server.md) | Forgejo as self-hosted Git + OCI registry + CI vs GitLab/Gitea |
-| [011 — Outline Wiki](ADR/011-outline-wiki.md) | Outline over Docmost (OIDC gated behind EE) for team wiki |
-| [012 — Cloudflare Tunnel](ADR/012-cloudflare-tunnel.md) | Cloudflare Tunnel + WARP vs port forwarding/Tailscale/WireGuard |
-| [013 — Forgejo Actions Runner](ADR/013-forgejo-actions-runner.md) | DinD sidecar runner pattern vs host Docker/k8s executor/Podman |
+| [001: Dual Cluster Topology](ADR/001-dual-cluster-topology.md) | k8s (bare-metal HA) + k3s (local dev) dual cluster rationale |
+| [002: Kubespray as Provisioner](ADR/002-kubespray-as-provisioner.md) | Kubespray vs kubeadm, k0s, RKE2, Talos for cluster provisioning |
+| [003: Cilium CNI Migration](ADR/003-cilium-cni-migration.md) | Cilium eBPF + Hubble, migrated from Calico |
+| [004: Longhorn Storage](ADR/004-longhorn-storage.md) | Longhorn distributed block storage vs NFS/OpenEBS/Rook-Ceph |
+| [005: Traefik Ingress](ADR/005-traefik-ingress.md) | Traefik v3 with forwardAuth + cert-manager vs nginx/HAProxy/Istio |
+| [006: ArgoCD GitOps](ADR/006-argocd-gitops.md) | ArgoCD app-of-apps pattern vs Flux/Fleet |
+| [007: CloudNativePG](ADR/007-cloudnative-pg.md) | CNPG operator for PostgreSQL vs standalone/Zalando/CrunchyData |
+| [008: SealedSecrets](ADR/008-sealed-secrets.md) | SealedSecrets for GitOps-safe secrets vs Vault/ESO/SOPS+AGE |
+| [009: Authentik IdP](ADR/009-authentik-idp.md) | Authentik as SSO/OIDC IdP vs Keycloak/Kanidm/Zitadel/Authelia |
+| [010: Forgejo Git Server](ADR/010-forgejo-git-server.md) | Forgejo as self-hosted Git + OCI registry + CI vs GitLab/Gitea |
+| [011: Outline Wiki](ADR/011-outline-wiki.md) | Outline over Docmost (OIDC gated behind EE) for team wiki |
+| [012: Cloudflare Tunnel](ADR/012-cloudflare-tunnel.md) | Cloudflare Tunnel + WARP vs port forwarding/Tailscale/WireGuard |
+| [013: Forgejo Actions Runner](ADR/013-forgejo-actions-runner.md) | DinD sidecar runner pattern vs host Docker/k8s executor/Podman |
 
 ## Homelab
 
