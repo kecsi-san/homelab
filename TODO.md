@@ -20,6 +20,8 @@ Recurring maintenance — not one-off tasks; re-verify occasionally rather than 
 
 - **ArgoCD version** — `argocd_chart_version` in `roles/setup_argocd/defaults/main.yml` is a plain Ansible default, not tracked by Renovate; the two clusters only upgrade when someone reruns `post-k8s.yml`/`post-k3s.yml` after bumping it, so they can silently drift apart. Check https://github.com/argoproj/argo-helm for newer releases and confirm both clusters still match. Last checked 2026-07-05: k8s v2.14.5 (chart 7.7.5), k3s v2.13.1 (older chart pin — reran less recently).
 
+- **prolion Node.js pin (better-sqlite3 / thumbsup Node 24 compat)** — `inventory/group_vars/fileservers.yml` pins `nodejs_apt_major_version: "22"` (role default is `"24"`) because thumbsup's locked `better-sqlite3@11.0.0` has no prebuilt binary for Node 24's ABI and fails to compile against it. Periodically check whether thumbsup has bumped its `better-sqlite3` dependency to a version with Node 24 prebuild coverage (https://github.com/WiredThing/thumbsup releases/package.json, and https://github.com/WiseLibs/better-sqlite3 releases for Node 24 prebuilds) — once it has, bump `nodejs_apt_major_version` back to `"24"` (or drop the override entirely) and rerun `fileservers.yml`. Not Renovate-tracked (a native-module ABI compatibility question, not a version range Renovate can evaluate). Pinned 2026-08-08.
+
 ## AWS / EC2 & Email
 
 ### Ansible — inventory, roles & playbooks
