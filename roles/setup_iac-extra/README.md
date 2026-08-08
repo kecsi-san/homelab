@@ -1,10 +1,10 @@
 # setup_iac-extra
 
-Installs additional IaC tooling via Homebrew — complements `setup_iac-terraform`.
+Installs additional IaC tooling via Homebrew; complements `setup_iac-terraform`.
 
 ## What it does
 
-Installs the following via Homebrew (Tier 2 — frequently updated):
+Installs the following via Homebrew (Tier 2; frequently updated):
 
 | Tool | Purpose |
 |------|---------|
@@ -33,6 +33,6 @@ Installs the following via Homebrew (Tier 2 — frequently updated):
 
 ## Notes
 
-- `become: false` — Homebrew runs in user space
+- `become: false`: Homebrew runs in user space
 - Requires Homebrew (`install_linuxbrew` role)
 - See [Tool Management Philosophy](../../README.md#tool-management-philosophy)

@@ -19,8 +19,8 @@ Installs Go development tooling via Homebrew.
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `go_dev_enabled` | `true` | Set to `false` to skip the role entirely |
-| `go_brew_packages` | `[go, gopls, golangci-lint]` | Core packages — always installed |
-| `go_optional_brew_packages` | all `false` | Optional tools — flip to `true` to install |
+| `go_brew_packages` | `[go, gopls, golangci-lint]` | Core packages; always installed |
+| `go_optional_brew_packages` | all `false` | Optional tools; flip to `true` to install |
 
 ## Usage
 
@@ -43,6 +43,6 @@ Installs Go development tooling via Homebrew.
 
 ## Notes
 
-- `become: false` — all installs are user-space via Homebrew
+- `become: false`: all installs are user-space via Homebrew
 - After install, ensure `$(go env GOPATH)/bin` is in your `PATH` for tools installed via `go install`
 - `gopls` is required for VS Code Go extension and JetBrains GoLand IDE support

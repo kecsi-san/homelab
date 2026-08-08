@@ -1,6 +1,6 @@
 # disable_hibernation
 
-Disables all forms of system sleep and hibernation via systemd — intended for always-on servers.
+Disables all forms of system sleep and hibernation via systemd; intended for always-on servers.
 
 ## What it does
 
@@ -27,5 +27,5 @@ Disables all forms of system sleep and hibernation via systemd — intended for 
 ## Notes
 
 - Requires `become: true`
-- Intended for bare-metal servers and homelab nodes — not needed on desktops
+- Intended for bare-metal servers and homelab nodes; not needed on desktops
 - Masking targets survives reboots; the `nosuspend.conf` drop-in provides an additional layer

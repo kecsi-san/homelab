@@ -6,7 +6,7 @@ Covers **Tier 3** of the tool management strategy (Python-only packages). See [T
 
 ## What it does
 
-1. Installs CLI tools via `uv tool install` — each in an isolated virtualenv, linked to `~/.local/bin`
+1. Installs CLI tools via `uv tool install`: each in an isolated virtualenv, linked to `~/.local/bin`
 2. Adds `~/.local/bin` to `PATH` in `~/.bashrc`
 3. Creates a shared `~/.venv/devops` virtualenv for library packages
 4. Installs library packages into the devops venv via `uv pip install`
@@ -16,7 +16,7 @@ Covers **Tier 3** of the tool management strategy (Python-only packages). See [T
 
 ---
 
-## CLI tools — `uv tool install`
+## CLI tools: `uv tool install`
 
 | Tool | Version | Purpose |
 |------|---------|---------|
@@ -30,7 +30,7 @@ Covers **Tier 3** of the tool management strategy (Python-only packages). See [T
 
 `ansible-core` includes `netaddr` as an extra dependency (required by Kubespray's `ansible.utils.ipaddr` filter).
 
-## Library packages — `uv pip install` into `~/.venv/devops`
+## Library packages: `uv pip install` into `~/.venv/devops`
 
 | Package | Purpose |
 |---------|---------|
@@ -101,11 +101,11 @@ uv_tools:
 
 ## Notes
 
-- `become: false` — all packages are installed in user space
-- `changed_when: false` on install/upgrade tasks — uv is idempotent; use `upgrade_python-uv` to upgrade
+- `become: false`: all packages are installed in user space
+- `changed_when: false` on install/upgrade tasks; uv is idempotent; use `upgrade_python-uv` to upgrade
 - Adding packages to the lists installs them on next run; removing them does not uninstall automatically
-- `ansible-core` is pinned to `>=2.18,<2.19` — Kubespray release-2.31 requires ansible-core 2.18.x
-- Do not install `ansible` or `ansible-core` into the devops venv — conflicts with the uv tool and causes PATH shadowing issues
+- `ansible-core` is pinned to `>=2.18,<2.19`: Kubespray release-2.31 requires ansible-core 2.18.x
+- Do not install `ansible` or `ansible-core` into the devops venv; conflicts with the uv tool and causes PATH shadowing issues
 
 ## Platform limitations
 

@@ -10,7 +10,7 @@ Installs AWS CLI tooling for local development and infrastructure work.
 | `aws-sam-cli` | Homebrew | Linux + macOS |
 | `session-manager-plugin` | Official `.deb` from AWS | Linux only |
 
-`session-manager-plugin` is not available as a Homebrew formula for Linux — it is downloaded directly from the AWS S3 installer bucket and installed via `apt`.
+`session-manager-plugin` is not available as a Homebrew formula for Linux; it is downloaded directly from the AWS S3 installer bucket and installed via `apt`.
 
 ## Variables
 
@@ -37,6 +37,6 @@ Installs AWS CLI tooling for local development and infrastructure work.
 
 ## Notes
 
-- `become: false` for Homebrew installs — user-space
-- `become: true` for `apt` install of session-manager-plugin — requires root
+- `become: false` for Homebrew installs; user-space
+- `become: true` for `apt` install of session-manager-plugin; requires root
 - Session Manager Plugin enables SSH/port-forward via SSM without opening inbound ports

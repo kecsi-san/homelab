@@ -8,7 +8,7 @@ Installs security scanning and hardening utilities.
 
 | Package | Purpose |
 |---------|---------|
-| `fail2ban` | Brute-force protection — bans IPs after repeated auth failures |
+| `fail2ban` | Brute-force protection; bans IPs after repeated auth failures |
 | `rkhunter` | Rootkit scanner and system integrity checker |
 
 ### Cisofy apt repo
@@ -24,9 +24,9 @@ Adds the official [Cisofy](https://cisofy.com) apt repository and installs:
 | Package | Purpose |
 |---------|---------|
 | `trivy` | Vulnerability and misconfiguration scanner for containers, IaC, and filesystems |
-| `hadolint` | Dockerfile linter — best-practice and security checks |
+| `hadolint` | Dockerfile linter; best-practice and security checks |
 
-> `trivy` is also installed by `setup_iac-terraform` — the duplicate is intentional so this role is self-contained.
+> `trivy` is also installed by `setup_iac-terraform`: the duplicate is intentional so this role is self-contained.
 
 ## Variables
 
@@ -51,12 +51,12 @@ Adds the official [Cisofy](https://cisofy.com) apt repository and installs:
 - `lynis` can be run manually: `sudo lynis audit system`
 - `rkhunter` initial database: `sudo rkhunter --update && sudo rkhunter --propupd`
 - `aide` (file integrity monitoring) is supported but **not** in the default
-  `security_apt_packages` and not used by any playbook — `dailyaidecheck.timer`'s
+  `security_apt_packages` and not used by any playbook; `dailyaidecheck.timer`'s
   daily full-filesystem hash cost 15+ min CPU and a ~20G memory peak per kube
   node. If a caller passes `aide` in `security_apt_packages`, the role deploys
   Kubernetes/NFS scan exclusions, suppresses its (undeliverable, no MTA) mail
   report, and initializes its baseline database. Whenever `aide` is **absent**
   from the list, the role actively tears down a previously-installed instance
   (stops/disables the timer, purges `aide`+`aide-common`, removes leftover
-  config and the baseline database) — so removing it from the list is enough
+  config and the baseline database); so removing it from the list is enough
   to fully disable it on hosts that had it before.

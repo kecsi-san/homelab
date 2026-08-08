@@ -1,7 +1,7 @@
 # configure_bash-aliases
 
 Deploys `~/.bash_aliases` (sourced automatically by the default `.bashrc`,
-already present on this workstation — no extra wiring needed). Migrated
+already present on this workstation; no extra wiring needed). Migrated
 from the old `../dotfiles` `.bash_aliases` (see homelab `TODO.md`
 "Dotfiles migration").
 
@@ -18,7 +18,7 @@ from the old `../dotfiles` `.bash_aliases` (see homelab `TODO.md`
 | Alias | What it does |
 |-------|--------------|
 | `ls`, `ll`, `l`, `la` | `eza`-based directory listings |
-| `alert` | Desktop notification for the last command — handy prefixed onto a long-running command, e.g. `sleep 10; alert` |
+| `alert` | Desktop notification for the last command; handy prefixed onto a long-running command, e.g. `sleep 10; alert` |
 | `kx [context]` | Switch/show current `kubectl` context |
 | `kn [namespace]` | Switch/show current `kubectl` namespace |
 | `apt-maintenance` | `apt update && upgrade && autoremove && autoclean` |
@@ -26,11 +26,11 @@ from the old `../dotfiles` `.bash_aliases` (see homelab `TODO.md`
 | `ecr-login` | Docker login to this account's ECR registry (region: `bash_aliases_ecr_region`) |
 | `git-reset-author` | Amend the last commit to reset its author to the current git identity |
 
-Deliberately **not** migrated: `alias k=kubectl` — already deployed by
+Deliberately **not** migrated: `alias k=kubectl`: already deployed by
 `setup_kube-extra`, would just be a duplicate/conflicting `blockinfile`
 target if repeated here.
 
-`apt-maintenance` uses `apt -y upgrade` (non-interactive) — this workstation's
+`apt-maintenance` uses `apt -y upgrade` (non-interactive); this workstation's
 live `~/.bash_aliases` already had that refinement, which the source
 `../dotfiles/.bash_aliases` this role was templated from never had pushed
 back to it; kept the live version rather than regressing it.
@@ -55,7 +55,6 @@ back to it; kept the live version rather than regressing it.
 ## Notes
 
 - `apt-maintenance` and `ecr-login`/AWS-specific aliases are harmless but
-  no-ops (or errors if actually run) on machines without `apt`/AWS creds —
-  same as the original dotfiles file, no OS/context guarding is applied to
+  no-ops (or errors if actually run) on machines without `apt`/AWS creds;   same as the original dotfiles file, no OS/context guarding is applied to
   the alias *definitions* themselves, only to their install-time
   dependencies (`libnotify-bin`).

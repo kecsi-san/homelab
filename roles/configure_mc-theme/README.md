@@ -8,10 +8,9 @@ Downloads the gruvbox256 Midnight Commander skin. Migrated from the old
 
 Downloads [Dornat/midnight-commander-gruvbox-skin](https://github.com/Dornat/midnight-commander-gruvbox-skin)'s
 `gruvbox256.ini` to `~/.local/share/mc/skins/gruvbox256.ini`. `mc` itself is
-already installed by `setup_minimal` — this role only handles the skin file.
+already installed by `setup_minimal`: this role only handles the skin file.
 
-Unlike the original script, this does **not** launch `mc` interactively —
-that was a one-time "try it now" convenience in the source script, not
+Unlike the original script, this does **not** launch `mc` interactively; that was a one-time "try it now" convenience in the source script, not
 something to automate. To actually enable it:
 
 ```

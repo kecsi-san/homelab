@@ -17,10 +17,10 @@ annotation, IngressRoutes, TLS) is managed by ArgoCD via the GitOps repo.
 | `traefik_helm_release_name` | `traefik` | Helm release name |
 | `traefik_helm_repo_name` | `traefik` | Helm repo alias |
 | `traefik_helm_repo_url` | `https://traefik.github.io/charts` | Helm repo URL |
-| `traefik_chart_version` | `34.4.1` | Chart version — pin for reproducibility |
+| `traefik_chart_version` | `34.4.1` | Chart version; pin for reproducibility |
 | `traefik_kubeconfig` | `""` | Path to kubeconfig; empty = uses `KUBECONFIG` env var |
 | `traefik_service_type` | `ClusterIP` | Service type at install time (see note below) |
-| `traefik_helm_values` | see defaults | Full Helm values dict — override as needed |
+| `traefik_helm_values` | see defaults | Full Helm values dict; override as needed |
 
 ## Service type note
 
@@ -30,7 +30,7 @@ This avoids a race condition where two services claim the same IP during migrati
 
 ## Usage
 
-In `post-k8s.yml` (homelab — targets `kube` group, delegates Helm to localhost):
+In `post-k8s.yml` (homelab; targets `kube` group, delegates Helm to localhost):
 
 ```yaml
 - name: Install Traefik ingress controller
@@ -42,7 +42,7 @@ In `post-k8s.yml` (homelab — targets `kube` group, delegates Helm to localhost
     - traefik
 ```
 
-In `post-k3s.yml` (k3s local — targets `localhost`):
+In `post-k3s.yml` (k3s local; targets `localhost`):
 
 ```yaml
 - name: Install Traefik ingress controller
@@ -57,4 +57,4 @@ In `post-k3s.yml` (k3s local — targets `localhost`):
 ## Upgrading Traefik
 
 Update `traefik_chart_version` in `defaults/main.yml` and re-run the playbook.
-The Helm task is idempotent — it upgrades if the version differs.
+The Helm task is idempotent; it upgrades if the version differs.

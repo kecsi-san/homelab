@@ -6,9 +6,9 @@ Covers **Tier 2** of the tool management strategy. Companion to `debian_upgrade`
 
 ## What it does
 
-1. `brew update` — fetches latest formulae and cask definitions
-2. `brew upgrade` — upgrades all installed packages to latest
-3. `brew cleanup` — removes old versions (default: anything older than 1 day)
+1. `brew update`: fetches latest formulae and cask definitions
+2. `brew upgrade`: upgrades all installed packages to latest
+3. `brew cleanup`: removes old versions (default: anything older than 1 day)
 
 ## Variables
 
@@ -31,5 +31,5 @@ Covers **Tier 2** of the tool management strategy. Companion to `debian_upgrade`
 
 ## Notes
 
-- `become: false` — Homebrew runs entirely in user space
+- `become: false`: Homebrew runs entirely in user space
 - Safe to run regularly; equivalent to running `brew update && brew upgrade && HOMEBREW_CLEANUP_MAX_AGE_DAYS=1 brew cleanup` manually

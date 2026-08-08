@@ -5,7 +5,7 @@ Configures passwordless sudo for the admin user by creating a validated sudoers 
 ## What it does
 
 - Creates `/etc/sudoers.d/{{ sudo_user }}` with `NOPASSWD: ALL`
-- Validates the file with `visudo -cf` before writing (safe — will not break sudo on syntax error)
+- Validates the file with `visudo -cf` before writing (safe; will not break sudo on syntax error)
 - Idempotent via `lineinfile` with a regexp guard
 
 ## Variables

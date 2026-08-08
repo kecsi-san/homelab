@@ -1,6 +1,6 @@
 # setup_aws-ssm-agent
 
-Installs and enables the AWS Systems Manager (SSM) agent, giving an out-of-band rescue path (AWS Console → Session Manager) that doesn't depend on sshd — useful before making risky SSH/PAM config changes.
+Installs and enables the AWS Systems Manager (SSM) agent, giving an out-of-band rescue path (AWS Console → Session Manager) that doesn't depend on sshd; useful before making risky SSH/PAM config changes.
 
 ## What it does
 
@@ -16,7 +16,7 @@ Installs and enables the AWS Systems Manager (SSM) agent, giving an out-of-band 
 
 ## Prerequisites
 
-The EC2 instance's IAM instance profile must have a role with the `AmazonSSMManagedInstanceCore` managed policy attached, or the agent will install and run but never register with Systems Manager. This is not managed by Ansible — attach it manually or via Terraform IAM resources:
+The EC2 instance's IAM instance profile must have a role with the `AmazonSSMManagedInstanceCore` managed policy attached, or the agent will install and run but never register with Systems Manager. This is not managed by Ansible; attach it manually or via Terraform IAM resources:
 
 ```bash
 aws iam attach-role-policy --role-name <role-name> \

@@ -3,7 +3,7 @@
 Installs a single-node k3s local development cluster.
 
 - **Linux (WSL2 / Debian):** native k3s via the official installer script
-- **macOS:** k3s via k3d (k3s in Docker) — installed through Homebrew
+- **macOS:** k3s via k3d (k3s in Docker); installed through Homebrew
 
 Kubeconfig is written to `~/.kube/k3s.yaml` and appended to `KUBECONFIG` in `~/.bashrc`.
 
@@ -48,7 +48,7 @@ Kubeconfig is written to `~/.kube/k3s.yaml` and appended to `KUBECONFIG` in `~/.
 
 - **Idempotent on Linux:** skips install if `/usr/local/bin/k3s` already exists
 - **Idempotent on macOS:** skips `k3d cluster create` if the named cluster already exists
-- `KUBECONFIG` uses the colon-separated multi-file syntax — safe to combine with other cluster configs
+- `KUBECONFIG` uses the colon-separated multi-file syntax; safe to combine with other cluster configs
 - To uninstall, run `playbooks/reset-k3s.yml`
 - macOS requires Docker Desktop (or OrbStack) to be running for k3d to work
-- Traefik is disabled by default — use ingress-nginx or another controller for local testing
+- Traefik is disabled by default; use ingress-nginx or another controller for local testing

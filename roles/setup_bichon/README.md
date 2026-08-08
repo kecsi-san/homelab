@@ -1,8 +1,8 @@
 # setup_bichon
 
-> **Status: Planned** — placeholder only, not yet implemented.
+> **Status: Planned**: placeholder only, not yet implemented.
 
-Deploys [Bichon](https://github.com/rustmailer/bichon) — a self-hosted email archive with full-text search, built in Rust with a React web UI.
+Deploys [Bichon](https://github.com/rustmailer/bichon): a self-hosted email archive with full-text search, built in Rust with a React web UI.
 
 ## What it does
 
@@ -15,7 +15,7 @@ Deploys [Bichon](https://github.com/rustmailer/bichon) — a self-hosted email a
 
 Chosen over alternatives (Piler, Mail-Archiver, OpenArchiver) for:
 - Single binary / minimal dependencies (no separate DB required)
-- Rust — low memory footprint, suitable for the existing EC2 instance
+- Rust; low memory footprint, suitable for the existing EC2 instance
 - Modern React UI with threaded view and full-text search (Tantivy)
 - AGPL-3.0 license
 - Actively maintained (1,800+ stars, released June 2026)
@@ -39,5 +39,5 @@ See [`docs/research/email-archive-software.md`](../../docs/research/email-archiv
 
 ## Notes
 
-- IMAP pull is the primary ingestion method — archives existing mailboxes incrementally
+- IMAP pull is the primary ingestion method; archives existing mailboxes incrementally
 - For MTA-level capture (outbound + mail that never hits a mailbox), also set `always_bcc` in Postfix pointing to Bichon's embedded SMTP on port 2525

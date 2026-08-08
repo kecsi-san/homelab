@@ -3,11 +3,11 @@
 Installs Node.js, selecting between two install methods via
 `nodejs_install_method`:
 
-- **`homebrew-nvm`** (default, workstations) — Node.js managed via **nvm**
+- **`homebrew-nvm`** (default, workstations); Node.js managed via **nvm**
   (not a fixed Homebrew formula) so multiple versions can be installed and
   switched per-project; `pnpm` and the optional tools remain standalone
   Homebrew binaries.
-- **`apt-nodesource`** (servers) — Node.js installed system-wide from the
+- **`apt-nodesource`** (servers); Node.js installed system-wide from the
   NodeSource apt repo, root-owned, single version, no per-project switching.
   Homebrew-only options (`nodejs_brew_packages`,
   `nodejs_optional_brew_packages`) don't apply to this method.
@@ -41,12 +41,12 @@ Installs Node.js, selecting between two install methods via
 |----------|---------|-------------|
 | `nodejs_dev_enabled` | `true` | Set to `false` to skip the role entirely |
 | `nodejs_install_method` | `"homebrew-nvm"` | `"homebrew-nvm"` or `"apt-nodesource"` |
-| `nodejs_version` | `"lts/*"` | Node.js version installed via nvm — only used for `homebrew-nvm` |
-| `nodejs_apt_major_version` | `"24"` | NodeSource major version line — only used for `apt-nodesource` |
-| `nodejs_apt_purge_distro_packages` | `true` | Passed through to `setup_apt_repos` — only used for `apt-nodesource` |
-| `nodejs_brew_packages` | `[pnpm]` | Standalone Homebrew packages — only used for `homebrew-nvm` |
-| `nodejs_optional_brew_packages` | all `false` | Optional tools — only used for `homebrew-nvm` |
-| `nodejs_npm_global_packages` | `[]` | Extra packages to install globally via npm — both methods |
+| `nodejs_version` | `"lts/*"` | Node.js version installed via nvm; only used for `homebrew-nvm` |
+| `nodejs_apt_major_version` | `"24"` | NodeSource major version line; only used for `apt-nodesource` |
+| `nodejs_apt_purge_distro_packages` | `true` | Passed through to `setup_apt_repos`: only used for `apt-nodesource` |
+| `nodejs_brew_packages` | `[pnpm]` | Standalone Homebrew packages; only used for `homebrew-nvm` |
+| `nodejs_optional_brew_packages` | all `false` | Optional tools; only used for `homebrew-nvm` |
+| `nodejs_npm_global_packages` | `[]` | Extra packages to install globally via npm; both methods |
 
 ## Usage
 
@@ -90,7 +90,7 @@ Installs Node.js, selecting between two install methods via
 
 - `homebrew-nvm`: `become: false`, all installs are user-space. nvm is a
   shell function sourced into interactive shells, not a normal `PATH`
-  binary — tasks drive it via explicit `. nvm.sh` shell commands
+  binary; tasks drive it via explicit `. nvm.sh` shell commands
   (`nvm_brew_prefix` registered from `brew --prefix nvm`), not an Ansible
   module. `community.general.npm` isn't used either, for the same reason:
   nvm-managed `npm` lives under `~/.nvm/versions/node/<version>/bin`, not a
@@ -100,7 +100,7 @@ Installs Node.js, selecting between two install methods via
   README for the purge-vs-pin rationale) and installs global npm packages
   directly via `community.general.npm`, since apt-installed node/npm are
   already on the normal system `PATH`.
-- `pnpm` is preferred over npm for workspace projects — faster installs,
+- `pnpm` is preferred over npm for workspace projects; faster installs,
   content-addressable store. Homebrew-only, not available under
   `apt-nodesource`.
 - `eslint` and `prettier` are usually installed per-project via

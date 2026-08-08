@@ -6,8 +6,8 @@ Covers **Tier 3** of the tool management strategy. Companion to `debian_upgrade`
 
 ## What it does
 
-1. `uv tool upgrade --all` — upgrades all CLI tools to their latest versions
-2. `uv pip install --upgrade` — upgrades all library packages in `~/.venv/devops`
+1. `uv tool upgrade --all`: upgrades all CLI tools to their latest versions
+2. `uv pip install --upgrade`: upgrades all library packages in `~/.venv/devops`
 
 ## Variables
 
@@ -31,6 +31,6 @@ Covers **Tier 3** of the tool management strategy. Companion to `debian_upgrade`
 
 ## Notes
 
-- `become: false` — all operations run in user space
+- `become: false`: all operations run in user space
 - Keep `uv_pip_packages` in sync with `setup_python-uv/defaults/main.yml`
 - `uv tool upgrade --all` upgrades every tool installed via `uv tool install`, not just those listed in `setup_python-uv`

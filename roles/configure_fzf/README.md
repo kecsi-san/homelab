@@ -1,6 +1,6 @@
 # configure_fzf
 
-Adds `fzf` shell integration to `~/.bashrc` — idempotent and symlink-aware.
+Adds `fzf` shell integration to `~/.bashrc`: idempotent and symlink-aware.
 
 ## What it does
 
@@ -31,4 +31,4 @@ Adds `fzf` shell integration to `~/.bashrc` — idempotent and symlink-aware.
 ## Notes
 
 - Requires `fzf` to already be installed (e.g. via `setup_minimal` brew packages)
-- Uses `blockinfile` with a named marker — safe to re-run
+- Uses `blockinfile` with a named marker; safe to re-run

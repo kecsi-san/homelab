@@ -22,8 +22,8 @@ Installs an oh-my-posh prompt theme and wires it into `~/.bashrc`.
 ## Available themes
 
 Theme files are in `roles/configure_oh-my-posh/files/`:
-- `pluto.omp.yaml` (default) — self-adapts its `os` segment background to the actual OS/distro via `background_templates` keyed on `.Icon`/`.WSL` (palette: `debian-red`, `ubu-orange`, `rpi-red`, `mac-gray`, `microsoft-blue`), so one file covers every non-EPAM host instead of maintaining a static theme per OS
-- `epam.omp.yaml` — EPAM-branded variant (own palette, "❮ epam ❯" badge segments), selected automatically for hostnames starting with `EP`
+- `pluto.omp.yaml` (default); self-adapts its `os` segment background to the actual OS/distro via `background_templates` keyed on `.Icon`/`.WSL` (palette: `debian-red`, `ubu-orange`, `rpi-red`, `mac-gray`, `microsoft-blue`), so one file covers every non-EPAM host instead of maintaining a static theme per OS
+- `epam.omp.yaml`: EPAM-branded variant (own palette, "❮ epam ❯" badge segments), selected automatically for hostnames starting with `EP`
 
 ## Usage
 
@@ -41,5 +41,5 @@ Theme files are in `roles/configure_oh-my-posh/files/`:
 ## Notes
 
 - Requires `oh-my-posh` to already be installed (via `setup_minimal` brew packages)
-- Uses `blockinfile` with a named marker — safe to re-run
+- Uses `blockinfile` with a named marker; safe to re-run
 - Override `default_omp_theme` in group_vars to use a different theme per host group

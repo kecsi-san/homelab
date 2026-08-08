@@ -7,20 +7,20 @@ Installs Azure CLI tooling for local development and infrastructure work.
 | Tool | Formula | Default | Purpose |
 |------|---------|---------|---------|
 | `azure-cli` | `azure-cli` | always | Main Azure CLI (`az`) |
-| `azd` | `azure-dev` | optional | Azure Developer CLI — scaffold/deploy workflow |
+| `azd` | `azure-dev` | optional | Azure Developer CLI; scaffold/deploy workflow |
 | `bicep` | `bicep` | optional | Bicep IaC language (alternative to ARM templates) |
 | `azcopy` | `azcopy` | optional | High-performance Azure Storage copy tool |
 | `kubelogin` | `kubelogin` | optional | Azure AD auth plugin for kubectl (AKS) |
 
-All tools installed via Homebrew — cross-platform (Linux + macOS).
+All tools installed via Homebrew; cross-platform (Linux + macOS).
 
 ## Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `azure_enabled` | `true` | Set to `false` to skip the role entirely |
-| `azure_brew_packages` | `[azure-cli]` | Core packages — always installed |
-| `azure_optional_brew_packages` | all `false` | Optional tools — flip to `true` to install |
+| `azure_brew_packages` | `[azure-cli]` | Core packages; always installed |
+| `azure_optional_brew_packages` | all `false` | Optional tools; flip to `true` to install |
 
 ## Usage
 
@@ -43,6 +43,6 @@ All tools installed via Homebrew — cross-platform (Linux + macOS).
 
 ## Notes
 
-- `become: false` — all Homebrew installs are user-space
+- `become: false`: all Homebrew installs are user-space
 - `azure-cli` is also installable from the Microsoft apt repo (`apt_repo_microsoft` in `setup_apt_repos`) but Homebrew is used here for cross-platform consistency
 - `kubelogin` is required for AKS clusters using Azure AD / Entra ID authentication

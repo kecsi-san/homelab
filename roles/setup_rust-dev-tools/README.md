@@ -6,7 +6,7 @@ Installs Rust development tooling via the official `rustup` installer.
 
 | Tool | Source | Default | Purpose |
 |------|--------|---------|---------|
-| `rustup` | rustup.rs script | always | Toolchain manager — installs/updates rustc, cargo, rustfmt, clippy |
+| `rustup` | rustup.rs script | always | Toolchain manager; installs/updates rustc, cargo, rustfmt, clippy |
 | `rustc` | via rustup | always | Rust compiler |
 | `cargo` | via rustup | always | Build system and package manager |
 | `rustfmt` | via rustup (default profile) | always | Code formatter |
@@ -52,9 +52,9 @@ Installs Rust development tooling via the official `rustup` installer.
 
 ## Notes
 
-- `rustup` is installed to `~/.cargo/bin/rustup` — idempotent, skipped if already present
+- `rustup` is installed to `~/.cargo/bin/rustup`: idempotent, skipped if already present
 - `~/.cargo/bin` is added to `PATH` in `~/.bashrc` via an Ansible-managed block
-- Optional cargo tools are compiled from source — first install can take several minutes
+- Optional cargo tools are compiled from source; first install can take several minutes
 - `cross` requires Docker to be running for cross-compilation targets
 - `--no-modify-path` is passed to the rustup installer since PATH is managed via the bashrc block
-- Linux and macOS compatible — rustup is the official cross-platform Rust toolchain manager
+- Linux and macOS compatible; rustup is the official cross-platform Rust toolchain manager

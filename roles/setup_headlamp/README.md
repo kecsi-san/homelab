@@ -1,6 +1,6 @@
 # setup_headlamp
 
-Installs [Headlamp](https://headlamp.dev) — a Kubernetes dashboard — via Helm.
+Installs [Headlamp](https://headlamp.dev): a Kubernetes dashboard; via Helm.
 
 Captures the manual `helm install my-headlamp` that was run on the homelab cluster.
 Running this role against the homelab upgrades the existing release and flips the
@@ -13,16 +13,16 @@ Traefik routes to Headlamp via an IngressRoute instead.
 |----------|---------|-------------|
 | `headlamp_enabled` | `true` | Set to `false` to skip the role entirely |
 | `headlamp_namespace` | `kube-system` | Kubernetes namespace |
-| `headlamp_helm_release_name` | `my-headlamp` | Helm release name — matches the existing manual install |
+| `headlamp_helm_release_name` | `my-headlamp` | Helm release name; matches the existing manual install |
 | `headlamp_helm_repo_name` | `headlamp` | Helm repo alias |
 | `headlamp_helm_repo_url` | `https://kubernetes-sigs.github.io/headlamp/` | Helm repo URL |
-| `headlamp_chart_version` | `0.40.0` | Chart version — pin for reproducibility |
+| `headlamp_chart_version` | `0.40.0` | Chart version; pin for reproducibility |
 | `headlamp_kubeconfig` | `""` | Path to kubeconfig; empty = uses `KUBECONFIG` env var |
-| `headlamp_helm_values` | `service.type: ClusterIP` | Full Helm values dict — override as needed |
+| `headlamp_helm_values` | `service.type: ClusterIP` | Full Helm values dict; override as needed |
 
 ## Usage
 
-In `post-k8s.yml` (homelab only — Headlamp is not wired into post-k3s.yml by default):
+In `post-k8s.yml` (homelab only; Headlamp is not wired into post-k3s.yml by default):
 
 ```yaml
 - name: Install Headlamp dashboard

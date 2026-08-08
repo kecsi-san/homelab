@@ -35,6 +35,6 @@ ansible-playbook -t bgimages playbooks/k8s-nodes.yml
 
 ## Notes
 
-- Requires `become: true` — writes to system directories
+- Requires `become: true`: writes to system directories
 - Images must be placed in `roles/upload_fav_bgimages/files/`
 - Override `fav_bgimages` in group_vars to use a different image set per host group

@@ -16,7 +16,7 @@ cluster can decrypt them.
 | `sealed_secrets_helm_release_name` | `sealed-secrets` | Helm release name |
 | `sealed_secrets_helm_repo_name` | `sealed-secrets` | Helm repo alias |
 | `sealed_secrets_helm_repo_url` | `https://bitnami-labs.github.io/sealed-secrets` | Helm repo URL |
-| `sealed_secrets_chart_version` | `2.16.1` | Chart version (app v0.27.1) — pin for reproducibility |
+| `sealed_secrets_chart_version` | `2.16.1` | Chart version (app v0.27.1); pin for reproducibility |
 | `sealed_secrets_kubeconfig` | `""` | Path to kubeconfig; empty = uses `KUBECONFIG` env var |
 
 ## Usage
@@ -77,4 +77,4 @@ vice versa. Each cluster has its own key pair. Seal secrets separately per clust
 ## Upgrading
 
 Update `sealed_secrets_chart_version` in `defaults/main.yml` and re-run the playbook.
-The Helm task is idempotent — it upgrades if the version differs.
+The Helm task is idempotent; it upgrades if the version differs.

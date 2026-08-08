@@ -1,6 +1,6 @@
 # role_template
 
-Starter template — copy this directory and rename it to begin a new role.
+Starter template; copy this directory and rename it to begin a new role.
 
 ```bash
 cp -r roles/role_template roles/<verb>_<subject>
@@ -12,7 +12,7 @@ Then replace all occurrences of `<role-name>` and `role_template` with your actu
 
 ## What it does
 
-_Describe what this role does in 1–3 sentences._
+_Describe what this role does in 1-3 sentences._
 
 ## What it does (detailed)
 

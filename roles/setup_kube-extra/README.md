@@ -36,6 +36,6 @@ Installs Kubernetes CLI tooling, sets up system-wide bash completions, and adds 
 ## Notes
 
 - Requires Homebrew (`install_linuxbrew` role)
-- Completions are system-wide (`/etc/bash_completion.d/`) — requires `become: true` internally
+- Completions are system-wide (`/etc/bash_completion.d/`); requires `become: true` internally
 - The `k` alias completion relies on `__start_kubectl` being loaded from the kubectl completion script
 - Open a new shell after first run for completions and alias to take effect

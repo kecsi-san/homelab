@@ -1,10 +1,10 @@
 # setup_vscode
 
-> **Status: Incomplete** — see notes below before using.
+> **Status: Incomplete**: see notes below before using.
 
 Installs VS Code, deploys user settings, and installs extensions.
 
-Local-only role — not included in `k8s-nodes.yml`.
+Local-only role; not included in `k8s-nodes.yml`.
 
 ## What it does
 
@@ -67,14 +67,14 @@ Local-only role — not included in `k8s-nodes.yml`.
 
 ## Notes
 
-- `code --install-extension` is idempotent — skips already-installed extensions
+- `code --install-extension` is idempotent; skips already-installed extensions
 - Extension installation requires `code` to be on PATH
 - On WSL2, extensions are installed into `~/.vscode-server/extensions/`
 
 ## Known limitation
 
 This role installs VS Code on Linux and deploys settings to `~/.config/Code/User/settings.json`.
-However, in a WSL2 setup, VS Code runs on **Windows** — its settings and extensions live on the Windows side.
+However, in a WSL2 setup, VS Code runs on **Windows**: its settings and extensions live on the Windows side.
 Configuring the Windows VS Code from a Linux Ansible playbook requires WinRM or Windows SSH, which is out of scope for now.
 
 **Current state:** tasks are written but the approach needs rethinking for WSL2 environments.

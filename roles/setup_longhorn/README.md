@@ -1,6 +1,6 @@
 # setup_longhorn
 
-Installs and configures [Longhorn](https://longhorn.io) — a lightweight, cloud-native distributed block storage system for Kubernetes. Longhorn turns the local disks of your cluster nodes into replicated, highly available persistent volumes without requiring an external SAN or NFS server.
+Installs and configures [Longhorn](https://longhorn.io): a lightweight, cloud-native distributed block storage system for Kubernetes. Longhorn turns the local disks of your cluster nodes into replicated, highly available persistent volumes without requiring an external SAN or NFS server.
 
 ## Why this role exists
 
@@ -11,7 +11,7 @@ Kubernetes does not include a built-in distributed block storage solution. Longh
 - Offering built-in snapshot and backup support (to S3-compatible targets or NFS)
 - Exposing a web UI for storage visibility and management
 
-This role automates the full installation lifecycle: OS-level prerequisites on every node, the `longhornctl` preflight CLI, and the Helm chart deployment — so the cluster is ready to provision persistent volumes after a single playbook run.
+This role automates the full installation lifecycle: OS-level prerequisites on every node, the `longhornctl` preflight CLI, and the Helm chart deployment; so the cluster is ready to provision persistent volumes after a single playbook run.
 
 ## Requirements
 
@@ -23,7 +23,7 @@ This role automates the full installation lifecycle: OS-level prerequisites on e
 
 ## Role variables
 
-### Defaults (`defaults/main.yml`) — override in inventory or playbook
+### Defaults (`defaults/main.yml`): override in inventory or playbook
 
 | Variable | Default | Description |
 |---|---|---|
@@ -35,7 +35,7 @@ This role automates the full installation lifecycle: OS-level prerequisites on e
 | `longhorn_namespace` | `"longhorn-system"` | Kubernetes namespace for the Longhorn deployment |
 | `longhorn_helm_release_name` | `"longhorn"` | Helm release name |
 
-### Internal vars (`vars/main.yml`) — not intended to be overridden
+### Internal vars (`vars/main.yml`): not intended to be overridden
 
 | Variable | Value | Description |
 |---|---|---|
@@ -47,7 +47,7 @@ This role automates the full installation lifecycle: OS-level prerequisites on e
 
 ### OS-specific vars (`vars/os/Debian.yml`)
 
-`longhorn_requirement_packages` — list of APT packages installed on each node before Longhorn is deployed. Covers iSCSI initiator, NFS client, device-mapper, and cryptsetup for optional LUKS encryption support.
+`longhorn_requirement_packages`: list of APT packages installed on each node before Longhorn is deployed. Covers iSCSI initiator, NFS client, device-mapper, and cryptsetup for optional LUKS encryption support.
 
 ## Tags
 
@@ -85,14 +85,14 @@ ansible-playbook playbooks/post-kubespray.yml -e longhorn_version=1.12.0
 
 ## What the role does (task order)
 
-1. **Load OS vars** — includes `vars/os/Debian.yml` for the package list
-2. **Install packages** — APT packages required by Longhorn on every node (`become: true`)
-3. **Start iscsid** — enables and starts the iSCSI initiator daemon (`become: true`)
-4. **Check longhornctl** — skips download if the binary is already present
-5. **Download longhornctl** — fetches the binary from GitHub and places it in `/usr/local/bin/` (`become: true`)
-6. **Preflight check** *(optional)* — runs `longhornctl check preflight` and prints the output; non-blocking
-7. **Add Helm repo** — adds `https://charts.longhorn.io` (delegated to localhost, runs once)
-8. **Helm install** — deploys the Longhorn chart into `longhorn-system` and waits for it to become ready (delegated to localhost, runs once)
+1. **Load OS vars**: includes `vars/os/Debian.yml` for the package list
+2. **Install packages**: APT packages required by Longhorn on every node (`become: true`)
+3. **Start iscsid**: enables and starts the iSCSI initiator daemon (`become: true`)
+4. **Check longhornctl**: skips download if the binary is already present
+5. **Download longhornctl**: fetches the binary from GitHub and places it in `/usr/local/bin/` (`become: true`)
+6. **Preflight check** *(optional)*; runs `longhornctl check preflight` and prints the output; non-blocking
+7. **Add Helm repo**: adds `https://charts.longhorn.io` (delegated to localhost, runs once)
+8. **Helm install**: deploys the Longhorn chart into `longhorn-system` and waits for it to become ready (delegated to localhost, runs once)
 
 ## Post-install
 

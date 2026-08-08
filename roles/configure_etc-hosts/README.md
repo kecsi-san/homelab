@@ -1,6 +1,6 @@
 # configure_etc-hosts
 
-Populates `/etc/hosts` on every node in the `kube` group with the static IP mappings of all cluster members, including the Kubernetes API load balancer VIP. This ensures that hostnames resolve correctly without depending on DNS infrastructure being available — which is especially important during cluster bootstrap.
+Populates `/etc/hosts` on every node in the `kube` group with the static IP mappings of all cluster members, including the Kubernetes API load balancer VIP. This ensures that hostnames resolve correctly without depending on DNS infrastructure being available; which is especially important during cluster bootstrap.
 
 ## Why this role exists
 
@@ -44,7 +44,7 @@ For the cluster defined in this repository the result is:
 192.168.1.100  api.k8s.custom.local     api.k8s.localdomain     api.k8s
 ```
 
-The `api.k8s` entry maps to the kube-vip VIP (`192.168.1.100`), which is the HA endpoint for `kube-apiserver`. The task uses `lineinfile` with a `regexp` guard so it is fully idempotent — re-running the role updates existing entries rather than duplicating them.
+The `api.k8s` entry maps to the kube-vip VIP (`192.168.1.100`), which is the HA endpoint for `kube-apiserver`. The task uses `lineinfile` with a `regexp` guard so it is fully idempotent; re-running the role updates existing entries rather than duplicating them.
 
 ## Tags
 

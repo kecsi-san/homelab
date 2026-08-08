@@ -31,5 +31,5 @@ Installs and initialises etckeeper to track `/etc` changes in git.
 ## Notes
 
 - Requires `become: true`
-- `etckeeper` is enabled in group_vars (`etckeeper: true`) but the role is not yet wired into any playbook — add it to `k8s-nodes.yml` to activate
+- `etckeeper` is enabled in group_vars (`etckeeper: true`) but the role is not yet wired into any playbook; add it to `k8s-nodes.yml` to activate
 - Idempotent: the init marker prevents double-initialisation

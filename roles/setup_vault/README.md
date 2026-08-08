@@ -14,7 +14,7 @@ Installs and configures HashiCorp Vault on the EC2 edge node.
 
 ## Relationship with setup_users
 
-The `vault` system user is created by `setup_users` with **UID 1008** (pinned to match the live server). The HashiCorp APT package also attempts to create a `vault` user — since it already exists, `adduser` skips creation and proceeds normally.
+The `vault` system user is created by `setup_users` with **UID 1008** (pinned to match the live server). The HashiCorp APT package also attempts to create a `vault` user; since it already exists, `adduser` skips creation and proceeds normally.
 
 This matters for data migration: the legacy server's `/opt/vault/data/` is owned by `vault:vault` (UID 1008). The new server's vault user is also UID 1008, so rsync preserves correct ownership with no `chown` needed.
 
@@ -24,14 +24,14 @@ This matters for data migration: the legacy server's `/opt/vault/data/` is owned
 
 Vault listens on `127.0.0.1:8200` (loopback only). Apache proxies HTTPS from `vault.kecskemethy.hu` and `vault.linuxbox.hu` to this address. Vault itself does not handle TLS.
 
-The old live server bound to the VPC private IP (`172.30.2.246:8200`) — on the new server loopback is correct and more secure.
+The old live server bound to the VPC private IP (`172.30.2.246:8200`); on the new server loopback is correct and more secure.
 
-## Data migration — two different Vaults, don't confuse them
+## Data migration: two different Vaults, don't confuse them
 
 There have been two Vault instances on the legacy box, and only one of them matters for a rebuild:
 
-1. **Old, dead Vault (v1.4.0, manual binary at `/opt/hashicorp/vault`, data at `/opt/hashicorp/vault-data/`).** Unreachable since ~2020, nothing depended on it. **Deliberately not migrated** — the current Vault below was freshly initialized instead of trying to resurrect this one. Its data was simply left in place on the legacy box, unused.
-2. **Current, live Vault (HashiCorp APT package, initialized 2026-07-04, data at `/opt/vault/data/`).** This is the one at `vault.kecskemethy.hu` that Ansible itself now depends on — `inventory/group_vars/aws_all.yml` sources `ec2_users`/`apache_vhosts`/`apache_certs`/`mailbox_users`/`duo_*`/AWS creds/DKIM backups from it via AppRole lookups (see `docs/howtos/vault-secrets-architecture.md`). **This one must be migrated before EIP cutover** — once the EIP swaps, `vault.kecskemethy.hu` resolves to the new instance's Vault, and if it's still empty, every Vault-sourced Ansible variable breaks (only the plaintext `secrets.yml` fallback values would keep working).
+1. **Old, dead Vault (v1.4.0, manual binary at `/opt/hashicorp/vault`, data at `/opt/hashicorp/vault-data/`).** Unreachable since ~2020, nothing depended on it. **Deliberately not migrated**: the current Vault below was freshly initialized instead of trying to resurrect this one. Its data was simply left in place on the legacy box, unused.
+2. **Current, live Vault (HashiCorp APT package, initialized 2026-07-04, data at `/opt/vault/data/`).** This is the one at `vault.kecskemethy.hu` that Ansible itself now depends on; `inventory/group_vars/aws_all.yml` sources `ec2_users`/`apache_vhosts`/`apache_certs`/`mailbox_users`/`duo_*`/AWS creds/DKIM backups from it via AppRole lookups (see `docs/howtos/vault-secrets-architecture.md`). **This one must be migrated before EIP cutover**: once the EIP swaps, `vault.kecskemethy.hu` resolves to the new instance's Vault, and if it's still empty, every Vault-sourced Ansible variable breaks (only the plaintext `secrets.yml` fallback values would keep working).
 
 Migrate it as one of the last steps before cutover, so the copy is consistent:
 
@@ -43,7 +43,7 @@ rsync -av --chown=vault:vault old-ec2:/opt/vault/data/ new-ec2:/opt/vault/data/
 # --chown is just an explicit safety net
 ```
 
-After migrating data, Vault will be in a **sealed** state and must be manually unsealed with the **original 2026-07-04 unseal keys** (not the 2020 ones — there's nothing to unseal on that dead instance). See `docs/howtos/ec2-rebuild-plan.md`'s Phase 6 section for where this fits in the overall cutover sequence.
+After migrating data, Vault will be in a **sealed** state and must be manually unsealed with the **original 2026-07-04 unseal keys** (not the 2020 ones; there's nothing to unseal on that dead instance). See `docs/howtos/ec2-rebuild-plan.md`'s Phase 6 section for where this fits in the overall cutover sequence.
 
 ## First deploy (fresh instance, no data migration)
 
@@ -72,11 +72,11 @@ Defined in `inventory/group_vars/aws_all.yml`.
 | `vault_version` | `""` | Package version to install, e.g. `1.19.3-1`; empty = latest |
 | `vault_config_dir` | `/etc/vault.d` | Directory for `vault.hcl` (package default) |
 | `vault_storage_path` | `/opt/vault/data` | File backend storage root |
-| `vault_bind_addr` | `127.0.0.1:8200` | TCP listener — Apache proxies to this |
+| `vault_bind_addr` | `127.0.0.1:8200` | TCP listener; Apache proxies to this |
 | `vault_api_addr` | `https://vault.{{ domain_name }}` | Public API URL (UI redirect target) |
 | `vault_ui` | `true` | Enable built-in web UI |
 | `vault_disable_mlock` | `false` | Set true only on kernels without `CAP_IPC_LOCK` |
 
 ## Tags
 
-`--tags vault` — run only Vault tasks.
+`--tags vault`: run only Vault tasks.
