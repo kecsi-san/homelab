@@ -4,7 +4,7 @@ type: reference
 status: stable
 scope: [ansible]
 created: 2026-03-30
-updated: 2026-07-25
+updated: 2026-08-08
 tags: [ansible, roles, reference]
 ---
 
@@ -90,6 +90,9 @@ Use `roles/role_template/` as a starting point when creating a new role.
 | `configure_oh-my-posh` | Installs Pluto OMP theme and shell init | k8s-nodes.yml, fileservers.yml |
 | `configure_ssh` | Deploys SSH authorized key | k8s-nodes.yml, fileservers.yml, prerequisite.yml |
 | `configure_sudo` | Configures passwordless sudo for `admin_user` | k8s-nodes.yml, fileservers.yml, local-security.yml, prerequisite.yml |
+| `configure_mikrotik-router` | Upserts static DNS records and NAT (dst-nat) rules on MikroTik router via `community.routeros` API; manages API VIP, k3s wildcard, NFS alias, and port forwards | configure-router.yml |
+| `configure_cloudflare-zone` | Manages Cloudflare zone settings (ECH) and DNS A records via REST API; `proxied: false` for UDP services | configure-cloudflare.yml |
+| `configure_k8s-auto-uncordon` | systemd timer + oneshot service on `kube_control_plane` nodes; waits per-node for `Ready` then uncordons; companion to `shutdown-k8s.yml`'s cordon step | post-k8s.yml |
 | `debian_upgrade` | `apt update && upgrade && autoremove` | k8s-nodes.yml, fileservers.yml, upgrade.yml, upgrade-local.yml |
 | `disable_hibernation` | Disables suspend/hibernate via systemd | k8s-nodes.yml |
 | `install_linuxbrew` | Installs Homebrew via `markosamuli.linuxbrew` galaxy role (Linux only) | local-core.yml |
@@ -124,8 +127,13 @@ Use `roles/role_template/` as a starting point when creating a new role.
 | `setup_users` | Creates named EC2 system users with pinned UIDs (critical for data migration), SSH authorized keys, password hashes, group memberships; removes absent users while preserving home dirs | ec2-core.yml |
 | `setup_email-server` | Full email stack: Postfix (multi-domain, PAM/system users, LMTP, postscreen, DNSBL, DANE), Dovecot (IMAPS, PAM auth, FTS Xapian), Rspamd (DKIM 2048-bit, SPF, greylisting), OpenDMARC | ec2-mail.yml |
 | `setup_unbound` | Installs Unbound as local DNSSEC-validating caching resolver; disables systemd-resolved; writes static `/etc/resolv.conf`; forwards to AWS VPC resolver then Cloudflare | ec2-core.yml |
+| `setup_aws-ssm-agent` | Installs and enables the AWS SSM agent; out-of-band rescue path (AWS Console → Session Manager) independent of sshd | ec2-core.yml |
+| `configure_duo-ssh` | Migrates SSH MFA from `ForceCommand login_duo` to PAM-based `pam_duo.so`, scoped to sshd only via `/etc/pam.d/sshd` | ec2-core.yml |
+| `configure_ssh-hardening` | Codifies sshd connection/session hardening (`MaxAuthTries`, `PermitRootLogin no`, etc.) as a drop-in | ec2-core.yml |
 | `setup_apache2` | Apache2 with ModSecurity, ModEvasive, certbot (HTTP-01 webroot + DNS-01 Route53); variable-driven vhosts for static sites, full proxies, and path-specific proxies; OCSP stapling; HSTS | ec2-web.yml |
 | `setup_vault` | HashiCorp Vault from HashiCorp APT repo; file backend; `127.0.0.1:8200` listener (Apache-proxied); systemd unit; version pinning with apt-mark hold | ec2-vault.yml |
+| `setup_nfs-backup` | Carves LV from existing VG, formats ext4, mounts at `/backups`, installs + configures nfs-kernel-server | backup-nfs.yml |
+| `setup_restic-rest-server` | Downloads restic REST server binary, installs to `/usr/local/bin`, runs as systemd service on `:8000` storing repos in `/backups/restic-repos/`; `--no-auth` (LAN-only) | backup-nfs.yml |
 
 ---
 

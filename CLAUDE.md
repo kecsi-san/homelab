@@ -11,6 +11,22 @@ Ansible automation for setting up and maintaining developer and DevOps environme
 - **Solo repo, no branches/PRs**: this repo has a single maintainer. Commit and push directly to `main` — don't create feature branches or open PRs unless explicitly asked to.
 - **Conventional Commits**: subject lines follow the `type(scope): description` format (`feat`, `fix`, `docs`, `chore`, etc. — see git log for examples). No JIRA/ticket reference; `git-changelog` parses these for `CHANGELOG.md`.
 - **GitOps app inventory can drift from this file**: the app tables below are hand-maintained and can lag behind reality. When auditing or reconciling the app stack, verify against `kube-gitops/{k8s,k3s}/apps/*.yaml` directly (`spec.source`/`spec.sources` for Helm chart+repo vs raw manifest path, `spec.syncPolicy.automated` to confirm it's actually live) rather than trusting this file alone.
+- **Git and secrets stay on the control node**: all commits/pushes happen from this repo on the control node, never from a Claude Code session running directly on a remote host (EC2, a kube node). Bring findings/fixes from an on-server investigation back here to commit. Sensitive values stay Vault/ansible-vault protected, never plaintext on a remote box even temporarily.
+- **Onboard new host groups from the control node**: investigate a new host (OS, existing manual config, installed tooling) via read-only SSH from here, dry-run with `--check --diff`, then apply — don't spin up a Claude Code session on the target server for role rollout. Reserve an on-server session for genuinely bespoke app-level debugging that will never become a reusable role.
+- **`TODO.md`** (repo root) is the single cross-session task tracker — check it before starting new work. Completed items move to the one `## Done` section at the bottom, never left inline in a topical section or duplicated elsewhere.
+- **Release roughly every 3 months** (`git tag` + `gh release create`) even with work still in progress — releases are checkpoints, not "done" states. `CHANGELOG.md` regenerates automatically via `git-changelog`. Give `--title` a descriptive suffix (e.g. `vX.Y.Z — <description>`); it renders blank if it exactly equals the tag name. `git fetch`/rebase first if anything else merged earlier in the session — tagging the wrong commit doesn't move the tag, but pushing `main` after can get rejected.
+- **Don't proactively poll CI** (`gh run watch`) after pushing — failures get reported separately; only check if asked, or a change is unusually risky and needs confirming green before a dependent next step.
+- **For live-cluster maintenance with real blast radius** (data migration, scaling, GitOps sync state changes): state the plan before executing, and prefer blocking calls (`kubectl wait`) over background-then-poll-then-kill patterns. For the EC2 edge node specifically — a single production instance with no staging copy — confirm before *any* connection attempt, including read-only/`--check`.
+- **Prefer a narrow, live, read-only check over trusting static review alone** when auditing config-drift-prone systems (EC2, any hand-configured host) — static analysis can only compare what's written against what's written elsewhere, not what a system actually does at runtime.
+- **Keep `README.md` and this file in sync** with role/playbook changes — they're the source of truth for repo structure. (There is no separate `ROLES.md` — the detailed per-role table lives in `docs/ansible/roles.md`, which has its own staleness risk since it's not cross-checked automatically; verify against the Roles Reference table below or `roles/` directly if in doubt.)
+
+## Public Repository — Personal Data Policy
+
+This repo (`kecsi-san/homelab`) is public. Treat personal identifiers (family names, gamertags, nicknames — not just credentials) with the same care as secrets:
+
+- **Never commit a real personal identifier in plaintext**, even where it isn't a traditional secret (e.g. a family member's game username). Use the existing SealedSecret pattern (`kube-gitops/*/**/sealedsecret-*.yaml`) instead of templating the raw value into a Deployment env var or ConfigMap, even when the upstream tool's documented "easy" option requires embedding it directly.
+- **Doc/code examples always use fully generic placeholders** (`alice`/`bob`/`example.com`/`example.net`) — never combine a real identifier that's already public elsewhere in this repo (e.g. the owner's own username) with other real personal details as if it were illustrative data. That reads as "just an example" and invites less scrutiny than clearly-real operational data would.
+- **A forward-only fix isn't enough** if personal data already landed in a pushed commit — it stays reachable via `git log`/GitHub history until rewritten. Check `git log --all -- <path>` for prior exposure (not just HEAD), then rewrite with `git filter-repo` (older/multiple commits) or `commit --amend` + cherry-pick + force-push (a single recent commit), and force-push. This has happened twice in this repo's history.
 
 ## Common Commands
 
@@ -74,6 +90,9 @@ ansible-playbook playbooks/post-k3s.yml
 # Run BEFORE k8s.yml — api.k8s.<domain> must resolve to kube-vip before kubeadm init
 # Also run after changing Traefik LB IPs or domain config
 ansible-playbook playbooks/configure-router.yml
+
+# Configure Cloudflare zone settings (ECH) and DNS A records
+ansible-playbook playbooks/configure-cloudflare.yml
 
 # OS upgrades on all kube group hosts
 ansible-playbook playbooks/upgrade.yml
@@ -189,6 +208,13 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | `configure_wsl2` | Templates full `/etc/wsl.conf` (`[automount]`/`[network]`/`[interop]`/`[user]`/`[boot]`, incl. `systemd = true`); WSL2-only (`ansible_kernel` detection), no-op elsewhere; wired into `local-core.yml` |
 | `configure_mc-theme` | Downloads the gruvbox256 Midnight Commander skin to `~/.local/share/mc/skins/`; `mc` itself already installed by `setup_minimal`; wired into `personalise.yml` |
 | `configure_git` | Templates `~/.gitconfig`; SSH-format commit signing (`gpg.format = ssh`, reuses the `github.com` key from `configure_ssh-client`, which must run first) — disabled on remote `k8s-nodes.yml`/`fileservers.yml` runs where no signing key is deployed |
+| `setup_apt_repos` | Adds the Docker CE apt repo; installs `docker-ce` + compose plugin; adds `admin_user` to the `docker` group; wired into `local-core.yml` (`apt-repos`/`docker` tags) |
+| `setup_iac-terraform` | Installs terraform, terraform-docs, tflint via Homebrew (`hashicorp/tap`); trivy is a role default but omitted here (handled by `setup_security-tools`); wired into `local-cloud.yml` |
+| `setup_iac-extra` | Installs opentofu, terragrunt, terrascan, tfupdate via Homebrew; wired into `local-cloud.yml` |
+| `setup_cloud-aws` | awscli, aws-sam-cli, session-manager-plugin via Homebrew; optional: okta-aws-cli, eksctl, aws-vault; wired into `local-cloud.yml` |
+| `setup_cloud-azure` | azure-cli via Homebrew; optional: azd, bicep, azcopy, kubelogin; wired into `local-cloud.yml` |
+| `setup_cloud-gcp` | google-cloud-sdk (gcloud/gsutil/bq) via Homebrew; optional: gke-gcloud-auth-plugin, cloud-sql-proxy; wired into `local-cloud.yml` |
+| `setup_k3s` | Single-node k3s cluster — native install (Linux) or k3d (macOS, via Homebrew); wired into `k3s.yml`; see Kubernetes Setup below |
 | `configure_bash-aliases` | Templates `~/.bash_aliases` (`eza`-based `ls`/`ll`/`l`/`la`, `alert`, `kx`/`kn`, `apt-maintenance`, `brew-maintenance`, `ecr-login`, `git-reset-author`); `k=kubectl` deliberately excluded, already owned by `setup_kube-extra` |
 | `configure_ssh-client` | Templates `~/.ssh/config` from Vault (`workstation/ssh-config/<machine>`, keyed by `ansible_hostname`); fetches only the specific keys that machine's config references from a shared pool (`workstation/ssh-keys/<key-name>`), not the whole pool; runs interactively via the human's own cached Vault session, no AppRole |
 | `configure_oh-my-posh` | Installs Pluto OMP theme; adds init block to `~/.bashrc`; wired into `k8s-nodes.yml` and `fileservers.yml` (both gated by `omp_enabled`) |
@@ -217,7 +243,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 | `setup_go-dev-tools` | go, gopls, golangci-lint via Homebrew; optional: delve, goreleaser, ko, air |
 | `setup_nodejs-dev-tools` | Node.js via nvm (multi-version, not a fixed brew formula), pnpm via Homebrew; optional brew + npm global packages |
 | `setup_rust-dev-tools` | rustup + stable toolchain (rustc, cargo, rustfmt, clippy); optional cargo tools |
-| `setup_vscode` | VS Code via apt (Linux) or Homebrew Cask (macOS); installs configured extensions |
+| `setup_vscode` | VS Code via apt (Linux) or Homebrew Cask (macOS); installs configured extensions; **`vscode_enabled: false` by default in `local-dev.yml`** — incomplete on WSL2, where VS Code runs on Windows, not Linux, so the extension-install step may not work as expected |
 | `upgrade_brew` | `brew update && upgrade && cleanup` — cross-platform (Linux/macOS brew paths via vars/os/) |
 | `upgrade_python-uv` | `uv tool upgrade --all` + `uv pip install --upgrade` in devops venv |
 | `upgrade_nodejs` | Upgrades the nvm-managed Node.js version (`nvm install --reinstall-packages-from=current`) and global npm packages (`npm update -g`) |
@@ -235,7 +261,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 
 #### Placeholder Roles (empty `tasks/main.yml`)
 
-`setup_email-tools`, `setup_mlops-tools`, `setup_aiops-tools`, `setup_mle-tools`
+`setup_bichon` (Bichon email archive — Rust, IMAP pull from Dovecot, React UI; see `docs/research/email-archive-software.md`), `setup_email-tools`, `setup_mlops-tools`, `setup_aiops-tools`, `setup_mle-tools`
 
 ### Inventory Structure
 
@@ -387,11 +413,13 @@ kubectl create secret generic my-secret --namespace my-ns \
 - Create users via ak shell: see `docs/IDP/user-management.md`; no `create_user` CLI command exists
 - `akadmin` is the bootstrap admin; use it only for IDP management, not day-to-day logins
 - Bitnami Redis removed from Docker Hub — use standalone `redis:7-alpine` deployment named `authentik-redis-master`
+- **Always set `grant_types` explicitly** on every `authentik_providers_oauth2.oauth2provider` blueprint entry (`[authorization_code, refresh_token]`, plus `client_credentials` for machine-to-machine) — 2026.5.0 changed the default from "all types" to `[]`; a provider with empty `grant_types` still resolves `client_id` but fails every authorization attempt with an unhelpful `invalid_request`
+- When an OIDC login fails silently (no error logged), check for an **issuer mismatch first** before instrumenting deeper — most OIDC clients call `fail()` not `error()` on `claims.iss` mismatch, so nothing gets logged. Compare `<provider>/.well-known/openid-configuration`'s `issuer` against the client's configured value; Authentik's `issuer_mode: global` vs `per_provider` changes what `iss` actually is
 
 **Traffic and TLS architecture (dual-path):**
 - **LAN path (Edge browser):** MikroTik wildcard DNS `*.<your-domain.tld>` → 192.168.1.101 (Traefik); cert-manager issues per-service Let's Encrypt certs via DNS01 (Cloudflare API token); IngressRoutes reference `<service>-tls` secrets; no H2 coalescing since each service has its own cert
 - **Cloudflare path (Firefox + WARP):** Cloudflare WARP routes traffic through Cloudflare edge → Cloudflare Tunnel CNAME (`<tunnel-id>.cfargotunnel.com`) → `cloudflared` pod (2 replicas, `kube-gitops/k8s/cloudflared/`) → Traefik via `https://traefik.traefik.svc.cluster.local` with `noTLSVerify: true`; Cloudflare's Universal SSL cert is what the browser sees
-- **DNS automation for the Cloudflare path:** the `external-dns` app (ArgoCD-managed Helm chart, ArgoCD app `external-dns`) watches every IngressRoute's `external-dns.alpha.kubernetes.io/target: "<tunnel-id>.cfargotunnel.com"` annotation and syncs the matching proxied Cloudflare CNAME record automatically — `policy: sync`, so it also deletes the record if the IngressRoute is removed; every service in `kube-gitops/k8s/ingressroutes/` carries this annotation, so both paths (LAN cert-manager DNS01 + Cloudflare Tunnel CNAME) are provisioned per-service without manual DNS edits
+- **DNS automation for the Cloudflare path:** the `external-dns` app (ArgoCD-managed Helm chart, ArgoCD app `external-dns`) watches every IngressRoute's `external-dns.alpha.kubernetes.io/target: "<tunnel-id>.cfargotunnel.com"` annotation and syncs the matching proxied Cloudflare CNAME record automatically — `policy: sync`, so it also deletes the record if the IngressRoute is removed; every service in `kube-gitops/k8s/ingressroutes/` carries this annotation, so both paths (LAN cert-manager DNS01 + Cloudflare Tunnel CNAME) are provisioned per-service without manual DNS edits. **Miss the annotation on a new IngressRoute and the service is unreachable from the internet** — `external-dns` has no CNAME to write and either skips the record or falls back to the LAN IP, which Cloudflare's edge can't reach.
 - cert-manager: installed via ArgoCD app (`cert-manager-config.yaml`); ClusterIssuer uses DNS01 challenge with `cloudflare-api-token` SealedSecret in `cert-manager` namespace
 - ArgoCD runs in insecure mode; TLS terminated at Traefik (LAN) or Cloudflare edge (WARP)
 - MikroTik wildcard DNS entry for `<your-domain.tld>` (match-subdomain) defined in `configure_mikrotik-dns` defaults; run `configure-router.yml` after any IP/domain changes
@@ -436,3 +464,43 @@ kubectl create secret generic my-secret --namespace my-ns \
     --controller-namespace sealed-secrets > sealedsecret.yaml
 # Add yamllint disable-line comments before long encrypted data lines
 ```
+
+## Known Gotchas
+
+Non-obvious failure modes hit in this repo, worth checking before re-diagnosing the same class of bug from scratch.
+
+### Ansible
+
+- **Play-level `become`**: set `become: false` at the play level, explicit `become: true` per `import_role`/task that needs root. Play-level `become: true` runs fact-gathering as root too, which resolves `ansible_env.HOME` to `/root` and breaks user-space roles.
+- **`--check` isn't always side-effect-free**: the `git` module does real clone/fetch work under `--check` when the destination doesn't exist yet (hit via `install_linuxbrew`'s vendored `markosamuli.linuxbrew` role on a host with no prior brew install). `--skip-tags always` also disables Ansible's automatic "Gathering Facts" task, since that implicit task is itself tagged `always` — to skip one specific `always`-tagged task, use `--start-at-task="<expanded task name>"` instead.
+- **Kubespray control-plane arg changes need `-e upgrade_cluster_setup=true`**: a plain `ansible-playbook -b playbooks/k8s.yml` run silently no-ops any `kube_apiserver_*`/`kube_controller_*`/`kube_scheduler_*` extra_arg change in `k8s-cluster.yml` — Kubespray gates the `kubeadm upgrade apply`-equivalent step behind this flag. Restarts control-plane pods one node at a time; kube-vip keeps the API VIP available throughout, so it's safe to run. Verify against the live static pod's actual command, not just a clean playbook run.
+- **`install_linuxbrew` must run before any brew-dependent role** on a remote-host playbook (`setup_minimal`'s brew packages, `setup_security-tools`'s trivy/hadolint) — neither has an install fallback, they assume brew already exists.
+- **Pin volatile Homebrew formulas**: an unpinned formula (`state: present`, no version) can silently major-version-bump on `upgrade-local.yml`'s `brew upgrade`. Helm did exactly this (3→4) and broke ArgoCD's Server-Side-Apply assumptions — it's now pinned (`helm@3` + `brew pin`) in `setup_kube-extra`; apply the same pattern to any other tool where a breaking major bump would hurt.
+- **Third-party Homebrew taps need the fully-qualified name everywhere** (`hashicorp/tap/terraform`, not `terraform`) — the bare name triggers Homebrew's untrusted-tap gate on formula *resolution*, even when the package is already installed under the short name.
+- **Custom callback plugin overrides need the full `DOCUMENTATION` block** copied from the original, even if no options change — without it, `set_options()` fails silently (no error, just no output).
+- **`ansible-lint` stays CI-only**, never pre-commit — it's ~70s/run, too slow for a commit hook. `yamllint` (~1s) is what's actually in the pre-commit config.
+- **Jinja2 `.dict.items` is Python's `dict.items()` method, not the JSON key `"items"`**: `kubectl -o json` output has a top-level `items` key holding the object list, but `{{ some_dict.items }}` resolves via dot-attribute lookup to the built-in method and fails as a loop source (`Invalid data passed to 'loop'`). Use bracket notation: `{{ some_dict['items'] }}`. Applies to any dict key that collides with a dict method name (`items`, `keys`, `values`, `get`, `update`, ...).
+
+### GitOps / ArgoCD
+
+- **Verify CRD field nesting with `kubectl explain`** before editing a manifest (VolSync `ReplicationSource`, CNPG `Cluster`, cert-manager `ClusterIssuer`, ArgoCD `Application`, etc.) — a wrong nesting level is silently pruned by the CRD's structural schema. `kubectl apply` reports success and `git diff` shows the change, but the live object never gets it. Re-read the live object right after applying to confirm the field actually landed.
+- **App-of-apps self-heal**: pausing sync on a child Application isn't enough for manual live edits (scale to 0, `kubectl edit`) — root also has `selfHeal: true` and re-pushes the child's `syncPolicy.automated` from git within seconds, undoing the child's own paused state. Pause both root and the child (`kubectl patch application -n argocd <app> --type merge -p '{"spec":{"syncPolicy":{"automated":null}}}'`); to restore, only patch root back — the child inherits it on root's next reconcile.
+- **ArgoCD secrets referenced in `argocd-cm`** (`$secret-name:key`) need the label `app.kubernetes.io/part-of: argocd` or they're silently ignored — ArgoCD sends an empty client secret and the OAuth2 provider returns `invalid_client`.
+- **`configure_mikrotik-router` never deletes DNS records** — only adds/updates (`api_find_and_modify`/`api`). Stale records must be removed manually via Winbox/SSH. RouterOS also processes static entries top-to-bottom — more specific match-subdomain entries (e.g. `k3s.<domain>`) must be ordered before broader wildcards (`<domain>`) or the wildcard wins.
+- If an Application stays `OutOfSync` despite a correctly-configured `ignoreDifferences`, check for **stale live-only drift first** (e.g. a leftover `kubectl.kubernetes.io/restartedAt` annotation from a manual `kubectl rollout restart`, never tracked by git) before fighting the ignore-rule syntax further — removing the drift at the source has proven more reliable than tuning `jqPathExpressions`/`jsonPointers`.
+- Avoid OCI Helm chart sources (`oci://`) from Gitea-based registries (e.g. codeberg.org) in ArgoCD — the `/v2/` health check returns 401 even for public packages, and ArgoCD marks the repo broken, blocking sync entirely (the chart still pulls fine via plain `helm` CLI). Use a standard HTTP Helm repo, or raw Kubernetes manifests, instead.
+- Homepage v1.2.0+'s Kubernetes integration selects pods via the `app.kubernetes.io/name` label, not the plain `app` label — any new raw-manifest deployment that needs a Homepage status badge needs both labels set.
+- SPAs that make background `fetch()` calls for streaming/live data (not just full-page navigation) can break behind Traefik `forwardAuth` via CORS on the redirect, even though the middleware is correctly configured and the main page loads fine — the failure looks like "page loads, then breaks," not an obvious auth error. Check for this (DevTools Network tab, repeated XHR/fetch after load) before assuming SSO will "just work" on a new service's frontend.
+
+### Terraform & Vault
+
+- **`skip_child_token = true`** on every `provider "vault" {}` block — the provider tries to mint an ephemeral child token by default (needs `auth/token/create`, which none of this repo's Vault policies grant), even for reads/writes the token already has direct access to. Fixing a 403 here means adding this flag, not broadening policy grants.
+- **One tool owns a given DNS record type, permanently** — never have Ansible (or any generator) call a DNS provider API directly for a record Terraform could also touch, even during a migration window. The value flows through Vault instead, and Terraform stays the sole API caller for that provider.
+- **`vault_kv_secret_v2` data sources pull the entire secret payload into Terraform state**, not just the field referenced in `.tf` code — the provider marks the attribute sensitive (redacted from CLI/plan output), but the full payload still lands in the state file in plaintext. If a public field (e.g. an SSH public key) is co-located with a private one at the same Vault path, reading it for the public field still leaks the private one into state — split co-located secrets across separate KV paths before any Terraform data-source read. Once split, wrap a field that's genuinely public in `nonsensitive(...)` if you need it to render in plan output (e.g. for a public DNS record value) — never do this for real credential material.
+- For a multi-chunk Route53 TXT value (>255 bytes, e.g. a DKIM key), build the chunk list and `join('" "')` — **no leading/trailing quote**. Terraform/the AWS provider adds one outer quote pair automatically; wrapping each chunk yourself produces a doubled-quote string the API rejects.
+- Import existing AWS security groups as `aws_security_group_rule` resources, never inline `ingress`/`egress` blocks inside `aws_security_group` — inline blocks produce noisy diffs on import (description/IPv4-IPv6 mismatches show as changes even when rules are identical); rule resources are also more granular for future additions.
+
+### Dependency management (Renovate)
+
+- Renovate does **not** track two things in this repo: image tags pinned directly in per-app Helm values files (needs an explicit `helm-values` manager scoped to `kube-gitops/*/values/*.yaml`, plus `image.repository` present alongside any bare `image.tag`), and ArgoCD's own chart version (`argocd_chart_version` in `roles/setup_argocd/defaults/main.yml` — outside the `kube-gitops/` tree Renovate scans; a manual periodic check, tracked in `TODO.md`).
+- `.github/dependabot.yml` is intentionally empty — Renovate handles all dependency updates (see `renovate.json`). Old pre-migration Dependabot PRs can still be open and duplicate a later Renovate grouped PR for the same package; check for supersession before merging both.
