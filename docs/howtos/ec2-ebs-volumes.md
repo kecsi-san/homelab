@@ -28,12 +28,12 @@ Storage design for the new EC2 edge node (email + web server).
 | Path | Current size | Notes |
 |---|---|---|
 | `/` (root volume) | 14 GB used / 25 GB | OS + all services |
-| `/home/kecsi/Maildir` | 5.2 GB | Largest mailbox, grows ~0.5-1 GB/year |
-| `/home/peter/Maildir` | 234 MB | |
-| `/home/orsi/Maildir` | 102 MB | |
-| `/home/tamas/Maildir` | 51 MB | |
-| `/var/www/linuxbox.hu` | 852 MB | |
-| `/var/www/kecskemethy.hu` | 295 MB | Includes kepek static files (served from S3) |
+| `/home/<u1>/Maildir` | 5.2 GB | Largest mailbox, grows ~0.5-1 GB/year |
+| `/home/<u2>/Maildir` | 234 MB | |
+| `/home/<u3>/Maildir` | 102 MB | |
+| `/home/<u4>/Maildir` | 51 MB | |
+| `/var/www/<d1>.hu` | 852 MB | |
+| `/var/www/<d2>.hu` | 295 MB | Includes kepek static files (served from S3) |
 | `/var/log` | 3.2 GB | Large due to historical accumulation; logrotate controls ongoing growth |
 | `/opt/hashicorp` | 172 MB | HashiCorp Vault binary + data |
 | `/var/lib/rspamd` | 91 MB | DKIM keys, bayes, greylisting state |
@@ -64,9 +64,9 @@ Implementation lives in the reusable `terraform/modules/ec2` module (not a dedic
 
 ```hcl
 data_volumes = {
-  "/dev/sdf" = { size = 40, type = "gp3", encrypted = true, name = "edge.kecskemethy.net-home" }
-  "/dev/sdg" = { size = 20, type = "gp3", encrypted = true, name = "edge.kecskemethy.net-www" }
-  "/dev/sdh" = { size = 10, type = "gp3", encrypted = true, name = "edge.kecskemethy.net-log" }
+  "/dev/sdf" = { size = 40, type = "gp3", encrypted = true, name = "edge.<d>.net-home" }
+  "/dev/sdg" = { size = 20, type = "gp3", encrypted = true, name = "edge.<d>.net-www" }
+  "/dev/sdh" = { size = 10, type = "gp3", encrypted = true, name = "edge.<d>.net-log" }
 }
 ```
 
