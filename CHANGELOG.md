@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(playbooks): use bracket notation for pods JSON items key ([d99038c](https://github.com/kecsi-san/homelab/commit/d99038c3309fccdd3aefd32f750c1f48b27fedd4) by Zoltan K).
 - fix(minecraft): nest moverSecurityContext under spec.restic ([3dd0249](https://github.com/kecsi-san/homelab/commit/3dd0249cc24e2b1055bf6caca7bb83fd68bb20a8) by Zoltan K).
 - fix(minecraft): run VolSync backup mover as uid 1000 to match world file ownership ([5a25c24](https://github.com/kecsi-san/homelab/commit/5a25c24300e43b1070ab2d3960d4c0da0c3db402) by Zoltan K).
 - fix(minecraft): revert LEVEL_NAME to world, alias via PVC symlink ([3bcee07](https://github.com/kecsi-san/homelab/commit/3bcee073748dfb715c40adccd8e978cb0a37da87) by Zoltan K).
