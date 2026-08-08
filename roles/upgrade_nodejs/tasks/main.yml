@@ -26,6 +26,22 @@
   changed_when: true
   when: nodejs_install_method == 'homebrew-nvm'
 
+# nvm's --reinstall-packages-from deliberately excludes npm itself from the
+# packages it carries over (npm ships bundled with each Node release), and
+# npm won't self-upgrade across a major version via `npm update -g` either
+# — it only ever prints a notice suggesting a manual `npm install -g
+# npm@latest`. Run nvm's own purpose-built command instead, as a separate
+# step so it's visible in playbook output.
+- name: Upgrade npm itself to the latest version that works with this Node.js version
+  ansible.builtin.shell:
+    cmd: >
+      export NVM_DIR="{{ ansible_env.HOME }}/.nvm";
+      . "{{ nvm_brew_prefix.stdout }}/nvm.sh";
+      nvm install-latest-npm
+  become: false
+  changed_when: true
+  when: nodejs_install_method == 'homebrew-nvm'
+
 - name: Upgrade global npm packages
   ansible.builtin.shell:
     cmd: >

@@ -12,10 +12,11 @@ method).
 
 ### `homebrew-nvm` method (workstations)
 
-1. `nvm install {{ nodejs_version }} --reinstall-packages-from=current` — installs the latest matching Node.js version and carries over globally-installed npm packages from the currently active version
+1. `nvm install {{ nodejs_version }} --reinstall-packages-from=current` — installs the latest matching Node.js version and carries over globally-installed npm packages from the currently active version. **Deliberately excludes npm itself** — nvm's `--reinstall-packages-from` filters `npm@...` out of the reinstall list by design, since npm ships bundled with each Node release.
 2. `nvm alias default {{ nodejs_version }}` — points the `default` alias at the new version
 3. `nvm cache clear` — clears nvm's download cache
-4. `npm update -g` — upgrades already-installed global npm packages to their latest versions (only runs if `nodejs_npm_global_packages` is non-empty)
+4. `nvm install-latest-npm` — upgrades npm itself to the latest version that works with the newly-installed Node.js version. Needed as its own step because npm does **not** self-upgrade across a major version via `npm update -g` — it only prints a notice suggesting a manual `npm install -g npm@latest`.
+5. `npm update -g` — upgrades already-installed global npm packages to their latest versions (only runs if `nodejs_npm_global_packages` is non-empty)
 
 ### `apt-nodesource` method (servers)
 
