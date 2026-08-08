@@ -27,7 +27,7 @@ prometheus:
     podMonitorSelector: {}
     podMonitorNamespaceSelector: {}
     retention: 15d
-    retentionSize: "45GB"
+    retentionSize: "10GB"
     scrapeInterval: "30s"
     evaluationInterval: "30s"
     storageSpec:
