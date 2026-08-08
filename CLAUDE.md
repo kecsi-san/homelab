@@ -196,6 +196,8 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 
 ### Roles Reference
 
+Quick-reference table below (kept in sync manually — see the Working Conventions note above). For role naming standard, the required directory/file layout, and status tracking for roles that aren't fully "done" (🔧 implemented-not-wired, 🚧 incomplete, 📋 planned), see `docs/ansible/roles.md`.
+
 #### Active / Implemented
 
 | Role | Purpose |

@@ -10,6 +10,8 @@ tags: [ansible, roles, reference]
 
 # Roles
 
+For current playbook wiring and a terser per-role summary, see `CLAUDE.md`'s "Roles Reference" section at the repo root — the two are maintained separately and can drift, so cross-check both when auditing.
+
 Status legend: ✅ Done | 🔧 Implemented (not wired) | 🚧 Incomplete | 📋 Planned
 
 ---
