@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(upgrade_nodejs): actually upgrade npm itself via nvm install-latest-npm ([cf1e066](https://github.com/kecsi-san/homelab/commit/cf1e06617d94f2588266ec6c2deb419abc5941c6) by Zoltan K).
 - fix(playbooks): use bracket notation for pods JSON items key ([d99038c](https://github.com/kecsi-san/homelab/commit/d99038c3309fccdd3aefd32f750c1f48b27fedd4) by Zoltan K).
 - fix(minecraft): nest moverSecurityContext under spec.restic ([3dd0249](https://github.com/kecsi-san/homelab/commit/3dd0249cc24e2b1055bf6caca7bb83fd68bb20a8) by Zoltan K).
 - fix(minecraft): run VolSync backup mover as uid 1000 to match world file ownership ([5a25c24](https://github.com/kecsi-san/homelab/commit/5a25c24300e43b1070ab2d3960d4c0da0c3db402) by Zoltan K).
