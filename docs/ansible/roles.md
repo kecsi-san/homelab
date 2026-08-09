@@ -128,7 +128,7 @@ Use `roles/role_template/` as a starting point when creating a new role.
 | `upload_profile_image` | Sets user profile picture: GNOME/GDM via AccountsService (Linux); macOS account picture via `dsimport`/`dscl`; source path set via `profile_image_src` | personalise.yml, k8s-nodes.yml |
 | `setup_users` | Creates named EC2 system users with pinned UIDs (critical for data migration), SSH authorized keys, password hashes, group memberships; removes absent users while preserving home dirs | ec2-core.yml |
 | `setup_email-server` | Full email stack: Postfix (multi-domain, PAM/system users, LMTP, postscreen, DNSBL, DANE), Dovecot (IMAPS, PAM auth, FTS Xapian), Rspamd (DKIM 2048-bit, SPF, greylisting), OpenDMARC | ec2-mail.yml |
-| `setup_unbound` | Installs Unbound as local DNSSEC-validating caching resolver; disables systemd-resolved; writes static `/etc/resolv.conf`; forwards to AWS VPC resolver then Cloudflare | ec2-core.yml |
+| `setup_unbound` | Installs Unbound as a full recursive, DNSSEC-validating resolver, no forward-zone (required for Postfix DANE); disables systemd-resolved; writes static `/etc/resolv.conf` (unbound primary, AWS VPC resolver fallback) | ec2-core.yml |
 | `setup_aws-ssm-agent` | Installs and enables the AWS SSM agent; out-of-band rescue path (AWS Console → Session Manager) independent of sshd | ec2-core.yml |
 | `configure_duo-ssh` | Migrates SSH MFA from `ForceCommand login_duo` to PAM-based `pam_duo.so`, scoped to sshd only via `/etc/pam.d/sshd` | ec2-core.yml |
 | `configure_ssh-hardening` | Codifies sshd connection/session hardening (`MaxAuthTries`, `PermitRootLogin no`, etc.) as a drop-in | ec2-core.yml |
