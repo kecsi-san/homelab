@@ -15,6 +15,30 @@ nodeExporter:
 kubeProxy:
   enabled: false
 
+# apiserver's default histogram buckets alone were ~98K of the TSDB's ~180K
+# active series (more than half the cluster's total cardinality) for latency
+# percentiles nobody queries in this homelab. Keep scraping it (kromgo's
+# kubernetes_version badge needs kubernetes_build_info from this target) but
+# drop everything else via metricRelabelings.
+kubeApiServer:
+  serviceMonitor:
+    metricRelabelings:
+      - action: keep
+        regex: kubernetes_build_info
+        sourceLabels: [__name__]
+
+# etcd/controller-manager/scheduler metrics aren't used by any dashboard or
+# kromgo badge here; disabling also removes controller-manager/scheduler as
+# a source of the old TargetDown alert blips (see TODO.md).
+kubeEtcd:
+  enabled: false
+
+kubeControllerManager:
+  enabled: false
+
+kubeScheduler:
+  enabled: false
+
 prometheus:
   prometheusSpec:
     # Discover ServiceMonitors and PodMonitors from all namespaces.
@@ -38,7 +62,7 @@ prometheus:
             - ReadWriteOnce
           resources:
             requests:
-              storage: 50Gi
+              storage: 15Gi
     additionalScrapeConfigs:
       - job_name: node-exporter
         static_configs:
