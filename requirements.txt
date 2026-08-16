@@ -12,5 +12,5 @@ passlib==1.7.4
 # ansible-galaxy
 distlib==0.4.3
 # CHANGELOG generation (used by pre-push hook)
-git-changelog==2.9.4
+git-changelog==2.9.6
 
