@@ -44,3 +44,12 @@ extra_aliases: {}         # e.g. {fail2ban: kecsi, wiki: kecsi}
 #       - kecskemethy.hu
 #       - kecskemethy.com
 mailbox_users: []
+
+# HELO/EHLO hostnames to accept even though they don't resolve in public DNS
+# (bypasses reject_invalid/non_fqdn/unknown_helo_hostname for these entries only —
+# everything else, including postscreen/rspamd/recipient checks, still applies).
+# For trusted internal hosts (LAN-only .local names) that deliver system mail
+# (cron, fail2ban) to a local mailbox on this server — not a relay/auth substitute,
+# see roles/setup_email-server/README.md.
+# Format: {"host.internal.example": "OK"}
+postfix_helo_access_entries: {}

@@ -39,6 +39,19 @@ mailbox_users:
 
 Auth is PAM/system-password based (see `ec2_users` in `setup_users`), not a separate password here; `mailbox_users` only controls address-to-user routing.
 
+## Accepting mail from internal LAN hosts with unresolvable HELO names
+
+A trusted internal host (e.g. a home fileserver) delivering its own system mail (cron, fail2ban) to a local mailbox on this server will get rejected by `smtpd_helo_restrictions`' `reject_unknown_helo_hostname`, since a `.local`/LAN-only HELO/EHLO hostname never resolves in public DNS. Every retry also counts as a failed connection against `fail2ban`'s `postfix` jail, so it eventually bans the sending network's public IP too.
+
+Set `postfix_helo_access_entries` to allowlist the exact HELO string:
+
+```yaml
+postfix_helo_access_entries:
+  prolion.kinet.local: "OK"
+```
+
+This only bypasses the HELO hostname-resolvability checks for that literal string. Postscreen's DNSBL checks, rspamd's spam scoring, and the recipient/relay restrictions all still apply normally. It's deliberately not a `mynetworks`/IP-based exception (a home IP is usually dynamic and shared by the whole LAN) and not SASL authentication (that's for a host that needs to *relay* through this server to arbitrary external recipients, which is a different, higher-trust problem than delivering to one of this server's own local mailboxes).
+
 ## DKIM
 
 Keys are generated at deploy time (2048-bit RSA) per domain using selector `{{ dkim_selector }}` (default: `mail`). Every run derives the public key from whatever's on disk and publishes it to Vault at `ec2/dkim-public/<domain>` (and backs up the private key to `ec2/dkim-private/<domain>`, disaster-recovery only, never read by Terraform). `terraform/aws` reads `ec2/dkim-public/<domain>` and publishes the actual Route53 TXT record; Terraform remains the only thing that ever calls the Route53 API. See `docs/howtos/vault-secrets-architecture.md`.
@@ -61,6 +74,7 @@ To rotate keys: delete the `.key` file for that domain (or change `dkim_selector
 | `mailbox_users` | `[]` | Users and their domains (see above) |
 | `aliases_root` | `root` | System user who receives root's mail |
 | `extra_aliases` | `{}` | Additional aliases, e.g. `{fail2ban: alice, wiki: alice}` |
+| `postfix_helo_access_entries` | `{}` | HELO/EHLO hostnames to accept despite not resolving in public DNS, e.g. `{host.internal.example: "OK"}`; see below |
 
 ## Prerequisites
 

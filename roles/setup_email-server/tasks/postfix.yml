@@ -37,6 +37,20 @@
   tags:
     - postfix
 
+- name: Deploy Postfix HELO access map
+  ansible.builtin.template:
+    src: postfix-helo-access.j2
+    dest: "{{ postfix_config_dir }}/helo_access"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify:
+    - Rebuild helo_access db
+    - Reload postfix
+  tags:
+    - postfix
+
 - name: Deploy /etc/aliases
   ansible.builtin.template:
     src: aliases.j2

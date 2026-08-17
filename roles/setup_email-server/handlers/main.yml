@@ -34,3 +34,9 @@
     cmd: newaliases
   become: true
   changed_when: true
+
+- name: Rebuild helo_access db
+  ansible.builtin.command:
+    cmd: postmap {{ postfix_config_dir }}/helo_access
+  become: true
+  changed_when: true

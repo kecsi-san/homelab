@@ -99,6 +99,15 @@ extra_aliases: "{{ lookup('community.hashi_vault.vault_kv2_get', 'mail', **vault
 mail_hostname: linuxbox.hu
 mail_cert_name: linuxbox.hu
 
+# prolion (home LAN fileserver) sends its own system mail (fail2ban, cron) here to a
+# local mailbox. Its HELO hostname is a .local name that will never resolve in public
+# DNS, so smtpd_helo_restrictions' reject_unknown_helo_hostname always rejected it —
+# every retry also tripped fail2ban's postfix jail and banned the home IP. This is
+# delivery to a local mailbox, not a relay: no SASL auth needed, see
+# roles/setup_email-server/README.md for why HELO allowlisting is the right scope here.
+postfix_helo_access_entries:
+  prolion.kinet.local: "OK"
+
 # --- HashiCorp Vault ---
 # vault_version: leave empty to install latest from HashiCorp APT repo.
 # Pin after first install to prevent unintended upgrades — apt-mark hold is applied automatically when set.

@@ -1,0 +1,5 @@
+# Managed by Ansible — HELO/EHLO access exceptions
+# Format: hostname   action  (see postfix_helo_access_entries)
+{% for helo, action in postfix_helo_access_entries.items() %}
+{{ helo }}   {{ action }}
+{% endfor %}
