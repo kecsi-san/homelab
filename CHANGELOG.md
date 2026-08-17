@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(cnpg): expand postgres PVC 4Gi to 6Gi to clear WAL-full primary outage ([1ffd3e8](https://github.com/kecsi-san/homelab/commit/1ffd3e8491c1553d9fe8b7f8110ec53bcc9aa22d) by Zoltan K).
 - fix(cnpg): grow postgres cluster storage 2Gi -> 4Gi ([edfebef](https://github.com/kecsi-san/homelab/commit/edfebef118245b08f588c942412fb92d68a63d09) by Zoltan K).
 - fix(upgrade_nodejs): actually upgrade npm itself via nvm install-latest-npm ([cf1e066](https://github.com/kecsi-san/homelab/commit/cf1e06617d94f2588266ec6c2deb419abc5941c6) by Zoltan K).
 - fix(playbooks): use bracket notation for pods JSON items key ([d99038c](https://github.com/kecsi-san/homelab/commit/d99038c3309fccdd3aefd32f750c1f48b27fedd4) by Zoltan K).
