@@ -14,12 +14,19 @@
   become: false
   when: nodejs_install_method == 'homebrew-nvm'
 
+# nvm refuses --reinstall-packages-from=current once nodejs_version (e.g.
+# lts/*) already resolves to the active version — the steady-state case
+# between LTS releases, i.e. most runs after the first. That's nvm correctly
+# saying there's nothing to carry over, not a real failure, so tolerate it
+# and still (re-)apply the alias/cache-clear steps.
 - name: Upgrade Node.js via nvm (carries over global npm packages)
   ansible.builtin.shell:
     cmd: >
       export NVM_DIR="{{ ansible_env.HOME }}/.nvm";
       . "{{ nvm_brew_prefix.stdout }}/nvm.sh";
-      nvm install {{ nodejs_version }} --reinstall-packages-from=current &&
+      nvm install {{ nodejs_version }} --reinstall-packages-from=current || {
+        [ "$(nvm current)" = "$(nvm version {{ nodejs_version }})" ] || exit 1;
+      };
       nvm alias default {{ nodejs_version }} &&
       nvm cache clear
   become: false
