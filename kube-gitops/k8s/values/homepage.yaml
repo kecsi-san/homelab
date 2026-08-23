@@ -4,7 +4,7 @@ image:
   # repository pinned so Renovate's helm-values manager can resolve and
   # track this tag (it needs both fields present to build the image ref)
   repository: ghcr.io/gethomepage/homepage
-  tag: v2.0.0
+  tag: v2.1.2
 
 enableRbac: true
 
