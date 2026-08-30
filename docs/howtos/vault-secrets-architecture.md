@@ -4,7 +4,7 @@
 
 ## Context
 
-Vault is live at `vault.kecskemethy.hu` (installed 2026-07-04, initialized/unsealed, CLI configured on the primary workstation with `VAULT_ADDR` set, see `docs/howtos/ec2-rebuild-plan.md` for the install). This doc plans the move from "root token for everything" to a properly designed setup before putting real secrets in it: separate mount points per concern, real access management, and a decision on whether Terraform should manage secret data itself.
+Vault is live at `vault.k*.hu` (installed 2026-07-04, initialized/unsealed, CLI configured on the primary workstation with `VAULT_ADDR` set, see `docs/howtos/ec2-rebuild-plan.md` for the install). This doc plans the move from "root token for everything" to a properly designed setup before putting real secrets in it: separate mount points per concern, real access management, and a decision on whether Terraform should manage secret data itself.
 
 **Decisions:**
 1. **Terraform manages structure only** (mounts, policies, auth methods), never secret *values*. Terraform state duplicates whatever it manages in plaintext (encrypted at rest via the S3 backend, but still a second place secrets could leak from); HashiCorp's own guidance is against using `vault_kv_secret_v2`-style resources for real secret content. Secret values get written directly via `vault kv put`, entirely outside Terraform's purview.
@@ -30,7 +30,7 @@ Vault is live at `vault.kecskemethy.hu` (installed 2026-07-04, initialized/unsea
 ### Terraform module: `terraform/vault/`
 New root module, separate state from `terraform/aws/` (different blast radius: Vault-admin credentials shouldn't be mixed into the same plan/state as AWS infra). Mirrors `terraform/aws/`'s existing backend pattern (same S3 bucket, new state key `vault/terraform.tfstate`; `backend.conf.example` committed, `backend.conf` gitignored).
 
-- `provider.tf`: `hashicorp/vault` provider, address from a variable (default `https://vault.kecskemethy.hu`), token via ambient `VAULT_TOKEN`/`~/.vault-token` (never a Terraform variable, this module needs *no* secret tfvars at all, unlike `terraform/aws/`)
+- `provider.tf`: `hashicorp/vault` provider, address from a variable (default `https://vault.k*.hu`), token via ambient `VAULT_TOKEN`/`~/.vault-token` (never a Terraform variable, this module needs *no* secret tfvars at all, unlike `terraform/aws/`)
 - `main.tf`: `vault_mount.ec2`, `vault_policy.ec2_ansible_read`, `vault_policy.ec2_admin`, `vault_auth_backend.approle`, `vault_auth_backend.userpass`, `vault_approle_auth_backend_role.ansible`
 - `outputs.tf`: the AppRole `role_id` (stable, not sensitive, safe to output)
 - README documenting the manual bootstrap steps below (things Terraform deliberately doesn't do)

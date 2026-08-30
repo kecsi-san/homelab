@@ -33,7 +33,7 @@ Run these in order, once, after `terraform apply`.
 root-equivalent AWS creds already in `secrets.yml` today):
 
 ```bash
-export VAULT_ADDR=https://vault.kecskemethy.hu
+export VAULT_ADDR=https://vault.k*.hu
 export VAULT_TOKEN=<root token>
 terraform apply
 ```

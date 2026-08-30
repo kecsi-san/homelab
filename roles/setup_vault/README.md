@@ -22,7 +22,7 @@ This matters for data migration: the legacy server's `/opt/vault/data/` is owned
 
 ## Vault bind address
 
-Vault listens on `127.0.0.1:8200` (loopback only). Apache proxies HTTPS from `vault.kecskemethy.hu` and `vault.linuxbox.hu` to this address. Vault itself does not handle TLS.
+Vault listens on `127.0.0.1:8200` (loopback only). Apache proxies HTTPS from `vault.k*.hu` and `vault.l*.hu` to this address. Vault itself does not handle TLS.
 
 The old live server bound to the VPC private IP (`172.30.2.246:8200`); on the new server loopback is correct and more secure.
 
@@ -31,7 +31,7 @@ The old live server bound to the VPC private IP (`172.30.2.246:8200`); on the ne
 There have been two Vault instances on the legacy box, and only one of them matters for a rebuild:
 
 1. **Old, dead Vault (v1.4.0, manual binary at `/opt/hashicorp/vault`, data at `/opt/hashicorp/vault-data/`).** Unreachable since ~2020, nothing depended on it. **Deliberately not migrated**: the current Vault below was freshly initialized instead of trying to resurrect this one. Its data was simply left in place on the legacy box, unused.
-2. **Current, live Vault (HashiCorp APT package, initialized 2026-07-04, data at `/opt/vault/data/`).** This is the one at `vault.kecskemethy.hu` that Ansible itself now depends on; `inventory/group_vars/aws_all.yml` sources `ec2_users`/`apache_vhosts`/`apache_certs`/`mailbox_users`/`duo_*`/AWS creds/DKIM backups from it via AppRole lookups (see `docs/howtos/vault-secrets-architecture.md`). **This one must be migrated before EIP cutover**: once the EIP swaps, `vault.kecskemethy.hu` resolves to the new instance's Vault, and if it's still empty, every Vault-sourced Ansible variable breaks (only the plaintext `secrets.yml` fallback values would keep working).
+2. **Current, live Vault (HashiCorp APT package, initialized 2026-07-04, data at `/opt/vault/data/`).** This is the one at `vault.k*.hu` that Ansible itself now depends on; `inventory/group_vars/aws_all.yml` sources `ec2_users`/`apache_vhosts`/`apache_certs`/`mailbox_users`/`duo_*`/AWS creds/DKIM backups from it via AppRole lookups (see `docs/howtos/vault-secrets-architecture.md`). **This one must be migrated before EIP cutover**: once the EIP swaps, `vault.k*.hu` resolves to the new instance's Vault, and if it's still empty, every Vault-sourced Ansible variable breaks (only the plaintext `secrets.yml` fallback values would keep working).
 
 Migrate it as one of the last steps before cutover, so the copy is consistent:
 

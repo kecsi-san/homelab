@@ -31,8 +31,8 @@ Example `hosts` value for `workstation/ssh-config/<your-wsl2-hostname>`:
 ```json
 [
   {
-    "host": "linuxbox linuxbox.hu 52.48.130.44",
-    "hostname": "linuxbox.hu",
+    "host": "linuxbox l*.hu 52.48.130.44",
+    "hostname": "l*.hu",
     "user": "kecsi",
     "key_name": "linuxbox2026",
     "port": 22,

@@ -12,7 +12,7 @@ tags: [secrets, vault, openbao, comparison]
 
 Research done ahead of migrating EC2/Ansible secrets (see `docs/howtos/vault-secrets-architecture.md`)
 out of `secrets.yml` and into a real secret store, to confirm HashiCorp Vault; already
-live at `vault.kecskemethy.hu` since Phase 4 of the EC2 rebuild; is still the right choice
+live at `vault.k*.hu` since Phase 4 of the EC2 rebuild; is still the right choice
 rather than starting over on OpenBao.
 
 ---

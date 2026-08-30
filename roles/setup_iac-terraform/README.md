@@ -9,7 +9,7 @@ Installs the following via Homebrew (Tier 2; frequently updated), tapping `hashi
 | Tool | Purpose |
 |------|---------|
 | `terraform` | Infrastructure as Code provisioning |
-| `vault` | Vault CLI; talks to a remote Vault server (e.g. `vault.kecskemethy.hu`), doesn't run one locally |
+| `vault` | Vault CLI; talks to a remote Vault server (e.g. `vault.k*.hu`), doesn't run one locally |
 | `terraform-docs` | Auto-generates documentation from Terraform modules |
 | `tflint` | Terraform linter and static analysis |
 | `trivy` | Vulnerability and misconfiguration scanner (replaces tfsec) |

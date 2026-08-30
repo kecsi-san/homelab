@@ -65,7 +65,7 @@ To rotate keys: delete the `.key` file for that domain (or change `dkim_selector
 | Variable | Default | Description |
 |---|---|---|
 | `mail_hostname` | `mail.<first domain>` | SMTP banner (`myhostname`) |
-| `mail_cert_name` | `{{ mail_hostname }}` | TLS cert directory name under `certbot_cert_dir`: override to match the domain `setup_apache2`'s `apache_certs` actually issued a cert for (e.g. `linuxbox.hu` covers `mail.linuxbox.hu`) |
+| `mail_cert_name` | `{{ mail_hostname }}` | TLS cert directory name under `certbot_cert_dir`: override to match the domain `setup_apache2`'s `apache_certs` actually issued a cert for (e.g. `l*.hu` covers `mail.l*.hu`) |
 | `email_domains` | *(required)* | List of domains to serve |
 | `dkim_selector` | `mail` | DKIM key selector |
 | `rspamd_dkim_key_dir` | `/var/lib/rspamd/dkim` | DKIM private key directory |

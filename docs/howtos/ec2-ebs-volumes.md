@@ -16,7 +16,7 @@ Storage design for the new EC2 edge node (email + web server).
 |---|---|---|---|---|
 | 1 | `/` | 20 GB | gp3 | OS, packages, configs (`/etc`), small service state (`/opt`, `/var/lib/rspamd`, `/var/lib/vault`) |
 | 2 | `/home` | 40 GB | gp3 | User Maildirs, 5.6 GB today (4 users), room for growth + future Bichon email archive |
-| 3 | `/var/www` | 20 GB | gp3 | Apache web content, 1.15 GB today (linuxbox.hu 852 MB, kecskemethy.hu 295 MB) |
+| 3 | `/var/www` | 20 GB | gp3 | Apache web content, 1.15 GB today (l*.hu 852 MB, k*.hu 295 MB) |
 | 4 | `/var/log` | 10 GB | gp3 | All system and service logs, isolated so log growth never kills root or services |
 
 **Total: 90 GB → ~$7.92/month** (gp3 at $0.088/GB-month, eu-west-1, checked via AWS Pricing API 2026-07-11)
