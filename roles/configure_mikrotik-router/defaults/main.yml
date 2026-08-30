@@ -11,6 +11,12 @@ mikrotik_dns_records:
   - name: "api.k8s.{{ domain_name }}"
     address: "{{ kube_vip_address }}"
 
+  # prolion fileserver — exact name, takes precedence over the wildcard below
+  # regardless of list order (match-subdomain only applies when no more specific
+  # static entry exists); LAN clients get prolion's real IP, not Traefik's.
+  - name: "prolion.{{ domain_name }}"
+    address: "192.168.1.10"
+
   # k8s services wildcard (*.kecskemethy.org → Traefik) — RouterOS match-subdomain format
   - name: "{{ domain_name }}"
     address: "{{ k8s_traefik_ip | default('') }}"
