@@ -389,6 +389,11 @@ data:
             - !Find [authentik_providers_oauth2.scopemapping, [managed, "goauthentik.io/providers/oauth2/scope-openid"]]
             - !Find [authentik_providers_oauth2.scopemapping, [managed, "goauthentik.io/providers/oauth2/scope-profile"]]
             - !Find [authentik_providers_oauth2.scopemapping, [managed, "goauthentik.io/providers/oauth2/scope-email"]]
+            # Requesting offline_access in scope= isn't enough on its own:
+            # since Authentik 2024.2, the provider also needs this mapping
+            # present or it silently omits refresh_token from the token
+            # response (no error until the client complains it's missing).
+            - !Find [authentik_providers_oauth2.scopemapping, [managed, "goauthentik.io/providers/oauth2/scope-offline_access"]]
             - !Find [authentik_providers_oauth2.scopemapping, [name, "Groups"]]
           grant_types:
             - authorization_code
