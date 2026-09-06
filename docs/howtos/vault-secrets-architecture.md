@@ -268,6 +268,20 @@ automated sync racing the prune step). From batch 4 onward, deleting the old
 delete the Secret) *before* syncing avoided the conflict entirely rather than
 reacting to it after.
 
+**k3s followed the same weekend**, ~10 minutes total for its own ESO install plus all
+13 secrets (2 batches: everything except Authentik's own credentials, then those last,
+same split as k8s). Its AppRole was scoped to `homelab/k3s/*` only from the start
+(k8s's `homelab-eso-read` policy was narrowed from a mount-wide grant to `homelab/k8s/*`
+at the same time, an in-place policy content update that didn't disturb the
+already-deployed k8s AppRole binding), so neither cluster's ESO credential can read the
+other's secrets. One real difference from k8s worth knowing about for any future
+cluster: k3s's `forgejo` has no Authentik OAuth2 registration job (`job-register-
+authentik.yaml` only exists on k8s), so `authentik-forgejo-oauth2` is one-sided there
+(Authentik's blueprint config only, no app-side consuming secret to pair it with),
+the same shape as `wikijs` on both clusters. Setting `ServerSideApply=true` on the ESO
+Helm Application from the start (rather than discovering the need for it, as k8s did)
+avoided the 262KB CRD-size gotcha entirely on this second pass.
+
 **One unrelated but real find along the way:** the Vault Web UI itself broke while
 browsing into any nested secret (`JSON.parse` error), root-caused to an EC2 Apache
 config issue (`AllowEncodedSlashes`/`nocanon` needed for the `%2F`-encoded paths the UI
