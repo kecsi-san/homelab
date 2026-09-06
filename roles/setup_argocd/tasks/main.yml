@@ -20,6 +20,11 @@
     values: "{{ argocd_helm_values }}"
     state: present
     wait: true
+    # k8s's ArgoCD lost Helm release tracking at some point (hand-patched
+    # image, no meta.helm.sh/* annotations on any of its resources) — this
+    # lets Helm adopt those existing resources instead of aborting on an
+    # ownership-validation error. No-op on a cluster already Helm-owned.
+    take_ownership: true
   delegate_to: localhost
   become: false
   run_once: true
