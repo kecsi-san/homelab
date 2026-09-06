@@ -1,0 +1,28 @@
+---
+# Longhorn's own Helm chart (networkPolicies.restrictInternalTraffic, default
+# true since a chart bump around 2026-08-23) ships a NetworkPolicy on
+# longhorn-manager that only allows ingress from other Longhorn component
+# pods, nothing for cross-namespace scraping. NetworkPolicies selecting the
+# same pods are additive (OR'd together), so this one just adds the missing
+# rule rather than touching Longhorn's own — same placement pattern as
+# servicemonitor-longhorn.yaml above (this file lives in the monitoring path
+# but targets longhorn-system; ArgoCD applies by metadata.namespace).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-monitoring-scrape
+  namespace: longhorn-system
+spec:
+  podSelector:
+    matchLabels:
+      app: longhorn-manager
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 9500
