@@ -233,6 +233,47 @@ sprint), spreading the 6 batches across separate sessions puts this somewhere ar
 Batch 6 is the one worth deliberately not rushing regardless of pace, since a mistake
 there affects every other app's login, not just one.
 
+## Addendum: actual execution results (2026-09-06/07)
+
+All 6 batches completed the same weekend, timed with a plain start/end timestamp per
+batch:
+
+| # | Batch | Estimated | Actual |
+|---|---|---|---|
+| 1 | VolSync restic credentials | ~45 min | 3m 58s |
+| 2 | Standalone single-app secrets | ~1h35 | 3m 4s |
+| 3 | App bootstrap secrets | ~45 min | 2m 0s |
+| 4 | OAuth2 client secret pairs | ~1h50 | 4m 10s |
+| 5 | CNPG DB credential pairs | ~50 min | 1m 57s |
+| 6 | Combined/foundational | ~1h45 | 3m 58s |
+
+**Total: ~19 minutes actual vs. ~7.5 hours estimated.** The estimate was built as a
+per-secret cost extrapolated from the single OpenCloud pilot; in practice, doing
+several secrets in one batch (one round of reading live values, one round of
+`vault kv put`, one round of manifest swaps, one sync) is far cheaper than that
+per-secret model assumed, once the pattern itself is already proven. Batch time didn't
+meaningfully scale with secret count either (batch 4's 10 files took about as long as
+batch 3's 3), suggesting the fixed cost per batch (reading state, writing to Vault,
+syncing, verifying) dominates over the marginal cost of one more secret in the same
+batch. Worth keeping in mind for any future estimate of this shape: batch it, don't
+extrapolate linearly from a single pilot.
+
+**A recurring gotcha, not just the OpenCloud pilot's one-off:** the SealedSecrets
+controller's refusal to hand over a pre-existing plain `Secret` it created (batch 3
+hit it, same as the pilot) turned out to be about sync timing, not a one-off: it only
+happens when the old `SealedSecret` object hasn't actually been pruned yet by the time
+the new `ExternalSecret` tries to take ownership (a sync that partially fails, or an
+automated sync racing the prune step). From batch 4 onward, deleting the old
+`SealedSecret` (and letting Kubernetes' owner-reference garbage collection cascade-
+delete the Secret) *before* syncing avoided the conflict entirely rather than
+reacting to it after.
+
+**One unrelated but real find along the way:** the Vault Web UI itself broke while
+browsing into any nested secret (`JSON.parse` error), root-caused to an EC2 Apache
+config issue (`AllowEncodedSlashes`/`nocanon` needed for the `%2F`-encoded paths the UI
+sends), fixed live during batch 6. See `TODO.md` for that fix's own details and its
+still-pending Ansible reconciliation, it's unrelated to the Vault data model itself.
+
 ## Verification (once implemented)
 - `terraform -chdir=terraform/vault plan` / `apply` succeed cleanly against the new module
 - `vault policy read ec2-ansible-read` / `vault auth list` confirm the AppRole and policies exist as expected
