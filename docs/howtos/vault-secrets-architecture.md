@@ -171,6 +171,68 @@ one-time setup cost.
 migration (env vars are read once at container start, so replacing the backing Secret
 object doesn't disrupt an already-running pod); the resolved value matched exactly.
 
+## Addendum: remaining k8s migration roadmap (2026-09-07)
+
+33 SealedSecrets remain on k8s (34 total minus ESO's own bootstrap secret, which can't
+move to Vault). k3s's 13 are a separate, later phase: it needs its own ESO install and
+`ClusterSecretStore` first, effectively repeating a chunk of the one-time setup cost
+above, so it isn't part of this roadmap.
+
+**A refinement over the OpenCloud pilot for paired secrets:** several of these aren't
+one file each, they're two files holding the *same* value in two namespaces, one
+Authentik OAuth2 client secret referenced by both Authentik's own blueprint and the
+consuming app, or one CNPG-managed-role credential referenced by both the `cnpg-cluster`
+bootstrap and the consuming app. Rather than `vault kv put` the same value at two paths,
+write it once and point both `ExternalSecret`s at the same `homelab/k8s/<app>` path,
+one per namespace. Confirmed pairs (checked by reading each file's keys, not just
+guessing from naming):
+
+- **OAuth2 client secret pairs** (`authentik/sealedsecret-*-oauth2.yaml` + the app's own
+  consuming secret): argocd, forgejo, grafana (`monitoring/`), headlamp, wikijs. Each
+  app's Deployment/Helm-values env var wiring stays exactly as-is, same `secretKeyRef`
+  target name, only the manifest backing it changes, the same pattern the OpenCloud
+  pilot proved for a *public* OIDC client; this is the first time this migration touches
+  a *confidential* client secret, worth confirming end-to-end on the first one before
+  assuming the rest are identical.
+- **CNPG DB credential pairs** (`cnpg/sealedsecret-*-db.yaml` + the app's own DB secret):
+  forgejo, wikijs cleanly. `backstage` and `authentik` also have a DB credential, but
+  each already bundles it into a single larger secret (see below), not a separate file.
+- **backstage** (`sealedsecret-app.yaml`) bundles three concerns in one target Secret:
+  its Authentik OAuth2 client secret, its own session secret, and its CNPG DB
+  credentials. Needs one `ExternalSecret` with three `data[]` entries pulling from three
+  Vault paths, rather than the one-entry-per-secret shape everything else uses. Save
+  for its own batch once the OAuth2-pair and DB-pair patterns are both independently
+  proven elsewhere first.
+- **authentik** (`sealedsecret-credentials.yaml`) is the highest-blast-radius secret in
+  the whole migration: its own bootstrap admin password, `secret-key`, and its CNPG DB
+  password, all in one file. Every other app's SSO depends on Authentik staying up.
+  Deliberately last, once the process is fully proven elsewhere, with a live
+  verification pass across a few dependent apps' logins afterward rather than a
+  fire-and-forget commit.
+
+### Batches, in order
+
+| # | Batch | Secrets | Risk | Est. active time |
+|---|---|---|---|---|
+| 1 | VolSync restic credentials | gatus, mealie, minecraft, ntfy (4) | Lowest, backup-only blast radius | ~45 min |
+| 2 | Standalone single-app secrets | garage, backstage pull-secret, minecraft allowlist, gatus alert-email, gatus ntfy-token, ntfy smtp, ntfy smtp-email, ntfy alertmanager-bridge (8) | Low, no cross-app coordination | ~1h35 |
+| 3 | App bootstrap secrets | forgejo admin, forgejo secret-key, forgejo-runner token (3) | Low | ~45 min |
+| 4 | OAuth2 client secret pairs | argocd, forgejo, grafana, headlamp, wikijs (5 relationships, ~10 files) | Medium, first confidential-client validation, verify login after each | ~1h50 |
+| 5 | CNPG DB credential pairs | forgejo, wikijs (2, clean pairs only) | Medium, verify DB connectivity after each | ~50 min |
+| 6 | Combined/foundational | backstage (3-in-1 secret), authentik (bootstrap + DB, do last) | Highest, widest blast radius | ~1h45 |
+
+**Total estimated active effort: ~7.5 hours**, a rough figure from one data point (the
+OpenCloud pilot), not a measured average, treat it as a planning estimate, not a
+commitment. Each batch is its own PR: commit, push, force-sync, verify, before starting
+the next, exactly the loop already used for OpenCloud, so a batch can be paused between
+sessions without leaving anything half-migrated.
+
+**Calendar estimate:** at the homelab's usual pace (evenings/weekends, not a dedicated
+sprint), spreading the 6 batches across separate sessions puts this somewhere around
+2 to 4 weeks if picked up casually, or as little as one weekend if run back-to-back.
+Batch 6 is the one worth deliberately not rushing regardless of pace, since a mistake
+there affects every other app's login, not just one.
+
 ## Verification (once implemented)
 - `terraform -chdir=terraform/vault plan` / `apply` succeed cleanly against the new module
 - `vault policy read ec2-ansible-read` / `vault auth list` confirm the AppRole and policies exist as expected
