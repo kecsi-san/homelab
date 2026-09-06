@@ -16,21 +16,19 @@
 
 - name: Install helm via Homebrew
   community.general.homebrew:
-    name: helm@3
+    name: helm
     state: present
   become: false
 
-- name: Link helm@3 (keg-only formula)
-  ansible.builtin.command: brew link --force helm@3
-  become: false
-  register: helm_link
-  changed_when: "'Already linked' not in helm_link.stderr"
-
-- name: Pin helm@3 to prevent silent major-version upgrades via brew upgrade
-  ansible.builtin.command: brew pin helm@3
-  become: false
-  register: helm_pin
-  changed_when: "'already pinned' not in helm_pin.stdout"
+# Pinned to helm@3 from 2026-07-19 to 2026-09-06 after an unpinned brew
+# upgrade silently jumped 3->4 and broke ArgoCD's Server-Side-Apply
+# assumptions (see CLAUDE.md's Known Gotchas). The actual break, argocd-cm/
+# argocd-rbac-cm co-managed by the Helm chart and argocd-config's raw
+# manifests, is fixed for real now (configs.cm.create/configs.rbac.create:
+# false in argocd_helm_values, see TODO.md's "Helm 4 migration" item), and
+# re-verified live against the real v4 binary on both clusters before
+# unpinning. No helm@4 formula exists to pin against; if Homebrew ever
+# splits one out the way it did for v3, apply the same pin pattern again.
 
 - name: Check installed helm plugins
   ansible.builtin.command:
