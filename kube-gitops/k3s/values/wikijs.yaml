@@ -6,6 +6,10 @@
 postgresql:
   enabled: false
 
+# Scaled to 0: not in active use on k3s, kept off to speed up local WSL
+# boot. See TODO.md for how to bring it back.
+replicaCount: 0
+
 externalPostgresql:
   host: postgres-rw.postgres.svc.cluster.local
   port: 5432
