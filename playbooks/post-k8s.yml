@@ -47,6 +47,14 @@
   connection: local
   become: false
   tasks:
+    - name: Install ArgoCD via Helm
+      ansible.builtin.import_role:
+        name: setup_argocd
+      vars:
+        argocd_kubeconfig: "~/.kube/k8s.yaml"
+      tags:
+        - argocd
+
     - name: Set ArgoCD server to insecure mode (TLS terminated by Traefik)
       ansible.builtin.command: >
         kubectl --kubeconfig {{ ansible_env.HOME }}/.kube/k8s.yaml
