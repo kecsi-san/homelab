@@ -207,7 +207,17 @@ metallb_namespace: "metallb-system"
 #           address_pool:
 #             - pool2
 
-argocd_enabled: true
+# Kubespray's own ArgoCD (kubernetes-apps/argocd role) is deliberately off.
+# It installs the raw upstream install.yaml via kubectl, pinned to its own
+# argocd_version (2.14.5), completely separate from and unaware of the
+# Helm-managed install roles/setup_argocd already runs from post-k8s.yml.
+# Having both enabled is how the k8s cluster's ArgoCD lost its Helm release
+# tracking in the first place: every k8s.yml rerun reapplied Kubespray's
+# raw manifests over top, at Kubespray's own version, with no meta.helm.sh/*
+# ownership annotations, silently overwriting whatever the Helm chart had
+# installed. See roles/setup_argocd, TODO.md, and CLAUDE.md's Known Gotchas
+# for the discovered drift and the take_ownership fix that recovers it.
+argocd_enabled: false
 # argocd_namespace: argocd
 # Default password:
 #   - https://argo-cd.readthedocs.io/en/stable/getting_started/#4-login-using-the-cli
