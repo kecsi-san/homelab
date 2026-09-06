@@ -15,6 +15,10 @@ the full design rationale.
 - `vault_auth_backend.userpass` — human auth method (the actual user is created manually, see step 3 below)
 - `vault_mount.workstation` — KV v2 mount at `workstation/`, for personal/workstation secrets (SSH client config + keys, migrated from `../dotfiles`)
 - `vault_policy.workstation_admin` — full CRUD on `workstation/*`, bound to the same userpass login as `ec2-admin`
+- `vault_mount.homelab` — KV v2 mount at `homelab/`, for Kubernetes app secrets migrating off SealedSecrets (path convention `homelab/<cluster>/<app>`)
+- `vault_policy.homelab_eso_read` — read+list only on `homelab/*`, bound to the External Secrets Operator AppRole
+- `vault_policy.homelab_admin` — full CRUD on `homelab/*`, bound to the same userpass login as `ec2-admin`/`workstation-admin`
+- `vault_approle_auth_backend_role.eso` — machine auth for External Secrets Operator (`eso-homelab` role), bound to `homelab-eso-read`, reusing the same `approle` auth backend as Ansible
 
 ## Setup
 

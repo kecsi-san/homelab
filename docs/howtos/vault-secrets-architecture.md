@@ -100,9 +100,76 @@ but not fully zero-touch.
 
 ## Deferred (explicitly out of scope, tracked for later)
 - OIDC auth via Authentik for human login
-- Kubernetes SealedSecrets → Vault migration (needs External Secrets Operator or Vault Agent Injector)
 - MikroTik/router credentials: staying in vaulted `secrets.yml` deliberately (bootstrapping risk)
 - Secret rotation automation
+
+## Addendum: Kubernetes SealedSecrets → Vault pilot (2026-09-06)
+
+Piloted on one secret (OpenCloud's admin password) to measure the real effort of
+migrating all 49 SealedSecrets currently in `kube-gitops/`, per a request to gauge this
+before committing to the full migration.
+
+**Tool: External Secrets Operator (ESO), not Vault Agent Injector.** ESO produces native
+`Secret` objects other resources reference normally (`secretKeyRef`, same as
+SealedSecrets does today); Vault Agent Injector is sidecar-based and file-mounted, a
+bigger blast radius per-Deployment and the older of the two approaches (HashiCorp's own
+current guidance favors ESO/Vault Secrets Operator).
+
+**Auth method: AppRole, not Kubernetes auth.** The idiomatic ESO-on-Vault pattern is the
+Kubernetes auth method (Vault validates a pod's ServiceAccount token against the
+cluster's own API server, no bootstrap secret needed at all). Not viable here: Vault
+sits on the EC2 edge node (public internet), the k8s cluster sits on the home LAN behind
+NAT, and Kubernetes auth needs Vault to reach *back into* the cluster's API server for
+token validation, a path that doesn't exist without the still-unbuilt
+`configure_wireguard` role. AppRole works today with no network changes, at the cost of
+one small bootstrap secret per cluster (ESO's own `role_id`/`secret_id`) that can't
+itself move to Vault, everything else now can. Revisit Kubernetes auth once Wireguard
+connects EC2 to the home LAN.
+
+**New Terraform (`terraform/vault/main.tf`):** one `homelab` KV v2 mount (path
+convention `homelab/<cluster>/<app>`, e.g. `homelab/k8s/opencloud`, so both clusters
+share one mount rather than one per cluster), a `homelab-eso-read` policy (read+list
+only, bound to a new `eso-homelab` AppRole role), and a `homelab-admin` policy
+(full CRUD, added to the existing human userpass login alongside `ec2-admin`/
+`workstation-admin`). Applying this needed the root token, same as the original EC2/
+Ansible bootstrap; day-to-day `vault kv put` work under `homelab-admin` doesn't.
+
+**New Kubernetes-side pieces (per cluster, one-time):**
+- `external-secrets` app: the ESO Helm chart itself
+- `external-secrets-config` app: the `ClusterSecretStore` pointing at Vault, plus the
+  one bootstrap `SealedSecret` holding ESO's AppRole `secret_id`
+- Per-secret, going forward: one `ExternalSecret` manifest replaces one `SealedSecret`
+  manifest, same target `Secret` name/key, so nothing consuming the secret needs to
+  change
+
+**Gotchas hit:**
+- Two of ESO's CRDs (`clustersecretstores.external-secrets.io`,
+  `secretstores.external-secrets.io`) exceed the 262KB `kubectl.kubernetes.io/
+  last-applied-configuration` annotation limit under client-side apply, same issue
+  already documented for CNPG in `CLAUDE.md`'s Known Gotchas. Fix: `ServerSideApply=true`
+  in the app's `syncOptions`.
+- SealedSecrets' controller refuses to adopt a pre-existing plain `Secret` it didn't
+  create ("already exists and is not managed by SealedSecret"); had to delete the plain
+  Secret first and let the controller recreate it. ESO's `ExternalSecret` did not have
+  this problem, it took over and updated the existing Secret in place without complaint.
+- An in-flight ArgoCD sync operation retries with the `syncOptions` it was *created*
+  with, not the current ones from git; patching `.spec` isn't enough to make a stuck
+  retry loop pick up a fix. Needed `argocd app terminate-op` (via `argocd login --core`,
+  no separate ArgoCD login required) to actually cancel it before a fresh sync would use
+  the corrected options.
+
+**Effort measured:** roughly a day's work end to end for the first secret, most of it
+one-time cost (Terraform module changes, ESO installation, the CRD/ArgoCD gotchas
+above). Each *additional* secret after that is a much smaller, mechanical change: delete
+one `SealedSecret` manifest, add one `ExternalSecret` manifest pointing at a new
+`homelab/<cluster>/<app>` path, `vault kv put` the value once. No changes needed to
+whatever actually consumes the secret. Extrapolating: migrating the remaining ~48
+SealedSecrets is a series of small, low-risk, repeatable PRs, not a re-run of this
+one-time setup cost.
+
+**Result:** confirmed working end to end on k8s. Pod never restarted during the
+migration (env vars are read once at container start, so replacing the backing Secret
+object doesn't disrupt an already-running pod); the resolved value matched exactly.
 
 ## Verification (once implemented)
 - `terraform -chdir=terraform/vault plan` / `apply` succeed cleanly against the new module
