@@ -103,3 +103,60 @@ resource "vault_policy" "workstation_admin" {
     }
   EOT
 }
+
+# homelab/ — KV v2 mount holding Kubernetes app secrets, migrating off
+# SealedSecrets one app at a time. Path convention: homelab/<cluster>/<app>
+# (e.g. homelab/k8s/opencloud), so both clusters share one mount instead of
+# one per cluster. Piloted with OpenCloud's admin password; see
+# docs/howtos/vault-secrets-architecture.md.
+resource "vault_mount" "homelab" {
+  path        = "homelab"
+  type        = "kv-v2"
+  description = "Kubernetes app secrets (k8s + k3s), migrating off SealedSecrets"
+
+  options = {
+    version = "2"
+    type    = "kv-v2"
+  }
+}
+
+# Read + list only on homelab/* — bound to the External Secrets Operator
+# AppRole. ESO never needs to write secrets, only read them at sync time.
+resource "vault_policy" "homelab_eso_read" {
+  name = "homelab-eso-read"
+
+  policy = <<-EOT
+    path "homelab/data/*" {
+      capabilities = ["read", "list"]
+    }
+    path "homelab/metadata/*" {
+      capabilities = ["read", "list"]
+    }
+  EOT
+}
+
+# Full CRUD on homelab/* for day-to-day `vault kv put/get` work — bound to the
+# same userpass login as ec2-admin/workstation-admin (see README.md bootstrap).
+resource "vault_policy" "homelab_admin" {
+  name = "homelab-admin"
+
+  policy = <<-EOT
+    path "homelab/*" {
+      capabilities = ["create", "read", "update", "delete", "list"]
+    }
+  EOT
+}
+
+# Machine auth for External Secrets Operator. Same auth backend type as
+# Ansible's AppRole above but a distinct role, since Kubernetes auth method
+# isn't viable yet: Vault (on EC2, public) would need a network path back
+# into the home-LAN k8s API server for ServiceAccount token validation, which
+# doesn't exist without the still-unbuilt configure_wireguard role. AppRole
+# needs no such path — ESO just needs its role_id/secret_id, delivered as one
+# small SealedSecret per cluster (the one bootstrap secret that can't itself
+# move to Vault).
+resource "vault_approle_auth_backend_role" "eso" {
+  backend        = vault_auth_backend.approle.path
+  role_name      = "eso-homelab"
+  token_policies = [vault_policy.homelab_eso_read.name]
+}
