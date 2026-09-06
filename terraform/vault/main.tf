@@ -120,16 +120,35 @@ resource "vault_mount" "homelab" {
   }
 }
 
-# Read + list only on homelab/* — bound to the External Secrets Operator
-# AppRole. ESO never needs to write secrets, only read them at sync time.
+# Read + list only on homelab/k8s/* — bound to the k8s cluster's External
+# Secrets Operator AppRole. Scoped to k8s/ specifically (not the whole mount)
+# so a compromised k8s ESO credential can't read k3s's secrets, and vice
+# versa for homelab_eso_k3s_read below. Narrowed from a mount-wide grant to
+# this scope after k3s got its own ESO instance (2026-09-07); this is an
+# in-place policy content update, not a rename, so it doesn't disturb the
+# already-deployed k8s AppRole binding or its existing role_id/secret_id.
 resource "vault_policy" "homelab_eso_read" {
   name = "homelab-eso-read"
 
   policy = <<-EOT
-    path "homelab/data/*" {
+    path "homelab/data/k8s/*" {
       capabilities = ["read", "list"]
     }
-    path "homelab/metadata/*" {
+    path "homelab/metadata/k8s/*" {
+      capabilities = ["read", "list"]
+    }
+  EOT
+}
+
+# Read + list only on homelab/k3s/* — bound to the k3s cluster's ESO AppRole.
+resource "vault_policy" "homelab_eso_k3s_read" {
+  name = "homelab-eso-k3s-read"
+
+  policy = <<-EOT
+    path "homelab/data/k3s/*" {
+      capabilities = ["read", "list"]
+    }
+    path "homelab/metadata/k3s/*" {
       capabilities = ["read", "list"]
     }
   EOT
@@ -159,4 +178,13 @@ resource "vault_approle_auth_backend_role" "eso" {
   backend        = vault_auth_backend.approle.path
   role_name      = "eso-homelab"
   token_policies = [vault_policy.homelab_eso_read.name]
+}
+
+# Same as above, for k3s's own ESO instance. A separate role (not the same
+# role_id/secret_id reused across clusters) so each cluster's bootstrap
+# credential is independently revocable and scoped only to its own secrets.
+resource "vault_approle_auth_backend_role" "eso_k3s" {
+  backend        = vault_auth_backend.approle.path
+  role_name      = "eso-k3s"
+  token_policies = [vault_policy.homelab_eso_k3s_read.name]
 }

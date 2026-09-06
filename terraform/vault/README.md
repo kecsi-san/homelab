@@ -16,9 +16,11 @@ the full design rationale.
 - `vault_mount.workstation` — KV v2 mount at `workstation/`, for personal/workstation secrets (SSH client config + keys, migrated from `../dotfiles`)
 - `vault_policy.workstation_admin` — full CRUD on `workstation/*`, bound to the same userpass login as `ec2-admin`
 - `vault_mount.homelab` — KV v2 mount at `homelab/`, for Kubernetes app secrets migrating off SealedSecrets (path convention `homelab/<cluster>/<app>`)
-- `vault_policy.homelab_eso_read` — read+list only on `homelab/*`, bound to the External Secrets Operator AppRole
+- `vault_policy.homelab_eso_read` — read+list only on `homelab/k8s/*`, bound to k8s's External Secrets Operator AppRole
+- `vault_policy.homelab_eso_k3s_read` — read+list only on `homelab/k3s/*`, bound to k3s's ESO AppRole
 - `vault_policy.homelab_admin` — full CRUD on `homelab/*`, bound to the same userpass login as `ec2-admin`/`workstation-admin`
-- `vault_approle_auth_backend_role.eso` — machine auth for External Secrets Operator (`eso-homelab` role), bound to `homelab-eso-read`, reusing the same `approle` auth backend as Ansible
+- `vault_approle_auth_backend_role.eso` — machine auth for k8s's External Secrets Operator (`eso-homelab` role), bound to `homelab-eso-read`, reusing the same `approle` auth backend as Ansible
+- `vault_approle_auth_backend_role.eso_k3s` — same, for k3s's ESO (`eso-k3s` role, bound to `homelab-eso-k3s-read`), a separate role so each cluster's bootstrap credential is independently revocable
 
 ## Setup
 
