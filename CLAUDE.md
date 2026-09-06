@@ -371,6 +371,7 @@ ArgoCD itself is installed by the `setup_argocd` Ansible role (Helm, insecure mo
 | volsync | volsync-system | Helm (backube/volsync) | PVC backup operator |
 | volsync-config | volsync-system | Raw manifests (`kube-gitops/k8s/volsync-config/`) | Longhorn VolumeSnapshotClass |
 | mealie | mealie | Raw manifests (`kube-gitops/k8s/mealie/`) | Self-hosted recipe manager; SQLite; default login changeme@example.com / MyPassword |
+| opencloud | opencloud | Raw manifests (`kube-gitops/k8s/opencloud/`) | Self-hosted file storage and sharing (Go, ownCloud Infinite Scale fork); no database, filesystem-backed; Authentik OIDC (public client, PKCE); `homelab-admins` group maps to the OpenCloud `admin` role via `proxy.yaml`; LAN-only (no `external-dns` annotation); its own community Helm chart is archived, so this is hand-rolled raw manifests instead — see `docs/research/homelab-cloud-storage-comparison.md` |
 | minecraft | minecraft | Raw manifests (`kube-gitops/k8s/minecraft/`) | Minecraft Bedrock server; `itzg/minecraft-bedrock-server`; UDP 19132 on 192.168.1.110 (kube-vip); 5Gi Longhorn PVC |
 | pod-cleanup | kube-system | Raw manifests (`kube-gitops/k8s/pod-cleanup/`) | Nightly CronJob (03:00) deleting Failed + Succeeded pods cluster-wide; RBAC: list+delete pods |
 | reloader | reloader | Helm (stakater/reloader) | Rolls pods on ConfigMap/Secret change |

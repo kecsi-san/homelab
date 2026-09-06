@@ -135,7 +135,7 @@ config:
     - Apps:
         - OpenCloud:
             href: https://opencloud.kecskemethy.org
-            description: Cloud file storage and sharing (trial)
+            description: Cloud file storage and sharing
             icon: open-cloud.png
             namespace: opencloud
             app: opencloud

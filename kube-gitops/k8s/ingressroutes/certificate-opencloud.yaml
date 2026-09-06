@@ -1,0 +1,13 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: opencloud-tls
+  namespace: opencloud
+spec:
+  secretName: opencloud-tls
+  dnsNames:
+    - "opencloud.kecskemethy.org"
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer

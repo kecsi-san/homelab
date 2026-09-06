@@ -1,0 +1,60 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opencloud-config
+  namespace: opencloud
+data:
+  proxy.yaml: |
+    role_assignment:
+      driver: oidc
+      oidc_role_mapper:
+        role_claim: groups
+        role_mapping:
+          - role_name: admin
+            claim_value: homelab-admins
+  csp.yaml: |
+    # Extends OpenCloud's default CSP (services/proxy/pkg/config/csp.yaml)
+    # to allow the silent-SSO-check iframe and any direct fetch/XHR to the
+    # external Authentik IdP. Without this, the login page's silent-renew
+    # iframe is blocked by CSP with no visible error and the page just
+    # hangs on "loading...".
+    directives:
+      child-src:
+        - "'self'"
+      connect-src:
+        - "'self'"
+        - 'blob:'
+        - 'https://raw.githubusercontent.com/opencloud-eu/awesome-apps/'
+        - 'https://update.opencloud.eu/'
+        - 'https://authentik.kecskemethy.org'
+      default-src:
+        - "'none'"
+      font-src:
+        - "'self'"
+      frame-ancestors:
+        - "'self'"
+      frame-src:
+        - "'self'"
+        - 'blob:'
+        - 'https://embed.diagrams.net/'
+        - 'https://authentik.kecskemethy.org'
+      img-src:
+        - "'self'"
+        - 'data:'
+        - 'blob:'
+        - 'https://raw.githubusercontent.com/opencloud-eu/awesome-apps/'
+      manifest-src:
+        - "'self'"
+      media-src:
+        - "'self'"
+      object-src:
+        - "'self'"
+        - 'blob:'
+      script-src:
+        - "'self'"
+        - "'unsafe-inline'"
+      style-src:
+        - "'self'"
+        - "'unsafe-inline'"
+        - 'blob:'

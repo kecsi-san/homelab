@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: opencloud
+  namespace: opencloud
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`opencloud.kecskemethy.org`)
+      kind: Rule
+      services:
+        - name: opencloud
+          port: 9200
+  tls:
+    secretName: opencloud-tls

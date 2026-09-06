@@ -1,0 +1,143 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opencloud
+  namespace: opencloud
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: opencloud
+  template:
+    metadata:
+      labels:
+        app: opencloud
+        app.kubernetes.io/name: opencloud
+    spec:
+      securityContext:
+        fsGroup: 1000
+      hostAliases:
+        - ip: "10.233.33.165"
+          hostnames:
+            - "authentik.kecskemethy.org"
+      initContainers:
+        - name: init-config
+          image: opencloudeu/opencloud:7.2.4
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              if [ ! -f /etc/opencloud/opencloud.yaml ]; then
+                opencloud init --admin-password "$IDM_ADMIN_PASSWORD"
+              else
+                echo "config already initialized, skipping"
+              fi
+          env:
+            - name: OC_INSECURE
+              value: "false"
+            - name: IDM_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: opencloud-admin
+                  key: admin-password
+          volumeMounts:
+            - name: data
+              mountPath: /etc/opencloud
+              subPath: config
+      containers:
+        - name: opencloud
+          image: opencloudeu/opencloud:7.2.4
+          args: ["server"]
+          ports:
+            - name: http
+              containerPort: 9200
+          env:
+            - name: OC_URL
+              value: "https://opencloud.kecskemethy.org"
+            - name: PROXY_HTTP_ADDR
+              value: "0.0.0.0:9200"
+            - name: PROXY_TLS
+              value: "false"
+            - name: OC_INSECURE
+              value: "false"
+            - name: OC_LOG_LEVEL
+              value: "info"
+            - name: IDM_CREATE_DEMO_USERS
+              value: "false"
+            - name: IDM_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: opencloud-admin
+                  key: admin-password
+            # External OIDC (Authentik), built-in idp disabled
+            - name: OC_EXCLUDE_RUN_SERVICES
+              value: "idp"
+            - name: OC_OIDC_ISSUER
+              value: "https://authentik.kecskemethy.org/application/o/opencloud/"
+            - name: OC_OIDC_CLIENT_ID
+              value: "opencloud"
+            - name: WEBFINGER_WEB_OIDC_CLIENT_ID
+              value: "opencloud"
+            - name: WEBFINGER_WEB_OIDC_CLIENT_SCOPES
+              value: "openid profile email groups offline_access"
+            - name: PROXY_OIDC_REWRITE_WELLKNOWN
+              value: "true"
+            # authentik-server's internal TLS cert doesn't match the hostname
+            # reached via hostAliases below; scoped to the OIDC transport only.
+            - name: PROXY_OIDC_INSECURE
+              value: "true"
+            - name: PROXY_OIDC_ACCESS_TOKEN_VERIFY_METHOD
+              value: "jwt"
+            - name: PROXY_USER_OIDC_CLAIM
+              value: "preferred_username"
+            - name: PROXY_USER_CS3_CLAIM
+              value: "username"
+            - name: PROXY_AUTOPROVISION_ACCOUNTS
+              value: "true"
+            - name: PROXY_ROLE_ASSIGNMENT_DRIVER
+              value: "oidc"
+            - name: PROXY_ROLE_ASSIGNMENT_OIDC_CLAIM
+              value: "groups"
+            - name: PROXY_CSP_CONFIG_FILE_LOCATION
+              value: "/etc/opencloud/csp.yaml"
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 250m
+            limits:
+              memory: 4Gi
+              cpu: "2"
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/opencloud
+              subPath: data
+            - name: data
+              mountPath: /etc/opencloud
+              subPath: config
+            - name: config
+              mountPath: /etc/opencloud/proxy.yaml
+              subPath: proxy.yaml
+            - name: config
+              mountPath: /etc/opencloud/csp.yaml
+              subPath: csp.yaml
+          readinessProbe:
+            exec:
+              command: ["opencloud", "proxy", "health"]
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            exec:
+              command: ["opencloud", "proxy", "health"]
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 5
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: opencloud-data
+        - name: config
+          configMap:
+            name: opencloud-config

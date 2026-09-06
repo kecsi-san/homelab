@@ -1,7 +1,7 @@
 ---
 title: "Self-Hosted Cloud Storage / File Collaboration Software"
 type: research
-status: active
+status: done
 scope: [k8s, k3s]
 created: 2026-09-06
 updated: 2026-09-06
@@ -209,3 +209,10 @@ app on either cluster. Given the memory caveat above, start it with a generous m
 limit rather than a tight one, and don't bulk-import an existing large file tree on
 day one, since the reindexing spike is what actually triggers the reported OOM
 behavior, not idle running.
+
+**Outcome (2026-09-06):** trialled on both clusters, login and file access
+confirmed working on both. Promoted to a real GitOps app on k8s
+(`kube-gitops/k8s/opencloud/` + `kube-gitops/k8s/apps/opencloud.yaml`), LAN-only
+for now (no `external-dns` annotation, so no Cloudflare Tunnel exposure). The k3s
+trial was scaled to 0 the same day as part of a broader cleanup of unused apps
+there to speed up local WSL2 boot (see `TODO.md`), not because it didn't work.
