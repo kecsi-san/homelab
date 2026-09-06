@@ -12,7 +12,20 @@ argocd_chart_version: "10.8.1"  # ships ArgoCD v3.5.2; check https://github.com/
 argocd_kubeconfig: ""
 
 # server.insecure: ingress controller (Traefik) handles TLS; ArgoCD serves plain HTTP.
+#
+# configs.cm.create / configs.rbac.create: false — argocd-cm/argocd-rbac-cm
+# are hand-authored in kube-gitops/{k8s,k3s}/argocd/ instead (argocd-config
+# GitOps Application), sole owner now including every key the chart used to
+# template by default (copied in verbatim, see the comments there). Needed
+# to unblock a future Helm 3->4 migration: Helm 4 enforces strict
+# Server-Side-Apply field-manager ownership and refuses to co-manage an
+# object two writers both touch, which is what Helm 3's lenient client-side
+# 3-way merge tolerated silently. See TODO.md's "Helm 4 migration" item.
 argocd_helm_values:
   configs:
     params:
       server.insecure: "true"
+    cm:
+      create: false
+    rbac:
+      create: false

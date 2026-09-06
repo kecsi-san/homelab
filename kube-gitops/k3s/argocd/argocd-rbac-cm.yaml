@@ -11,3 +11,8 @@ data:
   policy.default: role:readonly
   policy.csv: |
     g, homelab-admins, role:admin
+  # Chart defaults, kept verbatim now that configs.rbac.create: false makes
+  # this manifest sole owner instead of co-owning with Helm — see the
+  # matching comment in argocd-cm.yaml and TODO.md's "Helm 4 migration" item.
+  policy.matchMode: glob
+  scopes: '[groups]'
