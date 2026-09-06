@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(authentik): allow OpenCloud desktop client's loopback redirect ([d0ae11c](https://github.com/kecsi-san/homelab/commit/d0ae11c6f8a4496b32c9af760a2fe8a4f2c33fa3) by Zoltan K).
 - fix(k8s): ServerSideApply for external-secrets' oversized CRDs ([18f911b](https://github.com/kecsi-san/homelab/commit/18f911bb1c5472e9cb0924f5390508e9128b3567) by Zoltan K).
 - fix(upgrade_nodejs): tolerate nvm's already-current guard on --reinstall-packages-from ([791b7b4](https://github.com/kecsi-san/homelab/commit/791b7b46aa1fe48a329f4b25b9dd2e0d9821852d) by Zoltan K).
 - fix(cnpg): expand postgres PVC 4Gi to 6Gi to clear WAL-full primary outage ([1ffd3e8](https://github.com/kecsi-san/homelab/commit/1ffd3e8491c1553d9fe8b7f8110ec53bcc9aa22d) by Zoltan K).
