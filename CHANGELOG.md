@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(monitoring): allow Prometheus to scrape longhorn-manager ([13726ec](https://github.com/kecsi-san/homelab/commit/13726ec92d7c9ef5780973bd576317e39b181c2d) by Zoltan K).
 - fix(k8s): actually install ArgoCD via the setup_argocd Helm role ([056cd67](https://github.com/kecsi-san/homelab/commit/056cd6767448957be78a812c6e33da920adedb83) by Zoltan K).
 - fix(k8s): disable Kubespray's own ArgoCD install, root cause of drift ([9482bfb](https://github.com/kecsi-san/homelab/commit/9482bfb939e21857caffcce440f0508accb678d8) by Zoltan K).
 - fix(authentik): add offline_access scope mapping for OpenCloud refresh tokens ([34a993b](https://github.com/kecsi-san/homelab/commit/34a993b7cd49a37697efd051fefa87834ad093af) by Zoltan K).
