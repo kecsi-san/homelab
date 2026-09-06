@@ -133,6 +133,12 @@ config:
             namespace: kube-system
             app: hubble-ui
     - Apps:
+        - OpenCloud:
+            href: https://opencloud.kecskemethy.org
+            description: Cloud file storage and sharing (trial)
+            icon: open-cloud.png
+            namespace: opencloud
+            app: opencloud
         - Mealie:
             href: https://mealie.kecskemethy.org
             description: Recipe manager
