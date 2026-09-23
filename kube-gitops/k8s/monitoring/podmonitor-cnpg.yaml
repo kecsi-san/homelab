@@ -1,0 +1,22 @@
+---
+# CNPG metrics — cnpg.io/cluster selects each Postgres instance pod directly;
+# CNPG bundles its own Prometheus exporter on the 'metrics' port (9187), no
+# separate Service needed. Placed here (monitoring namespace path) but targets
+# postgres; ArgoCD applies by metadata.namespace, same pattern as the
+# Longhorn/Traefik ServiceMonitors in this directory.
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: cnpg
+  namespace: postgres
+spec:
+  selector:
+    matchLabels:
+      cnpg.io/cluster: postgres
+  namespaceSelector:
+    matchNames:
+      - postgres
+  podMetricsEndpoints:
+    - port: metrics
+      path: /metrics
+      interval: 30s
