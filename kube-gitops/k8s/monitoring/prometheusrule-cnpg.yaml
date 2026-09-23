@@ -1,0 +1,36 @@
+---
+# Alerts on CNPG replication slot health (see CLAUDE.md Known Gotchas: a
+# stuck/inactive slot blocks WAL recycling and has taken Postgres down twice
+# already, 2026-08-08 and 2026-08-17, plus a third caught manually 2026-09-23
+# before it caused an outage). The 'release: kube-prometheus-stack' label is
+# required: the Prometheus CR's ruleSelector only matches that label, an
+# otherwise-correct PrometheusRule without it is silently ignored.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cnpg
+  namespace: postgres
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: cnpg.rules
+      rules:
+        - alert: CNPGReplicationSlotInactive
+          # Standbys report a "shadow" copy of every slot that's always
+          # active=0 (nothing streams from a replica directly in this
+          # non-cascading topology) — the on(pod) join restricts this to the
+          # current primary's own slots, the only ones an inactive reading
+          # actually means something for.
+          expr: cnpg_pg_replication_slots_active == 0 and on(pod) cnpg_pg_replication_in_recovery == 0
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "CNPG replication slot {{ $labels.slot_name }} has been inactive for 10+ minutes"
+            description: >-
+              Slot {{ $labels.slot_name }} reported by {{ $labels.pod }} in namespace {{ $labels.namespace }}
+              is inactive. Postgres retains WAL indefinitely for an inactive slot instead of recycling it
+              past max_wal_size, which can fill the primary's PVC. Rebuild the stuck instance: force-delete
+              its pod, delete its PVC, strip the PVC's pvc-protection finalizer if the delete hangs
+              Terminating, then let CNPG reprovision and rejoin via base backup.
