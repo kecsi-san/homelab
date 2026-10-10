@@ -7,7 +7,7 @@ Covers **Tier 2** of the tool management strategy. Companion to `debian_upgrade`
 ## What it does
 
 1. `brew update`: fetches latest formulae and cask definitions
-2. `brew upgrade`: upgrades all installed packages to latest
+2. `brew outdated`, then `brew upgrade <formula>` once per outdated formula, so each package is its own task result and slow ones (gcc, python) show progress
 3. `brew cleanup`: removes old versions (default: anything older than 1 day)
 
 ## Variables
@@ -16,6 +16,7 @@ Covers **Tier 2** of the tool management strategy. Companion to `debian_upgrade`
 |----------|---------|-------------|
 | `brew_bin` | `/home/linuxbrew/.linuxbrew/bin/brew` | Path to the brew binary |
 | `brew_cleanup_max_age_days` | `1` | Max age in days before old versions are removed |
+| `brew_upgrade_timeout` | `3600` | Per-package upgrade timeout in seconds |
 
 ## Usage
 

@@ -7,10 +7,29 @@
     update_homebrew: true
   become: false
 
-- name: Upgrade all Homebrew packages
-  community.general.homebrew:
-    upgrade_all: true
+- name: List outdated Homebrew formulae
+  ansible.builtin.command:
+    cmd: "{{ brew_bin }} outdated --formula --quiet"
+  environment:
+    HOMEBREW_NO_AUTO_UPDATE: "1"
+  register: brew_outdated
   become: false
+  changed_when: false
+
+# One task result per package, so a slow upgrade (gcc, python@*) shows progress
+# instead of a single silent `brew upgrade` that looks hung.
+- name: Upgrade outdated Homebrew formulae one by one
+  ansible.builtin.command:
+    cmd: "{{ brew_bin }} upgrade --formula {{ item }}"
+  environment:
+    HOMEBREW_NO_AUTO_UPDATE: "1"
+    HOMEBREW_NO_ENV_HINTS: "1"
+  loop: "{{ brew_outdated.stdout_lines }}"
+  register: brew_upgrade_result
+  async: "{{ brew_upgrade_timeout }}"
+  poll: 15
+  become: false
+  changed_when: "'Upgrading' in brew_upgrade_result.stdout or 'Upgrading' in brew_upgrade_result.stderr"
 
 - name: Clean up old Homebrew versions
   ansible.builtin.command:
