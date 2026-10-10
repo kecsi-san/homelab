@@ -33,6 +33,12 @@ spec:
               value: "1000"
             - name: PGID
               value: "1000"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              memory: 1Gi
           volumeMounts:
             - name: data
               mountPath: /app/data
