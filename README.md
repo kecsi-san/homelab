@@ -48,19 +48,19 @@ Boxes are network zones, arrows are traffic flows, and logos mark the services. 
 
 ### Applications
 
-| Service | Purpose | Access |
+| Service | Purpose | Access (`.fqdn` = your domain, e.g. `example.com`) |
 |---------|---------|--------|
 | [Authentik](https://goauthentik.io) | SSO / Identity Provider; OIDC for all platform services | authentik.fqdn |
 | [Forgejo](https://forgejo.org) | Self-hosted Git server, OCI registry, and CI runner | forgejo.fqdn |
 | [Backstage](https://backstage.io) | Internal developer portal; catalog, scaffolder, TechDocs | backstage.fqdn |
 | [Wiki.js](https://js.wiki) | Self-hosted wiki and knowledge base (replaced Outline) | wiki.fqdn |
 | [Mealie](https://mealie.io) | Self-hosted recipe manager | mealie.fqdn |
-| [Homepage](https://gethomepage.dev) | Start page with live cluster and service widgets | homepage.kecskemethy.org |
-| [Glance](https://github.com/glanceapp/glance) | Secondary dashboard; weather, markets, HN, Reddit, GitHub trending | glance.kecskemethy.org |
+| [Homepage](https://gethomepage.dev) | Start page with live cluster and service widgets | homepage.fqdn |
+| [Glance](https://github.com/glanceapp/glance) | Secondary dashboard; weather, markets, HN, Reddit, GitHub trending | glance.fqdn |
 | [Headlamp](https://headlamp.dev) | Kubernetes dashboard | headlamp.fqdn |
 | [Prometheus + Grafana](https://prometheus.io) | Cluster metrics collection and dashboards | grafana.fqdn |
 | [Gatus](https://gatus.io) | Uptime monitoring and status page | gatus.fqdn |
-| [Kromgo](https://github.com/home-operations/kromgo) | Public cluster status badges | kromgo.kecskemethy.org |
+| [Kromgo](https://github.com/home-operations/kromgo) | Public cluster status badges | kromgo.fqdn |
 | [ntfy](https://ntfy.sh) | Push notification server; alerts from Gatus and VolSync | ntfy.fqdn |
 | Minecraft (Bedrock) | Family Minecraft server | UDP 19132 on 192.168.1.110 |
 | [Longhorn](https://longhorn.io) | Distributed block storage across all 4 nodes | n/a |
