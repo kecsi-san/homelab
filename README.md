@@ -44,6 +44,7 @@ Boxes are network zones, arrows are traffic flows, and logos mark the services. 
 - **[cert-manager](https://cert-manager.io)**: Automated Let's Encrypt certificates via DNS01 (Cloudflare)
 - **[Traefik](https://traefik.io)**: Ingress controller; dual-path: LAN cert-manager TLS + Cloudflare Tunnel
 - **[Sealed Secrets](https://sealed-secrets.netlify.app)**: Encrypted secrets safe to commit; separate key pairs per cluster
+- **[Longhorn](https://longhorn.io)**: Replicated block storage; default `StorageClass`
 - **[Ansible](https://www.ansible.com)**: Node provisioning, workstation setup, cluster lifecycle management
 
 ### Applications
@@ -58,17 +59,21 @@ Boxes are network zones, arrows are traffic flows, and logos mark the services. 
 | [Homepage](https://gethomepage.dev) | Start page with live cluster and service widgets | homepage.fqdn |
 | [Glance](https://github.com/glanceapp/glance) | Secondary dashboard; weather, markets, HN, Reddit, GitHub trending | glance.fqdn |
 | [Headlamp](https://headlamp.dev) | Kubernetes dashboard | headlamp.fqdn |
-| [Prometheus + Grafana](https://prometheus.io) | Cluster metrics collection and dashboards | grafana.fqdn |
+| [Prometheus + Grafana](https://prometheus.io) | Cluster metrics, Alertmanager alerts, and dashboards | grafana.fqdn |
 | [Gatus](https://gatus.io) | Uptime monitoring and status page | gatus.fqdn |
 | [Kromgo](https://github.com/home-operations/kromgo) | Public cluster status badges | kromgo.fqdn |
-| [ntfy](https://ntfy.sh) | Push notification server; alerts from Gatus and VolSync | ntfy.fqdn |
+| [ntfy](https://ntfy.sh) | Push notification server; alerts from Gatus, Alertmanager and VolSync | ntfy.fqdn |
+| [OpenCloud](https://opencloud.eu) | Self-hosted file storage and sharing; Authentik login, LAN only | opencloud.fqdn |
 | [Minecraft (Bedrock)](https://www.minecraft.net) | Family Minecraft server | minecraft.fqdn |
 | [Longhorn](https://longhorn.io) | Distributed block storage across all 4 nodes | n/a |
 | [CloudNativePG](https://cloudnative-pg.io) | PostgreSQL operator; shared cluster for Forgejo, Authentik, Backstage, Wiki.js | n/a |
-| [VolSync](https://volsync.readthedocs.io) | PVC backup operator; daily restic snapshots to NFS backup server | n/a |
+| [VolSync](https://volsync.readthedocs.io) | PVC backup operator; restic snapshots to a REST server on the backup host | n/a |
 | [Garage](https://garagehq.deuxfleurs.fr) | S3-compatible object storage | n/a |
 | [cloudflared](https://github.com/cloudflare/cloudflared) | Cloudflare Tunnel daemon; internet access without open router ports | n/a |
 | [external-dns](https://github.com/kubernetes-sigs/external-dns) | Syncs Cloudflare DNS records from IngressRoute annotations | n/a |
+| [External Secrets](https://external-secrets.io) | Pulls secrets from Vault; replaces SealedSecrets one app at a time | n/a |
+| [Reloader](https://github.com/stakater/Reloader) | Restarts pods when their ConfigMap or Secret changes | n/a |
+| pod-cleanup | Nightly CronJob that deletes Failed and Succeeded pods | n/a |
 
 > k8s is the primary homelab cluster. k3s is a development/experimentation mirror but mostly for lightweight services.
 
@@ -164,6 +169,8 @@ flowchart LR
 
 ## 🗺️ Workflows
 
+Step-by-step guides for the three things this repo sets up. Each one runs Ansible playbooks in a fixed order, and each is independent of the others, so pick the one you need. Start with the workstation guide if you are new: the other two assume the tools it installs.
+
 | Guide | Description |
 |-------|-------------|
 | [Dev/DevOps Workstation](docs/ansible/devenv.md) | Set up a local workstation; macOS or Debian/WSL2 |
@@ -171,6 +178,8 @@ flowchart LR
 | [4-Node Homelab Cluster](docs/ansible/k8s-homelab.md) | Bare-metal HA cluster, GitOps stack, Cloudflare Tunnel |
 
 ## 📚 Reference
+
+Look-up material for when you already know what you want to do. Read Quick Start first for the prerequisites and the commands in one place. Roles explains how the building blocks are named and lists them all. CI/CD covers what runs on every push.
 
 | Guide | Description |
 |-------|-------------|
@@ -181,7 +190,8 @@ flowchart LR
 > Every command in the guides above is also available as a `just <recipe>`: run
 > `just --list` at the repo root for the full, discoverable set (setup, playbooks,
 > Terraform, lint, cluster rebuild runbook).
-| [All docs](docs/README.md) | Full documentation index |
+>
+> The full documentation index is in [docs/README.md](docs/README.md).
 
 ---
 
