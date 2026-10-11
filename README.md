@@ -56,7 +56,7 @@ Boxes are network zones, arrows are traffic flows, and logos mark the services. 
 | [Wiki.js](https://js.wiki) | Self-hosted wiki and knowledge base (replaced Outline) | wiki.fqdn |
 | [Mealie](https://mealie.io) | Self-hosted recipe manager | mealie.fqdn |
 | [Homepage](https://gethomepage.dev) | Start page with live cluster and service widgets | homepage.kecskemethy.org |
-| [Glance](https://github.com/glanceapp/glance) | Secondary dashboard; weather, markets, HN, Reddit, GitHub trending | glance.fqdn |
+| [Glance](https://github.com/glanceapp/glance) | Secondary dashboard; weather, markets, HN, Reddit, GitHub trending | glance.kecskemethy.org |
 | [Headlamp](https://headlamp.dev) | Kubernetes dashboard | headlamp.fqdn |
 | [Prometheus + Grafana](https://prometheus.io) | Cluster metrics collection and dashboards | grafana.fqdn |
 | [Gatus](https://gatus.io) | Uptime monitoring and status page | gatus.fqdn |
