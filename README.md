@@ -62,7 +62,7 @@ Boxes are network zones, arrows are traffic flows, and logos mark the services. 
 | [Gatus](https://gatus.io) | Uptime monitoring and status page | gatus.fqdn |
 | [Kromgo](https://github.com/home-operations/kromgo) | Public cluster status badges | kromgo.fqdn |
 | [ntfy](https://ntfy.sh) | Push notification server; alerts from Gatus and VolSync | ntfy.fqdn |
-| Minecraft (Bedrock) | Family Minecraft server | UDP 19132 on 192.168.1.110 |
+| [Minecraft (Bedrock)](https://www.minecraft.net) | Family Minecraft server | minecraft.fqdn |
 | [Longhorn](https://longhorn.io) | Distributed block storage across all 4 nodes | n/a |
 | [CloudNativePG](https://cloudnative-pg.io) | PostgreSQL operator; shared cluster for Forgejo, Authentik, Backstage, Wiki.js | n/a |
 | [VolSync](https://volsync.readthedocs.io) | PVC backup operator; daily restic snapshots to NFS backup server | n/a |
