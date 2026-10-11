@@ -15,11 +15,34 @@
 
 ## 💡 Intro
 
-This repository tries to follow a modular **LEGO approach**, build up automated resuable components.
+Everything in this homelab is code: workstations, bare-metal nodes, two Kubernetes clusters, an AWS edge node and the apps on top. The repo follows a modular **LEGO approach**: small, automated, reusable components that work alone and snap together.
 
 - Each Ansible role is self-contained and independently runnable via tags.
-- Ansible roles usable for both workstation setup or a bare-metal Kubernetes homelab node.
-- Kubernetes clusters use a self-hosted platform stack managed via GitOps (ArgoCD).
+- The same roles set up a workstation or a bare-metal Kubernetes node.
+- Kubernetes clusters run a self-hosted platform stack managed via GitOps (ArgoCD), so git is the source of truth.
+- Secrets never land in git in plaintext: Sealed Secrets, Vault and ansible-vault carry them.
+
+**What is where**
+
+| Path | Contents |
+|------|----------|
+| `roles/`, `playbooks/`, `inventory/` | Ansible roles and the playbooks that combine them; host and group variables |
+| `kube-gitops/` | ArgoCD apps and manifests for the k8s and k3s clusters |
+| `terraform/` | AWS edge node, DNS and Vault configuration |
+| `docs/` | Guides, research, decision records and the [infrastructure map](docs/infra-map/) |
+| `justfile` | One `just <recipe>` per common command; run `just --list` |
+
+### Tool management philosophy
+
+Tools reach a machine through one of three package managers, picked by how often the tool changes:
+
+| Method | macOS | Linux | When to use |
+|--------|-------|-------|-------------|
+| **APT** | n/a | ✓ | System-level, rarely changing packages; well-maintained in Debian repos |
+| **Homebrew** | ✓ formula + cask | ✓ Linuxbrew formula | Frequently updated tools; tools not in APT or lagging upstream |
+| **uv** | ✓ | ✓ | Python CLI tools and library packages |
+
+> APT for system stability (Linux), Homebrew for freshness and macOS-native installs, uv for the Python ecosystem.
 
 ## 🧭 Infrastructure Map
 
@@ -192,18 +215,6 @@ Look-up material for when you already know what you want to do. Read Quick Start
 > Terraform, lint, cluster rebuild runbook).
 >
 > The full documentation index is in [docs/README.md](docs/README.md).
-
----
-
-## 🛠️ Tool Management Philosophy
-
-| Method | macOS | Linux | When to use |
-|--------|-------|-------|-------------|
-| **APT** | n/a | ✓ | System-level, rarely changing packages; well-maintained in Debian repos |
-| **Homebrew** | ✓ formula + cask | ✓ Linuxbrew formula | Frequently updated tools; tools not in APT or lagging upstream |
-| **uv** | ✓ | ✓ | Python CLI tools and library packages |
-
-> APT for system stability (Linux), Homebrew for freshness and macOS-native installs, uv for the Python ecosystem.
 
 ---
 
