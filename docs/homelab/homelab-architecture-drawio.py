@@ -78,14 +78,18 @@ def add(cid, value, style, parent, x, y, w, h):
     return cid
 
 
-def zone(title, key, x, y, w, h, parent="1", dashed=False, alpha=14):
+def zone(title, key, x, y, w, h, parent="1", dashed=False, alpha=14, icon=None):
+    icons = [icon] if isinstance(icon, str) else list(icon or [])
     c = ZONES[key]
     style = (
         f"rounded=1;arcSize=3;html=1;whiteSpace=wrap;fillColor={c};fillOpacity={alpha};"
         f"strokeColor={c};strokeWidth=2;{'dashed=1;' if dashed else ''}verticalAlign=top;align=left;"
-        f"spacingLeft=12;spacingTop=6;fontStyle=1;fontSize=16;fontColor={c};container=1;collapsible=0;"
+        f"spacingLeft={12 + 32 * len(icons)};spacingTop=6;fontStyle=1;fontSize=16;fontColor={c};container=1;collapsible=0;"
     )
-    return add(nid(), title, style, parent, x, y, w, h)
+    zid = add(nid(), title, style, parent, x, y, w, h)
+    for i, ic in enumerate(icons):  # OS / vendor logos as a prefix in the header
+        add(nid(), "", f"shape=image;image={icon_uri(ic)};imageAspect=1;html=1;", zid, x + 10 + 32 * i, y + 5, 26, 26)
+    return zid
 
 
 def card(title, sub, icon, x, y, parent="1", w=CW, h=CH, isize=52):
@@ -183,7 +187,7 @@ else:
 
 # ---- Cloudflare
 w, h = zsize(4, 2, extra=96)
-z_cf = zone("Cloudflare edge", "cf", 120, 290, w, h)
+z_cf = zone("Cloudflare edge", "cf", 120, 290, w, h, icon="cloudflare")
 cf_ids = grid(
     z_cf,
     [
@@ -198,7 +202,7 @@ listbox("Clients", ["Edge browser (LAN path)", "Firefox + WARP (Cloudflare path)
 cf_bottom = 290 + h
 
 # ---- AWS
-z_aws = zone("AWS · single production edge node (Debian, Terraform-managed)", "aws", 1480, 290, 1060, 438)
+z_aws = zone("AWS · single production edge node", "aws", 1480, 290, 1060, 438, icon=["aws", "debian-linux", "terraform"])
 w, h = zsize(12, 4)
 z_ec2 = zone("EC2 · mail, web, secrets", "aws", 1500, 330, w, h, z_aws, alpha=18)
 ec2 = grid(
@@ -236,17 +240,17 @@ aws_bottom = 290 + 438
 # ---- LAN
 LAN_Y = 800
 LAN_H = 1240
-z_lan = zone("LAN · 192.168.1.0/24 · flat network, no VLANs yet", "lan", 40, LAN_Y, 2520, LAN_H, alpha=10)
+z_lan = zone("LAN · 192.168.1.0/24 · flat network, no VLANs yet", "lan", 40, LAN_Y, 2520, LAN_H, alpha=10, icon="mikrotik")
 
 # router box (edge of the LAN) with the arrow into the cluster beneath it
-z_rt = zone("MikroTik router · 192.168.1.1", "lan", 1000, 850, 780, 140, z_lan, alpha=22)
+z_rt = zone("MikroTik router · 192.168.1.1", "lan", 1000, 850, 780, 140, z_lan, alpha=22, icon="mikrotik")
 router = card("MikroTik", "WAN edge", "mikrotik", 1012, 880, z_rt)
 listbox("Router role", ["split-horizon DNS: *.<domain> → .101", "static records (prolion, backups, api VIP)", "dst-nat UDP 19132 → .110 · NTP source for all nodes"], "lan", 1366, 876, 400, z_rt)
 
 # ---- k8s
-z_k8s = zone("k8s · Kubespray 2.31 · Kubernetes 1.35 · Cilium", "pod", 130, 900 + K, 1490, 934, z_lan, alpha=12)
+z_k8s = zone("k8s · Kubespray 2.31 · Kubernetes 1.35 · Cilium", "pod", 130, 900 + K, 1490, 934, z_lan, alpha=12, icon=["kubernetes", "kubespray", "cilium"])
 w, h = zsize(4, 4)
-z_nodes = zone("Nodes (Debian)", "lan", 150, 940 + K, w, h, z_k8s, alpha=22)
+z_nodes = zone("Nodes", "lan", 150, 940 + K, w, h, z_k8s, alpha=22, icon="debian-linux")
 grid(
     z_nodes,
     [
@@ -335,7 +339,7 @@ grid(
 )
 
 # ---- prolion / workstation / planned (right column of LAN)
-z_pro = zone("prolion · 192.168.1.10 · Debian 13 file server · 7.3 TB /stuff array", "lan", 1660, 900 + K, 860, 170, z_lan, alpha=22)
+z_pro = zone("prolion · 192.168.1.10 · file server · 7.3 TB /stuff array", "lan", 1660, 900 + K, 860, 170, z_lan, alpha=22, icon="debian-linux")
 grid(
     z_pro,
     [
@@ -347,9 +351,9 @@ grid(
     6,
 )
 
-z_ws = zone("Workstation · Windows 11 + WSL2 (192.168.1.25)", "dev", 1660, 1100 + K, 860, 330, z_lan, alpha=16)
+z_ws = zone("Workstation · WSL2 (192.168.1.25)", "dev", 1660, 1100 + K, 860, 330, z_lan, alpha=16, icon="windows-11")
 grid(z_ws, [("Control node", "Ansible · kubectl", "ansible"), ("Windows 11", "desktop", "windows-11")], 2)
-z_k3s = zone("k3s · single-node dev cluster", "dev", 1960, 1136 + K, 552, 276, z_ws, alpha=22)
+z_k3s = zone("k3s · single-node dev cluster", "dev", 1960, 1136 + K, 552, 276, z_ws, alpha=22, icon="k3s")
 grid(
     z_k3s,
     [
