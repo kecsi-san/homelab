@@ -172,7 +172,8 @@ def center_x(cid):
 #   Internet band | arrows | Cloudflare + AWS zones | arrows | LAN (router box | arrow | k8s ...)
 K = 170  # shift of everything inside the LAN below the router box (room for the router box + arrow)
 
-add(nid(), "Homelab · infrastructure map", f"text;html=1;fontSize=34;fontStyle=1;fontColor={TEXT};align=left;", "1", 40, 14, 800, 44)
+add(nid(), "", f"shape=image;image={icon_uri('kubernetes')};imageAspect=1;html=1;", "1", 40, 14, 44, 44)
+add(nid(), "Homelab · Infrastructure Map", f"text;html=1;fontSize=34;fontStyle=1;fontColor={TEXT};align=left;", "1", 96, 14, 800, 44)
 
 # ---- Public network: a wide band the arrows hang off
 if MODE == "block":

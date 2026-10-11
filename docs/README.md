@@ -89,6 +89,8 @@ Cross-cutting operational procedures and runbooks.
 
 | Doc | Description |
 |-----|-------------|
+| [Architecture Map (draw.io)](homelab/homelab-architecture-v0.3-black.drawio) | Current infrastructure map, editable in diagrams.net (PNG preview next to it) |
+| [Architecture Map Source](homelab/homelab-architecture-drawio.py) | Python generator for the draw.io files (`link` and `block` variants) |
 | [Architecture Diagram](homelab/homelab-architecture-v0.2-black.png) | Full homelab architecture (rendered PNG) |
 | [Architecture Source](homelab/homelab-architecture-v0.2-black.py) | Python source for the architecture diagram |
 | [Architecture Diagram v0.1 (light)](homelab/homelab-architecture-v0.1-light.png) | Previous light-mode version, kept for comparison |
