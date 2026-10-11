@@ -28,9 +28,9 @@ This folder holds the infrastructure map of the homelab: how the LAN, the two Ku
 ## Regenerating the draw.io files
 
 ```bash
-python3 docs/homelab/homelab-architecture-drawio.py          # builds both variants
-python3 docs/homelab/homelab-architecture-drawio.py block    # v0.3 only
-python3 docs/homelab/homelab-architecture-drawio.py link     # v0.2 only
+python3 docs/infra-map/homelab-architecture-drawio.py          # builds both variants
+python3 docs/infra-map/homelab-architecture-drawio.py block    # v0.3 only
+python3 docs/infra-map/homelab-architecture-drawio.py link     # v0.2 only
 ```
 
 The script needs only the Python standard library. The logos are embedded into the `.drawio` files as data URIs, so each file is self-contained, which is also why they are about 1.2 MB each.
@@ -43,7 +43,7 @@ The two older Python versions need the `diagrams` library and Graphviz:
 
 ```bash
 source ~/.venv/devops/bin/activate
-python3 docs/homelab/homelab-architecture-v0.2-black.py
+python3 docs/infra-map/homelab-architecture-v0.2-black.py
 ```
 
 ## Icons
@@ -61,6 +61,7 @@ Some services have no public logo, so their icons were drawn by hand in the same
 | 2026-10-11 | Rebuilt as draw.io files: v0.2 with double-line connectors, v0.3 with block arrows between zones. Zones, flows and a legend added. |
 | 2026-10-11 | AWS and EC2 boxes switched from text lists to icon cards. One Dark Pro palette, larger text, and a frame around the whole map. |
 | 2026-10-11 | Logo prefixes in zone headers, and the title gets an icon. |
+| 2026-10-11 | Folder renamed from `docs/homelab/` to `docs/infra-map/`. |
 
 ## Ideas for later
 

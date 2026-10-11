@@ -1,7 +1,7 @@
 """
 Homelab architecture diagram — generated with the Python diagrams library.
-Run: source ~/.venv/devops/bin/activate && python3 docs/homelab/homelab-architecture-v0.1-light.py
-Output: docs/homelab/homelab-architecture-v0.1-light.png (kept for comparison with v0.2-black)
+Run: source ~/.venv/devops/bin/activate && python3 docs/infra-map/homelab-architecture-v0.1-light.py
+Output: docs/infra-map/homelab-architecture-v0.1-light.png (kept for comparison with v0.2-black)
 """
 
 from pathlib import Path

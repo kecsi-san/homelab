@@ -1,8 +1,8 @@
 """
 Homelab infrastructure map, generated with the Python diagrams library (dark mode).
 
-Run:  source ~/.venv/devops/bin/activate && python3 docs/homelab/homelab-architecture-v0.2-black.py
-Out:  docs/homelab/homelab-architecture-v0.2-black.png
+Run:  source ~/.venv/devops/bin/activate && python3 docs/infra-map/homelab-architecture-v0.2-black.py
+Out:  docs/infra-map/homelab-architecture-v0.2-black.png
 
 Conventions
 - Cluster (box) colour = network zone, see ZONES / the legend in the diagram.

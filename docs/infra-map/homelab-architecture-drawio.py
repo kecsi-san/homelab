@@ -1,9 +1,9 @@
 """
 Homelab infrastructure map as a draw.io file (dark mode), hand-placed layout.
 
-Run:  python3 docs/homelab/homelab-architecture-drawio.py [link|block]
-Out:  docs/homelab/homelab-architecture-v0.2-black.drawio   link  : double-line connectors
-      docs/homelab/homelab-architecture-v0.3-black.drawio   block : block arrows between zones
+Run:  python3 docs/infra-map/homelab-architecture-drawio.py [link|block]
+Out:  docs/infra-map/homelab-architecture-v0.2-black.drawio   link  : double-line connectors
+      docs/infra-map/homelab-architecture-v0.3-black.drawio   block : block arrows between zones
       (no argument builds both; open in draw.io / diagrams.net)
 
 Same content and conventions as homelab-architecture-v0.2-black.py (Python diagrams

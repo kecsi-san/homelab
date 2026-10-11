@@ -17,9 +17,9 @@ using Kubespray, followed by a GitOps app stack managed by ArgoCD.
 
 ## Architecture
 
-![Homelab Architecture](../homelab/homelab-architecture-v0.2-black.png)
+![Homelab Architecture](../infra-map/homelab-architecture-v0.2-black.png)
 
-> Regenerate: `source ~/.venv/devops/bin/activate && python3 docs/homelab/homelab-architecture-v0.2-black.py`
+> Regenerate: `source ~/.venv/devops/bin/activate && python3 docs/infra-map/homelab-architecture-v0.2-black.py`
 
 ### Clusters
 
