@@ -4,7 +4,7 @@ type: reference
 status: stable
 scope: [general]
 created: 2026-05-15
-updated: 2026-06-05
+updated: 2026-10-11
 tags: [index, navigation]
 ---
 
@@ -24,9 +24,9 @@ rationale live in [Research → IDP Components](research/homelab-idp-components.
 | [PostgreSQL Access](IDP/postgres.md) | CNPG cluster access, connection runbook, common commands |
 | [User Management](IDP/user-management.md) | Creating and managing users in Authentik |
 | [Forgejo](IDP/forgejo.md) | tea CLI setup, OCI registry, CI runners, admin tasks |
-| [Outline](IDP/outline.md) | Documentation strategy: what goes in Outline vs Git; operational notes |
+| [Outline](IDP/outline.md) | *Superseded by Wiki.js.* Documentation strategy and operational notes, kept for history |
 | [CI Pipelines](IDP/ci-pipelines.md) | Forgejo Actions setup; Python template adaptation; Semgrep + Trivy (planned) |
-| CD Pipelines | *(planned)* Push-to-main → ArgoCD sync; deployment workflow for Python apps |
+| Continuous delivery | No separate doc: delivery is GitOps. A push to `main` is synced by ArgoCD, see [ADR 006](ADR/006-argocd-gitops.md) and the [GitOps stack](ansible/k8s-homelab.md) |
 | Backstage | ✅ Deployed on k8s (see [Status](IDP/status.md)); service catalog; custom image built via Forgejo Actions CI |
 
 ## Ansible Workflows
@@ -66,6 +66,8 @@ Cross-cutting operational procedures and runbooks.
 | [Email Server Components](research/cloud-email-server-components.md) | Self-hosted email stack: Postfix, Dovecot, Rspamd, TLS, DNS requirements |
 | [Python Project Templates](research/dev-python-templates.md) | uv-based Python project template comparison and recommendation (7 templates) |
 | [Secret Store Comparison](research/homelab-secret-store-comparison.md) | HashiCorp Vault vs OpenBao; license, feature parity, ecosystem maturity |
+| [Cloud Storage Comparison](research/homelab-cloud-storage-comparison.md) | Self-hosted file storage and collaboration software (why OpenCloud) |
+| [Email Archive Software](research/email-archive-software.md) | Survey of self-hosted email archiving tools (Bichon and others) |
 
 ## Architecture Decisions
 
@@ -81,17 +83,17 @@ Cross-cutting operational procedures and runbooks.
 | [008: SealedSecrets](ADR/008-sealed-secrets.md) | SealedSecrets for GitOps-safe secrets vs Vault/ESO/SOPS+AGE |
 | [009: Authentik IdP](ADR/009-authentik-idp.md) | Authentik as SSO/OIDC IdP vs Keycloak/Kanidm/Zitadel/Authelia |
 | [010: Forgejo Git Server](ADR/010-forgejo-git-server.md) | Forgejo as self-hosted Git + OCI registry + CI vs GitLab/Gitea |
-| [011: Outline Wiki](ADR/011-outline-wiki.md) | Outline over Docmost (OIDC gated behind EE) for team wiki |
+| [011: Outline Wiki](ADR/011-outline-wiki.md) | *Superseded by Wiki.js.* Outline over Docmost (OIDC gated behind EE) for team wiki |
 | [012: Cloudflare Tunnel](ADR/012-cloudflare-tunnel.md) | Cloudflare Tunnel + WARP vs port forwarding/Tailscale/WireGuard |
 | [013: Forgejo Actions Runner](ADR/013-forgejo-actions-runner.md) | DinD sidecar runner pattern vs host Docker/k8s executor/Podman |
 
-## Homelab
+## Infrastructure map
+
+The map lives in its own folder, see the [folder README](infra-map/README.md) for contents, regeneration and history.
 
 | Doc | Description |
 |-----|-------------|
 | [Architecture Map (draw.io)](infra-map/homelab-architecture-v0.3-black.drawio) | Current infrastructure map, editable in diagrams.net (PNG preview next to it) |
 | [Architecture Map Source](infra-map/homelab-architecture-drawio.py) | Python generator for the draw.io files (`link` and `block` variants) |
-| [Architecture Diagram](infra-map/homelab-architecture-v0.2-black.png) | Full homelab architecture (rendered PNG) |
-| [Architecture Source](infra-map/homelab-architecture-v0.2-black.py) | Python source for the architecture diagram |
-| [Architecture Diagram v0.1 (light)](infra-map/homelab-architecture-v0.1-light.png) | Previous light-mode version, kept for comparison |
-| [Icons](infra-map/icons/) | Service icons for homepage dashboard |
+| [Older diagrams](infra-map/README.md#folder-contents) | Python `diagrams` versions v0.1 (light) and v0.2 (dark), kept for comparison |
+| [Icons](infra-map/icons/) | Logos used by the infrastructure map |
