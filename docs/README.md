@@ -89,6 +89,7 @@ Cross-cutting operational procedures and runbooks.
 
 | Doc | Description |
 |-----|-------------|
-| [Architecture Diagram](homelab/homelab-architecture.png) | Full homelab architecture (rendered PNG) |
-| [Architecture Source](homelab/homelab-architecture.py) | Python source for the architecture diagram |
+| [Architecture Diagram](homelab/homelab-architecture-v0.2-black.png) | Full homelab architecture (rendered PNG) |
+| [Architecture Source](homelab/homelab-architecture-v0.2-black.py) | Python source for the architecture diagram |
+| [Architecture Diagram v0.1 (light)](homelab/homelab-architecture-v0.1-light.png) | Previous light-mode version, kept for comparison |
 | [Icons](homelab/icons/) | Service icons for homepage dashboard |

@@ -1,7 +1,7 @@
 """
 Homelab architecture diagram — generated with the Python diagrams library.
-Run: source ~/.venv/devops/bin/activate && python3 docs/homelab-architecture.py
-Output: docs/homelab-architecture.png
+Run: source ~/.venv/devops/bin/activate && python3 docs/homelab/homelab-architecture-v0.1-light.py
+Output: docs/homelab/homelab-architecture-v0.1-light.png (kept for comparison with v0.2-black)
 """
 
 from pathlib import Path
@@ -36,7 +36,7 @@ with Diagram(
     "Homelab Architecture",
     show=False,
     direction="TB",
-    filename="docs/homelab-architecture",
+    filename=str(Path(__file__).parent / "homelab-architecture-v0.1-light"),
     graph_attr=graph_attr,
     node_attr=node_attr,
 ):
