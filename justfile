@@ -198,6 +198,18 @@ lint-ansible:
 # Run all lint checks
 lint: lint-yaml lint-ansible
 
+# ---- Docs ----
+
+# Re-download the README status badges from kromgo (cluster must be up); commit the SVGs afterwards
+badges-refresh:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    for b in debian_version kubernetes_version cluster_alert_count cluster_argocd_out_of_sync cluster_failed_pods \
+             cluster_cpu_usage cluster_memory_usage cluster_longhorn_storage cluster_node_count cluster_pod_count \
+             cluster_birth_age cluster_uptime_age; do
+        curl -fsS -m 10 "https://kromgo.kecskemethy.org/badges/$b" -o "docs/status-badges/$b.svg"
+    done
+
 # ---- Full cluster rebuild runbook ----
 # Mirrors CLAUDE.md's "Full cluster rebuild runbook" steps 1-4.
 # Steps 5-7 (sealed-secrets key restore, Firefox HSTS cache clear, Longhorn smoke
