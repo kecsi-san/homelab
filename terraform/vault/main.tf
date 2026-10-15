@@ -57,6 +57,24 @@ resource "vault_policy" "ec2_dkim_write" {
   EOT
 }
 
+# Placeholder for the MaxMind GeoLite2 credentials used by roles/setup_geoip. Terraform
+# only creates the path and writes CHANGE_ME once; the real values are set by hand with
+# `vault kv put ec2/maxmind-geoip account_id=... license_key=...` (see
+# roles/setup_geoip/README.md). The write-only data_json_wo plus disable_read keep the
+# real values out of Terraform state: they are never read back, and bumping
+# data_json_wo_version is the only way a later apply would overwrite them.
+resource "vault_kv_secret_v2" "maxmind_geoip" {
+  mount                = vault_mount.ec2.path
+  name                 = "maxmind-geoip"
+  data_json_wo         = jsonencode({ account_id = "CHANGE_ME", license_key = "CHANGE_ME" })
+  data_json_wo_version = 1
+  disable_read         = true
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
 # Machine auth for Ansible.
 resource "vault_auth_backend" "approle" {
   type = "approle"

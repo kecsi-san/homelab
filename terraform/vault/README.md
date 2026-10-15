@@ -71,6 +71,8 @@ vault kv put ec2/duo duo_ikey=... duo_skey=... duo_api_host=...
 vault kv put ec2/users ec2_users=@ec2_users.json   # or however ec2_users best serializes
 vault kv put ec2/vhosts apache_certs=@apache_certs.json apache_vhosts=@apache_vhosts.json
 vault kv put ec2/mail mailbox_users=@mailbox_users.json
+# ec2/maxmind-geoip: the path is created by Terraform with CHANGE_ME placeholders; overwrite with the real values:
+vault kv put ec2/maxmind-geoip account_id=... license_key=...
 ```
 
 The exact serialization for the list/dict-shaped values (`ec2_users`, `apache_certs`,
