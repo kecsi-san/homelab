@@ -54,6 +54,15 @@
         - firewall
         - security
 
+    - name: Setup fail2ban
+      ansible.builtin.import_role:
+        name: setup_fail2ban
+      become: true
+      when: fail2ban_enabled | default(false)
+      tags:
+        - fail2ban
+        - security
+
     - name: Configure Duo SSH MFA (PAM-based)
       ansible.builtin.import_role:
         name: configure_duo-ssh

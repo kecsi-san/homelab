@@ -1,0 +1,37 @@
+---
+- name: Install fail2ban
+  ansible.builtin.apt:
+    name: "{{ fail2ban_apt_packages }}"
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+  tags: [fail2ban]
+
+- name: Write /etc/fail2ban/jail.d/homelab.local
+  ansible.builtin.template:
+    src: homelab.local.j2
+    dest: /etc/fail2ban/jail.d/homelab.local
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Restart fail2ban
+  tags: [fail2ban]
+
+# Fail before the restart handler runs if the configuration does not parse; a bad file
+# would otherwise leave the service down.
+- name: Test the fail2ban configuration
+  ansible.builtin.command: fail2ban-client --test
+  become: true
+  changed_when: false
+  check_mode: false
+  tags: [fail2ban]
+
+- name: Enable and start fail2ban
+  ansible.builtin.systemd:
+    name: fail2ban
+    enabled: true
+    state: started
+  become: true
+  tags: [fail2ban]

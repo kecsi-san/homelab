@@ -1,0 +1,20 @@
+# Managed by Ansible (role setup_fail2ban). Do not edit by hand.
+[DEFAULT]
+ignoreip = {{ fail2ban_ignoreip | join(' ') }}
+bantime = {{ fail2ban_bantime }}
+findtime = {{ fail2ban_findtime }}
+maxretry = {{ fail2ban_maxretry }}
+backend = {{ fail2ban_backend }}
+banaction = {{ fail2ban_banaction }}
+banaction_allports = {{ fail2ban_banaction | regex_replace('multiport$', 'allports') }}
+{% if fail2ban_bantime_increment %}
+bantime.increment = true
+bantime.maxtime = {{ fail2ban_bantime_maxtime }}
+{% endif %}
+{% for name, options in fail2ban_jails.items() %}
+
+[{{ name }}]
+{% for key, value in options.items() %}
+{{ key }} = {{ 'true' if value is sameas true else ('false' if value is sameas false else value) }}
+{% endfor %}
+{% endfor %}

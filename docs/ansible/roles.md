@@ -132,6 +132,7 @@ Use `roles/role_template/` as a starting point when creating a new role.
 | `setup_aws-ssm-agent` | Installs and enables the AWS SSM agent; out-of-band rescue path (AWS Console → Session Manager) independent of sshd | ec2-core.yml |
 | `setup_geoip` | Keeps `xt_geoip` firewall data fresh (xtables-addons DKMS, geoipupdate, `/etc/GeoIP.conf` from Vault `ec2/maxmind-geoip`, `.mmdb` → `/usr/share/xt_geoip` builder chained after geoipupdate); no firewall rules | ec2-core.yml |
 | `setup_firewall` | Host iptables firewall in its own chain: trusted sources, SSH allow-list, optional SSH country filter, static drops; boot-time unit, never flushes fail2ban/Docker chains | ec2-core.yml |
+| `setup_fail2ban` | fail2ban with a generated drop-in (ignore list, ban times, jails), config-tested before restart | ec2-core.yml |
 | `configure_duo-ssh` | Migrates SSH MFA from `ForceCommand login_duo` to PAM-based `pam_duo.so`, scoped to sshd only via `/etc/pam.d/sshd` | ec2-core.yml |
 | `configure_ssh-hardening` | Codifies sshd connection/session hardening (`MaxAuthTries`, `PermitRootLogin no`, etc.) as a drop-in | ec2-core.yml |
 | `setup_apache2` | Apache2 with ModSecurity, ModEvasive, certbot (HTTP-01 webroot + DNS-01 Route53); variable-driven vhosts for static sites, full proxies, and path-specific proxies; OCSP stapling; HSTS | ec2-web.yml |

@@ -1,0 +1,38 @@
+---
+# Master switch: playbooks only run this role when true.
+fail2ban_enabled: false
+
+# Never ban these (addresses or CIDRs, IPv4 and IPv6). Include your own servers and
+# admin addresses: a ban survives reboots and applies to every port the jail covers.
+# Keep in step with the firewall allow-list, for example:
+#   fail2ban_ignoreip: "{{ ['127.0.0.1/8', '::1'] + firewall_trusted_sources }}"
+fail2ban_ignoreip:
+  - 127.0.0.1/8
+  - ::1
+
+fail2ban_bantime: 1h
+fail2ban_findtime: 10m
+fail2ban_maxretry: 5
+
+# Escalate repeat offenders (bantime doubles per repeat, up to fail2ban_bantime_maxtime).
+fail2ban_bantime_increment: false
+fail2ban_bantime_maxtime: 1w
+
+# Ban action. iptables-multiport matches the setup_firewall role (iptables, nft backend);
+# fail2ban adds its own f2b-* chains and never touches the homelab chain.
+fail2ban_banaction: iptables-multiport
+
+# Debian 13 logs to journald by default; the systemd backend needs python3-systemd.
+fail2ban_backend: systemd
+
+# Jails to configure, name -> options written verbatim under [name]. Set
+# enabled: false (or leave a jail out) to turn it off.
+fail2ban_jails:
+  sshd:
+    enabled: true
+    maxretry: 3
+
+fail2ban_apt_packages:
+  - fail2ban
+  - python3-systemd
+  - iptables
