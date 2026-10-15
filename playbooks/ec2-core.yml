@@ -45,6 +45,15 @@
         - geoip
         - security
 
+    - name: Setup firewall
+      ansible.builtin.import_role:
+        name: setup_firewall
+      become: true
+      when: firewall_enabled | default(false)
+      tags:
+        - firewall
+        - security
+
     - name: Configure Duo SSH MFA (PAM-based)
       ansible.builtin.import_role:
         name: configure_duo-ssh

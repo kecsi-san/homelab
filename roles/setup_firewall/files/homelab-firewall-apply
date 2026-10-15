@@ -1,0 +1,30 @@
+#!/bin/sh
+# Load /etc/homelab-firewall/rules.v4 and rules.v6 into the HOMELAB chain without
+# touching any other chain (fail2ban and Docker keep theirs), then make sure INPUT
+# jumps to it. Safe to run repeatedly.
+#
+#   homelab-firewall-apply            apply both families
+#   homelab-firewall-apply --test4 F  syntax-check an IPv4 rules file only
+#   homelab-firewall-apply --test6 F  syntax-check an IPv6 rules file only
+set -eu
+
+DIR=/etc/homelab-firewall
+
+case "${1:-}" in
+    --test4) exec iptables-restore -w --noflush --test < "$2" ;;
+    --test6) exec ip6tables-restore -w --noflush --test < "$2" ;;
+esac
+
+CHAIN=$(cat "$DIR/chain")
+
+apply() {
+    tool=$1 file=$2
+    "$tool" -w -N "$CHAIN" 2>/dev/null || true
+    "${tool}-restore" -w --noflush < "$file"
+    "$tool" -w -C INPUT -j "$CHAIN" 2>/dev/null || "$tool" -w -A INPUT -j "$CHAIN"
+}
+
+apply iptables "$DIR/rules.v4"
+if [ -f "$DIR/rules.v6" ]; then
+    apply ip6tables "$DIR/rules.v6"
+fi

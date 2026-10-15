@@ -1,0 +1,23 @@
+# Managed by Ansible (role setup_firewall). Do not edit by hand.
+# IPv{{ family }} rules for chain {{ firewall_chain }}; loaded by homelab-firewall-apply.
+*filter
+:{{ firewall_chain }} - [0:0]
+-F {{ firewall_chain }}
+-A {{ firewall_chain }} -i lo -j ACCEPT
+-A {{ firewall_chain }} -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+{% for src in sources_trusted %}
+-A {{ firewall_chain }} -s {{ src }} -j ACCEPT
+{% endfor %}
+{% for src in sources_drop %}
+-A {{ firewall_chain }} -s {{ src }} -j DROP
+{% endfor %}
+{% for src in sources_ssh %}
+-A {{ firewall_chain }} -p tcp -m tcp --dport {{ firewall_ssh_port }} -s {{ src }} -j ACCEPT
+{% endfor %}
+{% if firewall_ssh_countries | length > 0 %}
+-A {{ firewall_chain }} -p tcp -m geoip ! --source-country {{ firewall_ssh_countries | join(',') }} -m tcp --dport {{ firewall_ssh_port }} -j DROP
+{% endif %}
+{% for rule in extra_rules %}
+-A {{ firewall_chain }} {{ rule }}
+{% endfor %}
+COMMIT

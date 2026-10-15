@@ -1,0 +1,128 @@
+---
+- name: Check the country files exist for every SSH country
+  ansible.builtin.stat:
+    path: "{{ firewall_geoip_dir }}/{{ item | upper }}.iv4"
+  loop: "{{ firewall_ssh_countries }}"
+  register: firewall_country_files
+  tags: [firewall]
+
+- name: Refuse to build a GeoIP rule without data
+  ansible.builtin.assert:
+    that: item.stat.exists
+    fail_msg: >-
+      {{ firewall_geoip_dir }}/{{ item.item | upper }}.iv4 is missing. Run role
+      setup_geoip first (a rule using -m geoip would not load, or would match nothing).
+    quiet: true
+  loop: "{{ firewall_country_files.results }}"
+  loop_control:
+    label: "{{ item.item }}"
+  tags: [firewall]
+
+- name: Install iptables
+  ansible.builtin.apt:
+    name: iptables
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+  tags: [firewall]
+
+- name: Create the config directory
+  ansible.builtin.file:
+    path: "{{ firewall_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+  tags: [firewall]
+
+- name: Install homelab-firewall-apply
+  ansible.builtin.copy:
+    src: homelab-firewall-apply
+    dest: /usr/local/sbin/homelab-firewall-apply
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+  tags: [firewall]
+
+- name: Record the chain name for the apply script
+  ansible.builtin.copy:
+    content: "{{ firewall_chain }}\n"
+    dest: "{{ firewall_config_dir }}/chain"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Apply firewall
+  tags: [firewall]
+
+# The templates are syntax-checked with iptables-restore --test before they replace the
+# live file, so a typo cannot reach the boot-time unit.
+- name: Render IPv4 rules
+  ansible.builtin.template:
+    src: rules.j2
+    dest: "{{ firewall_config_dir }}/rules.v4"
+    owner: root
+    group: root
+    mode: "0644"
+    validate: /usr/local/sbin/homelab-firewall-apply --test4 %s
+  vars:
+    family: 4
+    sources_trusted: "{{ firewall_trusted_sources | reject('contains', ':') | list }}"
+    sources_drop: "{{ firewall_drop_sources | reject('contains', ':') | list }}"
+    sources_ssh: "{{ firewall_ssh_allow_sources | reject('contains', ':') | list }}"
+    extra_rules: "{{ firewall_extra_rules_v4 }}"
+  become: true
+  notify: Apply firewall
+  tags: [firewall]
+
+- name: Render IPv6 rules
+  ansible.builtin.template:
+    src: rules.j2
+    dest: "{{ firewall_config_dir }}/rules.v6"
+    owner: root
+    group: root
+    mode: "0644"
+    validate: /usr/local/sbin/homelab-firewall-apply --test6 %s
+  vars:
+    family: 6
+    sources_trusted: "{{ firewall_trusted_sources | select('contains', ':') | list }}"
+    sources_drop: "{{ firewall_drop_sources | select('contains', ':') | list }}"
+    sources_ssh: "{{ firewall_ssh_allow_sources | select('contains', ':') | list }}"
+    extra_rules: "{{ firewall_extra_rules_v6 }}"
+  become: true
+  when: firewall_ipv6
+  notify: Apply firewall
+  tags: [firewall]
+
+- name: Remove stale IPv6 rules when IPv6 is turned off
+  ansible.builtin.file:
+    path: "{{ firewall_config_dir }}/rules.v6"
+    state: absent
+  become: true
+  when: not firewall_ipv6
+  tags: [firewall]
+
+- name: Install the boot-time unit
+  ansible.builtin.copy:
+    src: homelab-firewall.service
+    dest: /etc/systemd/system/homelab-firewall.service
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Reload systemd
+  tags: [firewall]
+
+- name: Flush handlers so the unit exists and the rules are applied now
+  ansible.builtin.meta: flush_handlers
+  tags: [firewall]
+
+- name: Enable the firewall unit
+  ansible.builtin.systemd:
+    name: homelab-firewall.service
+    enabled: true
+  become: true
+  tags: [firewall]

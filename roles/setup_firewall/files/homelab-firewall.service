@@ -1,0 +1,14 @@
+[Unit]
+Description=Load the homelab firewall chain
+Documentation=file:///usr/local/sbin/homelab-firewall-apply
+Wants=network-pre.target
+Before=network-pre.target fail2ban.service
+After=local-fs.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/usr/local/sbin/homelab-firewall-apply
+
+[Install]
+WantedBy=multi-user.target

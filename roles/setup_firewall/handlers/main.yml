@@ -1,0 +1,10 @@
+---
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
+
+- name: Apply firewall
+  ansible.builtin.command: /usr/local/sbin/homelab-firewall-apply
+  become: true
+  changed_when: true

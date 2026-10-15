@@ -1,0 +1,35 @@
+---
+# Master switch: playbooks only run this role when true.
+firewall_enabled: false
+
+# SSH port protected by the ssh_* rules below.
+firewall_ssh_port: 22
+
+# Addresses or CIDRs (IPv4 and IPv6 mixed) that may reach every port: your other
+# servers, VPC range, admin addresses. Evaluated before any drop rule.
+firewall_trusted_sources: []
+
+# Extra addresses or CIDRs allowed to reach the SSH port only.
+firewall_ssh_allow_sources: []
+
+# ISO 3166 country codes allowed to reach the SSH port (e.g. ["HU", "GB"]).
+# Non-empty: SSH from every other country is dropped, unless the source is trusted or
+# in firewall_ssh_allow_sources. Needs the xt_geoip module and country files
+# (role setup_geoip); the role refuses to run when a country file is missing.
+firewall_ssh_countries: []
+
+# Addresses or CIDRs dropped on every port.
+firewall_drop_sources: []
+
+# Raw iptables rule fragments appended last, without "-A <chain>" (one per item).
+firewall_extra_rules_v4: []
+firewall_extra_rules_v6: []
+
+# Manage ip6tables too. Turn off on hosts with IPv6 disabled.
+firewall_ipv6: true
+
+# Our rules live in one chain, jumped to from INPUT. Other tools (fail2ban, Docker)
+# keep their own chains and are never flushed.
+firewall_chain: HOMELAB-INPUT
+firewall_config_dir: /etc/homelab-firewall
+firewall_geoip_dir: /usr/share/xt_geoip
