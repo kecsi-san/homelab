@@ -1,0 +1,104 @@
+---
+- name: Fail early when MaxMind credentials are missing
+  ansible.builtin.assert:
+    that:
+      - geoip_maxmind_account_id | string | length > 0
+      - geoip_maxmind_license_key | string | length > 0
+      - geoip_maxmind_account_id != 'CHANGE_ME'
+      - geoip_maxmind_license_key != 'CHANGE_ME'
+    fail_msg: >-
+      geoip_maxmind_account_id / geoip_maxmind_license_key are empty or still the
+      CHANGE_ME placeholder. Set the real values in Vault first (see roles/setup_geoip/README.md, "Vault entry").
+    quiet: true
+  tags: [geoip]
+
+- name: Install GeoIP packages
+  ansible.builtin.apt:
+    name: "{{ geoip_apt_packages + [geoip_kernel_headers_package] }}"
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+  tags: [geoip]
+
+- name: Write /etc/GeoIP.conf
+  ansible.builtin.template:
+    src: GeoIP.conf.j2
+    dest: /etc/GeoIP.conf
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  no_log: true
+  tags: [geoip]
+
+- name: Install xt-geoip-build
+  ansible.builtin.copy:
+    src: xt-geoip-build
+    dest: /usr/local/sbin/xt-geoip-build
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+  notify: Rebuild xt_geoip files
+  tags: [geoip]
+
+- name: Install xt-geoip-build systemd unit
+  ansible.builtin.copy:
+    src: xt-geoip-build.service
+    dest: /etc/systemd/system/xt-geoip-build.service
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Reload systemd
+  tags: [geoip]
+
+- name: Create geoipupdate.service drop-in directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/geoipupdate.service.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+  tags: [geoip]
+
+- name: Chain xt-geoip-build after geoipupdate (OnSuccess=)
+  ansible.builtin.copy:
+    src: geoipupdate-xt-geoip.conf
+    dest: /etc/systemd/system/geoipupdate.service.d/xt-geoip.conf
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Reload systemd
+  tags: [geoip]
+
+- name: Flush handlers so systemd knows the new units before they are used
+  ansible.builtin.meta: flush_handlers
+  tags: [geoip]
+
+- name: Enable the geoipupdate timer
+  ansible.builtin.systemd:
+    name: geoipupdate.timer
+    enabled: true
+    state: started
+  become: true
+  tags: [geoip]
+
+- name: Check whether the Country database has been downloaded yet
+  ansible.builtin.stat:
+    path: "{{ geoip_mmdb_dir }}/GeoLite2-Country.mmdb"
+  register: geoip_country_mmdb
+  tags: [geoip]
+
+# First run on a new host: fetch the databases now. geoipupdate.service's
+# OnSuccess= then runs xt-geoip-build, so the firewall files exist right away.
+- name: Run geoipupdate once (first run only)
+  ansible.builtin.systemd:
+    name: geoipupdate.service
+    state: started
+  become: true
+  when: not geoip_country_mmdb.stat.exists
+  tags: [geoip]

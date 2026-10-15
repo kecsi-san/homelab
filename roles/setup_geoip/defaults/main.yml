@@ -1,0 +1,31 @@
+---
+# Master switch: playbooks only run this role when true.
+geoip_enabled: false
+
+# MaxMind GeoLite2 credentials. No defaults on purpose: set them from Vault
+# (inventory/group_vars/aws_all.yml, path ec2/maxmind-geoip). The role fails
+# early if they are empty.
+geoip_maxmind_account_id: ""
+geoip_maxmind_license_key: ""
+
+# Databases geoipupdate keeps fresh. Only GeoLite2-Country feeds the firewall.
+# ASN and City are kept because linuxbox already downloads them (log analysis);
+# trim the list on hosts that only need the firewall data.
+geoip_edition_ids:
+  - GeoLite2-ASN
+  - GeoLite2-City
+  - GeoLite2-Country
+
+# Packages: firewall module (DKMS needs the headers of the running kernel),
+# the updater, and the .mmdb reader used by xt-geoip-build.
+geoip_apt_packages:
+  - xtables-addons-common
+  - xtables-addons-dkms
+  - geoipupdate
+  - python3-maxminddb
+geoip_kernel_headers_package: "linux-headers-{{ ansible_facts['kernel'] }}"
+
+# Where the build script reads/writes (must match the script's defaults and the
+# ReadWritePaths in xt-geoip-build.service).
+geoip_mmdb_dir: /var/lib/GeoIP
+geoip_xt_geoip_dir: /usr/share/xt_geoip

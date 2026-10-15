@@ -86,6 +86,12 @@ apache_vhosts: "{{ lookup('community.hashi_vault.vault_kv2_get', 'vhosts', **vau
 # `vault kv put ec2/acme-dns acmedns_json=@acmedns.json` bootstrap step.
 acme_dns_json: "{{ lookup('community.hashi_vault.vault_kv2_get', 'acme-dns', **vault_ec2_lookup_args)['secret']['acmedns_json'] }}"
 
+# MaxMind GeoLite2 credentials for roles/setup_geoip (geoipupdate). Vault-only, no
+# secrets.yml fallback; create once with:
+#   vault kv put ec2/maxmind-geoip account_id=... license_key=...
+geoip_maxmind_account_id: "{{ lookup('community.hashi_vault.vault_kv2_get', 'maxmind-geoip', **vault_ec2_lookup_args)['secret']['account_id'] }}"
+geoip_maxmind_license_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'maxmind-geoip', **vault_ec2_lookup_args)['secret']['license_key'] }}"
+
 mailbox_users: "{{ lookup('community.hashi_vault.vault_kv2_get', 'mail', **vault_ec2_lookup_args)['secret']['mailbox_users'] }}"
 email_domains: "{{ lookup('community.hashi_vault.vault_kv2_get', 'mail', **vault_ec2_lookup_args)['secret']['email_domains'] }}"
 # New keys added to the ec2/mail Vault path 2026-07-26 (aliases_root, extra_aliases) —

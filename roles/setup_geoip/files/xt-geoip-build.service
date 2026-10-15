@@ -1,0 +1,18 @@
+[Unit]
+Description=Rebuild xt_geoip country files from GeoLite2-Country.mmdb
+Documentation=file:///usr/local/sbin/xt-geoip-build
+ConditionPathExists=/var/lib/GeoIP/GeoLite2-Country.mmdb
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/xt-geoip-build --reload-rules
+User=root
+# a slow, CPU-bound background job: stay out of the way of the mail and web services
+Nice=10
+IOSchedulingClass=idle
+# iptables needs root + CAP_NET_ADMIN, so keep the sandbox modest
+ProtectHome=true
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/usr/share/xt_geoip /run

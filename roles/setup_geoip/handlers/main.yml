@@ -1,0 +1,14 @@
+---
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
+
+# Only when the script itself changed and a database is already present. On a
+# first run the OnSuccess= chain from geoipupdate does the first build.
+- name: Rebuild xt_geoip files
+  ansible.builtin.command: /usr/local/sbin/xt-geoip-build --reload-rules
+  args:
+    removes: /var/lib/GeoIP/GeoLite2-Country.mmdb   # skip when the database is not there yet
+  become: true
+  changed_when: true

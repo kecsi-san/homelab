@@ -1,0 +1,5 @@
+# Managed by Ansible (role setup_geoip). Do not edit by hand.
+AccountID {{ geoip_maxmind_account_id }}
+LicenseKey {{ geoip_maxmind_license_key }}
+EditionIDs {{ geoip_edition_ids | join(' ') }}
+DatabaseDirectory {{ geoip_mmdb_dir }}

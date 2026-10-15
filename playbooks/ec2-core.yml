@@ -36,6 +36,15 @@
       tags:
         - ssm
 
+    - name: Setup GeoIP data for the firewall
+      ansible.builtin.import_role:
+        name: setup_geoip
+      become: true
+      when: geoip_enabled | default(false)
+      tags:
+        - geoip
+        - security
+
     - name: Configure Duo SSH MFA (PAM-based)
       ansible.builtin.import_role:
         name: configure_duo-ssh
