@@ -1,0 +1,27 @@
+---
+# Master switch: playbooks only run this role when true.
+hostname_enabled: false
+
+# Short host name (what `hostname` prints). No default on purpose: the role fails early
+# when it is empty.
+hostname_short: ""
+
+# DNS domain. FQDN = <short>.<domain> unless hostname_fqdn is set. No default.
+hostname_domain: ""
+hostname_fqdn: "{{ hostname_short }}.{{ hostname_domain }}"
+
+# Address of the host's own FQDN entry in /etc/hosts (Debian convention).
+hostname_self_ip: 127.0.1.1
+
+# Extra static entries, one per item: {ip: 192.0.2.10, names: [peer.example.com, peer]}.
+# Useful for traffic between servers that should stay on the private network.
+hostname_extra_hosts: []
+
+# Content of /etc/mailname. Empty = leave the file alone. Postfix uses it as the
+# default mail domain, and the Debian package writes it from the host name at install
+# time, so set the host name (this role) before installing the mail stack.
+hostname_mailname: ""
+
+# Stop cloud-init from resetting the host name on every boot (only applies when
+# /etc/cloud exists, for example on EC2 images).
+hostname_preserve_cloud_init: true

@@ -206,6 +206,7 @@ Quick-reference table below (kept in sync manually — see the Working Conventio
 | Role | Purpose |
 |------|---------|
 | `configure_etc-hosts` | Manages `/etc/hosts` with kube group IPs and domain names |
+| `configure_hostname` | Sets the host name and FQDN (`hostnamectl`), writes a marked block with the host's own entry and optional peers into `/etc/hosts`, keeps cloud-init from resetting the name, optionally writes `/etc/mailname`; no defaults for name/domain (fails early); gated by `hostname_enabled` (default false); wired into `ec2-core.yml`; not part of `setup_minimal` on purpose (that role also runs on workstations) |
 | `configure_mikrotik-router` | Upserts static DNS records and NAT (dst-nat) rules on MikroTik router via `community.routeros` API; manages API VIP (`api.k8s.<domain>`), k3s wildcard, NFS alias, and port forwards |
 | `configure_cloudflare-zone` | Manages Cloudflare zone settings (ECH) and DNS A records (e.g. `minecraft.<domain>`) via REST API; `proxied: false` for UDP services; credentials via `secrets.yml` |
 | `configure_fzf` | Adds fzf initialization to `~/.bashrc` (idempotent); wired into `k8s-nodes.yml` and `fileservers.yml` (both gated by `fzf_enabled`) |

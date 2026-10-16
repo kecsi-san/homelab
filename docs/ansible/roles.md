@@ -83,6 +83,7 @@ Use `roles/role_template/` as a starting point when creating a new role.
 | Role | Purpose | Playbook(s) |
 |------|---------|-------------|
 | `configure_etc-hosts` | Manages `/etc/hosts` with cluster node entries | k8s-nodes.yml |
+| `configure_hostname` | Host name, FQDN and a managed `/etc/hosts` block, cloud-init `preserve_hostname`, optional `/etc/mailname` (gated by `hostname_enabled`) | ec2-core.yml |
 | `configure_fzf` | Adds fzf shell integration to `~/.bashrc` | k8s-nodes.yml, fileservers.yml |
 | `configure_git` | Deploys `~/.gitconfig`; SSH-format commit signing (reuses `configure_ssh-client`'s key), disabled on remote k8s-nodes.yml/fileservers.yml runs | k8s-nodes.yml, fileservers.yml, local-core.yml, personalise.yml |
 | `configure_ssh-client` | Templates `~/.ssh/config` from Vault (`workstation/` mount); fetches only the keys a machine's config actually references | local-core.yml |

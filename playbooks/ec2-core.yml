@@ -30,6 +30,14 @@
       tags:
         - ssh
 
+    - name: Set host name and /etc/hosts
+      ansible.builtin.import_role:
+        name: configure_hostname
+      become: true
+      when: hostname_enabled | default(false)
+      tags:
+        - hostname
+
     - name: Setup AWS SSM agent
       ansible.builtin.import_role:
         name: setup_aws-ssm-agent

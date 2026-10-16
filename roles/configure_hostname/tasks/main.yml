@@ -1,0 +1,65 @@
+---
+- name: Check that the host name and domain are set
+  ansible.builtin.assert:
+    that:
+      - hostname_short | length > 0
+      - hostname_fqdn | length > 0
+      - hostname_fqdn is search('\.')
+    fail_msg: >-
+      Set hostname_short and hostname_domain (or hostname_fqdn) for this host;
+      the role has no defaults for them.
+    quiet: true
+  tags: [hostname]
+
+# Write /etc/hosts first: changing the host name before the new name resolves makes
+# sudo print "unable to resolve host" for the rest of the play.
+- name: Write the managed block in /etc/hosts
+  ansible.builtin.blockinfile:
+    path: /etc/hosts
+    marker: "# {mark} ANSIBLE MANAGED BLOCK configure_hostname"
+    block: |
+      {{ hostname_self_ip }} {{ hostname_fqdn }} {{ hostname_short }}
+      {% for h in hostname_extra_hosts %}
+      {{ h.ip }} {{ h.names | join(' ') }}
+      {% endfor %}
+  become: true
+  tags: [hostname]
+
+- name: Set the host name
+  ansible.builtin.hostname:
+    name: "{{ hostname_short }}"
+    use: systemd
+  become: true
+  tags: [hostname]
+
+- name: Check for cloud-init
+  ansible.builtin.stat:
+    path: /etc/cloud/cloud.cfg.d
+  register: hostname_cloud_cfg_dir
+  tags: [hostname]
+
+- name: Keep cloud-init from resetting the host name
+  ansible.builtin.copy:
+    dest: /etc/cloud/cloud.cfg.d/99-preserve-hostname.cfg
+    content: |
+      # Managed by Ansible (configure_hostname)
+      preserve_hostname: true
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  when:
+    - hostname_preserve_cloud_init | bool
+    - hostname_cloud_cfg_dir.stat.isdir | default(false)
+  tags: [hostname]
+
+- name: Write /etc/mailname
+  ansible.builtin.copy:
+    dest: /etc/mailname
+    content: "{{ hostname_mailname }}\n"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  when: hostname_mailname | length > 0
+  tags: [hostname]
