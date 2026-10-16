@@ -10,13 +10,13 @@ Keeps the data behind an `xt_geoip` firewall rule (`-m geoip --source-country ..
 - Adds `xt-geoip-build`, a small script that turns `GeoLite2-Country.mmdb` into the packed `<CC>.iv4` / `<CC>.iv6` files in `/usr/share/xt_geoip`, and a systemd drop-in so it runs after every successful `geoipupdate`.
 - Re-inserts every iptables/ip6tables rule that uses `-m geoip` in place (`iptables -R`, rule position kept), because the kernel only loads the country ranges when a rule is added.
 
-It does **not** create firewall rules. Those belong in the firewall role.
+It does not create firewall rules. Those belong in the firewall role.
 
 ## Why a custom builder
 
 Debian ships only a builder for MaxMind's CSV download (`xt_geoip_build_maxmind`), nothing runs it on a schedule, and `geoipupdate` only fetches `.mmdb` files. Left alone, the country files go stale (one host had files from 2023). `xt-geoip-build` reuses the download `geoipupdate` already does.
 
-What the script does: reads `country.iso_code` (falls back to `registered_country`), merges adjacent ranges, skips the IPv6 aliases of IPv4 space, refuses to install if it sees fewer than 200 countries, builds in a temp directory, reads the files back and compares 5000 random addresses per family with the `.mmdb`, then replaces the files one by one. About 30 seconds and 230 MB of memory on a t3.small (`Nice=10`).
+What the script does: reads `country.iso_code` (falls back to `registered_country`), merges adjacent ranges, skips the IPv6 aliases of IPv4 space, refuses to install if it sees fewer than 200 countries, builds in a temp directory, reads the files back and compares 5000 random addresses per family with the `.mmdb`, then replaces the files one by one. A run takes about 30 seconds and 230 MB of memory on a t3.small (`Nice=10`).
 
 ## Variables
 
@@ -75,4 +75,4 @@ journalctl -u xt-geoip-build.service --no-pager | tail
 - The reload step needs root and `CAP_NET_ADMIN`, so the unit runs as root with a modest sandbox (`ProtectSystem=strict`, writable `/usr/share/xt_geoip` and `/run`). If a future systemd or iptables version needs more, relax it there.
 - `OnSuccess=` needs systemd 249 or newer (Debian 13 ships 257).
 - The old special files `A1`, `A2` and `O1` (satellite and anonymous proxies) are not produced. Delete them if no rule uses them.
-- Tested on a Debian 13 host with `python3-maxminddb` 2.x: country lookups right, rule replaced in place, SSH unaffected.
+- Tested on a Debian 13 host with `python3-maxminddb` 2.x: country lookups were correct, the rule was replaced in place, and SSH was unaffected.
