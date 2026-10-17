@@ -1,4 +1,17 @@
 ---
+# The Debian package keeps its config in /etc/opendmarc.conf and does not create this directory.
+- name: Create the OpenDMARC config directory
+  ansible.builtin.file:
+    path: /etc/opendmarc
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+  when: mail_trusted_relays | length > 0
+  tags:
+    - opendmarc
+
 - name: Deploy the OpenDMARC ignore list for trusted upstream relays
   ansible.builtin.template:
     src: opendmarc-ignore-hosts.j2
