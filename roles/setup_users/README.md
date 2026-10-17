@@ -6,7 +6,8 @@ Creates and configures named system users on the EC2 edge node.
 
 - Creates system users with pinned UIDs, GECOS, shell, and group memberships
 - Deploys SSH authorized keys (additive; does not remove existing keys)
-- Sets passwords from a plaintext value in Vault, hashed at apply time (defaults to locked `!` if not provided)
+- Sets passwords from an existing hash (`password_hash`) or a plaintext value in Vault hashed at apply time (defaults to locked `!` if neither is given)
+- Optionally pins the primary group's GID (`gid`)
 - Optionally removes users while preserving home directories for data migration
 
 ## Why UIDs must be pinned
@@ -52,6 +53,8 @@ Any group listed in `ec2_users[].groups` must already exist on the host; `ansibl
 | `sudo`          | no       | If true, appends user to `sudo` group |
 | `shell`         | no       | Login shell (default: `/bin/bash`; use `/bin/false` for service accounts) |
 | `ssh_key`       | no       | SSH public key string; store in `secrets.yml` |
+| `gid`           | no       | Numeric GID of the primary group. When set, the group `<name>` is created with this GID first and used as the user's primary group; needed when a migrated tree must keep its group ownership |
+| `password_hash` | no       | Existing crypt hash (for example copied from the old server's shadow file), stored in Vault; wins over `password`, keeps the task idempotent and lets users keep their passwords |
 | `password`      | no       | **Plaintext**: store in Vault (`ec2/users`), not `secrets.yml`; hashed by this role at apply time, never written to disk as plaintext; omit to lock the account |
 
 ### Why plaintext, in Vault

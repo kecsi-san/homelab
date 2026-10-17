@@ -1,4 +1,19 @@
 ---
+# Optional: pin the primary group's GID too. rsync --archive keeps numeric GIDs just like
+# UIDs, so a migrated tree only keeps its group ownership if the GIDs match the old host.
+- name: Create primary groups with pinned GIDs
+  ansible.builtin.group:
+    name: "{{ item.name }}"
+    gid: "{{ item.gid }}"
+    state: present
+  become: true
+  loop: "{{ ec2_users }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: item.gid is defined
+  tags:
+    - users
+
 - name: Create system users
   ansible.builtin.user:
     name: "{{ item.name }}"
@@ -6,13 +21,19 @@
     comment: "{{ item.comment | default(omit) }}"
     groups: "{{ (item.groups | default([])) + (['sudo'] if item.sudo | default(false) else []) }}"
     append: true
+    group: "{{ item.name if item.gid is defined else omit }}"
     shell: "{{ item.shell | default('/bin/bash') }}"
     # item.password is plaintext (stored that way in Vault deliberately — SSH access
     # is key-only/password auth disabled, so this only gates PAM-based email login
     # over SSL, and being able to recover a forgotten password from Vault matters
     # more here than defense-in-depth against a leak). Hashed here, on the wire to
     # the target only, never written to disk as plaintext; '!' (locked) if unset.
-    password: "{{ item.password | password_hash('sha512') if item.password is defined else '!' }}"
+    # password_hash (an existing crypt hash, for example copied from the old server) wins over
+    # password; with a fixed hash the task stays idempotent, a plaintext password gets a new
+    # random salt and reports a change on every run.
+    password: >-
+      {{ item.password_hash if item.password_hash is defined
+         else (item.password | password_hash('sha512') if item.password is defined else '!') }}
     create_home: true
     state: present
   become: true
