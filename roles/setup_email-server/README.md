@@ -60,6 +60,51 @@ Key files: `/var/lib/rspamd/dkim/<domain>.<selector>.key`
 
 To rotate keys: delete the `.key` file for that domain (or change `dkim_selector`), re-run this role, then run `terraform apply` in `terraform/aws` to publish the new value.
 
+## Keys carried over from another server
+
+To keep the existing DNS records, give the role the old keys and selectors instead of letting it generate new ones:
+
+```yaml
+dkim_domain_selectors:
+  example.com: default
+  example.org: selector1
+dkim_private_keys:
+  example.com: "{{ lookup('...', 'example.com') }}"   # PEM text, for example from Vault
+  example.org: "..."
+dkim_vault_sync: false   # the keys already live in Vault
+```
+
+Each key is written to `<rspamd_dkim_key_dir>/<domain>.<selector>.key` (mode 0400), and Rspamd signs each domain with its own selector. Domains without an entry in `dkim_domain_selectors` keep using `dkim_selector`. Rspamd reads the same PEM private keys that OpenDKIM uses, so no key conversion is needed and the signatures look the same to receivers.
+
+## Supplied TLS certificate
+
+By default Postfix and Dovecot expect a Let's Encrypt certificate under `certbot_cert_dir`. To use a certificate you bought, set:
+
+```yaml
+mail_tls_supplied: true
+mail_tls_fullchain_pem: "..."   # leaf certificate followed by the chain
+mail_tls_key_pem: "..."
+mail_certbot_enabled: false
+```
+
+The role writes `fullchain.pem` (0644) and `privkey.pem` (0600) into `mail_tls_dir` (`/etc/ssl/mail`), points Postfix and Dovecot at them and reloads both when the files change. Renewal is manual: replace the values and rerun the role.
+
+## Upstream filters and relays
+
+If a filtering service delivers your inbound mail, list its addresses in `mail_trusted_relays`. The role then:
+
+- lets those addresses skip postscreen's tests (`postscreen_access.cidr`),
+- adds them to Rspamd's `local_addrs`, so Rspamd looks past them to the real sender when it checks SPF and blocklists,
+- adds them to OpenDMARC's `IgnoreHosts`, because SPF for the relay's address would fail for every domain.
+
+`mail_mynetworks` sets Postfix's `mynetworks` (networks that may relay without authentication). Left empty, the role does not set it and Postfix uses its default, the host's own subnet.
+
+## Sieve
+
+With `email_sieve_enabled: true` the role installs `dovecot-sieve`, runs Sieve scripts at delivery, and writes the scripts from `email_sieve_user_scripts` (`{username: "script text"}`) to each user's `~/.dovecot.sieve`. Every script is checked with `sievec` before it is written, so a syntax error stops the play. Folder names in `fileinto` are IMAP names with `.` as the separator, which matches Maildir++ directories (`fileinto "INBOX.work.reports"` delivers to `.INBOX.work.reports/`).
+
+The Dovecot config also declares the special-use folders `Drafts`, `Junk`, `Trash` and `Sent`.
+
 ## Variables
 
 | Variable | Default | Description |
@@ -75,6 +120,18 @@ To rotate keys: delete the `.key` file for that domain (or change `dkim_selector
 | `aliases_root` | `root` | System user who receives root's mail |
 | `extra_aliases` | `{}` | Additional aliases, e.g. `{fail2ban: alice, wiki: alice}` |
 | `postfix_helo_access_entries` | `{}` | HELO/EHLO hostnames to accept despite not resolving in public DNS, e.g. `{host.internal.example: "OK"}`; see below |
+| `mail_tls_supplied` | `false` | Install a supplied certificate instead of expecting Let's Encrypt |
+| `mail_tls_fullchain_pem`, `mail_tls_key_pem` | empty | PEM text of the supplied certificate chain and key |
+| `mail_tls_dir` | `/etc/ssl/mail` | Where the supplied certificate is written |
+| `mail_certbot_enabled` | `true` | Enable the certbot timer and reload hook |
+| `dkim_domains` | `{{ email_domains }}` | Domains and host names that get a DKIM key (add sender names that are not mail domains) |
+| `dkim_domain_selectors` | `{}` | Per-domain selectors when they differ from `dkim_selector` |
+| `dkim_private_keys` | `{}` | PEM private keys per domain to install |
+| `dkim_vault_sync` | `true` | Mirror keys into Vault and publish public keys for Terraform |
+| `mail_mynetworks` | `[]` | Postfix `mynetworks`; empty keeps Postfix's default |
+| `mail_trusted_relays` | `[]` | Upstream filters or relays that deliver inbound mail |
+| `email_sieve_enabled` | `false` | Install Sieve and deploy the user scripts |
+| `email_sieve_user_scripts` | `{}` | Sieve script text per user |
 
 ## Prerequisites
 
@@ -93,4 +150,6 @@ To rotate keys: delete the `.key` file for that domain (or change `dkim_selector
 | `rspamd` | Rspamd config and DKIM keys |
 | `dkim-dns` | Derive DKIM public key and back up key pair to Vault |
 | `opendmarc` | OpenDMARC config |
+| `tls` | Supplied certificate files |
+| `sieve` | Sieve scripts |
 | `certbot` | Certbot renewal timer + Postfix/Dovecot reload hook (no issuance; see Prerequisites) |

@@ -1,0 +1,15 @@
+# Managed by Ansible (role setup_email-server).
+# Addresses Rspamd treats as local. The defaults plus our trusted upstream relays: Rspamd
+# looks past them in the Received headers to the real client address, so SPF and the
+# blocklist checks judge the original sender and not the relay.
+local_addrs = [
+    "127.0.0.0/8",
+    "::1",
+    "fe80::/10",
+    "10.0.0.0/8",
+    "172.16.0.0/12",
+    "192.168.0.0/16",
+{% for ip in mail_trusted_relays %}
+    "{{ ip }}",
+{% endfor %}
+];

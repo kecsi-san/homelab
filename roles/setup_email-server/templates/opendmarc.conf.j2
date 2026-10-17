@@ -15,3 +15,6 @@ UMask 0002
 UserID opendmarc
 
 RejectFailures true
+{% if mail_trusted_relays %}
+IgnoreHosts /etc/opendmarc/ignore.hosts
+{% endif %}

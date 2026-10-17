@@ -10,6 +10,41 @@ mail_driver = maildir
 mail_path = ~/Maildir
 mail_privileged_group = mail
 
+# Folders and their special-use flags, so mail clients find Drafts, Junk, Sent and Trash.
+# Maildir++ keeps the "." separator, matching folders created by older Dovecot/Courier.
+namespace inbox {
+  inbox = yes
+  separator = .
+
+  mailbox Drafts {
+    special_use = \Drafts
+  }
+  mailbox Junk {
+    special_use = \Junk
+  }
+  mailbox Trash {
+    special_use = \Trash
+  }
+  mailbox Sent {
+    special_use = \Sent
+  }
+}
+{% if email_sieve_enabled | bool %}
+
+# Sieve filtering at delivery (replaces procmail): one script per user, ~/.dovecot.sieve
+protocol lmtp {
+  mail_plugins {
+    sieve = yes
+  }
+}
+
+sieve_script personal {
+  driver = file
+  path = ~/sieve
+  active_path = ~/.dovecot.sieve
+}
+{% endif %}
+
 # Reject cleartext auth over unencrypted connections
 auth_mechanisms = plain login
 auth_allow_cleartext = no

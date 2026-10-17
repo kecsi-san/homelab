@@ -1,0 +1,7 @@
+# Managed by Ansible (role setup_email-server). OpenDMARC does not judge mail relayed by
+# these hosts: their address would always fail SPF for the original sender's domain.
+127.0.0.1
+::1
+{% for ip in mail_trusted_relays %}
+{{ ip }}
+{% endfor %}

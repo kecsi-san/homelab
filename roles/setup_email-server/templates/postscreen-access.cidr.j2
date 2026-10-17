@@ -1,0 +1,5 @@
+# Managed by Ansible (role setup_email-server). Upstream filters and relays that deliver
+# inbound mail here: postscreen skips its tests for them.
+{% for ip in mail_trusted_relays %}
+{{ ip }} permit
+{% endfor %}

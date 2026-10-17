@@ -1,4 +1,17 @@
 ---
+- name: Deploy the OpenDMARC ignore list for trusted upstream relays
+  ansible.builtin.template:
+    src: opendmarc-ignore-hosts.j2
+    dest: /etc/opendmarc/ignore.hosts
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Reload opendmarc
+  when: mail_trusted_relays | length > 0
+  tags:
+    - opendmarc
+
 - name: Deploy opendmarc.conf
   ansible.builtin.template:
     src: opendmarc.conf.j2

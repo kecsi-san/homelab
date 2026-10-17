@@ -53,3 +53,46 @@ mailbox_users: []
 # see roles/setup_email-server/README.md.
 # Format: {"host.internal.example": "OK"}
 postfix_helo_access_entries: {}
+
+# --- TLS certificate ---
+# Default: a Let's Encrypt certificate under certbot_cert_dir/<mail_cert_name>/ (issued by
+# another role). Set mail_tls_supplied: true to install a certificate you bought instead:
+# pass the PEM text (leaf followed by the chain) and the private key, for example from Vault.
+# Renewal is then manual: replace the values and rerun the role.
+mail_tls_supplied: false
+mail_tls_dir: /etc/ssl/mail
+mail_tls_fullchain_pem: ""
+mail_tls_key_pem: ""
+mail_tls_cert_file: "{{ (mail_tls_dir ~ '/fullchain.pem') if mail_tls_supplied | bool else (certbot_cert_dir ~ '/' ~ mail_cert_name ~ '/fullchain.pem') }}"
+mail_tls_key_file: "{{ (mail_tls_dir ~ '/privkey.pem') if mail_tls_supplied | bool else (certbot_cert_dir ~ '/' ~ mail_cert_name ~ '/privkey.pem') }}"
+# Enable the certbot renewal timer and the reload hook (only useful with Let's Encrypt).
+mail_certbot_enabled: true
+
+# --- DKIM ---
+# Domains and host names that get a DKIM key. Defaults to email_domains; add sender names
+# that are not mail domains (for example www.example.com or mail.example.com).
+dkim_domains: "{{ email_domains }}"
+# Per-domain selectors when they differ from dkim_selector, for example keys carried over
+# from another server: {example.com: default, example.org: selector1}.
+dkim_domain_selectors: {}
+# Private keys to install (PEM text per domain), for example read from Vault. A key is
+# written to <rspamd_dkim_key_dir>/<domain>.<selector>.key when it is given here.
+dkim_private_keys: {}
+# Mirror the on-disk keys into Vault (private) and publish the public halves for a
+# Terraform-managed DNS record. Turn off when keys are managed elsewhere.
+dkim_vault_sync: true
+
+# --- Postfix network settings ---
+# Networks allowed to relay without authentication. Empty = do not set mynetworks
+# (Postfix then uses its own default: the host's subnet).
+mail_mynetworks: []
+# Upstream filters or relays that deliver inbound mail to this server (addresses or
+# CIDRs). They skip postscreen tests, Rspamd looks past them to the real sender, and
+# OpenDMARC does not judge mail they relay (SPF would always fail for their address).
+mail_trusted_relays: []
+
+# --- Sieve (server-side mail filtering, replaces procmail) ---
+email_sieve_enabled: false
+# Per-user scripts: {username: "script text"}; written to the user's ~/.dovecot.sieve after
+# a syntax check (sievec). The users must exist.
+email_sieve_user_scripts: {}

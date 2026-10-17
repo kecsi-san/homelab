@@ -1,18 +1,27 @@
 ---
 - name: Install email server packages
   ansible.builtin.package:
-    name: "{{ email_apt_packages }}"
+    name: "{{ email_apt_packages + (['dovecot-sieve'] if email_sieve_enabled | bool else []) }}"
     state: present
   become: true
 
+- name: Install a supplied TLS certificate
+  ansible.builtin.import_tasks: tls.yml
+  when: mail_tls_supplied | bool
+
 - name: Configure certbot TLS certificate
   ansible.builtin.import_tasks: certbot.yml
+  when: mail_certbot_enabled | bool
 
 - name: Configure Postfix
   ansible.builtin.import_tasks: postfix.yml
 
 - name: Configure Dovecot
   ansible.builtin.import_tasks: dovecot.yml
+
+- name: Deploy Sieve scripts
+  ansible.builtin.import_tasks: sieve.yml
+  when: email_sieve_enabled | bool
 
 - name: Configure Rspamd
   ansible.builtin.import_tasks: rspamd.yml

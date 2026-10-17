@@ -1,0 +1,53 @@
+---
+# Supplied certificate (mail_tls_supplied: true): written from variables, no Let's Encrypt.
+- name: Check that the supplied certificate and key are set
+  ansible.builtin.assert:
+    that:
+      - mail_tls_fullchain_pem | length > 0
+      - mail_tls_key_pem | length > 0
+    fail_msg: >-
+      mail_tls_supplied is true but mail_tls_fullchain_pem or mail_tls_key_pem is empty.
+    quiet: true
+  no_log: true
+  tags:
+    - tls
+
+- name: Create the TLS directory
+  ansible.builtin.file:
+    path: "{{ mail_tls_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+  tags:
+    - tls
+
+- name: Install the certificate chain
+  ansible.builtin.copy:
+    dest: "{{ mail_tls_dir }}/fullchain.pem"
+    content: "{{ mail_tls_fullchain_pem | trim }}\n"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify:
+    - Reload postfix
+    - Reload dovecot
+  tags:
+    - tls
+
+- name: Install the private key
+  ansible.builtin.copy:
+    dest: "{{ mail_tls_dir }}/privkey.pem"
+    content: "{{ mail_tls_key_pem | trim }}\n"
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  no_log: true
+  notify:
+    - Reload postfix
+    - Reload dovecot
+  tags:
+    - tls

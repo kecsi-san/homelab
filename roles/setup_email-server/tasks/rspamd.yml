@@ -22,30 +22,45 @@
 # Idempotent: skipped if the .key already exists (covers fresh install).
 # For keys migrated from the old server: copy the .key file first; this task
 # is then skipped but a .txt file won't exist — see the display task below.
+# Keys carried over from another server (dkim_private_keys, for example from Vault) are
+# written first, so the generate task below skips those domains.
+- name: Install supplied DKIM private keys
+  ansible.builtin.copy:
+    dest: "{{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_domain_selectors[item] | default(dkim_selector) }}.key"
+    content: "{{ dkim_private_keys[item] | trim }}\n"
+    owner: _rspamd
+    group: _rspamd
+    mode: "0400"
+  become: true
+  loop: "{{ dkim_domains | select('in', dkim_private_keys) | list }}"
+  no_log: true
+  tags:
+    - rspamd
+
 - name: Generate DKIM key pair per domain
   ansible.builtin.shell:
     cmd: >
       rspamadm dkim_keygen
       --bits 2048
-      -s {{ dkim_selector }}
+      -s {{ dkim_domain_selectors[item] | default(dkim_selector) }}
       -d {{ item }}
-      -k {{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_selector }}.key
-      > {{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_selector }}.txt
-    creates: "{{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_selector }}.key"
+      -k {{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_domain_selectors[item] | default(dkim_selector) }}.key
+      > {{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_domain_selectors[item] | default(dkim_selector) }}.txt
+    creates: "{{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_domain_selectors[item] | default(dkim_selector) }}.key"
   become: true
-  loop: "{{ email_domains }}"
+  loop: "{{ dkim_domains }}"
   tags:
     - rspamd
     - dkim-dns
 
 - name: Fix DKIM key ownership
   ansible.builtin.file:
-    path: "{{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_selector }}.key"
+    path: "{{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_domain_selectors[item] | default(dkim_selector) }}.key"
     owner: _rspamd
     group: _rspamd
     mode: "0400"
   become: true
-  loop: "{{ email_domains }}"
+  loop: "{{ dkim_domains }}"
   tags:
     - rspamd
 
@@ -58,6 +73,19 @@
     mode: "0640"
   become: true
   notify: Reload rspamd
+  tags:
+    - rspamd
+
+- name: Deploy Rspamd local_addrs for trusted upstream relays
+  ansible.builtin.template:
+    src: rspamd-options.inc.j2
+    dest: /etc/rspamd/local.d/options.inc
+    owner: root
+    group: _rspamd
+    mode: "0640"
+  become: true
+  notify: Reload rspamd
+  when: mail_trusted_relays | length > 0
   tags:
     - rspamd
 
@@ -74,23 +102,29 @@
 # which isn't guaranteed to exist for keys migrated from the old server.
 - name: Read DKIM private key content
   ansible.builtin.slurp:
-    src: "{{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_selector }}.key"
+    src: "{{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_domain_selectors[item] | default(dkim_selector) }}.key"
   become: true
-  loop: "{{ email_domains }}"
+  loop: "{{ dkim_domains }}"
   register: dkim_private_key_files
+  when: dkim_vault_sync | bool
   tags:
     - rspamd
     - dkim-dns
 
 - name: Derive DKIM public key (base64 DER) from private key
   ansible.builtin.shell:
-    cmd: set -o pipefail && openssl rsa -in {{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_selector }}.key -pubout -outform DER 2>/dev/null | openssl base64 -A
+    cmd: >-
+      set -o pipefail &&
+      openssl rsa
+      -in {{ rspamd_dkim_key_dir }}/{{ item }}.{{ dkim_domain_selectors[item] | default(dkim_selector) }}.key
+      -pubout -outform DER 2>/dev/null | openssl base64 -A
     executable: /bin/bash
   become: true
-  loop: "{{ email_domains }}"
+  loop: "{{ dkim_domains }}"
   register: dkim_public_key_b64
   changed_when: false
   check_mode: false
+  when: dkim_vault_sync | bool
   tags:
     - rspamd
     - dkim-dns
@@ -114,6 +148,7 @@
     label: "{{ item.item }}"
   delegate_to: localhost
   become: false
+  when: dkim_vault_sync | bool
   tags:
     - rspamd
     - dkim-dns
@@ -144,6 +179,7 @@
     label: "{{ item.item }}"
   delegate_to: localhost
   become: false
+  when: dkim_vault_sync | bool
   tags:
     - rspamd
     - dkim-dns

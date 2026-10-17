@@ -37,6 +37,19 @@
   tags:
     - postfix
 
+- name: Deploy the postscreen allow list for trusted upstream relays
+  ansible.builtin.template:
+    src: postscreen-access.cidr.j2
+    dest: "{{ postfix_config_dir }}/postscreen_access.cidr"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Reload postfix
+  when: mail_trusted_relays | length > 0
+  tags:
+    - postfix
+
 - name: Deploy Postfix HELO access map
   ansible.builtin.template:
     src: postfix-helo-access.j2

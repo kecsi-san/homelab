@@ -1,0 +1,17 @@
+---
+# One script per user, written to ~/.dovecot.sieve. sievec checks the syntax first, so a
+# broken script stops the play instead of being skipped silently at delivery time.
+- name: Install Sieve scripts
+  ansible.builtin.copy:
+    dest: "/home/{{ item.key }}/.dovecot.sieve"
+    content: "{{ item.value }}\n"
+    owner: "{{ item.key }}"
+    group: "{{ item.key }}"
+    mode: "0600"
+    validate: sievec -d %s
+  become: true
+  loop: "{{ email_sieve_user_scripts | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  tags:
+    - sieve

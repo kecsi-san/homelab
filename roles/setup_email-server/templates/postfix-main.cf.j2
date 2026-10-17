@@ -7,6 +7,9 @@ myhostname = {{ mail_hostname }}
 mydomain = {{ email_domains | first }}
 myorigin = $mydomain
 inet_interfaces = all
+{% if mail_mynetworks %}
+mynetworks = {{ mail_mynetworks | join(', ') }}
+{% endif %}
 inet_protocols = ipv4
 
 # All served domains — local delivery to system users
@@ -26,8 +29,8 @@ home_mailbox = Maildir/
 recipient_delimiter = +
 
 # TLS — inbound (smtpd)
-smtpd_tls_cert_file = {{ certbot_cert_dir }}/{{ mail_cert_name }}/fullchain.pem
-smtpd_tls_key_file  = {{ certbot_cert_dir }}/{{ mail_cert_name }}/privkey.pem
+smtpd_tls_cert_file = {{ mail_tls_cert_file }}
+smtpd_tls_key_file  = {{ mail_tls_key_file }}
 smtpd_tls_CApath = /etc/ssl/certs
 smtpd_tls_security_level = may
 smtpd_tls_auth_only = yes
@@ -117,7 +120,8 @@ smtpd_milters = inet:127.0.0.1:11332, inet:127.0.0.1:8893
 non_smtpd_milters =
 
 # Postscreen — connection-level DNSBL filtering before smtpd accepts the session
-postscreen_access_list = permit_mynetworks
+postscreen_access_list = permit_mynetworks{% if mail_trusted_relays %}, cidr:{{ postfix_config_dir }}/postscreen_access.cidr{% endif %}
+
 postscreen_blacklist_action = drop
 postscreen_dnsbl_action = enforce
 postscreen_greet_action = enforce
