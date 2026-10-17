@@ -1,0 +1,11 @@
+# Managed by Ansible (role setup_restic-backup).
+[Unit]
+Description=Run the restic file system backup
+
+[Timer]
+OnCalendar={{ restic_backup_schedule }}
+RandomizedDelaySec={{ restic_backup_random_delay }}
+Persistent=true
+
+[Install]
+WantedBy=timers.target

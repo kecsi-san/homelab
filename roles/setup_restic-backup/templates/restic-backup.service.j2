@@ -1,0 +1,12 @@
+# Managed by Ansible (role setup_restic-backup).
+[Unit]
+Description=restic file system backup
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/restic-backup
+# a long, I/O heavy job: stay out of the way of mail and web services
+Nice=10
+IOSchedulingClass=idle

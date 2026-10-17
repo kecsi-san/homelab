@@ -1,0 +1,27 @@
+#!/bin/bash
+# Managed by Ansible (role setup_restic-backup).
+# File system backup to a restic repository, one snapshot per directory.
+# Settings come from {{ restic_backup_config_dir }}/env (RESTIC_REPOSITORY, RESTIC_PASSWORD).
+set -euo pipefail
+
+set -a
+# shellcheck disable=SC1091
+. {{ restic_backup_config_dir }}/env
+set +a
+
+stamp() { date +"%Y.%m.%d %T"; }
+
+echo "[$(stamp)] [load: $(cut -d' ' -f1-3 /proc/loadavg)] restic backup started."
+for dir in {% for d in restic_backup_dirs %}{{ d | quote }} {% endfor %}; do
+  echo "[$(stamp)] backing up $dir"
+  restic -q backup --tag {{ restic_backup_tag | quote }} {% for a in restic_backup_extra_args %}{{ a | quote }} {% endfor %}"$dir"
+done
+{% if restic_backup_maintenance | bool %}
+
+echo "[$(stamp)] maintenance started."
+restic -q check
+restic -q forget --keep-daily {{ restic_backup_keep_daily }}
+restic -q prune
+{% endif %}
+
+echo "[$(stamp)] all done."

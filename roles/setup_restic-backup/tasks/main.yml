@@ -1,0 +1,86 @@
+---
+- name: Check that the repository and password are set
+  ansible.builtin.assert:
+    that:
+      - restic_backup_repository | length > 0
+      - restic_backup_password | length > 0
+    fail_msg: >-
+      restic_backup_repository and restic_backup_password are empty; the role has no
+      defaults for them. Set them from Vault.
+    quiet: true
+  no_log: true
+  tags: [restic]
+
+- name: Install restic
+  ansible.builtin.apt:
+    name: "{{ restic_backup_apt_packages }}"
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+  tags: [restic]
+
+- name: Create the restic config directory
+  ansible.builtin.file:
+    path: "{{ restic_backup_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+  become: true
+  tags: [restic]
+
+- name: Write the restic environment file
+  ansible.builtin.template:
+    src: restic-env.j2
+    dest: "{{ restic_backup_config_dir }}/env"
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  no_log: true
+  tags: [restic]
+
+- name: Install the backup script
+  ansible.builtin.template:
+    src: restic-backup.sh.j2
+    dest: /usr/local/sbin/restic-backup
+    owner: root
+    group: root
+    mode: "0750"
+  become: true
+  tags: [restic]
+
+- name: Install the systemd service
+  ansible.builtin.template:
+    src: restic-backup.service.j2
+    dest: /etc/systemd/system/restic-backup.service
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Reload systemd
+  tags: [restic]
+
+- name: Install the systemd timer
+  ansible.builtin.template:
+    src: restic-backup.timer.j2
+    dest: /etc/systemd/system/restic-backup.timer
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Reload systemd
+  tags: [restic]
+
+- name: Flush handlers so systemd knows the new units
+  ansible.builtin.meta: flush_handlers
+  tags: [restic]
+
+- name: Enable and start the backup timer
+  ansible.builtin.systemd:
+    name: restic-backup.timer
+    enabled: true
+    state: started
+  become: true
+  tags: [restic]

@@ -1,0 +1,33 @@
+---
+# Master switch: playbooks run this role only when true.
+restic_backup_enabled: false
+
+# Repository and password. No defaults on purpose: the role fails early when they are
+# empty. Set them from Vault. An S3 repository looks like
+# s3:s3.amazonaws.com/<bucket>/<prefix>; credentials for S3 come from the instance
+# profile, so no AWS keys are needed on EC2.
+restic_backup_repository: ""
+restic_backup_password: ""
+
+# Directories to back up, one restic snapshot per directory, tagged restic_backup_tag.
+restic_backup_dirs:
+  - /etc
+  - /root
+  - /home
+restic_backup_tag: fs
+
+# Extra arguments for `restic backup`, for example ["--exclude-caches"].
+restic_backup_extra_args: []
+
+# systemd calendar expression and a random delay added on top of it.
+restic_backup_schedule: "*-*-* 23:00:00"
+restic_backup_random_delay: 15min
+
+# Only ONE host should run maintenance on a shared repository (prune takes an exclusive
+# lock). When true, the backup run is followed by check, forget and prune.
+restic_backup_maintenance: false
+restic_backup_keep_daily: 30
+
+restic_backup_apt_packages:
+  - restic
+restic_backup_config_dir: /etc/restic
