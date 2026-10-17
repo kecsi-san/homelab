@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(setup_email-server): restart opendmarc instead of reloading it ([69faafb](https://github.com/kecsi-san/homelab/commit/69faafbb6049cb8a9f8ce9b066b1e83db6f2b915) by Zoltan K).
+- fix(setup_email-server): flush handlers after Postfix, Dovecot and Rspamd ([47739e7](https://github.com/kecsi-san/homelab/commit/47739e79412b0098fca610ec541dff26325fb416) by Zoltan K).
 - fix(setup_email-server): create /etc/opendmarc before the ignore list ([7487346](https://github.com/kecsi-san/homelab/commit/7487346d788d19d675b7573974b961f42ff9a3f2) by Zoltan K).
 - fix(setup_unbound): remove resolv.conf only when it is a symlink ([0ac6934](https://github.com/kecsi-san/homelab/commit/0ac6934f389a623bb64b5c0702a75e0e51913516) by Zoltan K).
 - fix(setup_geoip): create /usr/share/xt_geoip, build missing country files ([580c9f9](https://github.com/kecsi-san/homelab/commit/580c9f9c5dcd9d27b3d6906ac9ddd63398357ff3) by Zoltan K).
