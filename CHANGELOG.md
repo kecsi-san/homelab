@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(setup_geoip): create /usr/share/xt_geoip, build missing country files ([580c9f9](https://github.com/kecsi-san/homelab/commit/580c9f9c5dcd9d27b3d6906ac9ddd63398357ff3) by Zoltan K).
 - fix(setup_geoip): enable Debian contrib, geoipupdate is not in main ([37377a4](https://github.com/kecsi-san/homelab/commit/37377a4a778690c4a2c7a19e3eaf17e6952b5d05) by Zoltan K).
 - fix(upgrade_brew): upgrade formulae one by one so progress is visible ([10a755a](https://github.com/kecsi-san/homelab/commit/10a755ae976df88e4752570ed0ded022e96d12b1) by Zoltan K).
 - fix(argocd): remove stale argocd_helm_values override in local.yml ([6e12e89](https://github.com/kecsi-san/homelab/commit/6e12e89ff730013f2cc102175996adb143a102f1) by Zoltan K).
