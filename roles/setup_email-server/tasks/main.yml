@@ -16,8 +16,17 @@
 - name: Configure Postfix
   ansible.builtin.import_tasks: postfix.yml
 
+# Run the handlers now: map rebuilds (postmap, newaliases) and reloads. If a later task fails,
+# Ansible skips pending handlers, and the next run finds the files unchanged and does not
+# notify them again, which would leave maps unbuilt and services on stale config.
+- name: Apply Postfix changes before continuing
+  ansible.builtin.meta: flush_handlers
+
 - name: Configure Dovecot
   ansible.builtin.import_tasks: dovecot.yml
+
+- name: Apply Dovecot changes before continuing
+  ansible.builtin.meta: flush_handlers
 
 - name: Deploy Sieve scripts
   ansible.builtin.import_tasks: sieve.yml
@@ -25,6 +34,9 @@
 
 - name: Configure Rspamd
   ansible.builtin.import_tasks: rspamd.yml
+
+- name: Apply Rspamd changes before continuing
+  ansible.builtin.meta: flush_handlers
 
 - name: Configure OpenDMARC
   ansible.builtin.import_tasks: opendmarc.yml
