@@ -19,11 +19,21 @@
   ignore_errors: true  # not present on all Debian images
   tags: [unbound]
 
+# Only remove the symlink. Deleting a regular file on every run would leave the host
+# without a resolver file for a moment each time the role is rerun.
+- name: Check whether resolv.conf is still a symlink
+  ansible.builtin.stat:
+    path: /etc/resolv.conf
+    follow: false
+  register: unbound_resolv_conf
+  tags: [unbound]
+
 - name: Remove systemd-resolved resolv.conf symlink
   ansible.builtin.file:
     path: /etc/resolv.conf
     state: absent
   become: true
+  when: unbound_resolv_conf.stat.islnk | default(false)
   tags: [unbound]
 
 - name: Write static resolv.conf pointing to unbound
