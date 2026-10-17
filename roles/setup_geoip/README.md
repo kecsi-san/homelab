@@ -25,6 +25,7 @@ What the script does: reads `country.iso_code` (falls back to `registered_countr
 | `geoip_enabled` | `false` | Playbooks run the role only when true |
 | `geoip_maxmind_account_id` | `""` | MaxMind account ID; set from Vault. The role fails when empty |
 | `geoip_maxmind_license_key` | `""` | MaxMind license key; set from Vault. The role fails when empty |
+| `geoip_enable_contrib` | `true` | Add the `contrib` component to `/etc/apt/sources.list.d/debian.sources` (`geoipupdate` is only there; official cloud images enable `main` only) |
 | `geoip_edition_ids` | ASN, City, Country | Databases `geoipupdate` downloads; only Country is needed for the firewall |
 | `geoip_apt_packages` | see defaults | Packages to install |
 | `geoip_kernel_headers_package` | `linux-headers-<running kernel>` | DKMS needs these to build `xt_geoip` |

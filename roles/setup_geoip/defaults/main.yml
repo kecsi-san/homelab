@@ -29,3 +29,8 @@ geoip_kernel_headers_package: "linux-headers-{{ ansible_facts['kernel'] }}"
 # ReadWritePaths in xt-geoip-build.service).
 geoip_mmdb_dir: /var/lib/GeoIP
 geoip_xt_geoip_dir: /usr/share/xt_geoip
+
+# geoipupdate lives in Debian's contrib component, which the official cloud images do
+# not enable. When true, the role adds contrib to /etc/apt/sources.list.d/debian.sources
+# (deb822 format only; hosts with a one-line sources.list must enable contrib themselves).
+geoip_enable_contrib: true

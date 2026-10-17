@@ -12,6 +12,34 @@
     quiet: true
   tags: [geoip]
 
+# geoipupdate is in Debian's contrib component; the official cloud images enable only main.
+- name: Check for the deb822 Debian sources file
+  ansible.builtin.stat:
+    path: /etc/apt/sources.list.d/debian.sources
+  register: geoip_debian_sources
+  when: geoip_enable_contrib | bool
+  tags: [geoip]
+
+- name: Enable the contrib component
+  ansible.builtin.replace:
+    path: /etc/apt/sources.list.d/debian.sources
+    regexp: '^Components: main$'
+    replace: 'Components: main contrib'
+  become: true
+  register: geoip_contrib
+  when:
+    - geoip_enable_contrib | bool
+    - geoip_debian_sources.stat.exists
+  tags: [geoip]
+
+# apt_cache validity below would otherwise skip the refresh and the package stays unknown.
+- name: Refresh the apt cache after enabling contrib
+  ansible.builtin.apt:
+    update_cache: true
+  become: true
+  when: geoip_contrib is changed
+  tags: [geoip]
+
 - name: Install GeoIP packages
   ansible.builtin.apt:
     name: "{{ geoip_apt_packages + [geoip_kernel_headers_package] }}"
