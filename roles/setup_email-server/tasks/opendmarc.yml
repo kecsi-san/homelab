@@ -20,7 +20,7 @@
     group: root
     mode: "0644"
   become: true
-  notify: Reload opendmarc
+  notify: Restart opendmarc
   when: mail_trusted_relays | length > 0
   tags:
     - opendmarc
@@ -33,7 +33,7 @@
     group: root
     mode: "0644"
   become: true
-  notify: Reload opendmarc
+  notify: Restart opendmarc
   tags:
     - opendmarc
 

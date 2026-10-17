@@ -17,10 +17,11 @@
     state: reloaded
   become: true
 
-- name: Reload opendmarc
+# A restart, not a reload: the milter socket (Socket in opendmarc.conf) is only read at start.
+- name: Restart opendmarc
   ansible.builtin.systemd:
     name: opendmarc
-    state: reloaded
+    state: restarted
   become: true
 
 - name: Rebuild virtual db
