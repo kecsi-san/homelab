@@ -45,6 +45,13 @@ extra_aliases: {}         # e.g. {fail2ban: kecsi, wiki: kecsi}
 #       - kecskemethy.com
 mailbox_users: []
 
+# Extra address lines for the virtual map, verbatim: {"address": "target1, target2"}. For what
+# mailbox_users cannot express: forwards to outside addresses, several targets, catch-alls
+# ("@example.com"), address to address.
+mail_virtual_entries: {}
+# Extra names accepted as local domains next to email_domains and mail.<domain>, for example
+# ["www.example.com"] when mail is addressed to that name.
+mail_extra_destinations: []
 # HELO/EHLO hostnames to accept even though they don't resolve in public DNS
 # (bypasses reject_invalid/non_fqdn/unknown_helo_hostname for these entries only —
 # everything else, including postscreen/rspamd/recipient checks, still applies).

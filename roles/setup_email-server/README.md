@@ -117,6 +117,8 @@ The Dovecot config also declares the special-use folders `Drafts`, `Junk`, `Tras
 | `postscreen_dnsbl_sites` | *(see defaults)* | DNSBL list with weights |
 | `postscreen_dnsbl_threshold` | `3` | Score threshold to enforce block |
 | `mailbox_users` | `[]` | Users and their domains (see above) |
+| `mail_virtual_entries` | `{}` | Extra virtual map lines, verbatim: forwards to outside addresses, several targets, catch-alls, address to address |
+| `mail_extra_destinations` | `[]` | Extra names accepted as local domains, for example `www.example.com` |
 | `aliases_root` | `root` | System user who receives root's mail |
 | `extra_aliases` | `{}` | Additional aliases, e.g. `{fail2ban: alice, wiki: alice}` |
 | `postfix_helo_access_entries` | `{}` | HELO/EHLO hostnames to accept despite not resolving in public DNS, e.g. `{host.internal.example: "OK"}`; see below |

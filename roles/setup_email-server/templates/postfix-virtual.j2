@@ -10,3 +10,10 @@
 {% endfor %}
 {% endfor %}
 {% endfor %}
+{% if mail_virtual_entries %}
+
+# Entries given verbatim: external forwards, several targets, catch-alls, address to address
+{% for left, right in mail_virtual_entries.items() %}
+{{ left }}   {{ right }}
+{% endfor %}
+{% endif %}
