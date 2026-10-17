@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(setup_email-server): create /etc/opendmarc before the ignore list ([7487346](https://github.com/kecsi-san/homelab/commit/7487346d788d19d675b7573974b961f42ff9a3f2) by Zoltan K).
 - fix(setup_unbound): remove resolv.conf only when it is a symlink ([0ac6934](https://github.com/kecsi-san/homelab/commit/0ac6934f389a623bb64b5c0702a75e0e51913516) by Zoltan K).
 - fix(setup_geoip): create /usr/share/xt_geoip, build missing country files ([580c9f9](https://github.com/kecsi-san/homelab/commit/580c9f9c5dcd9d27b3d6906ac9ddd63398357ff3) by Zoltan K).
 - fix(setup_geoip): enable Debian contrib, geoipupdate is not in main ([37377a4](https://github.com/kecsi-san/homelab/commit/37377a4a778690c4a2c7a19e3eaf17e6952b5d05) by Zoltan K).
