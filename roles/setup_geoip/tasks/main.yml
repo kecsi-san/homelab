@@ -49,6 +49,18 @@
   become: true
   tags: [geoip]
 
+# Debian 13's xtables-addons-common does not create this directory. The build unit's
+# ReadWritePaths= needs it to exist, otherwise systemd fails with status 226/NAMESPACE.
+- name: Create the xt_geoip data directory
+  ansible.builtin.file:
+    path: "{{ geoip_xt_geoip_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+  tags: [geoip]
+
 - name: Write /etc/GeoIP.conf
   ansible.builtin.template:
     src: GeoIP.conf.j2
@@ -129,4 +141,27 @@
     state: started
   become: true
   when: not geoip_country_mmdb.stat.exists
+  tags: [geoip]
+
+# Safety net for a first build that failed or never ran (for example the unit could not
+# start before the directory existed): build the country files when they are missing.
+- name: Check for built country files
+  ansible.builtin.stat:
+    path: "{{ geoip_xt_geoip_dir }}/US.iv4"
+  register: geoip_country_files
+  tags: [geoip]
+
+- name: Check again for the Country database
+  ansible.builtin.stat:
+    path: "{{ geoip_mmdb_dir }}/GeoLite2-Country.mmdb"
+  register: geoip_country_mmdb_now
+  tags: [geoip]
+
+- name: Build the xt_geoip country files
+  ansible.builtin.command: /usr/local/sbin/xt-geoip-build
+  become: true
+  changed_when: true
+  when:
+    - not geoip_country_files.stat.exists
+    - geoip_country_mmdb_now.stat.exists
   tags: [geoip]
