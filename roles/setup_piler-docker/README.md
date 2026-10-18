@@ -34,6 +34,7 @@ The images are upstream's (`sutoj/piler`, `mariadb`, `manticoresearch/manticore`
 | `piler_mariadb_innodb_buffer_pool_size` | `1G` | InnoDB buffer pool |
 | `piler_manticore_rt_mem_limit` | `1024M` | Real-time index memory before it is flushed; keep it below the container limit |
 | `piler_memcached_memory_mb` | `64` | memcached memory |
+| `piler_log_max_size`, `piler_log_max_file` | `10m`, `3` | Container log rotation (Docker keeps logs forever by default) |
 
 ## Notes
 

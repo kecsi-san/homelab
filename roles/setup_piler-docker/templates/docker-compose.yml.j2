@@ -1,11 +1,19 @@
 # Managed by Ansible (role setup_piler-docker). Do not edit by hand.
 name: piler
 
+# Docker keeps container logs forever by default; rotate them.
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "{{ piler_log_max_size }}"
+    max-file: "{{ piler_log_max_file }}"
+
 services:
   mysql:
     image: mariadb:{{ piler_mariadb_version }}
     container_name: mysql
     restart: unless-stopped
+    logging: *logging
     cap_drop:
       - ALL
     cap_add:
@@ -27,6 +35,7 @@ services:
     image: manticoresearch/manticore:{{ piler_manticore_version }}
     container_name: manticore
     restart: unless-stopped
+    logging: *logging
     volumes:
       - ./manticore.conf:/etc/manticoresearch/manticore.conf
       - {{ piler_data_dir }}/manticore:/var/lib/manticore
@@ -36,6 +45,7 @@ services:
     image: sutoj/piler:{{ piler_version }}
     container_name: piler
     restart: unless-stopped
+    logging: *logging
     init: true
     env_file: piler.env
     environment:
@@ -68,4 +78,5 @@ services:
     image: memcached:{{ piler_memcached_version }}
     container_name: memcached
     restart: unless-stopped
+    logging: *logging
     command: -m {{ piler_memcached_memory_mb }}

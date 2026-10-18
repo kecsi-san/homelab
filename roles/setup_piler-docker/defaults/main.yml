@@ -40,3 +40,7 @@ piler_manticore_memory_limit: 3g
 # Real-time index memory before it is flushed to disk; keep it below the limit above.
 piler_manticore_rt_mem_limit: 1024M
 piler_memcached_memory_mb: 64
+
+# Container log rotation (json-file driver): size of one file and number of files kept.
+piler_log_max_size: 10m
+piler_log_max_file: 3
