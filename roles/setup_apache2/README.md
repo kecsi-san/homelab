@@ -17,7 +17,7 @@ Installs and configures Apache2 with TLS, ModSecurity, ModEvasive, and all vhost
 |--------|-------------|
 | `webroot` (default) | Any domain; requires port 80 reachable and domain pointing at this server |
 | `dns-route53` | Route53-hosted domains; works before DNS cutover |
-| `acme-dns` | Wildcard cert (`*.domain`) for domains with no DNS API access (e.g. .hu registrars); avoids maintaining an explicit SAN list by hand every time a new subdomain is added |
+| `acme-dns` | Domains with no DNS API access (e.g. .hu registrars). By default a wildcard cert (`domain` plus `*.domain`), which avoids maintaining a SAN list by hand; with `wildcard: false` on the cert entry only `domain` and `extra_sans` are requested (each name needs its own `_acme-challenge` CNAME delegation) |
 
 The role deploys a global ACME challenge conf (`letsencrypt-webroot.conf`) that serves `/.well-known/acme-challenge/` from `/var/www/letsencrypt/` for all vhosts, so the webroot method works even after the default site is disabled.
 

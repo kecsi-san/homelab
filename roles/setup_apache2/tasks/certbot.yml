@@ -131,7 +131,9 @@
 # The one-time acme-dns account registration + _acme-challenge CNAME delegation in the
 # real DNS zone is a manual step done ahead of time (see roles/setup_apache2/README.md)
 # — this task only renews/re-validates using the credentials already in acmedns.json.
-- name: Issue wildcard TLS certificates via acme-dns (DNS-01, manual hook)
+# A cert entry with `wildcard: false` gets just its domain and extra_sans (every name needs its own
+# _acme-challenge CNAME delegation); the default stays domain plus *.domain.
+- name: Issue TLS certificates via acme-dns (DNS-01, manual hook)
   ansible.builtin.command:
     cmd: >
       certbot certonly --non-interactive --agree-tos
@@ -139,7 +141,8 @@
       --manual-auth-hook /etc/letsencrypt/acme-dns-auth.py
       --email {{ certbot_email }}
       -d {{ item.domain }}
-      -d *.{{ item.domain }}
+      {% if item.wildcard | default(true) | bool %}-d *.{{ item.domain }} {% endif %}
+      {% for san in item.extra_sans | default([]) %}-d {{ san }} {% endfor %}
     creates: "{{ certbot_cert_dir }}/{{ item.domain }}/fullchain.pem"
   become: true
   loop: "{{ apache_certs | selectattr('method', 'defined') | selectattr('method', 'equalto', 'acme-dns') | list }}"

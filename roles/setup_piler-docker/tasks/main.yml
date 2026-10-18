@@ -110,6 +110,17 @@
   changed_when: "'Started' in piler_up.stderr or 'Created' in piler_up.stderr or 'Recreated' in piler_up.stderr"
   tags: [piler]
 
+# The first start of the image writes SITE_URL as http://<hostname>/. Behind a TLS reverse proxy the
+# UI would then build http links; later assignments win in PHP, so replace that line.
+- name: Set the public URL of the web UI
+  ansible.builtin.lineinfile:
+    path: "{{ piler_data_dir }}/etc/config-site.php"
+    regexp: '^\$config\[.SITE_URL.\]'
+    line: "$config['SITE_URL'] = '{{ piler_site_url }}';"
+  become: true
+  when: piler_site_url | length > 0
+  tags: [piler]
+
 # The upstream image only sets the admin password; the auditor hash reaches the container the
 # same way (piler.env, single quoted) and is applied here. It must not pass through Ansible's
 # environment: the shell around become expands the $ signs of a crypt hash.

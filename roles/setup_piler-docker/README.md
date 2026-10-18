@@ -22,6 +22,7 @@ The images are upstream's (`sutoj/piler`, `mariadb`, `manticoresearch/manticore`
 | `piler_manticore_version` | `25.0.0` | Manticore image tag |
 | `piler_memcached_version` | `1.6.45` | memcached image tag |
 | `piler_hostname` | `archive.example.com` | The archive's own host name (required, the role stops on the example value) |
+| `piler_site_url` | empty | Public URL of the web UI behind a TLS proxy (for example `https://archive.example.com/`); replaces the `http://` address the image writes on its first start |
 | `piler_project_dir` | `/opt/piler` | Compose file, configuration and secrets file |
 | `piler_data_dir` | `/srv/piler` | Data on its own volume: `etc` (piler.conf and piler.key), `store`, `db`, `manticore` |
 | `piler_smtp_bind` | `127.0.0.1:2525` | Where Piler's SMTP port is published |

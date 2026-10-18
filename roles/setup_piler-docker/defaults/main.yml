@@ -12,6 +12,11 @@ piler_memcached_version: "1.6.45"
 # Name the web UI and the archive use for themselves (the archive hostname).
 piler_hostname: "archive.example.com"
 
+# Public URL of the web UI when a TLS reverse proxy sits in front of it, for example
+# https://archive.example.com/. The image writes an http:// address into config-site.php on
+# its first start; the role replaces that line. Empty keeps the image's value.
+piler_site_url: ""
+
 # Where the compose file and the secrets file live.
 piler_project_dir: /opt/piler
 # Data on a dedicated volume; the four directories below are created under it.
