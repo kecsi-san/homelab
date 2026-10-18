@@ -6,6 +6,10 @@ After=network-online.target
 
 [Service]
 Type=oneshot
+# A system service has no $HOME, so restic cannot find its cache directory and re-reads the
+# repository index on every run. systemd creates /var/cache/restic for it.
+CacheDirectory=restic
+Environment=RESTIC_CACHE_DIR=/var/cache/restic
 ExecStart=/usr/local/sbin/restic-backup
 # a long, I/O heavy job: stay out of the way of mail and web services
 Nice=10

@@ -31,6 +31,7 @@ The role does not run a backup itself and does not initialize a repository. Poin
 
 - With S3 and an instance profile, the host needs no access keys. The profile must allow read, write and delete on the repository prefix.
 - Several hosts can share one repository, because restic records the host name in each snapshot. Run maintenance on one host only: `prune` takes an exclusive lock.
+- The service gets its own cache directory (`/var/cache/restic`, created by systemd), because a system service has no `$HOME` for restic's default cache.
 - A newer restic keeps writing to a repository in the old format. It does not upgrade the format unless you run `restic migrate`, and older clients on other hosts cannot read an upgraded repository.
 - Check the last run with `systemctl status restic-backup.service` and `journalctl -u restic-backup.service`. List snapshots with `sudo bash -c 'set -a; . /etc/restic/env; restic snapshots'`.
 
