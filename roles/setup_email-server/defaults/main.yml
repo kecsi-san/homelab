@@ -14,6 +14,16 @@ dkim_selector: mail
 # Rspamd DKIM key directory
 rspamd_dkim_key_dir: /var/lib/rspamd/dkim
 
+# Headers Rspamd adds to inbound mail. Debian's package adds none (use = []), so without this the
+# scoring has no visible effect and Sieve rules that test the spam header never match.
+# spam-header sets <rspamd_spam_header>: Yes when the action is add header or worse; x-spamd-result
+# lists the symbols and scores that decided. Mail from local networks and authenticated users is
+# skipped by Rspamd's own defaults.
+rspamd_milter_headers_use:
+  - spam-header
+  - x-spamd-result
+rspamd_spam_header: X-Spam
+
 # Postscreen DNSBL sites and scoring threshold.
 # Format: "hostname*weight" — total weight must reach threshold to trigger action.
 # Spamhaus free DNSBL requires a licence for cloud/datacenter IPs; replace with DQS key if available.

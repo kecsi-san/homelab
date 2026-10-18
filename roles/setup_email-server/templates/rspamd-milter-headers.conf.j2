@@ -1,0 +1,9 @@
+# Managed by Ansible (role setup_email-server)
+use = [{% for r in rspamd_milter_headers_use %}"{{ r }}"{{ ", " if not loop.last }}{% endfor %}];
+routines {
+  spam-header {
+    header = "{{ rspamd_spam_header }}";
+    value = "Yes";
+    remove = 1;
+  }
+}

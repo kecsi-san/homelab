@@ -89,6 +89,19 @@
   tags:
     - rspamd
 
+- name: Deploy Rspamd milter headers (spam flag for Sieve)
+  ansible.builtin.template:
+    src: rspamd-milter-headers.conf.j2
+    dest: /etc/rspamd/local.d/milter_headers.conf
+    owner: root
+    group: _rspamd
+    mode: "0640"
+  become: true
+  notify: Reload rspamd
+  when: rspamd_milter_headers_use | length > 0
+  tags:
+    - rspamd
+
 - name: Ensure rspamd is enabled and running
   ansible.builtin.systemd:
     name: rspamd
