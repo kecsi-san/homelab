@@ -1,0 +1,133 @@
+---
+- name: Check the required variables
+  ansible.builtin.assert:
+    that:
+      - piler_db_password | length > 0
+      - piler_hostname != 'archive.example.com'
+    fail_msg: >-
+      piler_db_password is empty or piler_hostname is still the example value. The role has
+      no defaults for them; set the password from Vault and the archive hostname.
+    quiet: true
+  no_log: true
+  tags: [piler]
+
+- name: Check that Docker with the compose plugin is installed
+  ansible.builtin.command:
+    cmd: docker compose version
+  become: true
+  register: piler_compose_version
+  changed_when: false
+  failed_when: piler_compose_version.rc != 0
+  tags: [piler]
+
+- name: Create the project directory
+  ansible.builtin.file:
+    path: "{{ piler_project_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0750"
+  become: true
+  tags: [piler]
+
+# The numeric owners are the users inside the images: mariadb (mysql, 999), manticore
+# (999) and piler (1000). The containers run without most capabilities, so the
+# directories must already belong to them.
+- name: Create the data directories
+  ansible.builtin.file:
+    path: "{{ piler_data_dir }}/{{ item.name }}"
+    state: directory
+    owner: "{{ item.owner }}"
+    group: "{{ item.owner }}"
+    mode: "{{ item.mode }}"
+  become: true
+  loop:
+    - { name: etc, owner: 0, mode: "0750" }
+    - { name: store, owner: 1000, mode: "0700" }
+    - { name: db, owner: 999, mode: "0750" }
+    - { name: manticore, owner: 999, mode: "0750" }
+  loop_control:
+    label: "{{ item.name }}"
+  tags: [piler]
+
+- name: Write the secrets file
+  ansible.builtin.template:
+    src: piler.env.j2
+    dest: "{{ piler_project_dir }}/piler.env"
+    owner: root
+    group: root
+    mode: "0600"
+  become: true
+  no_log: true
+  notify: Recreate the piler stack
+  tags: [piler]
+
+- name: Write the service configuration files
+  ansible.builtin.template:
+    src: "{{ item.name }}.j2"
+    dest: "{{ piler_project_dir }}/{{ item.name }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.owner }}"
+    mode: "0644"
+  become: true
+  loop:
+    - { name: piler.cnf, owner: 0 }
+    # Manticore's entrypoint changes the owner of its config file, so it must be writable and
+    # already owned by the manticore user; otherwise every run would flip the owner back.
+    - { name: manticore.conf, owner: 999 }
+  loop_control:
+    label: "{{ item.name }}"
+  notify: Recreate the piler stack
+  tags: [piler]
+
+- name: Write the compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ piler_project_dir }}/compose.yaml"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Recreate the piler stack
+  tags: [piler]
+
+- name: Check the compose file
+  ansible.builtin.command:
+    cmd: docker compose --project-directory {{ piler_project_dir }} config -q
+  become: true
+  changed_when: false
+  tags: [piler]
+
+- name: Flush handlers so a changed file takes effect before the check below
+  ansible.builtin.meta: flush_handlers
+  tags: [piler]
+
+- name: Make sure the stack is up
+  ansible.builtin.command:
+    cmd: docker compose --project-directory {{ piler_project_dir }} up -d --remove-orphans
+  become: true
+  register: piler_up
+  changed_when: "'Started' in piler_up.stderr or 'Created' in piler_up.stderr or 'Recreated' in piler_up.stderr"
+  tags: [piler]
+
+# The upstream image only sets the admin password; the auditor hash reaches the container the
+# same way (piler.env, single quoted) and is applied here. It must not pass through Ansible's
+# environment: the shell around become expands the $ signs of a crypt hash.
+- name: Set the auditor password
+  ansible.builtin.command:
+    argv:
+      - docker
+      - exec
+      - piler
+      - bash
+      - -c
+      - mysql --defaults-file=/etc/piler/.my.cnf {{ piler_db_name }} -e "update user set password='${AUDITOR_USER_PASSWORD_HASH}' where uid=1"
+  become: true
+  no_log: true
+  changed_when: false
+  when: piler_auditor_password_hash | length > 0
+  retries: 12
+  delay: 10
+  register: piler_auditor_result
+  until: piler_auditor_result.rc == 0
+  tags: [piler]

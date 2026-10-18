@@ -1,0 +1,6 @@
+---
+- name: Recreate the piler stack
+  ansible.builtin.command:
+    cmd: docker compose --project-directory {{ piler_project_dir }} up -d --remove-orphans
+  become: true
+  changed_when: true

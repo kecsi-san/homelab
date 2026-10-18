@@ -1,0 +1,42 @@
+---
+# Master switch: playbooks only run this role when true.
+piler_docker_enabled: false
+
+# Image versions, pinned on purpose. Bump piler_version for an upgrade (back up the
+# database and the message store first, see the README).
+piler_version: "1.4.9"
+piler_mariadb_version: "12.0.2"
+piler_manticore_version: "25.0.0"
+piler_memcached_version: "1.6.45"
+
+# Name the web UI and the archive use for themselves (the archive hostname).
+piler_hostname: "archive.example.com"
+
+# Where the compose file and the secrets file live.
+piler_project_dir: /opt/piler
+# Data on a dedicated volume; the four directories below are created under it.
+piler_data_dir: /srv/piler
+
+# Published addresses on the host. Keep them on loopback: a mail transfer agent on the
+# host hands mail to the SMTP port, and a reverse proxy in front serves the web UI.
+piler_smtp_bind: "127.0.0.1:2525"
+piler_http_bind: "127.0.0.1:8080"
+
+piler_db_name: piler
+piler_db_user: piler
+# Required. Set it from Vault; the database only reads it when it is first created.
+piler_db_password: ""
+
+# crypt(3) hash for the built-in admin and auditor accounts, for example the output of
+# `openssl passwd -6`. Without them the upstream default passwords stay in place.
+piler_admin_password_hash: ""
+piler_auditor_password_hash: ""
+
+# Memory limits (compose syntax) and the matching service settings.
+piler_memory_limit: 1g
+piler_mariadb_memory_limit: 2g
+piler_mariadb_innodb_buffer_pool_size: 1G
+piler_manticore_memory_limit: 3g
+# Real-time index memory before it is flushed to disk; keep it below the limit above.
+piler_manticore_rt_mem_limit: 1024M
+piler_memcached_memory_mb: 64

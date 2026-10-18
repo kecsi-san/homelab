@@ -1,0 +1,71 @@
+# Managed by Ansible (role setup_piler-docker). Do not edit by hand.
+name: piler
+
+services:
+  mysql:
+    image: mariadb:{{ piler_mariadb_version }}
+    container_name: mysql
+    restart: unless-stopped
+    cap_drop:
+      - ALL
+    cap_add:
+      - dac_override
+      - setuid
+      - setgid
+    env_file: piler.env
+    environment:
+      - MYSQL_DATABASE={{ piler_db_name }}
+      - MYSQL_USER={{ piler_db_user }}
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - {{ piler_data_dir }}/db:/var/lib/mysql
+      - ./piler.cnf:/etc/mysql/conf.d/piler.cnf:ro
+    mem_limit: {{ piler_mariadb_memory_limit }}
+
+  manticore:
+    image: manticoresearch/manticore:{{ piler_manticore_version }}
+    container_name: manticore
+    restart: unless-stopped
+    volumes:
+      - ./manticore.conf:/etc/manticoresearch/manticore.conf
+      - {{ piler_data_dir }}/manticore:/var/lib/manticore
+    mem_limit: {{ piler_manticore_memory_limit }}
+
+  piler:
+    image: sutoj/piler:{{ piler_version }}
+    container_name: piler
+    restart: unless-stopped
+    init: true
+    env_file: piler.env
+    environment:
+      - MANTICORE_HOSTNAME=manticore
+      - MEMCACHED_HOSTNAME=memcached
+      - MYSQL_HOSTNAME=mysql
+      - MYSQL_DATABASE={{ piler_db_name }}
+      - MYSQL_USER={{ piler_db_user }}
+      - PILER_HOSTNAME={{ piler_hostname }}
+      - RT=1
+    ports:
+      - "{{ piler_smtp_bind }}:25"
+      - "{{ piler_http_bind }}:80"
+    volumes:
+      - {{ piler_data_dir }}/etc:/etc/piler
+      - {{ piler_data_dir }}/store:/var/piler/store
+    healthcheck:
+      test: curl -s smtp://localhost/
+      interval: 20s
+      timeout: 3s
+      start_period: 15s
+      retries: 3
+    mem_limit: {{ piler_memory_limit }}
+    depends_on:
+      - mysql
+      - memcached
+      - manticore
+
+  memcached:
+    image: memcached:{{ piler_memcached_version }}
+    container_name: memcached
+    restart: unless-stopped
+    command: -m {{ piler_memcached_memory_mb }}
