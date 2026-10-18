@@ -23,10 +23,21 @@ restic_backup_extra_args: []
 restic_backup_schedule: "*-*-* 23:00:00"
 restic_backup_random_delay: 15min
 
-# Only ONE host should run maintenance on a shared repository (prune takes an exclusive
-# lock). When true, the backup run is followed by check, forget and prune.
+# Create the repository when it does not exist yet (restic init). Use one repository per
+# host: a small repository keeps the index, and so restic's memory use and cache, small.
+restic_backup_init: false
+# Repository format for restic init; empty = the restic default. Format 2 (restic 0.14 or
+# newer) adds compression; clients older than 0.14 cannot read it.
+restic_backup_repo_version: ""
+
+# Weekly maintenance: forget old snapshots, prune, check, clean unused caches. Safe to
+# enable on every host when each host has its own repository. With a repository shared by
+# several hosts enable it on ONE host only: prune takes an exclusive lock.
 restic_backup_maintenance: false
-restic_backup_keep_daily: 30
+restic_backup_maintenance_schedule: "Sun *-*-* 03:30:00"
+restic_backup_keep_daily: 14
+restic_backup_keep_weekly: 8
+restic_backup_keep_monthly: 12
 
 restic_backup_apt_packages:
   - restic

@@ -1,0 +1,11 @@
+# Managed by Ansible (role setup_restic-backup).
+[Unit]
+Description=Weekly restic repository maintenance
+
+[Timer]
+OnCalendar={{ restic_backup_maintenance_schedule }}
+RandomizedDelaySec=15min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

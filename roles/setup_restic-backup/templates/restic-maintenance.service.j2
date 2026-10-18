@@ -1,0 +1,13 @@
+# Managed by Ansible (role setup_restic-backup).
+[Unit]
+Description=restic repository maintenance (forget, prune, check)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+CacheDirectory=restic
+Environment=RESTIC_CACHE_DIR=/var/cache/restic
+ExecStart=/usr/local/sbin/restic-maintenance
+Nice=10
+IOSchedulingClass=idle

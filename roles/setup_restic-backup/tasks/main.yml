@@ -41,6 +41,24 @@
   no_log: true
   tags: [restic]
 
+- name: Initialize the repository when it does not exist yet
+  ansible.builtin.shell:
+    cmd: |
+      set -a
+      . {{ restic_backup_config_dir }}/env
+      set +a
+      if restic cat config >/dev/null 2>&1; then
+        echo "repository exists"
+      else
+        restic init {{ ('--repository-version ' ~ restic_backup_repo_version) if restic_backup_repo_version | string | length > 0 else '' }}
+      fi
+    executable: /bin/bash
+  become: true
+  register: restic_init_result
+  changed_when: "'created restic repository' in restic_init_result.stdout"
+  when: restic_backup_init | bool
+  tags: [restic]
+
 - name: Install the backup script
   ansible.builtin.template:
     src: restic-backup.sh.j2
@@ -73,6 +91,32 @@
   notify: Reload systemd
   tags: [restic]
 
+- name: Install the maintenance script
+  ansible.builtin.template:
+    src: restic-maintenance.sh.j2
+    dest: /usr/local/sbin/restic-maintenance
+    owner: root
+    group: root
+    mode: "0750"
+  become: true
+  when: restic_backup_maintenance | bool
+  tags: [restic]
+
+- name: Install the maintenance service and timer
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "/etc/systemd/system/{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  loop:
+    - {src: restic-maintenance.service.j2, dest: restic-maintenance.service}
+    - {src: restic-maintenance.timer.j2, dest: restic-maintenance.timer}
+  notify: Reload systemd
+  when: restic_backup_maintenance | bool
+  tags: [restic]
+
 - name: Flush handlers so systemd knows the new units
   ansible.builtin.meta: flush_handlers
   tags: [restic]
@@ -83,4 +127,13 @@
     enabled: true
     state: started
   become: true
+  tags: [restic]
+
+- name: Enable and start the maintenance timer
+  ansible.builtin.systemd:
+    name: restic-maintenance.timer
+    enabled: true
+    state: started
+  become: true
+  when: restic_backup_maintenance | bool
   tags: [restic]

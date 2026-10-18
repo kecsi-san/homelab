@@ -1,0 +1,19 @@
+#!/bin/bash
+# Managed by Ansible (role setup_restic-backup).
+# Weekly maintenance of this host's restic repository.
+set -euo pipefail
+
+set -a
+# shellcheck disable=SC1091
+. {{ restic_backup_config_dir }}/env
+set +a
+
+stamp() { date +"%Y.%m.%d %T"; }
+
+echo "[$(stamp)] forget and prune (keep {{ restic_backup_keep_daily }} daily, {{ restic_backup_keep_weekly }} weekly, {{ restic_backup_keep_monthly }} monthly)."
+restic -q forget --keep-daily {{ restic_backup_keep_daily }} --keep-weekly {{ restic_backup_keep_weekly }} --keep-monthly {{ restic_backup_keep_monthly }} --prune
+echo "[$(stamp)] check."
+restic -q check
+echo "[$(stamp)] clean unused caches."
+restic -q cache --cleanup
+echo "[$(stamp)] all done."

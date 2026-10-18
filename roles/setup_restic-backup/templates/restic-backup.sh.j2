@@ -16,12 +16,5 @@ for dir in {% for d in restic_backup_dirs %}{{ d | quote }} {% endfor %}; do
   echo "[$(stamp)] backing up $dir"
   restic -q backup --tag {{ restic_backup_tag | quote }} {% for a in restic_backup_extra_args %}{{ a | quote }} {% endfor %}"$dir"
 done
-{% if restic_backup_maintenance | bool %}
-
-echo "[$(stamp)] maintenance started."
-restic -q check
-restic -q forget --keep-daily {{ restic_backup_keep_daily }}
-restic -q prune
-{% endif %}
 
 echo "[$(stamp)] all done."

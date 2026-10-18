@@ -8,9 +8,10 @@ Backs up directories to a restic repository on a schedule. One systemd service r
 - Writes `/etc/restic/env` (mode 0600) with the repository and password.
 - Installs `/usr/local/sbin/restic-backup`, which backs up each directory in `restic_backup_dirs` as its own snapshot with the tag `restic_backup_tag`.
 - Installs and enables `restic-backup.timer` (default 23:00 plus up to 15 minutes of random delay, `Persistent=true` so a run missed while the host was off happens at the next boot).
-- Optionally follows the backup with `check`, `forget --keep-daily N` and `prune`.
+- Optionally creates the repository (`restic_backup_init`).
+- Optionally installs a weekly maintenance timer that runs `forget` (keep daily, weekly and monthly snapshots), `prune`, `check` and `cache --cleanup`.
 
-The role does not run a backup itself and does not initialize a repository. Point it at an existing one, or run `restic init` once by hand.
+The role does not run a backup itself. It initializes a repository only when `restic_backup_init` is true; otherwise point it at an existing one.
 
 ## Variables
 
@@ -24,13 +25,18 @@ The role does not run a backup itself and does not initialize a repository. Poin
 | `restic_backup_extra_args` | `[]` | Extra arguments for `restic backup` |
 | `restic_backup_schedule` | `*-*-* 23:00:00` | systemd calendar expression |
 | `restic_backup_random_delay` | `15min` | Random delay added to the schedule |
-| `restic_backup_maintenance` | `false` | Run check, forget and prune after the backup |
-| `restic_backup_keep_daily` | `30` | Daily snapshots kept by `forget` |
+| `restic_backup_init` | `false` | Create the repository when it does not exist yet |
+| `restic_backup_repo_version` | empty | Repository format for `restic init`; format 2 needs restic 0.14 or newer |
+| `restic_backup_maintenance` | `false` | Weekly forget, prune, check and cache cleanup |
+| `restic_backup_maintenance_schedule` | `Sun *-*-* 03:30:00` | systemd calendar expression for the maintenance |
+| `restic_backup_keep_daily` | `14` | Daily snapshots kept |
+| `restic_backup_keep_weekly` | `8` | Weekly snapshots kept |
+| `restic_backup_keep_monthly` | `12` | Monthly snapshots kept |
 
 ## Notes
 
 - With S3 and an instance profile, the host needs no access keys. The profile must allow read, write and delete on the repository prefix.
-- Several hosts can share one repository, because restic records the host name in each snapshot. Run maintenance on one host only: `prune` takes an exclusive lock.
+- Use one repository per host. restic loads the whole repository index into memory, so a repository that many hosts share and nobody prunes grows until small machines cannot back up at all (a 1 GB host failed on an index of 1.2 GB). A per-host repository stays small, is pruned by its own host without a lock fight, and a compromised host cannot read the others' backups when each has its own password.
 - The service gets its own cache directory (`/var/cache/restic`, created by systemd), because a system service has no `$HOME` for restic's default cache.
 - A newer restic keeps writing to a repository in the old format. It does not upgrade the format unless you run `restic migrate`, and older clients on other hosts cannot read an upgraded repository.
 - Check the last run with `systemctl status restic-backup.service` and `journalctl -u restic-backup.service`. List snapshots with `sudo bash -c 'set -a; . /etc/restic/env; restic snapshots'`.
