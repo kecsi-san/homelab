@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(setup_email-server): strip the domain from recipients so LMTP finds the system user ([f8f92c9](https://github.com/kecsi-san/homelab/commit/f8f92c9caf51ee79af3a1f7f22c5b00139ae03db) by Zoltan K).
 - fix(setup_restic-backup): one failing directory no longer aborts the others ([d95f4e1](https://github.com/kecsi-san/homelab/commit/d95f4e1ad52b95800d1260a7964783849064619b) by Zoltan K).
 - fix(setup_restic-backup): give the service a cache directory ([4a09785](https://github.com/kecsi-san/homelab/commit/4a09785eecb6075a831149c28dcad0094f9f9385) by Zoltan K).
 - fix(setup_email-server): restart opendmarc instead of reloading it ([69faafb](https://github.com/kecsi-san/homelab/commit/69faafbb6049cb8a9f8ce9b066b1e83db6f2b915) by Zoltan K).
