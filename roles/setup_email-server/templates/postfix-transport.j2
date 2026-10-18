@@ -1,0 +1,3 @@
+# Managed by Ansible - transport map
+# Mail archive: the archive domain is delivered straight to the archive's SMTP port
+{{ piler_archive_address.split('@')[1] }} smtp:[{{ piler_archive_smtp_host }}]:{{ piler_archive_smtp_port }}

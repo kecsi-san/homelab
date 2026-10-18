@@ -30,6 +30,12 @@
   become: true
   changed_when: true
 
+- name: Rebuild transport db
+  ansible.builtin.command:
+    cmd: postmap {{ postfix_config_dir }}/transport
+  become: true
+  changed_when: true
+
 - name: Rebuild aliases db
   ansible.builtin.command:
     cmd: newaliases

@@ -105,6 +105,12 @@ With `email_sieve_enabled: true` the role installs `dovecot-sieve`, runs Sieve s
 
 The Dovecot config also declares the special-use folders `Drafts`, `Junk`, `Trash` and `Sent`.
 
+## Mail archive
+
+With `piler_archive_enabled: true` every message passing through Postfix also goes, as a hidden copy (`always_bcc`), to `piler_archive_address`. A transport map (`/etc/postfix/transport`, built with `postmap`) sends that address's domain straight to the archive's SMTP port (`piler_archive_smtp_host`, `piler_archive_smtp_port`), so the domain needs no DNS record. The archive can be Piler from the `setup_piler-docker` role or any other SMTP-fed archive.
+
+If the archive is down, the copy is deferred and retried by Postfix, and the real recipients get their mail as usual: nothing is lost, the archive catches up when it is back.
+
 ## Variables
 
 | Variable | Default | Description |
@@ -133,6 +139,9 @@ The Dovecot config also declares the special-use folders `Drafts`, `Junk`, `Tras
 | `mail_mynetworks` | `[]` | Postfix `mynetworks`; empty keeps Postfix's default |
 | `mail_trusted_relays` | `[]` | Upstream filters or relays that deliver inbound mail |
 | `email_sieve_enabled` | `false` | Install Sieve and deploy the user scripts |
+| `piler_archive_enabled` | `false` | Send a hidden copy of every message to the archive (see Mail archive) |
+| `piler_archive_address` | empty | Archive recipient, for example `archive@archive.example.com` (required when enabled) |
+| `piler_archive_smtp_host`, `piler_archive_smtp_port` | `127.0.0.1`, `2525` | Where the archive domain is delivered |
 | `email_sieve_user_scripts` | `{}` | Sieve script text per user |
 
 ## Prerequisites

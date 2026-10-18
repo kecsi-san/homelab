@@ -24,6 +24,12 @@ virtual_maps = hash:{{ postfix_config_dir }}/virtual
 # Deliver all local mailboxes via Dovecot LMTP (writes to ~/Maildir)
 mailbox_transport = lmtp:unix:private/dovecot-lmtp
 home_mailbox = Maildir/
+{% if piler_archive_enabled | bool %}
+
+# Mail archive: a hidden copy of every message goes to the archive's SMTP port
+always_bcc = {{ piler_archive_address }}
+transport_maps = hash:{{ postfix_config_dir }}/transport
+{% endif %}
 
 # Subaddressing (user+tag@domain)
 recipient_delimiter = +

@@ -1,4 +1,13 @@
 ---
+- name: Check the mail archive address
+  ansible.builtin.assert:
+    that: "'@' in piler_archive_address"
+    fail_msg: "piler_archive_enabled needs piler_archive_address (for example archive@archive.example.com)"
+    quiet: true
+  when: piler_archive_enabled | bool
+  tags:
+    - postfix
+
 - name: Deploy Postfix main.cf
   ansible.builtin.template:
     src: postfix-main.cf.j2
@@ -34,6 +43,21 @@
   notify:
     - Rebuild virtual db
     - Reload postfix
+  tags:
+    - postfix
+
+- name: Deploy the transport map for the mail archive
+  ansible.builtin.template:
+    src: postfix-transport.j2
+    dest: "{{ postfix_config_dir }}/transport"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify:
+    - Rebuild transport db
+    - Reload postfix
+  when: piler_archive_enabled | bool
   tags:
     - postfix
 

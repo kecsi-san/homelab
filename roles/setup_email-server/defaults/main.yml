@@ -103,3 +103,11 @@ email_sieve_enabled: false
 # Per-user scripts: {username: "script text"}; written to the user's ~/.dovecot.sieve after
 # a syntax check (sievec). The users must exist.
 email_sieve_user_scripts: {}
+
+# Mail archive (Piler or any SMTP-fed archive). With piler_archive_enabled every message gets a hidden
+# copy (always_bcc) to piler_archive_address, and a transport map sends that domain straight to the
+# archive's SMTP port. If the archive is down the copy is deferred and retried; no mail is lost.
+piler_archive_enabled: false
+piler_archive_address: ""        # required when enabled, for example archive@archive.example.com
+piler_archive_smtp_host: 127.0.0.1
+piler_archive_smtp_port: 2525
