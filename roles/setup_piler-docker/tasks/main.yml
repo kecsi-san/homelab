@@ -30,6 +30,19 @@
   become: true
   tags: [piler]
 
+# The data directory itself is closed to other host users: it holds the database, the message
+# store, piler.key and a config file with the database password. The containers are not affected,
+# because Docker mounts the subdirectories as root.
+- name: Create the data directory
+  ansible.builtin.file:
+    path: "{{ piler_data_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0750"
+  become: true
+  tags: [piler]
+
 # The numeric owners are the users inside the images: mariadb (mysql, 999), manticore
 # (999) and piler (1000). The containers run without most capabilities, so the
 # directories must already belong to them.
@@ -42,7 +55,9 @@
     mode: "{{ item.mode }}"
   become: true
   loop:
-    - { name: etc, owner: 0, mode: "0750" }
+    # 0755 like the image: the web server runs as www-data inside the container and must be able to
+    # read config-site.php; with 0750 it falls back to its defaults (database host localhost).
+    - { name: etc, owner: 0, mode: "0755" }
     - { name: store, owner: 1000, mode: "0700" }
     - { name: db, owner: 999, mode: "0750" }
     - { name: manticore, owner: 999, mode: "0750" }
