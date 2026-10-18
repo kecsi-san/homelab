@@ -12,9 +12,20 @@ set +a
 stamp() { date +"%Y.%m.%d %T"; }
 
 echo "[$(stamp)] [load: $(cut -d' ' -f1-3 /proc/loadavg)] restic backup started."
+failed=0
 for dir in {% for d in restic_backup_dirs %}{{ d | quote }} {% endfor %}; do
   echo "[$(stamp)] backing up $dir"
-  restic -q backup --tag {{ restic_backup_tag | quote }} {% for a in restic_backup_extra_args %}{{ a | quote }} {% endfor %}"$dir"
+  rc=0
+  restic -q backup --tag {{ restic_backup_tag | quote }} {% for a in restic_backup_extra_args %}{{ a | quote }} {% endfor %}"$dir" || rc=$?
+  # exit code 3: the backup is complete but some files could not be read; not a failure
+  if [ "$rc" -ne 0 ] && [ "$rc" -ne 3 ]; then
+    echo "[$(stamp)] ERROR: restic exited with $rc for $dir" >&2
+    failed=1
+  fi
 done
 
+if [ "$failed" -ne 0 ]; then
+  echo "[$(stamp)] finished with errors." >&2
+  exit 1
+fi
 echo "[$(stamp)] all done."
