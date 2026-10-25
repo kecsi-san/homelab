@@ -17,6 +17,11 @@ apt_repo_yarn: false
 apt_repo_microsoft: false
 apt_repo_nodesource: false
 
+# Users added to the docker group. The default is the user Ansible runs as; when a play uses
+# `become: true`, facts report root, so set this to the real login (for example [admin]).
+docker_users:
+  - "{{ ansible_user_id }}"
+
 # Docker CE packages
 docker_packages:
   - docker-ce

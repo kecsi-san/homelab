@@ -30,6 +30,7 @@ Each repository is independently controlled by a boolean flag in `defaults/main.
 |----------|---------|-------------|
 | `docker_arch` | auto-detected | CPU arch for apt repos (`amd64`, `arm64`, `armhf`) |
 | `docker_packages` | see defaults | Docker CE packages to install |
+| `docker_users` | `[{{ ansible_user_id }}]` | Users added to the `docker` group. With `become: true` on the play the default resolves to `root`; set the real login, for example `[admin]` |
 | `mozilla_packages` | `[firefox]` | Packages to install from Mozilla repo (e.g. firefox, thunderbird) |
 | `apt_repo_*` | see table above | Enable/disable individual repositories |
 | `nodejs_apt_major_version` | `"24"` | NodeSource major version line to track (e.g. `"24"`, `"22"`) |
