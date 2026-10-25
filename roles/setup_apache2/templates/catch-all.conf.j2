@@ -1,0 +1,24 @@
+# Managed by Ansible — do not edit manually
+# Loaded first, so it is the default vhost: it answers 403 to every request whose Host name
+# matches none of the real vhosts.
+<VirtualHost *:80>
+    ServerName catch-all.invalid
+    <Location "/">
+        Require all denied
+    </Location>
+    ErrorLog  ${APACHE_LOG_DIR}/catch-all-error.log
+    CustomLog ${APACHE_LOG_DIR}/catch-all-access.log combined
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerName catch-all.invalid
+    SSLEngine on
+    SSLCertificateFile    {{ certbot_cert_dir }}/{{ apache_catch_all_cert_domain }}/fullchain.pem
+    SSLCertificateKeyFile {{ certbot_cert_dir }}/{{ apache_catch_all_cert_domain }}/privkey.pem
+    Include /etc/letsencrypt/options-ssl-apache.conf
+    <Location "/">
+        Require all denied
+    </Location>
+    ErrorLog  ${APACHE_LOG_DIR}/catch-all-error.log
+    CustomLog ${APACHE_LOG_DIR}/catch-all-access.log combined
+</VirtualHost>

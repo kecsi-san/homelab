@@ -46,3 +46,41 @@
   notify: Reload apache2
   tags:
     - vhosts
+
+- name: Deploy the catch-all vhost
+  ansible.builtin.template:
+    src: catch-all.conf.j2
+    dest: /etc/apache2/sites-available/000-catch-all.conf
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  when: apache_catch_all_cert_domain | length > 0
+  notify: Reload apache2
+  tags:
+    - vhosts
+
+- name: Enable the catch-all vhost
+  ansible.builtin.file:
+    src: /etc/apache2/sites-available/000-catch-all.conf
+    dest: /etc/apache2/sites-enabled/000-catch-all.conf
+    state: link
+    force: "{{ ansible_check_mode }}"   # check mode does not create the source file
+  become: true
+  when: apache_catch_all_cert_domain | length > 0
+  notify: Reload apache2
+  tags:
+    - vhosts
+
+- name: Remove the catch-all vhost when it is not wanted
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  become: true
+  loop:
+    - /etc/apache2/sites-enabled/000-catch-all.conf
+    - /etc/apache2/sites-available/000-catch-all.conf
+  when: apache_catch_all_cert_domain | length == 0
+  notify: Reload apache2
+  tags:
+    - vhosts

@@ -49,6 +49,8 @@ Defined in `inventory/group_vars/aws_all.yml`. Sensitive values (`acme_email`) i
 | `apache_certs` | `[]` | Certs to issue (see below) |
 | `apache_vhosts` | `[]` | Vhost definitions (see below) |
 | `apache_server_admin` | `webmaster@localhost` | Default ServerAdmin for all vhosts |
+| `apache_ocsp_stapling` | `true` | Global OCSP stapling. Set `false` for certificates without an OCSP URL (Let's Encrypt), otherwise Apache logs `AH02218`/`AH02604` on every reload |
+| `apache_catch_all_cert_domain` | `""` | Certbot cert directory name used by a catch-all vhost that answers 403 for any Host name without a vhost of its own. Empty = no catch-all vhost |
 | `certbot_email` | `{{ acme_email }}` | Let's Encrypt registration email |
 | `certbot_cert_dir` | `/etc/letsencrypt/live` | Certbot cert directory |
 

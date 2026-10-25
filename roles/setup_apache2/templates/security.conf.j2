@@ -5,6 +5,8 @@ ServerTokens Prod
 ServerSignature Off
 TraceEnable Off
 
+{% if apache_ocsp_stapling | bool %}
 # OCSP Stapling — requires mod_ssl and mod_socache_shmcb
 SSLUseStapling on
 SSLStaplingCache shmcb:/run/apache2/ocsp(131072)
+{% endif %}

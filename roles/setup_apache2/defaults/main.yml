@@ -46,6 +46,17 @@ apache_certs: []
 #           upstream: http://s3-bucket.s3-website.eu-west-1.amazonaws.com/remote/
 apache_vhosts: []
 
+# OCSP stapling (global). Set to false for certificates without an OCSP URL, for example
+# Let's Encrypt (which no longer puts one in): with stapling on, Apache logs AH02218 and
+# AH02604 on every reload.
+apache_ocsp_stapling: true
+
+# Catch-all vhost. Name of a certbot cert directory (under certbot_cert_dir) whose certificate
+# the catch-all vhost presents. When set, a vhost that is loaded first (so Apache uses it as the
+# default for ports 80 and 443) answers 403 to every request whose Host name has no vhost of
+# its own, so no real site is served for arbitrary names. Empty (default) = no catch-all vhost.
+apache_catch_all_cert_domain: ""
+
 # Default ServerAdmin email for all vhosts (override per-vhost with server_admin field)
 apache_server_admin: webmaster@localhost
 
