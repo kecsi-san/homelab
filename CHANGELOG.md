@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(configure_ntp): remove ntpsec before installing chrony ([6e16277](https://github.com/kecsi-san/homelab/commit/6e16277011b5f8695f87571c408fb191ed2fc513) by Zoltan K).
 - fix(cnpg): wait 300s before failing over so cold boots stop minting timelines ([0a06cdc](https://github.com/kecsi-san/homelab/commit/0a06cdcdf27806da1592f289674ee3f49c4cc436) by Zoltan K).
 - fix(cnpg): cap slot WAL retention, document the reliable replica rebuild ([1f9421d](https://github.com/kecsi-san/homelab/commit/1f9421de786936913aefad22372e3abc46dbfb2f) by Zoltan K).
 - fix(setup_apt_repos): docker_users lists who joins the docker group ([c41354f](https://github.com/kecsi-san/homelab/commit/c41354fcedb3e66749ae6cb59037b49dbb777204) by Zoltan K).
