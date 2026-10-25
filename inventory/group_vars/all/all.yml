@@ -126,7 +126,9 @@ kube_webhook_token_auth_url_skip_tls_verify: false
 # kube_webhook_token_auth_ca_data: "LS0t..."
 
 ## NTP Settings
-# Start the ntpd or chrony service and enable it at system boot.
+# Kubespray's own NTP handling, deliberately off: time sync is managed by the
+# configure_ntp role (chrony), so Kubespray must not install or configure a
+# second NTP daemon. ntp_servers only takes effect if ntp_manage_config is true.
 ntp_enabled: false
 ntp_manage_config: false
 ntp_servers:
