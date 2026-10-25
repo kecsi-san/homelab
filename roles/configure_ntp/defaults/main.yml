@@ -7,3 +7,8 @@ ntp_fallback_servers:
   - "0.pool.ntp.org"
   - "1.pool.ntp.org"
   - "2.pool.ntp.org"
+
+# Remove ntpsec before installing chrony. The two conflict,
+# and ntpsec shows up on hosts upgraded in place from Debian 12. Set false to skip
+# the explicit removal and let apt resolve the conflict during the chrony install.
+ntp_remove_ntpsec: true

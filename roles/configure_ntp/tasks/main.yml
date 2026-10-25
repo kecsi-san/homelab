@@ -7,6 +7,38 @@
   become: true
   failed_when: false
 
+# Debian 12 made the old `ntp` package a stand-in for ntpsec, so a host that was
+# upgraded in place (the live EC2 edge node, 2026-10) runs ntpsec without anyone
+# having chosen it. ntpsec and chrony both provide time-daemon and conflict, so
+# remove ntpsec explicitly instead of leaving apt to resolve the conflict
+# mid-install. No autoremove: it has stripped needed packages on that host before.
+- name: Gather package facts
+  ansible.builtin.package_facts:
+    manager: auto
+  when: ntp_remove_ntpsec | bool
+
+- name: Stop and disable ntpsec
+  ansible.builtin.service:
+    name: ntpsec
+    state: stopped
+    enabled: false
+  become: true
+  failed_when: false
+  when:
+    - ntp_remove_ntpsec | bool
+    - "'ntpsec' in ansible_facts.packages"
+
+# The ntp stand-in depends on ntpsec, so apt takes it out too if it is still installed.
+- name: Remove ntpsec
+  ansible.builtin.apt:
+    name: ntpsec
+    state: absent
+    autoremove: false
+  become: true
+  when:
+    - ntp_remove_ntpsec | bool
+    - "'ntpsec' in ansible_facts.packages"
+
 - name: Install chrony
   ansible.builtin.apt:
     name: chrony
