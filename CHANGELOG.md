@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(cnpg): cap slot WAL retention, document the reliable replica rebuild ([1f9421d](https://github.com/kecsi-san/homelab/commit/1f9421de786936913aefad22372e3abc46dbfb2f) by Zoltan K).
 - fix(setup_apt_repos): docker_users lists who joins the docker group ([c41354f](https://github.com/kecsi-san/homelab/commit/c41354fcedb3e66749ae6cb59037b49dbb777204) by Zoltan K).
 - fix(setup_piler-docker): the web user must be able to read /etc/piler ([d185dfb](https://github.com/kecsi-san/homelab/commit/d185dfb8166df32d08144a11642a0a239be8879e) by Zoltan K).
 - fix(setup_email-server): Rspamd adds the spam header (Debian's milter_headers is empty) ([9bca676](https://github.com/kecsi-san/homelab/commit/9bca67604867377952f2e506dbc041116a6c6c33) by Zoltan K).
