@@ -1,5 +1,6 @@
 Banner {{ sshd_hardening_banner }}
 AllowTcpForwarding {{ sshd_hardening_allow_tcp_forwarding | ternary('yes', 'no') }}
+AllowStreamLocalForwarding {{ sshd_hardening_allow_stream_local_forwarding | ternary('yes', 'no') }}
 ClientAliveCountMax {{ sshd_hardening_client_alive_count_max }}
 Compression {{ sshd_hardening_compression | ternary('yes', 'no') }}
 LogLevel {{ sshd_hardening_log_level }}

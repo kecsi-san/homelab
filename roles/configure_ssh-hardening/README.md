@@ -22,6 +22,7 @@ The live EC2 box has `/etc/ssh/sshd_config.d/lynis_hardening.conf`: created once
 |----------|---------|-----------|
 | `sshd_hardening_banner` | `/etc/issue.net` | `Banner` |
 | `sshd_hardening_allow_tcp_forwarding` | `false` | `AllowTcpForwarding` |
+| `sshd_hardening_allow_stream_local_forwarding` | `false` | `AllowStreamLocalForwarding` (Unix-domain socket forwarding, for example `/var/run/docker.sock`; sshd allows it by default even with `AllowTcpForwarding no`) |
 | `sshd_hardening_client_alive_count_max` | `2` | `ClientAliveCountMax` |
 | `sshd_hardening_compression` | `false` | `Compression` |
 | `sshd_hardening_log_level` | `VERBOSE` | `LogLevel` |

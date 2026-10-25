@@ -1,6 +1,7 @@
 ---
 sshd_hardening_banner: /etc/issue.net
 sshd_hardening_allow_tcp_forwarding: false
+sshd_hardening_allow_stream_local_forwarding: false
 sshd_hardening_client_alive_count_max: 2
 sshd_hardening_compression: false
 sshd_hardening_log_level: VERBOSE
