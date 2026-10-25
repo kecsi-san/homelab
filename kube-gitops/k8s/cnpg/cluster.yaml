@@ -14,6 +14,15 @@ spec:
   # cluster (a few small databases) while matching kubelet_shutdown_grace_period.
   stopDelay: 600
 
+  # Default 0 promotes a replica the instant the primary looks unhealthy. During this
+  # homelab's routine simultaneous multi-node cold boot the primary is always briefly
+  # unhealthy (Longhorn attach + crash recovery), so every boot minted 1-2 spurious
+  # promotions (12 timelines in 11 weeks) and left the demoted old primary wedged on a
+  # stale timeline (Refusing to restore future timeline history file). 300s lets a
+  # primary that is merely slow to boot stay primary. Trade-off: a genuine primary
+  # failure takes up to 300s longer to fail over. Revisit if cold boots still promote.
+  failoverDelay: 300
+
   postgresql:
     parameters:
       max_connections: "200"
