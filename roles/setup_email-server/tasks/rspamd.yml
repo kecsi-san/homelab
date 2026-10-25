@@ -102,6 +102,19 @@
   tags:
     - rspamd
 
+- name: Deploy Rspamd rbl config (switch off listed blocklists)
+  ansible.builtin.template:
+    src: rspamd-rbl.conf.j2
+    dest: /etc/rspamd/local.d/rbl.conf
+    owner: root
+    group: _rspamd
+    mode: "0640"
+  become: true
+  notify: Reload rspamd
+  when: rspamd_disabled_rbls | length > 0
+  tags:
+    - rspamd
+
 - name: Ensure rspamd is enabled and running
   ansible.builtin.systemd:
     name: rspamd

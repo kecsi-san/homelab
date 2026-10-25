@@ -23,6 +23,12 @@ rspamd_milter_headers_use:
   - spam-header
   - x-spamd-result
 rspamd_spam_header: X-Spam
+# Rspamd `rbl` module entries to switch off, by their name in `rspamadm configdump rbl`
+# (for example spamhaus, DBL). Spamhaus allows its free DNS blocklists only for non-commercial,
+# low-volume use; a commercial server without a paid Data Query Service key turns them off here.
+# Empty (default) leaves the module alone. A list set here is written to
+# /etc/rspamd/local.d/rbl.conf; to undo it, set the list empty and remove that file by hand.
+rspamd_disabled_rbls: []
 
 # Postscreen DNSBL sites and scoring threshold.
 # Format: "hostname*weight" — total weight must reach threshold to trigger action.

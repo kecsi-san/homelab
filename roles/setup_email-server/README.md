@@ -140,6 +140,7 @@ If the archive is down, the copy is deferred and retried by Postfix, and the rea
 | `mail_trusted_relays` | `[]` | Upstream filters or relays that deliver inbound mail |
 | `rspamd_milter_headers_use` | `spam-header`, `x-spamd-result` | Rspamd `milter_headers` routines to enable (Debian ships none, so no header is added without this) |
 | `rspamd_spam_header` | `X-Spam` | Name of the header set to `Yes` for spam; Sieve rules can test it |
+| `rspamd_disabled_rbls` | `[]` | Rspamd `rbl` module entries to switch off, by name (see `rspamadm configdump rbl`), for example `[spamhaus, DBL]`. Spamhaus's free blocklists are for non-commercial, low-volume use only; without a paid Data Query Service key a commercial server should turn them off. Written to `/etc/rspamd/local.d/rbl.conf` |
 | `email_sieve_enabled` | `false` | Install Sieve and deploy the user scripts |
 | `piler_archive_enabled` | `false` | Send a hidden copy of every message to the archive (see Mail archive) |
 | `piler_archive_address` | empty | Archive recipient, for example `archive@archive.example.com` (required when enabled) |

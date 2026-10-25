@@ -1,0 +1,8 @@
+# Managed by Ansible (role setup_email-server)
+rbls {
+{% for r in rspamd_disabled_rbls %}
+  {{ r }} {
+    enabled = false;
+  }
+{% endfor %}
+}
