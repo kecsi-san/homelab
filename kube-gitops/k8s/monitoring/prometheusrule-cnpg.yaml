@@ -31,6 +31,8 @@ spec:
             description: >-
               Slot {{ $labels.slot_name }} reported by {{ $labels.pod }} in namespace {{ $labels.namespace }}
               is inactive. Postgres retains WAL indefinitely for an inactive slot instead of recycling it
-              past max_wal_size, which can fill the primary's PVC. Rebuild the stuck instance: force-delete
-              its pod, delete its PVC, strip the PVC's pvc-protection finalizer if the delete hangs
-              Terminating, then let CNPG reprovision and rejoin via base backup.
+              past max_wal_size, which can fill the primary's PVC (capped by max_slot_wal_keep_size in
+              the Cluster spec). Rebuild the stuck instance with the operator held still, since a plain
+              pod+PVC delete races the operator: pause ArgoCD root and cnpg, scale the cnpg-cloudnative-pg
+              operator to 0, delete the instance's pod and PVC, scale the operator back to 1, restore
+              root's sync policy. CNPG then runs a real <instance>-join job. See CLAUDE.md Known Gotchas.

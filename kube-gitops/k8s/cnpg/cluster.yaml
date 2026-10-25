@@ -18,6 +18,12 @@ spec:
     parameters:
       max_connections: "200"
       shared_buffers: 256MB
+      # Cap on WAL a stuck/inactive replication slot can pin on the primary.
+      # Without it (default -1) one wedged replica retains WAL indefinitely and
+      # fills the PVC (2026-08-08, 2026-08-17, 2026-10-25: 1.8GB pinned on a 6Gi
+      # volume). On breach Postgres invalidates the slot, the primary stays up
+      # and only that replica needs a rebuild. Reload-only, no restart.
+      max_slot_wal_keep_size: 2GB
 
   bootstrap:
     initdb:
