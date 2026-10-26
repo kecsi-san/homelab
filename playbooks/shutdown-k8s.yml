@@ -44,20 +44,19 @@
     # and for a full-cluster shutdown we want every PVC-backed pod to
     # terminate cleanly in place, not be blocked waiting for a healthy
     # replica to reschedule to (everything is going down anyway).
-    - name: Start with an empty list of PVC-backed pods
-      ansible.builtin.set_fact:
-        pvc_pods: []
-
+    # One template pass, not a set_fact loop: a loop over every pod in the
+    # cluster costs Ansible about a second per item (86s for ~100 pods).
     - name: Collect running PVC-backed pods as namespace/name
       ansible.builtin.set_fact:
-        pvc_pods: "{{ pvc_pods + [item.metadata.namespace ~ '/' ~ item.metadata.name] }}"
-      loop: "{{ (all_pods_json.stdout | from_json)['items'] }}"
-      loop_control:
-        label: "{{ item.metadata.namespace }}/{{ item.metadata.name }}"
-      when:
-        - item.status.phase == "Running"
-        - item.spec.volumes is defined
-        - item.spec.volumes | selectattr('persistentVolumeClaim', 'defined') | list | length > 0
+        pvc_pods: >-
+          {%- set found = [] -%}
+          {%- for p in (all_pods_json.stdout | from_json)['items']
+              if p.status.phase == 'Running'
+              and p.spec.volumes is defined
+              and (p.spec.volumes | selectattr('persistentVolumeClaim', 'defined') | list | length > 0) -%}
+          {%- set _ = found.append(p.metadata.namespace ~ '/' ~ p.metadata.name) -%}
+          {%- endfor -%}
+          {{ found }}
 
     # All pods are deleted at once, so the shutdown takes as long as the
     # slowest pod instead of the sum of all of them, and the CNPG primary
