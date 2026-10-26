@@ -1,7 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
-  "assignees": ["kecsi-san"],
+  "extends": [
+    "config:recommended"
+  ],
+  "assignees": [
+    "kecsi-san"
+  ],
   "argocd": {
     "managerFilePatterns": [
       "/kube-gitops/k8s/apps/.+\\.yaml/",
@@ -16,25 +20,59 @@
   },
   "packageRules": [
     {
-      "matchManagers": ["argocd"],
+      "matchManagers": [
+        "argocd"
+      ],
       "groupName": "helm charts",
       "commitMessagePrefix": "chore(helm):"
     },
     {
-      "matchManagers": ["helm-values"],
+      "matchManagers": [
+        "helm-values"
+      ],
       "groupName": "app images",
       "commitMessagePrefix": "chore(images):"
     },
     {
-      "matchManagers": ["github-actions"],
+      "matchManagers": [
+        "kubernetes"
+      ],
+      "groupName": "raw manifest images",
+      "commitMessagePrefix": "chore(images):"
+    },
+    {
+      "matchManagers": [
+        "kubernetes"
+      ],
+      "matchPackageNames": [
+        "cloudflare/cloudflared"
+      ],
+      "groupName": "cloudflared",
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "automerge": true
+    },
+    {
+      "matchManagers": [
+        "github-actions"
+      ],
       "groupName": "GitHub Actions",
       "automerge": true,
       "commitMessagePrefix": "chore(ci):"
     },
     {
-      "matchManagers": ["pip_requirements"],
+      "matchManagers": [
+        "pip_requirements"
+      ],
       "groupName": "Python dependencies",
       "commitMessagePrefix": "chore(deps):"
     }
-  ]
+  ],
+  "kubernetes": {
+    "managerFilePatterns": [
+      "/kube-gitops/k8s/.+\\.yaml/",
+      "/kube-gitops/k3s/.+\\.yaml/"
+    ]
+  }
 }

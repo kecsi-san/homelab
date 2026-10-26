@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: minecraft-bedrock
-          image: itzg/minecraft-bedrock-server:latest
+          image: itzg/minecraft-bedrock-server:2026.10.2
           ports:
             - containerPort: 19132
               protocol: UDP
