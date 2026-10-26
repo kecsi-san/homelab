@@ -44,11 +44,13 @@
     # and for a full-cluster shutdown we want every PVC-backed pod to
     # terminate cleanly in place, not be blocked waiting for a healthy
     # replica to reschedule to (everything is going down anyway).
-    - name: Gracefully delete PVC-backed pods (each pod's own terminationGracePeriodSeconds applies, not the kubelet shutdown budget)
-      ansible.builtin.command: >
-        kubectl --kubeconfig {{ ansible_env.HOME }}/.kube/k8s.yaml
-        delete pod -n {{ item.metadata.namespace }} {{ item.metadata.name }}
-        --wait=true --timeout=300s
+    - name: Start with an empty list of PVC-backed pods
+      ansible.builtin.set_fact:
+        pvc_pods: []
+
+    - name: Collect running PVC-backed pods as namespace/name
+      ansible.builtin.set_fact:
+        pvc_pods: "{{ pvc_pods + [item.metadata.namespace ~ '/' ~ item.metadata.name] }}"
       loop: "{{ (all_pods_json.stdout | from_json)['items'] }}"
       loop_control:
         label: "{{ item.metadata.namespace }}/{{ item.metadata.name }}"
@@ -56,8 +58,33 @@
         - item.status.phase == "Running"
         - item.spec.volumes is defined
         - item.spec.volumes | selectattr('persistentVolumeClaim', 'defined') | list | length > 0
+
+    # All pods are deleted at once, so the shutdown takes as long as the
+    # slowest pod instead of the sum of all of them, and the CNPG primary
+    # is not left missing for minutes while the others drain one by one
+    # (the operator would see that as a reason to fail over). Each pod's
+    # own terminationGracePeriodSeconds still applies. Per-pod elapsed
+    # time is printed in completion order, so the slow pod is the last line.
+    - name: Gracefully delete PVC-backed pods in parallel (each pod's own terminationGracePeriodSeconds applies, not the kubelet shutdown budget)
+      ansible.builtin.shell: |
+        for p in {{ pvc_pods | join(' ') }}; do
+          (
+            start=$SECONDS
+            kubectl --kubeconfig {{ ansible_env.HOME }}/.kube/k8s.yaml \
+              delete pod -n "${p%%/*}" "${p##*/}" --wait=true --timeout=300s >/dev/null 2>&1
+            echo "$p rc=$? elapsed=$((SECONDS - start))s"
+          ) &
+        done
+        wait
+      args:
+        executable: /bin/bash
       register: pod_delete
-      changed_when: pod_delete.rc == 0
+      changed_when: pvc_pods | length > 0
+      failed_when: pod_delete.stdout_lines | reject('search', ' rc=0 ') | list | length > 0
+
+    - name: Show how long each pod took to terminate
+      ansible.builtin.debug:
+        var: pod_delete.stdout_lines
 
 - name: Power off all Kubernetes nodes
   hosts: kube
