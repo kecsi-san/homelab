@@ -33,7 +33,7 @@ Requirements:
 
 Use **CloudNativePG (CNPG)** operator with a single `Cluster` CR per cluster:
 
-- **k8s**: `postgres` namespace, 3-instance cluster (1 primary + 2 replicas),
+- **k8s**: `postgres` namespace, 2-instance cluster (1 primary + 1 replica),
   2 Gi Longhorn PVCs per instance
 - **k3s**: `postgres` namespace, 1-instance cluster, 2 Gi local-path PVC
 
@@ -61,7 +61,7 @@ field to prevent ArgoCD drift detection false positives.
 **Positive:**
 - `Database` and `Role` CRs enable declarative database provisioning: adding a new
   application database is a 20-line manifest, not a `psql` session
-- Streaming replication on k8s (3 instances) provides read scalability and automatic
+- Streaming replication on k8s (2 instances) provides read scalability and automatic
   failover if the primary fails
 - CNPG's `kubectl cnpg` plugin and `psql` access via `kubectl exec` (peer auth on the
   primary) make debugging straightforward (see `docs/IDP/postgres.md`)

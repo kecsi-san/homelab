@@ -363,7 +363,7 @@ ArgoCD itself is installed by the `setup_argocd` Ansible role (Helm, insecure mo
 | argocd-config | argocd | Raw manifests (`kube-gitops/k8s/argocd/`) | ArgoCD CM/RBAC config, OIDC SealedSecret, ServiceMonitors — layered on top of the Ansible-installed ArgoCD |
 | longhorn | longhorn-system | Helm (longhorn) | Distributed block storage; default StorageClass |
 | cnpg | cnpg-system | Helm (cloudnative-pg) | PostgreSQL operator; `ServerSideApply=true` required (CRDs exceed 262 KB apply limit); `ignoreDifferences` on terminatingReplicas |
-| cnpg-cluster | postgres | Raw manifests (`kube-gitops/k8s/cnpg/`) | 3-instance PostgreSQL cluster; 2Gi Longhorn PVCs; bootstrap DB `forgejo` owned by `forgejo`; DBs for `authentik`/`backstage`/`wikijs` via CNPG managed roles |
+| cnpg-cluster | postgres | Raw manifests (`kube-gitops/k8s/cnpg/`) | 2-instance PostgreSQL cluster (cut from 3 on 2026-10-26: the third replica kept getting stuck on a stale timeline after cold-boot failovers); 2Gi Longhorn PVCs; bootstrap DB `forgejo` owned by `forgejo`; DBs for `authentik`/`backstage`/`wikijs` via CNPG managed roles |
 | forgejo | forgejo | Raw manifests (`kube-gitops/k8s/forgejo/`) | Git server + OCI registry + CI; rootless image; `GITEA__` env vars; admin user `kecsi`; `Recreate` rollout strategy (LevelDB queue lock); `ENABLE_REMEMBER_ME=false` |
 | forgejo-runner | forgejo-runner | Raw manifests (`kube-gitops/k8s/forgejo-runner/`) | Forgejo Actions CI runner + cache-prune CronJob |
 | authentik | authentik | Helm (charts.goauthentik.io) 2026.5.6 + raw manifests (`kube-gitops/k8s/authentik/`) | SSO/IDP; standalone redis:7-alpine; OAuth2 providers for Forgejo/Backstage/Wiki.js/ArgoCD/Grafana via Blueprint; `sub_mode: user_username` |
