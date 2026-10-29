@@ -15,8 +15,12 @@ inet_protocols = ipv4
 # All served domains — local delivery to system users
 mydestination = $myhostname, localhost, localhost.localdomain{% for d in email_domains %}, {{ d }}, mail.{{ d }}{% endfor %}{% for d in mail_extra_destinations %}, {{ d }}{% endfor %}
 
-# Validate recipients: aliases, system users, virtual address map
-local_recipient_maps = $alias_maps unix:passwd.byname $virtual_maps
+# Validate recipients: aliases, system users, virtual address map.
+# proxy: matters. smtpd runs chrooted and the jail has no /etc/passwd, so a direct
+# unix:passwd.byname lookup sometimes fails with "cannot access UNIX password database" and
+# the recipient is answered "451 4.3.0 Temporary lookup failure". The proxymap service runs
+# outside the jail (it is also Postfix's own default for this table).
+local_recipient_maps = $alias_maps proxy:unix:passwd.byname $virtual_maps
 
 # Virtual address map — redirects user@domain to local system username
 virtual_maps = hash:{{ postfix_config_dir }}/virtual
