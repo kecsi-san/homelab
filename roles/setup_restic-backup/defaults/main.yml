@@ -30,6 +30,15 @@ restic_backup_init: false
 # newer) adds compression; clients older than 0.14 cannot read it.
 restic_backup_repo_version: ""
 
+# Mail a report after every backup run (the output of the run plus OK or FAILED in the subject), like the
+# cron mail some hosts get from MAILTO. Empty = no mail. Needs a working local MTA that provides
+# /usr/sbin/sendmail (Postfix, exim); a failed mail is logged and never fails the backup.
+restic_backup_mail_to: ""
+# Envelope and header sender; empty = root@<fqdn of the host>.
+restic_backup_mail_from: ""
+# true = only mail when a run failed.
+restic_backup_mail_only_on_failure: false
+
 # Weekly maintenance: forget old snapshots, prune, check, clean unused caches. Safe to
 # enable on every host when each host has its own repository. With a repository shared by
 # several hosts enable it on ONE host only: prune takes an exclusive lock.
