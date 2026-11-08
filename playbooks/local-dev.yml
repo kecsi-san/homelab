@@ -110,7 +110,7 @@
         name: setup_rust-dev-tools
       when: rust_dev_enabled
       vars:
-        rust_dev_enabled: false
+        rust_dev_enabled: true
         rustup_profile: default
         rustup_toolchain: stable
         rust_cargo_tools:
