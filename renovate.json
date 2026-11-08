@@ -55,6 +55,16 @@
     },
     {
       "matchManagers": [
+        "kubernetes"
+      ],
+      "matchPackageNames": [
+        "alpine/k8s"
+      ],
+      "allowedVersions": "<1.36",
+      "description": "kubectl client must stay within one minor of the 1.35 cluster"
+    },
+    {
+      "matchManagers": [
         "github-actions"
       ],
       "groupName": "GitHub Actions",
