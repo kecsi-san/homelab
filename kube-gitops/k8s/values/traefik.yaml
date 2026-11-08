@@ -1,7 +1,8 @@
 ---
 # Traefik values — k8s (bare-metal, kube-vip)
 service:
-  type: LoadBalancer
+  spec:
+    type: LoadBalancer
   annotations:
     kube-vip.io/loadbalancerIPs: "192.168.1.101"
 
