@@ -122,3 +122,14 @@
         name: configure_k8s-auto-uncordon
       tags:
         - auto-uncordon
+
+- name: Configure container image prune timer (all kube nodes)
+  hosts: kube
+  become: false
+  remote_user: "{{ ansible_ssh_user }}"
+  tasks:
+    - name: Configure image prune timer
+      ansible.builtin.import_role:
+        name: configure_k8s-image-prune
+      tags:
+        - image-prune

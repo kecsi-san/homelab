@@ -1,0 +1,42 @@
+---
+- name: Install k8s-image-prune script
+  ansible.builtin.template:
+    src: k8s-image-prune.sh.j2
+    dest: /usr/local/bin/k8s-image-prune.sh
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+  tags: [image-prune]
+
+- name: Install k8s-image-prune systemd service
+  ansible.builtin.template:
+    src: k8s-image-prune.service.j2
+    dest: /etc/systemd/system/k8s-image-prune.service
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify: Reload systemd
+  tags: [image-prune]
+
+- name: Install k8s-image-prune systemd timer
+  ansible.builtin.template:
+    src: k8s-image-prune.timer.j2
+    dest: /etc/systemd/system/k8s-image-prune.timer
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify:
+    - Reload systemd
+    - Restart k8s-image-prune timer
+  tags: [image-prune]
+
+- name: Enable k8s-image-prune timer
+  ansible.builtin.service:
+    name: k8s-image-prune.timer
+    state: started
+    enabled: true
+  become: true
+  tags: [image-prune]

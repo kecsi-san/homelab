@@ -1,0 +1,11 @@
+---
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
+
+- name: Restart k8s-image-prune timer
+  ansible.builtin.service:
+    name: k8s-image-prune.timer
+    state: restarted
+  become: true

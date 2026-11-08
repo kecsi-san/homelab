@@ -179,7 +179,7 @@ ansible-playbook --syntax-check playbooks/local-core.yml
 - `prerequisite.yml` — must run before `k8s-nodes.yml`; sets up SSH keys and passwordless sudo
 - `k8s.yml` / `reset-k8s.yml` — delegate entirely to the Kubespray collection
 - `pre-k8s.yml` — runs after `prerequisite.yml` and before `k8s.yml`; prepares nodes (etckeeper)
-- `post-k8s.yml` — runs after Kubernetes cluster is up; installs cluster-level tools (Longhorn, kube-extra, Traefik, Sealed Secrets, Headlamp)
+- `post-k8s.yml` — runs after Kubernetes cluster is up; installs cluster-level tools (Longhorn, kube-extra, Traefik, Sealed Secrets, Headlamp) and the node-level auto-uncordon and image-prune timers
 - `post-k3s.yml` — runs after k3s install; installs ArgoCD then bootstraps GitOps (ArgoCD manages Traefik, Sealed Secrets, Headlamp via kube-gitops/k3s/)
 - `configure-router.yml` — localhost only; upserts MikroTik DNS records and NAT rules via `configure_mikrotik-router` role; **must run before `k8s.yml`** so kubeadm can resolve the API VIP hostname (`api.k8s.<domain>`) during cluster init; also run after changing Traefik LB IPs, domain config, or port forwards
 - `upgrade.yml` — OS package upgrades across all kube hosts
@@ -229,6 +229,7 @@ Quick-reference table below (kept in sync manually — see the Working Conventio
 | `configure_ssh` | Deploys SSH authorized key for `ansible_ssh_user`; wired into `k8s-nodes.yml` and `fileservers.yml` |
 | `configure_sudo` | Creates `/etc/sudoers.d/{user}` with NOPASSWD (visudo-validated); wired into `k8s-nodes.yml` and `fileservers.yml` (Linux only) |
 | `configure_k8s-auto-uncordon` | systemd timer (`OnBootSec`, default 180s) + oneshot service on `kube_control_plane` nodes; waits per-node for `Ready` (default 300s timeout each) then uncordons — a stuck node stays cordoned instead of blocking the healthy ones; companion to `playbooks/shutdown-k8s.yml`'s cordon step; wired into `post-k8s.yml` |
+| `configure_k8s-image-prune` | systemd timer (`OnBootSec` 45min + `OnUnitActiveSec` 1w, random 10min) + oneshot service on all kube nodes; runs `crictl rmi --prune` and logs the space freed; a stamp file skips the run if the last one was under 6 days ago, so a weekend-only boot prunes once, after pods have settled; kubelet's own image GC only starts at 85% disk use and never ran on these nodes; wired into `post-k8s.yml` (`image-prune` tag) |
 | `debian_upgrade` | `apt update && upgrade && autoremove --purge`; wired into `k8s-nodes.yml` and `fileservers.yml` (both gated by `debian_upgrade_enabled`) |
 | `disable_hibernation` | Creates `/etc/systemd/sleep.conf.d/nosuspend.conf`; masks sleep targets |
 | `install_linuxbrew` | Installs Homebrew via `markosamuli.linuxbrew` (galaxy role, not vendored) |

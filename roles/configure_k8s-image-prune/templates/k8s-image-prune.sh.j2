@@ -1,0 +1,30 @@
+#!/bin/bash
+# Removes container images no container (running or exited) references. Kubelet's own
+# image GC only starts at 85% disk use, so on nodes that sit at 20-60% old image
+# versions pile up for months. Images used by existing containers are never touched.
+set -uo pipefail
+
+STAMP_DIR=/var/lib/k8s-image-prune
+STAMP="${STAMP_DIR}/last-run"
+CRICTL=/usr/local/bin/crictl
+
+mkdir -p "${STAMP_DIR}"
+
+if [ -f "${STAMP}" ] && [ -n "$(find "${STAMP}" -mtime -{{ image_prune_min_age_days }})" ]; then
+  echo "last prune was less than {{ image_prune_min_age_days }} days ago, skipping"
+  exit 0
+fi
+
+# Do nothing while the container runtime is not answering (failed run, retried next time)
+"${CRICTL}" info >/dev/null || { echo "containerd is not responding, skipping" >&2; exit 1; }
+
+used_before=$(df --output=used -B1 /var | tail -1 | tr -d ' ')
+images_before=$("${CRICTL}" images -q | wc -l)
+
+"${CRICTL}" rmi --prune
+
+used_after=$(df --output=used -B1 /var | tail -1 | tr -d ' ')
+images_after=$("${CRICTL}" images -q | wc -l)
+
+touch "${STAMP}"
+echo "pruned images: ${images_before} -> ${images_after}, freed $(( (used_before - used_after) / 1048576 )) MiB on /var"

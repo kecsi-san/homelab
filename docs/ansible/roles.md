@@ -98,6 +98,7 @@ Use `roles/role_template/` as a starting point when creating a new role.
 | `configure_mikrotik-router` | Upserts static DNS records and NAT (dst-nat) rules on MikroTik router via `community.routeros` API; manages API VIP, k3s wildcard, NFS alias, and port forwards | configure-router.yml |
 | `configure_cloudflare-zone` | Manages Cloudflare zone settings (ECH) and DNS A records via REST API; `proxied: false` for UDP services | configure-cloudflare.yml |
 | `configure_k8s-auto-uncordon` | systemd timer + oneshot service on `kube_control_plane` nodes; waits per-node for `Ready` then uncordons; companion to `shutdown-k8s.yml`'s cordon step | post-k8s.yml |
+| `configure_k8s-image-prune` | systemd timer + oneshot service on all kube nodes; runs `crictl rmi --prune` 45 minutes after boot and weekly while up (skipped if pruned in the last 6 days); removes only images no container uses | post-k8s.yml |
 | `debian_upgrade` | `apt update && upgrade && autoremove` | k8s-nodes.yml, fileservers.yml, upgrade.yml, upgrade-local.yml |
 | `disable_hibernation` | Disables suspend/hibernate via systemd | k8s-nodes.yml |
 | `install_linuxbrew` | Installs Homebrew via `markosamuli.linuxbrew` galaxy role (Linux only) | local-core.yml |

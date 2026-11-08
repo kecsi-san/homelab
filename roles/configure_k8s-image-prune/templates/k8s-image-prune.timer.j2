@@ -1,0 +1,11 @@
+[Unit]
+Description=Remove unused container images after boot and weekly while the node stays up
+
+[Timer]
+OnBootSec={{ image_prune_boot_delay }}
+OnUnitActiveSec={{ image_prune_interval }}
+RandomizedDelaySec={{ image_prune_random_delay }}
+Persistent=false
+
+[Install]
+WantedBy=timers.target

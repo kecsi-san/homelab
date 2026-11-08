@@ -1,0 +1,11 @@
+---
+# Delay after boot before the first prune (systemd OnBootSec= syntax). Long enough for
+# pods to be recreated and pull what they need, so the prune never races a cold start.
+image_prune_boot_delay: "45min"
+# Repeat interval while the node stays up (systemd OnUnitActiveSec= syntax)
+image_prune_interval: "1w"
+# Random spread so the four nodes don't prune at the same moment (RandomizedDelaySec=)
+image_prune_random_delay: "10min"
+# Skip the run if the last successful prune was newer than this many days. Keeps a
+# node that is rebooted several times in one week from pruning on every boot.
+image_prune_min_age_days: 6

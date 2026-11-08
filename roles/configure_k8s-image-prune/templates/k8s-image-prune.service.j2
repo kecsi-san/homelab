@@ -1,0 +1,11 @@
+[Unit]
+Description=Remove unused container images
+After=containerd.service kubelet.service
+Wants=containerd.service
+ConditionPathExists=/usr/local/bin/crictl
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/k8s-image-prune.sh
+Nice=10
+IOSchedulingClass=idle
