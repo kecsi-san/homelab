@@ -17,7 +17,7 @@ spec:
     spec:
       initContainers:
         - name: config
-          image: busybox:1.37
+          image: busybox:1.38
           command: [sh, -c]
           args:
             - |
@@ -52,7 +52,7 @@ spec:
               mountPath: /etc/garage
       containers:
         - name: garage
-          image: dxflrs/garage:v2.3.0
+          image: dxflrs/garage:v2.5.0
           command: ["/garage"]
           args: ["-c", "/etc/garage/garage.toml", "server"]
           ports:

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: ntfy-alertmanager
-          image: python:3.12-alpine
+          image: python:3.15-alpine
           command: [python, /scripts/webhook.py]
           env:
             - name: PYTHONUNBUFFERED
