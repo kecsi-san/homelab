@@ -1,8 +1,5 @@
 ---
 # Longhorn values — k8s (bare-metal)
-# Common customisations to add here:
-#   defaultSettings.defaultReplicaCount: 2   # default is 3; reduce for small clusters
-#   persistence.defaultClassReplicaCount: 2
 
 # ArgoCD uses `helm upgrade --install` which triggers pre-upgrade hooks even on
 # fresh installs. The pre-upgrade job fails because Longhorn CRDs don't exist yet.
@@ -10,11 +7,18 @@ preUpgradeChecker:
   jobEnabled: false
 
 defaultSettings:
+  # 2 data replicas per volume: node disks are small, and CNPG already
+  # replicates Postgres at the application level
+  defaultReplicaCount: 2
   # Keep a replica on the same node as the workload — prevents cross-node
   # detach/reattach races when a pod reschedules to a different node
   defaultDataLocality: best-effort
 
 persistence:
+  # StorageClass parameters are immutable: changing this on a live cluster means
+  # deleting the `longhorn` StorageClass so ArgoCD recreates it (existing PVs are
+  # unaffected; their replica count is set per volume)
+  defaultClassReplicaCount: 2
   # Delay PVC binding until a pod is scheduled so new volumes land on the
   # correct node from the start (only affects newly created PVCs)
   volumeBindingMode: WaitForFirstConsumer
