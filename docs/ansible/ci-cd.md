@@ -195,12 +195,13 @@ are still included but grouped under an "Other" section.
 
 ---
 
-## Dependabot
+## Dependency updates
 
-`.github/dependabot.yml` opens weekly pull requests for two ecosystems:
+Renovate owns all dependency updates (config in `renovate.json`, run by `.github/workflows/renovate.yml`).
+Dependabot is off: there is no `.github/dependabot.yml`. An earlier empty `updates: []` file was invalid, so
+GitHub ignored it and kept running the previous GitHub Actions and pip config until the file was deleted.
 
-| Ecosystem | What gets bumped | Directory |
-|-----------|-----------------|-----------|
+-----------|-----------------|-----------|
 | `github-actions` | `actions/checkout`, `actions/setup-python`, `actions/cache` | `/` |
 | `pip` | `requirements.txt` (ansible, ansible-lint, yamllint, etc.) | `/` |
 
