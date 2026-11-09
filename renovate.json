@@ -64,6 +64,13 @@
       "description": "kubectl client must stay within one minor of the 1.35 cluster"
     },
     {
+      "matchPackageNames": [
+        "codeberg.org/forgejo/forgejo"
+      ],
+      "allowedVersions": "<16",
+      "description": "Stay on the 15.0 LTS line (supported until 2027-07); the next LTS is 19.0 in 2027-04. Patch releases only."
+    },
+    {
       "matchManagers": [
         "github-actions"
       ],
