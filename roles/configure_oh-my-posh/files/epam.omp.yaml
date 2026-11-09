@@ -17,6 +17,7 @@ palette:
   navyblue: '#007ACC'
   rpi-red: '#c7053d'
   steelblue: '#4B8BBE'
+  python-blue: '#306998'
   ubu-orange: '#E95420'
   dmcyan: '#458588'
 blocks:
@@ -26,7 +27,7 @@ blocks:
       - properties:
           cache_duration: none
         template: ' {{.Icon}} '
-        foreground: p:debian-red
+        foreground: p:gray
         background: black
         type: os
         style: plain
@@ -75,9 +76,9 @@ blocks:
           folder_separator_icon: '  '
           style: agnoster_short
         template: ' {{ .Path }} '
-        foreground: black
+        foreground: '#100e23'
         powerline_symbol: 
-        background: p:dmcyan
+        background: '#a3c644'
         type: path
         style: powerline
       - properties:
@@ -105,7 +106,7 @@ blocks:
         template: '  {{ if .Error }}{{ .Error }}{{ else }}{{ if .Venv }}{{ .Venv }} {{ end }}{{ .Full }}{{ end }} '
         foreground: p:epam-bblack
         powerline_symbol: 
-        background: p:steelblue
+        background: p:python-blue
         type: python
         style: powerline
       - properties:
