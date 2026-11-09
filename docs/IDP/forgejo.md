@@ -199,13 +199,18 @@ kubectl logs -n forgejo deployment/forgejo --tail=100 -f
 
 ### Update Forgejo Version
 
-Edit the image tag in `kube-gitops/k8s/forgejo/deployment.yaml`:
-```yaml
-image: codeberg.org/forgejo/forgejo:12  # update minor/patch here
-```
+The image tag is pinned to an exact patch release (for example `15.0.11-rootless`), not a floating major tag.
+Forgejo can't be downgraded once the database migrates, so before changing it:
 
-ArgoCD will apply the change on next sync. The `Recreate` strategy ensures
-no two pods hold the LevelDB queue lock simultaneously.
+1. Back up the database (`pg_dump -Fc` from the CNPG primary) and the `forgejo-data` volume. Neither is covered by VolSync or CNPG backups.
+2. Run `forgejo manager flush-queues` in the pod.
+3. Read the breaking changes for every major you cross. A direct jump from 10.0.x to a later major is supported, but each release lists config changes (the upgrade guide is at `forgejo.org/docs/latest/admin/upgrade/`).
+
+Then edit the image tag in `kube-gitops/k8s/forgejo/deployment.yaml` and `job-register-authentik.yaml`.
+ArgoCD applies the change on the next sync. The `Recreate` strategy ensures no two pods hold the LevelDB queue lock
+simultaneously. Rolling back means restoring the backup.
+
+Stay on the LTS line (15.0.x until July 2027) unless a feature from a newer release is needed; the next LTS is 19.0 in April 2027.
 
 ---
 

@@ -21,7 +21,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: forgejo
-          image: codeberg.org/forgejo/forgejo:10-rootless
+          image: codeberg.org/forgejo/forgejo:15.0.11-rootless
           ports:
             - name: http
               containerPort: 3000
