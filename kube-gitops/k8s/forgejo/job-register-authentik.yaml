@@ -17,7 +17,7 @@ spec:
         runAsGroup: 1000
       containers:
         - name: register
-          image: codeberg.org/forgejo/forgejo:10-rootless
+          image: codeberg.org/forgejo/forgejo:17-rootless
           command:
             - /bin/sh
             - -c

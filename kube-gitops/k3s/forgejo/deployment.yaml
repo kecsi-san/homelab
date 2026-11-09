@@ -27,7 +27,7 @@ spec:
             - "authentik.k3s.kecskemethy.org"
       containers:
         - name: forgejo
-          image: codeberg.org/forgejo/forgejo:10-rootless
+          image: codeberg.org/forgejo/forgejo:17-rootless
           ports:
             - name: http
               containerPort: 3000
