@@ -50,14 +50,6 @@ spec:
                       name: grafana-oauth2-secret
                       key: client-secret
                       optional: true
-  persistentVolumeClaim:
-    spec:
-      storageClassName: longhorn
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: 5Gi
   service:
     spec:
       type: ClusterIP
