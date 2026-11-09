@@ -1,0 +1,78 @@
+{
+  "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+  "version": 3,
+  "blocks": [
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "type": "text",
+          "style": "powerline",
+          "powerline_symbol": "",
+          "foreground": "#FFFFFF",
+          "background": "#141413",
+          "template": " <b>✳</b> "
+        },
+        {
+          "type": "path",
+          "style": "powerline",
+          "powerline_symbol": "",
+          "foreground": "#282828",
+          "background": "#BCD1CA",
+          "template": "  {{ .Path }} ",
+          "properties": { "style": "letter" }
+        },
+        {
+          "type": "git",
+          "style": "powerline",
+          "powerline_symbol": "",
+          "foreground": "#282828",
+          "background": "#E3DACC",
+          "background_templates": [
+            "{{ if or (gt .Ahead 0) (gt .Behind 0) }}#C46686{{ end }}",
+            "{{ if or .Working.Changed .Staging.Changed }}#D97757{{ end }}"
+          ],
+          "template": "  {{ .HEAD }}{{ if or .Working.Changed .Staging.Changed }} {{ end }} ",
+          "properties": { "fetch_status": true, "fetch_upstream_icon": false, "branch_icon": "" }
+        },
+        {
+          "type": "claude",
+          "style": "powerline",
+          "powerline_symbol": "",
+          "foreground": "#282828",
+          "background": "#6A9BCC",
+          "template": " Chat ctx: {{ .TokenUsagePercent }}% | {{ .FormattedTokens }} tokens "
+        },
+        {
+          "type": "claude",
+          "style": "powerline",
+          "powerline_symbol": "",
+          "foreground": "#282828",
+          "background": "#E3DACC",
+          "background_templates": [
+            "{{ if gt .Cost.TotalCostUSD 2.0 }}#C46686{{ end }}",
+            "{{ if ge .Cost.TotalCostUSD 0.5 }}#D97757{{ end }}"
+          ],
+          "template": "{{ if gt .Cost.TotalCostUSD 0.0 }} {{ if lt .Cost.TotalCostUSD 0.01 }}<$0.01{{ else }}{{ .FormattedCost }}{{ end }} {{ end }}"
+        },
+        {
+          "type": "claude",
+          "style": "powerline",
+          "powerline_symbol": "",
+          "foreground": "#282828",
+          "background": "#D4A27F",
+          "template": " {{ .Model.DisplayName }} "
+        },
+        {
+          "type": "claude",
+          "style": "powerline",
+          "powerline_symbol": "",
+          "foreground": "#282828",
+          "background": "#BCD1CA",
+          "template": "{{ if .RateLimits }} 5h {{ .FiveHourUsage }}% · 7d {{ .SevenDayUsage }}% {{ end }}"
+        }
+      ]
+    }
+  ]
+}

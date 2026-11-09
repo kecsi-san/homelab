@@ -70,6 +70,7 @@
       vars:
         omp_enabled: true
         omp_themes_dir: "~/.poshthemes"
+        omp_claude_statusline_enabled: true
       tags:
         - omp
         - desktop

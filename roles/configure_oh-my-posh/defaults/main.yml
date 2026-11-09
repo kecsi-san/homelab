@@ -6,3 +6,6 @@ omp_themes_dir: "~/.poshthemes"
 default_omp_theme: "pluto.omp.yaml"
 # Path to user home directory
 home: "{{ ansible_env.HOME }}"
+
+# Deploy claude.omp.json (Claude Code status bar config) next to the themes
+omp_claude_statusline_enabled: false

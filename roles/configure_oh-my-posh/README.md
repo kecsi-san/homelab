@@ -17,6 +17,7 @@ Installs an oh-my-posh prompt theme and wires it into `~/.bashrc`.
 | `omp_themes_dir` | `~/.poshthemes` | Directory where theme files are stored |
 | `default_omp_theme` | `pluto.omp.yaml` | Theme filename to deploy and activate |
 | `omp_theme_override` | *(unset)* | Optional per-host/group escape hatch, takes priority over the EPAM/default heuristic (e.g. an EPAM host that still wants a non-epam.omp.yaml theme) |
+| `omp_claude_statusline_enabled` | `false` | Also deploy `claude.omp.json` (Claude Code status bar config) to `omp_themes_dir`; enabled in `personalise.yml` |
 | `home` | `{{ ansible_env.HOME }}` | User home directory |
 
 ## Available themes
@@ -24,6 +25,7 @@ Installs an oh-my-posh prompt theme and wires it into `~/.bashrc`.
 Theme files are in `roles/configure_oh-my-posh/files/`:
 - `pluto.omp.yaml` (default); self-adapts its `os` segment background to the actual OS/distro via `background_templates` keyed on `.Icon`/`.WSL` (palette: `debian-red`, `ubu-orange`, `rpi-red`, `mac-gray`, `microsoft-blue`), so one file covers every non-EPAM host instead of maintaining a static theme per OS
 - `epam.omp.yaml`: EPAM-branded variant (own palette, "❮ epam ❯" badge segments), selected automatically for hostnames starting with `EP`
+- `claude.omp.json`: config for the Claude Code status bar (Anthropic brand colours, context, cost, model, rate limits). Not a shell theme and never activated in `.bashrc`; point `statusLine.command` in `~/.claude/settings.json` at it: `oh-my-posh claude --config ~/.poshthemes/claude.omp.json`
 
 ## Usage
 

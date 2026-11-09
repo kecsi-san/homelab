@@ -36,6 +36,16 @@
   become: false
   when: omp_theme_override is defined
 
+# Claude Code status bar config (`oh-my-posh claude --config ...` in
+# ~/.claude/settings.json). Workstation-only, so opt-in.
+- name: Copy Claude Code status bar config
+  ansible.builtin.copy:
+    src: "files/claude.omp.json"
+    dest: "{{ omp_themes_dir }}/claude.omp.json"
+    mode: '0644'
+  become: false
+  when: omp_claude_statusline_enabled | bool
+
 - name: Select oh-my-posh theme
   ansible.builtin.set_fact:
     active_omp_theme: >-
