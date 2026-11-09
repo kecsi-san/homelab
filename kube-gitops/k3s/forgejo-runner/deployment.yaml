@@ -28,7 +28,7 @@ spec:
             - name: runner-data
               mountPath: /data
         - name: register
-          image: code.forgejo.org/forgejo/runner:12.13.2
+          image: code.forgejo.org/forgejo/runner:13.2.1
           workingDir: /data
           command:
             - sh
@@ -53,7 +53,7 @@ spec:
               mountPath: /var/run
       containers:
         - name: runner
-          image: code.forgejo.org/forgejo/runner:12.13.2
+          image: code.forgejo.org/forgejo/runner:13.2.1
           command:
             - sh
             - -c
