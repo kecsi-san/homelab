@@ -94,6 +94,16 @@ module "eip_edge" {
   name        = "edge.kecskemethy.net"
 }
 
+# DNS name for the new edge instance while it is built out, pointing at its temporary Elastic IP.
+# The production names (apex, mail host) follow the production EIP at cutover, not this record.
+resource "aws_route53_record" "edge_a" {
+  zone_id = module.route53.zone_ids["kecskemethy.net"]
+  name    = "edge.kecskemethy.net"
+  type    = "A"
+  ttl     = 300
+  records = [module.eip_edge.public_ip]
+}
+
 # DKIM public keys are generated on the mail server (roles/setup_email-server)
 # and backed up to Vault every Ansible run. Reading only the "-public" path
 # here — never "-private" — keeps the private key out of this state file; see

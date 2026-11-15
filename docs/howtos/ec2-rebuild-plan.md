@@ -151,6 +151,7 @@ Added to `ec2-core.yml`.
 - No Homebrew on this host. `setup_security-tools` takes its Homebrew tools from `security_brew_tools`, which `ec2-core.yml` sets to an empty list, and `ec2-core.yml` no longer installs Homebrew.
 - The EC2 playbooks pick their host group from the `ec2_target` variable (default `aws`, the legacy host, so nothing existing changes). Run them against the new instance with `-e ec2_target=aws_edge`, or `just ec2-core aws_edge`. Variables that apply only to it are in `inventory/group_vars/aws_edge.yml`.
 - Everything still pending in `terraform/aws` is this instance, so a plain `terraform apply` there creates exactly it (22 resources, no changes to existing ones).
+- The instance was created on 2026-11-15 (22 resources). Its name is a Terraform-managed `A` record in the Route53 zone, pointing at the temporary Elastic IP, so it can be reached by name while it is built out. The production names (apex, mail host) follow the production Elastic IP at cutover and are not this record.
 
 2. Run playbooks in order (users before mail: UIDs must exist before data migration;
    web before mail: the mail role reuses the TLS cert Apache issues for `mail_cert_name`'s
