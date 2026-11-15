@@ -42,6 +42,20 @@
   tags:
     - users
 
+# A key that is still a Jinja template (for example "{{ some_var | default(omit) }}", left over from
+# when the user list lived in secrets.yml) is a literal string once it comes back from a Vault lookup:
+# Ansible does not template lookup results, so the module would receive "{{ ... }}" as the key and fail.
+# Such entries are skipped with a warning; put the actual public key in Vault to have it deployed here.
+- name: Warn about SSH keys that are unresolved templates
+  ansible.builtin.debug:
+    msg: "The ssh_key of user {{ item.name }} is an unresolved template, not a key, so it is skipped. Store the public key itself in the user list."
+  loop: "{{ ec2_users }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: item.ssh_key is defined and '{{' in item.ssh_key
+  tags:
+    - users
+
 - name: Set authorized SSH keys
   ansible.posix.authorized_key:
     user: "{{ item.name }}"
@@ -50,7 +64,9 @@
     exclusive: false
   become: true
   loop: "{{ ec2_users }}"
-  when: item.ssh_key is defined
+  loop_control:
+    label: "{{ item.name }}"
+  when: item.ssh_key is defined and '{{' not in item.ssh_key
   no_log: true
   tags:
     - users
