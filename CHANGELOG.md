@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(configure_ntp): restart chrony via task, not handler ([f0b2556](https://github.com/kecsi-san/homelab/commit/f0b255636a943f59ce86a9f434f20a94611427ac) by Zoltan K).
 - fix(ec2-core): drop always tag from install_linuxbrew ([a7ef7aa](https://github.com/kecsi-san/homelab/commit/a7ef7aa0c8785acf3d558e3a0d1b0255ecf1e18a) by Zoltan K).
 - fix(monitoring): drop unused grafana PVC block; close out 2026-11-08 follow-ups in TODO ([2468990](https://github.com/kecsi-san/homelab/commit/2468990efc0a7478543a438131ee5113dd160ed2) by Zoltan K).
 - fix(traefik): move service type under service.spec for chart 42.3 ([4172a5c](https://github.com/kecsi-san/homelab/commit/4172a5ca278838ff3d45a92e3b1f6aa9815abf6a) by Zoltan K).
