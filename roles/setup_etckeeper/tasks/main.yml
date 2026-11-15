@@ -36,13 +36,19 @@
   become: true
   when: ansible_system == 'Linux' and not initmarker.stat.exists
 
+# On a host where other roles already ran apt, etckeeper's apt hook has committed /etc, so there can be
+# nothing left to commit here; that is fine, only a real git failure should stop the run.
 - name: Create etckeeper initial commit
   ansible.builtin.command: /usr/bin/git commit -a -m "Initial commit" # noqa: command-instead-of-module
   args:
     chdir: /etc
   become: true
+  register: etckeeper_initial_commit
   when: ansible_system == 'Linux' and not initmarker.stat.exists
-  changed_when: true
+  changed_when: etckeeper_initial_commit.rc == 0
+  failed_when:
+    - etckeeper_initial_commit.rc != 0
+    - "'nothing to commit' not in etckeeper_initial_commit.stdout"
 
 - name: Create init marker for etckeeper
   ansible.builtin.file:
