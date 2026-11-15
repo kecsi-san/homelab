@@ -231,7 +231,8 @@
 
 - name: Add Duo Security apt repository
   ansible.builtin.apt_repository:
-    repo: "deb [signed-by=/etc/apt/keyrings/duosecurity.asc] https://pkg.duosecurity.com/debian {{ ansible_distribution_release }} main"
+    # The path is case-sensitive: Duo publishes it as /Debian (lowercase /debian is a 404).
+    repo: "deb [signed-by=/etc/apt/keyrings/duosecurity.asc] https://pkg.duosecurity.com/Debian {{ ansible_distribution_release }} main"
     filename: duosecurity
     state: present
   become: true

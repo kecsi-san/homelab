@@ -66,6 +66,19 @@
         - fail2ban
         - security
 
+    # configure_duo-ssh expects duo-unix to be installed already (it was on the legacy host);
+    # a fresh instance needs Duo's apt repository and the package first.
+    - name: Install Duo Unix (apt repository and duo-unix)
+      ansible.builtin.import_role:
+        name: setup_apt_repos
+      become: true
+      vars:
+        apt_repo_duosecurity: true
+      tags:
+        - ssh
+        - duo
+        - security
+
     - name: Configure Duo SSH MFA (PAM-based)
       ansible.builtin.import_role:
         name: configure_duo-ssh
