@@ -4,12 +4,15 @@
 # instances") is plain wget + dpkg -i with no checksum/signature file published
 # alongside this artifact at all, for any region. TLS to s3.<region>.amazonaws.com
 # is the only integrity guarantee AWS itself provides here.
+# The download also runs under --check: it only writes this temp file, and without it the install
+# step below fails in a dry run on a host that does not have the package yet.
 - name: Download AWS SSM agent package
   ansible.builtin.get_url:
     url: "{{ aws_ssm_agent_deb_url }}"
     dest: /tmp/amazon-ssm-agent.deb
     mode: "0644"
   become: false
+  check_mode: false
   tags: [ssm]
 
 - name: Install AWS SSM agent package
@@ -18,10 +21,12 @@
   become: true
   tags: [ssm]
 
+# Under --check the package is not installed yet, so the unit does not exist; tolerate that in a dry run only.
 - name: Enable and start AWS SSM agent
   ansible.builtin.systemd:
     name: amazon-ssm-agent
     enabled: true
     state: started
   become: true
+  ignore_errors: "{{ ansible_check_mode }}"
   tags: [ssm]
