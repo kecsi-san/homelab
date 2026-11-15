@@ -54,7 +54,7 @@
     group: root
     mode: "0644"
   become: true
-  notify: Restart chrony
+  register: configure_ntp_conf
 
 - name: Ensure chrony is started and enabled
   ansible.builtin.service:
@@ -62,3 +62,13 @@
     state: started
     enabled: true
   become: true
+
+# A task, not a handler: with `--tags ntp` the untagged handler did not run on
+# the live EC2 node (2026-11-15), so chrony kept Debian's default config that
+# the package install had started it with. The conf is written after that start.
+- name: Restart chrony when its config changed
+  ansible.builtin.service:
+    name: chrony
+    state: restarted
+  become: true
+  when: configure_ntp_conf is changed
