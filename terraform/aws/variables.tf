@@ -64,3 +64,15 @@ variable "vault_address" {
   description = "Vault server address"
   type        = string
 }
+
+variable "ses_sender_domains" {
+  description = "Sender domains the mail server relays through Amazon SES for Microsoft consumer recipients. Each gets an SES identity with Easy DKIM; those also in route53_domains get their DKIM records created here, the rest are listed in the ses_dkim_manual_records output. Empty list = no SES resources."
+  type        = list(string)
+  default     = []
+}
+
+variable "ses_relay_iam_user_name" {
+  description = "Name of the IAM user whose access key becomes the Postfix SMTP credentials for SES"
+  type        = string
+  default     = "postfix-ses-relay"
+}

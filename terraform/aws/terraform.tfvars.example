@@ -18,3 +18,10 @@ route53_domains = ["example.com", "example.net"]
 
 # Existing S3 bucket names to import and manage
 s3_bucket_names = []
+
+# Sender domains relayed through Amazon SES for Microsoft consumer recipients (Outlook.com,
+# Hotmail, ...). Every domain the mail server sends for needs an entry. Domains also listed in
+# route53_domains get their DKIM records automatically; for the others the ses_dkim_manual_records
+# output lists the CNAME records to add by hand at their DNS host. Empty = no SES resources.
+ses_sender_domains = []
+# ses_sender_domains = ["example.com", "example.net", "example.org"]

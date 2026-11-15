@@ -1,0 +1,20 @@
+---
+# Send mail for selected recipient domains (the Microsoft consumer domains) through Amazon SES,
+# on the EC2 mail server. All other mail keeps going out directly.
+# Changes only the relay settings with postconf, so it does not rewrite the live main.cf the way
+# ec2-mail.yml would. Run --check --diff first.
+# Credentials (ec2/ses-relay in Vault) must exist, see docs/howtos/ses-relay.md.
+# Usage: ansible-playbook -i inventory/aws_hosts playbooks/ec2-smarthost.yml --check --diff
+- name: Configure the smarthost relay on the EC2 mail server
+  hosts: aws
+  become: false
+  remote_user: "{{ ansible_ssh_user }}"
+  tasks:
+    - name: Relay Microsoft consumer recipients through the smarthost
+      ansible.builtin.import_role:
+        name: configure_postfix-smarthost
+      become: true
+      vars:
+        postfix_smarthost_enabled: true
+      tags:
+        - smarthost

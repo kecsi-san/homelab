@@ -139,6 +139,7 @@ Use `roles/role_template/` as a starting point when creating a new role.
 | `setup_fail2ban` | fail2ban with a generated drop-in (ignore list, ban times, jails), config-tested before restart | ec2-core.yml |
 | `configure_duo-ssh` | Migrates SSH MFA from `ForceCommand login_duo` to PAM-based `pam_duo.so`, scoped to sshd only via `/etc/pam.d/sshd` | ec2-core.yml |
 | `configure_ssh-hardening` | Codifies sshd connection/session hardening (`MaxAuthTries`, `PermitRootLogin no`, etc.) as a drop-in | ec2-core.yml |
+| `configure_postfix-smarthost` | Relays mail for selected recipient domains (the Microsoft consumer domains by default) through an authenticated smarthost, Amazon SES by default, and leaves all other mail on direct delivery; changes only the relay settings with `postconf -e`, keeps the host's own `transport_maps`, uses plain tasks instead of handlers; credentials from Vault `ec2/ses-relay`; gated by `postfix_smarthost_enabled` | ec2-smarthost.yml |
 | `setup_apache2` | Apache2 with ModSecurity, ModEvasive, certbot (HTTP-01 webroot + DNS-01 Route53); variable-driven vhosts for static sites, full proxies, and path-specific proxies; OCSP stapling; HSTS | ec2-web.yml |
 | `setup_vault` | HashiCorp Vault from HashiCorp APT repo; file backend; `127.0.0.1:8200` listener (Apache-proxied); systemd unit; version pinning with apt-mark hold | ec2-vault.yml |
 | `setup_nfs-backup` | Carves LV from existing VG, formats ext4, mounts at `/backups`, installs + configures nfs-kernel-server | backup-nfs.yml |

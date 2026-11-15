@@ -68,6 +68,12 @@ vault_ec2_lookup_args:
 aws_access_key_id: "{{ lookup('community.hashi_vault.vault_kv2_get', 'aws-creds', **vault_ec2_lookup_args)['secret']['aws_access_key_id'] }}"
 aws_secret_access_key: "{{ lookup('community.hashi_vault.vault_kv2_get', 'aws-creds', **vault_ec2_lookup_args)['secret']['aws_secret_access_key'] }}"
 
+# SES relay credentials for configure_postfix-smarthost (ec2/ses-relay): the SMTP username is the
+# IAM access key id of the relay user, the password is derived from its secret key, see
+# docs/howtos/ses-relay.md. Evaluated only when the role runs, so other playbooks do not need the secret.
+postfix_smarthost_username: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ses-relay', **vault_ec2_lookup_args)['secret']['smtp_username'] }}"
+postfix_smarthost_password: "{{ lookup('community.hashi_vault.vault_kv2_get', 'ses-relay', **vault_ec2_lookup_args)['secret']['smtp_password'] }}"
+
 duo_ikey: "{{ lookup('community.hashi_vault.vault_kv2_get', 'duo', **vault_ec2_lookup_args)['secret']['duo_ikey'] }}"
 duo_skey: "{{ lookup('community.hashi_vault.vault_kv2_get', 'duo', **vault_ec2_lookup_args)['secret']['duo_skey'] }}"
 duo_api_host: "{{ lookup('community.hashi_vault.vault_kv2_get', 'duo', **vault_ec2_lookup_args)['secret']['duo_api_host'] }}"

@@ -1,0 +1,121 @@
+---
+# Selective smarthost relay for Postfix: mail to the listed recipient domains goes through an
+# authenticated relay (Amazon SES by default), all other mail is delivered directly as before.
+#
+# It only touches the relay settings, through `postconf -e`, so it is safe on a hand-built
+# main.cf (the live EC2 mail server has one). There are no handlers on purpose: the postmap and
+# reload steps run as plain tasks, because a `notify:` handler did not fire on the live EC2 node
+# (see TODO.md).
+
+- name: Smarthost relay for selected recipient domains
+  when: postfix_smarthost_enabled | bool
+  block:
+    - name: Check the relay credentials and domain list are set
+      ansible.builtin.assert:
+        that:
+          - postfix_smarthost_username | length > 0
+          - postfix_smarthost_password | length > 0
+          - postfix_smarthost_domains | length > 0
+        fail_msg: >-
+          postfix_smarthost_username, postfix_smarthost_password and postfix_smarthost_domains
+          must all be set (the credentials come from Vault, see docs/howtos/ses-relay.md)
+      no_log: true
+
+    - name: Install the transport map
+      ansible.builtin.template:
+        src: transport.j2
+        dest: "{{ postfix_smarthost_dir }}/transport_smarthost"
+        owner: root
+        group: root
+        mode: "0644"
+      register: postfix_smarthost_transport
+
+    - name: Install the SASL password file
+      ansible.builtin.template:
+        src: sasl_passwd.j2
+        dest: "{{ postfix_smarthost_dir }}/sasl_passwd_smarthost"
+        owner: root
+        group: root
+        mode: "0600"
+      register: postfix_smarthost_sasl
+      no_log: true
+
+    - name: Install the TLS policy map
+      ansible.builtin.template:
+        src: tls_policy.j2
+        dest: "{{ postfix_smarthost_dir }}/tls_policy_smarthost"
+        owner: root
+        group: root
+        mode: "0644"
+      register: postfix_smarthost_tls
+
+    - name: Build the hash maps
+      ansible.builtin.command: "postmap hash:{{ item.path }}"
+      loop:
+        - { path: "{{ postfix_smarthost_dir }}/transport_smarthost", changed: "{{ postfix_smarthost_transport is changed }}" }
+        - { path: "{{ postfix_smarthost_dir }}/sasl_passwd_smarthost", changed: "{{ postfix_smarthost_sasl is changed }}" }
+        - { path: "{{ postfix_smarthost_dir }}/tls_policy_smarthost", changed: "{{ postfix_smarthost_tls is changed }}" }
+      loop_control:
+        label: "{{ item.path | basename }}"
+      when: item.changed | bool
+      changed_when: true
+      register: postfix_smarthost_postmap
+
+    - name: Read the current list parameters
+      ansible.builtin.command: "postconf -h {{ item.key }}"
+      loop: "{{ postfix_smarthost_maps | dict2items }}"
+      loop_control:
+        label: "{{ item.key }}"
+      register: postfix_smarthost_current
+      changed_when: false
+      check_mode: false
+
+    - name: Put the smarthost maps first in each list parameter
+      ansible.builtin.command: >-
+        postconf -e "{{ item.item.key }} = {{ item.item.value }}{{ (', ' ~ item.stdout) if item.stdout | length > 0 else '' }}"
+      loop: "{{ postfix_smarthost_current.results }}"
+      loop_control:
+        label: "{{ item.item.key }}"
+      when: item.item.value not in item.stdout
+      changed_when: true
+      register: postfix_smarthost_lists
+
+    - name: Read the current scalar parameters
+      ansible.builtin.command: "postconf -h {{ item.key }}"
+      loop: "{{ postfix_smarthost_settings | dict2items }}"
+      loop_control:
+        label: "{{ item.key }}"
+      register: postfix_smarthost_scalars_current
+      changed_when: false
+      check_mode: false
+
+    - name: Set the scalar parameters that differ
+      ansible.builtin.command: 'postconf -e "{{ item.item.key }} = {{ item.item.value }}"'
+      loop: "{{ postfix_smarthost_scalars_current.results }}"
+      loop_control:
+        label: "{{ item.item.key }}"
+      when: item.stdout != item.item.value
+      changed_when: true
+      register: postfix_smarthost_scalars
+
+    - name: Check the Postfix configuration
+      ansible.builtin.command: postfix check
+      changed_when: false
+      check_mode: false
+
+    - name: Reload Postfix when anything changed
+      ansible.builtin.service:
+        name: postfix
+        state: reloaded
+      when: >-
+        postfix_smarthost_postmap.changed
+        or postfix_smarthost_lists.changed
+        or postfix_smarthost_scalars.changed
+
+    - name: Look up a Microsoft domain in the transport map (read-only check)
+      ansible.builtin.command: "postmap -q hotmail.com hash:{{ postfix_smarthost_dir }}/transport_smarthost"
+      register: postfix_smarthost_probe
+      changed_when: false
+      check_mode: false
+      failed_when: postfix_smarthost_relay not in postfix_smarthost_probe.stdout
+      when: "'hotmail.com' in postfix_smarthost_domains and not ansible_check_mode"

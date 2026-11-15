@@ -1,0 +1,16 @@
+---
+postfix_smarthost_relay: "[{{ postfix_smarthost_relay_host }}]:{{ postfix_smarthost_relay_port }}"
+
+# List parameters: our map is put first so it wins over anything the host already has
+# (the live EC2 config has its own transport_maps, which stays in place after ours).
+postfix_smarthost_maps:
+  transport_maps: "hash:{{ postfix_smarthost_dir }}/transport_smarthost"
+  smtp_sasl_password_maps: "hash:{{ postfix_smarthost_dir }}/sasl_passwd_smarthost"
+  smtp_tls_policy_maps: "hash:{{ postfix_smarthost_dir }}/tls_policy_smarthost"
+
+# Scalar parameters. SASL only applies to hosts that have an entry in the password map,
+# so enabling it globally does not change delivery to anyone else.
+postfix_smarthost_settings:
+  smtp_sasl_auth_enable: "yes"
+  smtp_sasl_security_options: noanonymous
+  smtp_sasl_tls_security_options: noanonymous

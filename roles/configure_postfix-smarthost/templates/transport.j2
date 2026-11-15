@@ -1,0 +1,5 @@
+# {{ ansible_managed }}
+# Recipient domains delivered through the smarthost (see postfix_smarthost_domains).
+{% for domain in postfix_smarthost_domains %}
+{{ domain }} smtp:{{ postfix_smarthost_relay }}
+{% endfor %}
