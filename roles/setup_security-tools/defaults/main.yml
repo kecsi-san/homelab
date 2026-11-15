@@ -4,3 +4,8 @@ security_apt_packages:
   - aide
   - fail2ban
   - rkhunter
+# Homebrew tools installed on every host that has Homebrew. Set to [] on hosts without it
+# (the EC2 edge node is a headless server with no Homebrew, decided 2026-11-15).
+security_brew_tools:
+  - trivy
+  - hadolint

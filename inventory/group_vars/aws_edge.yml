@@ -1,0 +1,16 @@
+---
+# Variables that apply only to the new edge instance (Phase 6 rebuild, the [aws_edge] group).
+# Everything shared by both EC2 hosts lives in aws_all.yml; the legacy host sets nothing here.
+# Run the EC2 playbooks against this group with: -e ec2_target=aws_edge
+
+# Host name and /etc/hosts entry (ec2-core.yml runs configure_hostname only when this is true).
+# Matches the Terraform instance name; the mail role sets Postfix's own name from mail_hostname.
+hostname_enabled: true
+hostname_short: edge
+hostname_domain: kecskemethy.net
+
+# Left off until the first full ec2-core.yml run on this host has been checked: turn them on one
+# at a time, with --check --diff first, and keep an SSM session open when enabling the firewall.
+firewall_enabled: false
+fail2ban_enabled: false
+geoip_enabled: false

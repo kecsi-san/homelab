@@ -1,8 +1,10 @@
 ---
 # Run BEFORE ec2-core.yml on a fresh instance — passwordless sudo not yet configured.
 # Usage: ansible-playbook --ask-become-pass -i inventory/aws_hosts playbooks/ec2-prerequisite.yml
+# New edge instance (Phase 6 rebuild) instead of the legacy host:
+#   ansible-playbook -e ec2_target=aws_edge --ask-become-pass -i inventory/aws_hosts playbooks/ec2-prerequisite.yml
 - name: EC2 prerequisite setup
-  hosts: aws
+  hosts: "{{ ec2_target | default('aws') }}"
   become: false
   remote_user: "{{ ansible_ssh_user }}"
   tasks:

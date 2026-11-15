@@ -7,8 +7,10 @@
 # {{ certbot_cert_dir }}/{{ mail_cert_name }}/ before Postfix/Dovecot start.
 # Domains and credentials come from secrets.yml.
 # Usage: ansible-playbook -i inventory/aws_hosts playbooks/ec2-mail.yml
+# New edge instance (Phase 6 rebuild) instead of the legacy host:
+#   ansible-playbook -e ec2_target=aws_edge -i inventory/aws_hosts playbooks/ec2-mail.yml
 - name: Configure email server
-  hosts: aws
+  hosts: "{{ ec2_target | default('aws') }}"
   become: false
   remote_user: "{{ ansible_ssh_user }}"
   tasks:

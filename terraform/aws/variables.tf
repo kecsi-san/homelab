@@ -82,3 +82,9 @@ variable "ses_mail_from_subdomain" {
   type        = string
   default     = "ses"
 }
+
+variable "edge_instance_type" {
+  description = "EC2 instance type of the new edge node (Phase 6 rebuild). Separate from instance_type, which the legacy instance uses, so resizing the edge node never touches the legacy one. The node is stopped between work sessions; to resize, stop it, change this value and apply."
+  type        = string
+  default     = "t3a.small"
+}

@@ -25,3 +25,6 @@ s3_bucket_names = []
 # output lists the CNAME records to add by hand at their DNS host. Empty = no SES resources.
 ses_sender_domains = []
 # ses_sender_domains = ["example.com", "example.net", "example.org"]
+
+# Instance type of the new edge node (Phase 6 rebuild); the legacy instance uses instance_type above.
+# edge_instance_type = "t3a.small"   # default shown; t3a.small = 2 GiB RAM, the smallest that runs the mail, web and Vault stack

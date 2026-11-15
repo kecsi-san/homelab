@@ -61,7 +61,7 @@ module "ec2_edge" {
   vpc_id               = var.vpc_id
   subnet_id            = var.subnet_id
   key_pair_name        = aws_key_pair.edge.key_name
-  instance_type        = var.instance_type
+  instance_type        = var.edge_instance_type
   iam_instance_profile = var.iam_instance_profile
   ingress_rules        = local.ingress_rules
   sg_name              = "homelab-edge-new"
@@ -139,8 +139,9 @@ module "s3" {
 # This file is gitignored — it contains live IP addresses.
 # [aws] stays pointed solely at the production instance; existing ec2-*.yml
 # playbooks target that group, so they are unaffected by the rebuild instance.
-# Target the new box explicitly, e.g.:
-#   ansible-playbook -i inventory/aws_hosts -l aws_edge playbooks/ec2-prerequisite.yml
+# The ec2-*.yml playbooks take the group from the ec2_target variable (default aws), so
+# target the new box explicitly:
+#   ansible-playbook -i inventory/aws_hosts -e ec2_target=aws_edge playbooks/ec2-prerequisite.yml
 #
 # [aws_all:children] makes both groups inherit inventory/group_vars/aws_all.yml
 # (Vault-sourced ec2_users/apache_vhosts/mailbox_users/duo_*, the Duo PAM SSH-args

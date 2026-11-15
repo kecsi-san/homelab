@@ -126,18 +126,12 @@
   become: true
   when: security_tools_enabled and ansible_system == 'Linux'
 
-# Trivy — via Homebrew (cross-platform)
-- name: Install trivy via Homebrew
+# Trivy (vulnerability scanner) and hadolint (Dockerfile linter) — via Homebrew, cross-platform.
+# The list is security_brew_tools; hosts without Homebrew set it to [] (no install fallback).
+- name: Install security tools via Homebrew
   community.general.homebrew:
-    name: trivy
+    name: "{{ item }}"
     state: present
-  become: false
-  when: security_tools_enabled
-
-# Hadolint — Dockerfile linter, via Homebrew (cross-platform)
-- name: Install hadolint via Homebrew
-  community.general.homebrew:
-    name: hadolint
-    state: present
+  loop: "{{ security_brew_tools }}"
   become: false
   when: security_tools_enabled

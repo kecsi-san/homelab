@@ -2,8 +2,10 @@
 # Deploy Apache2 web server with virtual hosts.
 # Run after ec2-core.yml. Vhost and cert config come from secrets.yml.
 # Usage: ansible-playbook -i inventory/aws_hosts playbooks/ec2-web.yml
+# New edge instance (Phase 6 rebuild) instead of the legacy host:
+#   ansible-playbook -e ec2_target=aws_edge -i inventory/aws_hosts playbooks/ec2-web.yml
 - name: Configure Apache2 web server
-  hosts: aws
+  hosts: "{{ ec2_target | default('aws') }}"
   become: false
   remote_user: "{{ ansible_ssh_user }}"
   tasks:

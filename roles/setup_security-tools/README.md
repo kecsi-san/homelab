@@ -47,7 +47,7 @@ Adds the official [Cisofy](https://cisofy.com) apt repository and installs:
 ## Notes
 
 - APT tasks and repo setup require `become: true` internally
-- Homebrew (trivy, hadolint) runs as user (`become: false`)
+- Homebrew tools (`security_brew_tools`, default `trivy` and `hadolint`) run as user (`become: false`); set the list to `[]` on hosts without Homebrew, as `ec2-core.yml` does for the EC2 edge node
 - `lynis` can be run manually: `sudo lynis audit system`
 - `rkhunter` initial database: `sudo rkhunter --update && sudo rkhunter --propupd`
 - `aide` (file integrity monitoring) is supported but **not** in the default

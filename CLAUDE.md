@@ -100,6 +100,8 @@ ansible-playbook playbooks/configure-cloudflare.yml
 # OS upgrades on all kube group hosts
 ansible-playbook playbooks/upgrade.yml
 
+# The EC2 playbooks below target the legacy host by default (group `aws`). For the new Phase 6 instance add
+# `-e ec2_target=aws_edge` (or `just ec2-core aws_edge`); its own variables are in inventory/group_vars/aws_edge.yml
 # AWS EC2 edge node — first-time setup (passwordless sudo not yet configured)
 ansible-playbook --ask-become-pass -i inventory/aws_hosts playbooks/ec2-prerequisite.yml
 
@@ -242,7 +244,7 @@ Quick-reference table below (kept in sync manually — see the Working Conventio
 | `setup_longhorn` | Installs iSCSI deps, longhornctl, and Longhorn via Helm |
 | `setup_minimal` | Installs base + compression APT packages; optional brew base packages; wired into `k8s-nodes.yml` and `fileservers.yml` |
 | `setup_network-tools` | Installs network diagnostic tools (APT on Linux, Homebrew on macOS); wired into `k8s-nodes.yml` and `fileservers.yml` (Linux only) |
-| `setup_security-tools` | fail2ban + rkhunter (APT) + lynis (Cisofy repo) + trivy/hadolint (Homebrew); AIDE optional via `security_apt_packages` but excluded on `k8s-nodes.yml`/`fileservers.yml` — daily full-filesystem hash is too CPU/memory-heavy on kube nodes' dynamic storage and prolion's 7.3TB `/stuff` array |
+| `setup_security-tools` | fail2ban + rkhunter (APT) + lynis (Cisofy repo) + trivy/hadolint (Homebrew, the `security_brew_tools` list, which `ec2-core.yml` sets to empty: the EC2 edge node has no Homebrew); AIDE optional via `security_apt_packages` but excluded on `k8s-nodes.yml`/`fileservers.yml` — daily full-filesystem hash is too CPU/memory-heavy on kube nodes' dynamic storage and prolion's 7.3TB `/stuff` array |
 | `setup_python-uv` | Installs uv CLI tools (checkov, ansible, black, etc.) and Python library packages into `~/.venv/devops`; optional `pyenv`/`pyenv-virtualenv` and `python-tk@<version>` |
 | `setup_kube-extra` | Installs kubectl, helm (+ `helm-diff`, `helm-docs`), argocd, flux, kubeseal, krew via Homebrew; bash completion system-wide (Linux: `/etc/bash_completion.d/`; macOS: `bash-completion@2` + Homebrew completion dir); `k` alias for kubectl |
 | `setup_traefik` | Installs Traefik ingress controller via Helm; `delegate_to: localhost`; kubeconfig per cluster |

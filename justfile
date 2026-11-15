@@ -126,24 +126,28 @@ backup-nfs:
 # ---- AWS EC2 edge node ----
 
 # First-time setup (passwordless sudo not yet configured)
-ec2-prerequisite:
-    ansible-playbook --ask-become-pass -i inventory/aws_hosts playbooks/ec2-prerequisite.yml
+ec2-prerequisite target="aws":
+    ansible-playbook --ask-become-pass -i inventory/aws_hosts -e ec2_target={{target}} playbooks/ec2-prerequisite.yml
 
 # Base hardening — run after ec2-prerequisite
-ec2-core:
-    ansible-playbook -i inventory/aws_hosts playbooks/ec2-core.yml
+ec2-core target="aws":
+    ansible-playbook -i inventory/aws_hosts -e ec2_target={{target}} playbooks/ec2-core.yml
 
 # Web server (Apache2 + ModSecurity + ModEvasive + certbot) — run after ec2-core
-ec2-web:
-    ansible-playbook -i inventory/aws_hosts playbooks/ec2-web.yml
+ec2-web target="aws":
+    ansible-playbook -i inventory/aws_hosts -e ec2_target={{target}} playbooks/ec2-web.yml
 
 # Email server (Postfix + Dovecot + Rspamd + OpenDMARC + certbot) — run after ec2-web
-ec2-mail:
-    ansible-playbook -i inventory/aws_hosts playbooks/ec2-mail.yml
+ec2-mail target="aws":
+    ansible-playbook -i inventory/aws_hosts -e ec2_target={{target}} playbooks/ec2-mail.yml
 
 # HashiCorp Vault — run after ec2-web; manually init+unseal after first deploy
-ec2-vault:
-    ansible-playbook -i inventory/aws_hosts playbooks/ec2-vault.yml
+ec2-vault target="aws":
+    ansible-playbook -i inventory/aws_hosts -e ec2_target={{target}} playbooks/ec2-vault.yml
+
+# Relay Microsoft consumer recipients through Amazon SES (changes only the relay settings; see docs/howtos/ses-relay.md)
+ec2-smarthost target="aws":
+    ansible-playbook -i inventory/aws_hosts -e ec2_target={{target}} playbooks/ec2-smarthost.yml --check --diff
 
 # ---- Terraform (AWS) ----
 

@@ -145,6 +145,13 @@ Added to `ec2-core.yml`.
 
 1. ✅ Terraform code done (2026-07-11): new EC2 instance alongside old one (separate resource, same SG) + 4-volume EBS layout. `terraform apply` not yet run, pending.
    - ⬜ OS-level mount/fstab step still needed before step 2 (formats + mounts the 4 volumes); see `docs/howtos/ec2-ebs-volumes.md`
+**Decisions and changes of 2026-11-15:**
+- The new instance is created at the smallest size that runs the whole stack (`edge_instance_type`, default `t3a.small`, 2 GiB RAM), as its own Terraform variable so resizing it never touches the legacy instance. It is stopped between work sessions (stop, change the type, start, if it needs resizing). While stopped it costs only the EBS volumes and the Elastic IP.
+- It uses its own SSH key pair, `linuxbox2026`, separate from the legacy box's key. Both halves are in Vault (`ec2/ssh-edge-bootstrap-public` and `-private`); Terraform reads only the public half.
+- No Homebrew on this host. `setup_security-tools` takes its Homebrew tools from `security_brew_tools`, which `ec2-core.yml` sets to an empty list, and `ec2-core.yml` no longer installs Homebrew.
+- The EC2 playbooks pick their host group from the `ec2_target` variable (default `aws`, the legacy host, so nothing existing changes). Run them against the new instance with `-e ec2_target=aws_edge`, or `just ec2-core aws_edge`. Variables that apply only to it are in `inventory/group_vars/aws_edge.yml`.
+- Everything still pending in `terraform/aws` is this instance, so a plain `terraform apply` there creates exactly it (22 resources, no changes to existing ones).
+
 2. Run playbooks in order (users before mail: UIDs must exist before data migration;
    web before mail: the mail role reuses the TLS cert Apache issues for `mail_cert_name`'s
    domain rather than issuing its own, see `setup_email-server/tasks/certbot.yml`):
