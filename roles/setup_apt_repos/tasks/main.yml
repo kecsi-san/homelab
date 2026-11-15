@@ -5,6 +5,8 @@
     name:
       - ca-certificates
       - curl
+      # apt_repository needs a gpg binary; minimal cloud images (EC2 Debian) do not ship one
+      - gnupg
     state: present
   become: true
 
