@@ -4,6 +4,10 @@ kind: PersistentVolumeClaim
 metadata:
   name: mealie-data
   namespace: mealie
+  labels:
+    # Opt in to the VolSync clone snapshot retention job (kube-gitops/k8s/volsync-config)
+    recurring-job.longhorn.io/source: enabled
+    recurring-job-group.longhorn.io/volsync-clone-source: enabled
 spec:
   accessModes:
     - ReadWriteOnce

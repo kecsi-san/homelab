@@ -1,0 +1,27 @@
+---
+# Keeps only the newest few Longhorn snapshots on volumes that VolSync backs up with
+# copyMethod: Clone. Every Clone backup leaves one snapshot behind on the source volume (the
+# clone source) and nothing removes it, so they piled up: 46 per volume by 2026-11-15, about
+# 1 GiB on mealie-data alone. The restic backups hold the data; these snapshots are not needed.
+#
+# Volumes opt in through PVC labels (ntfy, mealie and minecraft carry them in git). The gatus PVC
+# comes from a Helm chart that cannot set PVC labels, so it is labelled on the live object:
+#   kubectl -n gatus label pvc gatus recurring-job.longhorn.io/source=enabled \
+#     recurring-job-group.longhorn.io/volsync-clone-source=enabled
+#
+# The cluster is often off, so the job runs every 3 hours (a no-op when there is nothing to delete)
+# instead of once a day. The newest snapshots are always kept, so a clone that is still running
+# never loses its source.
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: volsync-clone-snapshot-retention
+  namespace: longhorn-system
+spec:
+  name: volsync-clone-snapshot-retention
+  task: snapshot-delete
+  cron: "30 */3 * * *"
+  retain: 3
+  concurrency: 1
+  groups:
+    - volsync-clone-source
