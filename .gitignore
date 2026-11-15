@@ -167,3 +167,6 @@ todo.md*
 # =============================================================================
 # Local Claude Code settings (machine-specific)
 .claude
+
+# Terraform plan files can contain sensitive values and go stale as soon as they are applied
+*.tfplan
