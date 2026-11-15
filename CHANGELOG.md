@@ -12,6 +12,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(setup_users): match unresolved templates with a regex, a literal braces pair breaks the when ([e747d85](https://github.com/kecsi-san/homelab/commit/e747d851da34de937f735a9d3620562506e9d31e) by Zoltan K).
+- fix(setup_users): skip ssh_key values that are unresolved templates ([6af717e](https://github.com/kecsi-san/homelab/commit/6af717e0035ce715e0b92e1ce6390ee328ad9d21) by Zoltan K).
+- fix(setup_python-uv): add passlib to the ansible-core tool ([f219d3e](https://github.com/kecsi-san/homelab/commit/f219d3e86c445c33ec5ba19e2b9d4fc6f31eddfc) by Zoltan K).
+- fix(setup_etckeeper): tolerate an already-clean /etc at the initial commit ([ce22084](https://github.com/kecsi-san/homelab/commit/ce2208464e6fb0b7cfda18d27329e9a1a41ca08a) by Zoltan K).
+- fix(ec2): give etckeeper a non-personal git identity on the EC2 hosts ([d4c4ea7](https://github.com/kecsi-san/homelab/commit/d4c4ea7a988ede25fdc772e977830d3b482cf046) by Zoltan K).
+- fix(setup_apt_repos): install gnupg, apt_repository needs a gpg binary on minimal images ([c4bbc24](https://github.com/kecsi-san/homelab/commit/c4bbc2452b53a79a19d8eeec73f38cb8b7ceb566) by Zoltan K).
+- fix(ec2-core): install duo-unix before configure_duo-ssh; fix the Duo apt repo URL case ([cde1fe0](https://github.com/kecsi-san/homelab/commit/cde1fe0f703c52a6050e9c3b725ff8fe772d7ad1) by Zoltan K).
+- fix(setup_aws-ssm-agent): make the role usable under --check ([a311c23](https://github.com/kecsi-san/homelab/commit/a311c23c689f4a1ce1a5d663c40190531fa24bfb) by Zoltan K).
 - fix(minecraft): give the VolSync mover an fsGroup so restic can write its cache ([fc726f0](https://github.com/kecsi-san/homelab/commit/fc726f03df4209473bda434f3c48b9733d8c7f58) by Zoltan K).
 - fix(configure_postfix-smarthost): set a CA file when none exists, leave global SASL option alone ([09ae525](https://github.com/kecsi-san/homelab/commit/09ae5256f6e62b85b988da8e212c2920e61b880e) by Zoltan K).
 - fix(configure_ntp): restart chrony via task, not handler ([f0b2556](https://github.com/kecsi-san/homelab/commit/f0b255636a943f59ce86a9f434f20a94611427ac) by Zoltan K).
