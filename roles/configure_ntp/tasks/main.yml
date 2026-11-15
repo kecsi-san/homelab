@@ -63,9 +63,10 @@
     enabled: true
   become: true
 
-# A task, not a handler: with `--tags ntp` the untagged handler did not run on
-# the live EC2 node (2026-11-15), so chrony kept Debian's default config that
-# the package install had started it with. The conf is written after that start.
+# A task, not a handler: on the live EC2 node (2026-11-15, run with `--tags ntp`)
+# the Restart chrony handler did not run (cause not found, a plain test playbook
+# runs it fine), so chrony kept Debian's default config that the package install
+# had started it with. The conf is written after that start.
 - name: Restart chrony when its config changed
   ansible.builtin.service:
     name: chrony
