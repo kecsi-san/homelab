@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(ec2-core): drop always tag from install_linuxbrew ([a7ef7aa](https://github.com/kecsi-san/homelab/commit/a7ef7aa0c8785acf3d558e3a0d1b0255ecf1e18a) by Zoltan K).
 - fix(monitoring): drop unused grafana PVC block; close out 2026-11-08 follow-ups in TODO ([2468990](https://github.com/kecsi-san/homelab/commit/2468990efc0a7478543a438131ee5113dd160ed2) by Zoltan K).
 - fix(traefik): move service type under service.spec for chart 42.3 ([4172a5c](https://github.com/kecsi-san/homelab/commit/4172a5ca278838ff3d45a92e3b1f6aa9815abf6a) by Zoltan K).
 - fix(setup_email-server): look up system users through proxymap in local_recipient_maps ([653c946](https://github.com/kecsi-san/homelab/commit/653c94600ad0073b6dbe86da9551a402ecb5dab0) by Zoltan K).
