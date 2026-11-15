@@ -20,3 +20,6 @@ spec:
     moverSecurityContext:
       runAsUser: 1000
       runAsGroup: 1000
+      # restic 0.19 aborts when it cannot write its cache, and the cache volume is root-owned;
+      # fsGroup makes it group-writable for the mover (found 2026-11-15, the manual trigger had hidden it)
+      fsGroup: 1000
