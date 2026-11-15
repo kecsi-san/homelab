@@ -10,9 +10,11 @@
     - name: Install linuxbrew
       ansible.builtin.import_role:
         name: install_linuxbrew
+      # No `always` tag: a targeted run (e.g. `--tags ntp`) must not install
+      # Homebrew on the live host. A full run still installs it first, which
+      # setup_security-tools needs for trivy/hadolint.
       tags:
         - brew
-        - always
 
     - name: Upgrade Debian packages
       ansible.builtin.import_role:
