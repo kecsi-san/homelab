@@ -12,7 +12,7 @@ Only the Microsoft consumer domains use the relay. Everything else is still deli
 
 | Part | Where | What it does |
 |------|-------|--------------|
-| SES identities, DKIM, IAM user | `terraform/aws/ses.tf` | One SES identity per sender domain with Easy DKIM, plus an IAM user that may only send as those domains |
+| SES identities, DKIM, MAIL FROM, IAM user | `terraform/aws/ses.tf` | One SES identity per sender domain with Easy DKIM and a custom MAIL FROM subdomain (`ses.<domain>`), plus an IAM user that may only send as those domains |
 | Recipient domain list | `roles/configure_postfix-smarthost/files/microsoft-consumer-domains.txt` | 68 domains, generated from public DNS by `scripts/ms-consumer-domains.sh` |
 | Postfix change | `roles/configure_postfix-smarthost`, `playbooks/ec2-smarthost.yml` | A transport map sends those domains to the SES SMTP endpoint with authentication |
 | Credentials | Vault `ec2/ses-relay` (`smtp_username`, `smtp_password`) | Read by Ansible from `inventory/group_vars/aws_all.yml` |
@@ -21,38 +21,53 @@ The role changes only the relay settings through `postconf -e`. It does not use 
 which would rewrite the live `main.cf`.
 
 DMARC stays satisfied: Rspamd signs the message with the domain's own DKIM key before Postfix hands it to SES,
-and SES adds a second signature for the same domain. SPF does not align through SES (the bounce address
-is an `amazonses.com` one), so DMARC passes on DKIM alone.
+and SES adds a second signature for the same domain. SES sends with a bounce address under `ses.<domain>`
+(the custom MAIL FROM domain), so receivers see an envelope sender in your own domain and SPF passes for it.
+The domains publish DMARC with strict SPF alignment, which a subdomain does not satisfy, so DMARC passes on
+DKIM; that is enough.
 
 ## Steps
 
 ### 1. Create the SES identities (Terraform)
 
-Set the sender domains in `terraform/aws/terraform.tfvars` (gitignored). Every domain the mail server sends
-for needs an entry, because SES rejects a From domain it has not verified.
+List the base sender domains in `terraform/aws/terraform.tfvars` (gitignored). The `ses.<domain>` MAIL FROM
+subdomain is derived from each one. SES rejects mail whose From domain it has not verified, so every domain
+the mail server sends for needs an entry.
 
 ```hcl
-ses_sender_domains = ["example.com", "example.net", "example.org"]
+ses_sender_domains = ["example.com", "example.net"]
 ```
+
+Apply only the SES resources. A plain `terraform apply` in this directory would also create the new edge
+instance from the Phase 6 rebuild, which is waiting on its own go/no-go.
 
 ```bash
 cd terraform/aws
-terraform plan
-terraform apply
+terraform plan -target=aws_sesv2_email_identity.sender \
+  -target=aws_sesv2_email_identity_mail_from_attributes.sender \
+  -target=aws_iam_user.ses_relay -target=aws_iam_user_policy.ses_relay -out=ses.tfplan
+terraform apply ses.tfplan
 ```
 
-Domains that are also in `route53_domains` get their DKIM records from Terraform. For the others,
-`terraform output ses_dkim_manual_records` lists the three CNAME records per domain.
+The plan should show only SES and IAM resources (identities, MAIL FROM settings, the IAM user and its policy)
+and no changes or destroys.
 
-### 2. Add the DKIM records for domains outside Route53
+**Adding domains later:** add them to `ses_sender_domains` and apply the same way. Do the DNS records and wait
+for verification before running the Postfix playbook, or add every sender domain first. Postfix chooses the relay
+by recipient domain, not by sender, so mail from a domain that SES has not verified would be rejected by SES
+and bounced to the sender.
 
-Add the three CNAME records per domain at that domain's DNS host (for the two Hungarian domains that is
-the registrar's own DNS panel, outside Terraform). SES marks each identity as verified once the records
-resolve, usually within minutes to an hour.
+### 2. Add the DNS records for domains outside Route53
+
+Add the five records per domain at that domain's DNS host: the registrar's own DNS panel for the two Hungarian
+domains, and Cloudflare for the `.org` domain, all outside Terraform. At Cloudflare set the three CNAME records to
+**DNS only** (grey cloud); a proxied CNAME breaks DKIM. SES marks each identity as verified once the DKIM records
+resolve, usually within minutes to an hour. Until the MX and TXT records for the MAIL FROM subdomain resolve,
+SES falls back to its own `amazonses.com` bounce address, so mail keeps flowing.
 
 ```bash
 aws sesv2 get-email-identity --email-identity example.com \
-  --query '{verified: VerifiedForSendingStatus, dkim: DkimAttributes.Status}'
+  --query '{verified: VerifiedForSendingStatus, dkim: DkimAttributes.Status, mailFrom: MailFromAttributes.MailFromDomainStatus}'
 ```
 
 ### 3. Request SES production access

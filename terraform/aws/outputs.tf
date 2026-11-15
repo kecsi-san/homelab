@@ -28,16 +28,30 @@ output "ec2_edge_instance_id" {
   value       = module.ec2_edge.instance_id
 }
 
-output "ses_dkim_manual_records" {
-  description = "SES DKIM CNAME records to add by hand, per sender domain whose DNS is not in Route53. Add all three per domain; SES verifies the domain once they resolve."
+output "ses_manual_dns_records" {
+  description = "SES DNS records to add by hand, per sender domain whose DNS is not in Route53: the three DKIM CNAMEs, plus the MX and SPF TXT records for the custom MAIL FROM subdomain. At Cloudflare set the CNAME records to DNS only (not proxied)."
   value = {
-    for domain in local.ses_manual_domains : domain => [
-      for token in local.ses_dkim_tokens[domain] : {
-        name  = "${token}._domainkey.${domain}"
-        type  = "CNAME"
-        value = "${token}.dkim.amazonses.com"
-      }
-    ]
+    for domain in local.ses_manual_domains : domain => concat(
+      [
+        for token in local.ses_dkim_tokens[domain] : {
+          name  = "${token}._domainkey.${domain}"
+          type  = "CNAME"
+          value = "${token}.dkim.amazonses.com"
+        }
+      ],
+      [
+        {
+          name  = "${var.ses_mail_from_subdomain}.${domain}"
+          type  = "MX"
+          value = "10 feedback-smtp.${var.aws_region}.amazonses.com"
+        },
+        {
+          name  = "${var.ses_mail_from_subdomain}.${domain}"
+          type  = "TXT"
+          value = "v=spf1 include:amazonses.com ~all"
+        }
+      ]
+    )
   }
 }
 

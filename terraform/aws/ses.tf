@@ -22,7 +22,7 @@ locals {
   }
 
   # Domains with a Route53 hosted zone get their DKIM records from Terraform; the others
-  # (their DNS is elsewhere) are listed in the ses_dkim_manual_records output to add by hand.
+  # (their DNS is elsewhere) are listed in the ses_manual_dns_records output to add by hand.
   ses_route53_domains = [for d in var.ses_sender_domains : d if contains(var.route53_domains, d)]
   ses_manual_domains  = [for d in var.ses_sender_domains : d if !contains(var.route53_domains, d)]
 
@@ -43,6 +43,38 @@ resource "aws_route53_record" "ses_dkim" {
   type    = "CNAME"
   ttl     = 1800
   records = ["${local.ses_dkim_tokens[each.value.domain][each.value.index]}.dkim.amazonses.com"]
+}
+
+# Custom MAIL FROM: SES sends with a bounce address under ses.<domain> instead of amazonses.com, so
+# the envelope sender is the sender's own domain and SPF passes for it. It needs an MX record (SES
+# receives bounces there) and an SPF TXT record on the subdomain. USE_DEFAULT_VALUE keeps mail flowing
+# with the amazonses.com address until those records resolve.
+resource "aws_sesv2_email_identity_mail_from_attributes" "sender" {
+  for_each = aws_sesv2_email_identity.sender
+
+  email_identity         = each.value.email_identity
+  mail_from_domain       = "${var.ses_mail_from_subdomain}.${each.key}"
+  behavior_on_mx_failure = "USE_DEFAULT_VALUE"
+}
+
+resource "aws_route53_record" "ses_mail_from_mx" {
+  for_each = toset(local.ses_route53_domains)
+
+  zone_id = module.route53.zone_ids[each.key]
+  name    = "${var.ses_mail_from_subdomain}.${each.key}"
+  type    = "MX"
+  ttl     = 1800
+  records = ["10 feedback-smtp.${var.aws_region}.amazonses.com"]
+}
+
+resource "aws_route53_record" "ses_mail_from_spf" {
+  for_each = toset(local.ses_route53_domains)
+
+  zone_id = module.route53.zone_ids[each.key]
+  name    = "${var.ses_mail_from_subdomain}.${each.key}"
+  type    = "TXT"
+  ttl     = 1800
+  records = ["v=spf1 include:amazonses.com ~all"]
 }
 
 # The relay's SMTP identity. The IAM user may only send mail as the verified domains above.

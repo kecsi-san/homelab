@@ -66,7 +66,7 @@ variable "vault_address" {
 }
 
 variable "ses_sender_domains" {
-  description = "Sender domains the mail server relays through Amazon SES for Microsoft consumer recipients. Each gets an SES identity with Easy DKIM; those also in route53_domains get their DKIM records created here, the rest are listed in the ses_dkim_manual_records output. Empty list = no SES resources."
+  description = "Sender domains the mail server relays through Amazon SES for Microsoft consumer recipients. Each gets an SES identity with Easy DKIM; those also in route53_domains get their DKIM records created here, the rest are listed in the ses_manual_dns_records output. Empty list = no SES resources."
   type        = list(string)
   default     = []
 }
@@ -75,4 +75,10 @@ variable "ses_relay_iam_user_name" {
   description = "Name of the IAM user whose access key becomes the Postfix SMTP credentials for SES"
   type        = string
   default     = "postfix-ses-relay"
+}
+
+variable "ses_mail_from_subdomain" {
+  description = "Subdomain of each SES sender domain used as the custom MAIL FROM (envelope/bounce) domain, e.g. \"ses\" gives ses.example.com. SES sends with a bounce address there and SPF passes for it."
+  type        = string
+  default     = "ses"
 }
