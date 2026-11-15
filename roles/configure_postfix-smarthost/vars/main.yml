@@ -10,7 +10,9 @@ postfix_smarthost_maps:
 
 # Scalar parameters. SASL only applies to hosts that have an entry in the password map,
 # so enabling it globally does not change delivery to anyone else.
+# smtp_sasl_security_options is left alone on purpose: its default (noplaintext, noanonymous)
+# forbids PLAIN/LOGIN on unencrypted connections, which is what we want. SES offers only
+# PLAIN and LOGIN, so the TLS variant has to allow them (inside TLS only).
 postfix_smarthost_settings:
   smtp_sasl_auth_enable: "yes"
-  smtp_sasl_security_options: noanonymous
   smtp_sasl_tls_security_options: noanonymous

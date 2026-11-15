@@ -22,5 +22,9 @@ postfix_smarthost_domains: >-
 # requires TLS. Keep "verify" unless the system CA store is unavailable.
 postfix_smarthost_tls_level: verify
 
+# CA bundle used to verify the relay's certificate. It is set as smtp_tls_CAfile only when the host
+# has neither smtp_tls_CAfile nor smtp_tls_CApath configured (the live EC2 mail server has neither).
+postfix_smarthost_ca_file: /etc/ssl/certs/ca-certificates.crt
+
 # Directory for the map files. Postfix reads maps from here on every distribution.
 postfix_smarthost_dir: /etc/postfix

@@ -13,7 +13,8 @@ entries stay in place after the new map.
 - Writes three maps under `/etc/postfix/`: `transport_smarthost` (domain to relay), `sasl_passwd_smarthost`
   (mode 0600) and `tls_policy_smarthost`, and builds their hash files with `postmap`.
 - Puts those maps first in `transport_maps`, `smtp_sasl_password_maps` and `smtp_tls_policy_maps`.
-- Sets `smtp_sasl_auth_enable`, `smtp_sasl_security_options` and `smtp_sasl_tls_security_options`.
+- Sets `smtp_sasl_auth_enable` and `smtp_sasl_tls_security_options` (PLAIN/LOGIN inside TLS only, which is all SES offers). The global `smtp_sasl_security_options` is left alone.
+- Sets `smtp_tls_CAfile` when the host has neither `smtp_tls_CAfile` nor `smtp_tls_CApath`, so the relay's certificate can be verified (the live EC2 server had neither).
 - Runs `postfix check`, then reloads Postfix when something changed.
 
 There are no handlers: the postmap and reload steps are plain tasks, because a handler did not fire
@@ -30,6 +31,7 @@ on the live EC2 node (see `TODO.md`).
 | `postfix_smarthost_password` | *(none)* | SMTP password; same |
 | `postfix_smarthost_domains` | contents of `files/microsoft-consumer-domains.txt` | Recipient domains that use the relay |
 | `postfix_smarthost_tls_level` | `verify` | `verify` checks the certificate chain and host name, `encrypt` only requires TLS |
+| `postfix_smarthost_ca_file` | `/etc/ssl/certs/ca-certificates.crt` | CA bundle set as `smtp_tls_CAfile` only when none is configured |
 | `postfix_smarthost_dir` | `/etc/postfix` | Where the map files go |
 
 ## Domain list

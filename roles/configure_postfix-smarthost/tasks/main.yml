@@ -80,6 +80,41 @@
       changed_when: true
       register: postfix_smarthost_lists
 
+    - name: Read the current CA settings
+      ansible.builtin.command: "postconf -h {{ item }}"
+      loop:
+        - smtp_tls_CAfile
+        - smtp_tls_CApath
+      register: postfix_smarthost_ca_current
+      changed_when: false
+      check_mode: false
+      when: postfix_smarthost_tls_level in ['verify', 'secure']
+
+    - name: Check that the CA bundle exists
+      ansible.builtin.stat:
+        path: "{{ postfix_smarthost_ca_file }}"
+      register: postfix_smarthost_ca_stat
+      when: postfix_smarthost_tls_level in ['verify', 'secure']
+
+    - name: Fail when certificate checks have no CA bundle to use
+      ansible.builtin.assert:
+        that: postfix_smarthost_ca_stat.stat.exists
+        fail_msg: >-
+          {{ postfix_smarthost_ca_file }} is missing (install ca-certificates) and Postfix has no
+          smtp_tls_CAfile or smtp_tls_CApath, so TLS verification of the relay would fail
+      when:
+        - postfix_smarthost_tls_level in ['verify', 'secure']
+        - postfix_smarthost_ca_current.results | map(attribute='stdout') | select | list | length == 0
+
+    - name: Set smtp_tls_CAfile when the host has no CA store configured
+      ansible.builtin.command: 'postconf -e "smtp_tls_CAfile = {{ postfix_smarthost_ca_file }}"'
+      when:
+        - postfix_smarthost_tls_level in ['verify', 'secure']
+        - postfix_smarthost_ca_current.results | map(attribute='stdout') | select | list | length == 0
+        - postfix_smarthost_ca_stat.stat.exists
+      changed_when: true
+      register: postfix_smarthost_ca
+
     - name: Read the current scalar parameters
       ansible.builtin.command: "postconf -h {{ item.key }}"
       loop: "{{ postfix_smarthost_settings | dict2items }}"
@@ -111,6 +146,7 @@
         postfix_smarthost_postmap.changed
         or postfix_smarthost_lists.changed
         or postfix_smarthost_scalars.changed
+        or postfix_smarthost_ca is changed
 
     - name: Look up a Microsoft domain in the transport map (read-only check)
       ansible.builtin.command: "postmap -q hotmail.com hash:{{ postfix_smarthost_dir }}/transport_smarthost"

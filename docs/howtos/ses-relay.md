@@ -101,8 +101,10 @@ ansible-playbook -i inventory/aws_hosts playbooks/ec2-smarthost.yml
 ```
 
 The role was tested against a Debian 13 container with Postfix 3.10 and a pre-existing `transport_maps`:
-the dry run only reports, the real run changes seven things, and a second run changes nothing. The legacy
-map stays in the list after the new one.
+the dry run only reports, the real run changes eight things, and a second run changes nothing. The legacy
+map stays in the list after the new one. The live server has no CA store configured (`smtp_tls_CAfile` and
+`smtp_tls_CApath` are empty), so the role sets `smtp_tls_CAfile` to the system bundle when none exists;
+without it Postfix could not verify the SES certificate. The global `smtp_sasl_security_options` is not touched.
 
 ### 6. Verify
 
@@ -128,7 +130,7 @@ grep 'relay=email-smtp' /var/log/mail.log | tail
 |---------|--------------|
 | `status=deferred ... 535 Authentication Credentials Invalid` | Wrong SMTP user name or password in Vault. Mail stays queued, nothing is lost. |
 | `554 ... Email address is not verified` | The From domain is not an SES identity, or SES is still in the sandbox |
-| `Server certificate not verified` | `smtp_tls_CAfile` or `smtp_tls_CApath` is missing on the host; set `postfix_smarthost_tls_level: encrypt` only as a stopgap |
+| `Server certificate not verified` | No CA bundle available (the role sets `smtp_tls_CAfile` when none is configured, and fails if `/etc/ssl/certs/ca-certificates.crt` is missing); install `ca-certificates`, and use `postfix_smarthost_tls_level: encrypt` only as a stopgap |
 | Microsoft still rejects the message | The message did not go through the relay; check the transport map lookup above |
 
 To switch the relay off, remove the first entry (`hash:/etc/postfix/transport_smarthost`) from `transport_maps`
