@@ -2,7 +2,8 @@
 driftfile /var/lib/chrony/chrony.drift
 logdir /var/log/chrony
 
-# LAN router — preferred primary (low latency, always available on LAN)
+# Preferred primary source (ntp_primary_server): the LAN router by default,
+# overridden per group (e.g. the AWS Time Sync Service on EC2)
 server {{ ntp_primary_server }} iburst prefer
 
 # Public fallback servers
