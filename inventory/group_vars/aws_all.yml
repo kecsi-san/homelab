@@ -36,6 +36,10 @@ ansible_ssh_args: >-
   -o KbdInteractiveAuthentication=yes
 
 etckeeper: true
+# Identity for the commits etckeeper makes in /etc (kept only in that local git log on the server).
+# A plain non-personal one: admin_email is a vaulted workstation value, not defined for EC2.
+etckeeper_user: etckeeper
+etckeeper_email: etckeeper@localhost
 linuxbrew: false   # headless server, not a workstation
 
 # Role default (192.168.1.1) is the home LAN router — unreachable from AWS.
