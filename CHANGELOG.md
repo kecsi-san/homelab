@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- fix(configure_postfix-smarthost): set a CA file when none exists, leave global SASL option alone ([09ae525](https://github.com/kecsi-san/homelab/commit/09ae5256f6e62b85b988da8e212c2920e61b880e) by Zoltan K).
 - fix(configure_ntp): restart chrony via task, not handler ([f0b2556](https://github.com/kecsi-san/homelab/commit/f0b255636a943f59ce86a9f434f20a94611427ac) by Zoltan K).
 - fix(ec2-core): drop always tag from install_linuxbrew ([a7ef7aa](https://github.com/kecsi-san/homelab/commit/a7ef7aa0c8785acf3d558e3a0d1b0255ecf1e18a) by Zoltan K).
 - fix(monitoring): drop unused grafana PVC block; close out 2026-11-08 follow-ups in TODO ([2468990](https://github.com/kecsi-san/homelab/commit/2468990efc0a7478543a438131ee5113dd160ed2) by Zoltan K).
