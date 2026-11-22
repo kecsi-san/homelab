@@ -1,9 +1,15 @@
 [Unit]
 Description=Load the homelab firewall chain
 Documentation=file:///usr/local/sbin/homelab-firewall-apply
+# Early-boot unit. With default dependencies systemd adds After=basic.target, which together with
+# Before=network-pre.target is an ordering cycle (basic.target -> sysinit.target -> cloud-init-network.service
+# -> network-pre.target -> this unit -> basic.target); systemd breaks it by deleting the start job of
+# cloud-init-network.service, so cloud-init never leaves its network stage.
+DefaultDependencies=no
 Wants=network-pre.target
-Before=network-pre.target fail2ban.service
+Before=network-pre.target fail2ban.service shutdown.target
 After=local-fs.target
+Conflicts=shutdown.target
 
 [Service]
 Type=oneshot
