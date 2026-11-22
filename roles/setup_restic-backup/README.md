@@ -55,4 +55,4 @@ The role does not run a backup itself. It initializes a repository only when `re
 
 ## Report mail
 
-Set `restic_backup_mail_to` to get the output of every backup run by mail (subject `restic backup on <host>: OK` or `FAILED`), the way a cron job mails its output. `restic_backup_mail_from` sets the sender (default `root@<fqdn>`), `restic_backup_mail_only_on_failure: true` limits it to failed runs. The host needs a local MTA that provides `/usr/sbin/sendmail`; a mail that cannot be sent is logged and does not fail the backup.
+Set `restic_backup_mail_to` to get the output of every backup run by mail (subject `<host> restic backup: OK` or `FAILED`; `restic_backup_mail_subject_prefix` puts a tag in front, e.g. `[example.com] `), the way a cron job mails its output. `restic_backup_mail_from` sets the sender (default `root@<fqdn>`), `restic_backup_mail_only_on_failure: true` limits it to failed runs. The host needs a local MTA that provides `/usr/sbin/sendmail`; a mail that cannot be sent is logged and does not fail the backup.

@@ -36,6 +36,8 @@ restic_backup_repo_version: ""
 restic_backup_mail_to: ""
 # Envelope and header sender; empty = root@<fqdn of the host>.
 restic_backup_mail_from: ""
+# Text put in front of the subject, e.g. "[example.com] " gives "[example.com] web1 restic backup: OK".
+restic_backup_mail_subject_prefix: ""
 # true = only mail when a run failed.
 restic_backup_mail_only_on_failure: false
 

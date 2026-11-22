@@ -47,7 +47,7 @@ from={{ restic_backup_mail_from | quote }}
 {
   printf 'To: %s\n' {{ restic_backup_mail_to | quote }}
   printf 'From: %s\n' "$from"
-  printf 'Subject: restic backup on %s: %s\n' "$(hostname -s)" "$status"
+  printf 'Subject: %s%s restic backup: %s\n' {{ restic_backup_mail_subject_prefix | quote }} "$(hostname -s)" "$status"
   printf 'Auto-Submitted: auto-generated\n'
   printf 'Content-Type: text/plain; charset=UTF-8\n\n'
   printf '%s\n' "$out"
