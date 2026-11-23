@@ -25,7 +25,7 @@ spec:
             - "authentik.kecskemethy.org"
       initContainers:
         - name: init-config
-          image: opencloudeu/opencloud:7.2.4
+          image: opencloudeu/opencloud:7.2.6
           command: ["/bin/sh", "-c"]
           args:
             - |
@@ -48,7 +48,7 @@ spec:
               subPath: config
       containers:
         - name: opencloud
-          image: opencloudeu/opencloud:7.2.4
+          image: opencloudeu/opencloud:7.2.6
           args: ["server"]
           ports:
             - name: http
