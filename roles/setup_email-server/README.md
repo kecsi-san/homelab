@@ -94,7 +94,7 @@ The role writes `fullchain.pem` (0644) and `privkey.pem` (0600) into `mail_tls_d
 If a filtering service delivers your inbound mail, list its addresses in `mail_trusted_relays`. The role then:
 
 - lets those addresses skip postscreen's tests (`postscreen_access.cidr`),
-- adds them to Rspamd's `local_addrs`, so Rspamd looks past them to the real sender when it checks SPF and blocklists,
+- configures Rspamd's `external_relay` module (`ip_map`): for mail from these addresses the client address is taken from the `Received` headers, so SPF, DMARC and the blocklists judge the real sender, and the mail is not DKIM-signed as local mail (the relays must not be in `local_addrs`),
 - adds them to OpenDMARC's `IgnoreHosts`, because SPF for the relay's address would fail for every domain.
 
 `mail_mynetworks` sets Postfix's `mynetworks` (networks that may relay without authentication). Left empty, the role does not set it and Postfix uses its default, the host's own subnet.
@@ -138,6 +138,7 @@ If the archive is down, the copy is deferred and retried by Postfix, and the rea
 | `dkim_vault_sync` | `true` | Mirror keys into Vault and publish public keys for Terraform |
 | `mail_mynetworks` | `[]` | Postfix `mynetworks`; empty keeps Postfix's default |
 | `mail_trusted_relays` | `[]` | Upstream filters or relays that deliver inbound mail |
+| `rspamd_forged_own_domain_action` | `""` | Action for mail from one of `email_domains` that fails DMARC: `""` (off), `add header` or `reject` |
 | `rspamd_milter_headers_use` | `spam-header`, `x-spamd-result` | Rspamd `milter_headers` routines to enable (Debian ships none, so no header is added without this) |
 | `rspamd_spam_header` | `X-Spam` | Name of the header set to `Yes` for spam; Sieve rules can test it |
 | `rspamd_disabled_rbls` | `[]` | Rspamd `rbl` module entries to switch off, by name (see `rspamadm configdump rbl`), for example `[spamhaus, DBL]`. Spamhaus's free blocklists are for non-commercial, low-volume use only; without a paid Data Query Service key a commercial server should turn them off. Written to `/etc/rspamd/local.d/rbl.conf` |

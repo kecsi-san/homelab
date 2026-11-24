@@ -76,16 +76,71 @@
   tags:
     - rspamd
 
-- name: Deploy Rspamd local_addrs for trusted upstream relays
+# Older versions of this role put the trusted relays into Rspamd's local_addrs. That made Rspamd
+# treat their mail as local: no SPF or DMARC check, and DKIM signing of inbound mail (sign_local).
+# The relays are handled by the external_relay module below; the file is removed so that
+# local_addrs falls back to the Rspamd defaults.
+- name: Remove the old Rspamd local_addrs override
+  ansible.builtin.file:
+    path: /etc/rspamd/local.d/options.inc
+    state: absent
+  become: true
+  notify: Reload rspamd
+  tags:
+    - rspamd
+
+# For mail handed over by a trusted relay, take the client address from the Received headers
+# (first address that is not a relay), so SPF, DMARC and the blocklists judge the real sender and
+# DKIM signing (sign_local) does not apply to inbound mail.
+- name: Deploy Rspamd external_relay config for trusted upstream relays
   ansible.builtin.template:
-    src: rspamd-options.inc.j2
-    dest: /etc/rspamd/local.d/options.inc
+    src: rspamd-external-relay.conf.j2
+    dest: /etc/rspamd/local.d/external_relay.conf
     owner: root
     group: _rspamd
     mode: "0640"
   become: true
   notify: Reload rspamd
   when: mail_trusted_relays | length > 0
+  tags:
+    - rspamd
+
+- name: Deploy list of served domains for Rspamd
+  ansible.builtin.copy:
+    dest: /etc/rspamd/own_domains.map
+    content: "# Managed by Ansible (role setup_email-server): domains this server is responsible for.\n{{ email_domains | join('\n') }}\n"
+    owner: root
+    group: _rspamd
+    mode: "0640"
+  become: true
+  notify: Reload rspamd
+  when: rspamd_forged_own_domain_action | length > 0
+  tags:
+    - rspamd
+
+- name: Deploy Rspamd multimap config (sender is one of our domains)
+  ansible.builtin.template:
+    src: rspamd-multimap.conf.j2
+    dest: /etc/rspamd/local.d/multimap.conf
+    owner: root
+    group: _rspamd
+    mode: "0640"
+  become: true
+  notify: Reload rspamd
+  when: rspamd_forged_own_domain_action | length > 0
+  tags:
+    - rspamd
+
+- name: Deploy Rspamd force_actions config (forged mail from our own domains)
+  ansible.builtin.template:
+    src: rspamd-force-actions.conf.j2
+    dest: /etc/rspamd/local.d/force_actions.conf
+    owner: root
+    group: _rspamd
+    mode: "0640"
+  become: true
+  notify: Reload rspamd
+  when: rspamd_forged_own_domain_action | length > 0
   tags:
     - rspamd
 

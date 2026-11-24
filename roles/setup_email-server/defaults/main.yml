@@ -110,9 +110,16 @@ dkim_vault_sync: true
 # (Postfix then uses its own default: the host's subnet).
 mail_mynetworks: []
 # Upstream filters or relays that deliver inbound mail to this server (addresses or
-# CIDRs). They skip postscreen tests, Rspamd looks past them to the real sender, and
-# OpenDMARC does not judge mail they relay (SPF would always fail for their address).
+# CIDRs). They skip postscreen tests, Rspamd takes the client address from the Received
+# headers (external_relay module, so SPF and DMARC judge the real sender and the mail is not
+# DKIM-signed as if it were ours), and OpenDMARC does not judge mail they relay (SPF would
+# always fail for their address).
 mail_trusted_relays: []
+# Action for mail that claims one of email_domains as sender but fails DMARC (forged, for
+# example From and To both our own address). "" = rule off, "add header" = flag as spam (the
+# milter header lets Sieve file it), "reject" = refuse at SMTP time. Needs mail_trusted_relays
+# to be useful behind a filter, and a DMARC record on the domain (p=none is enough).
+rspamd_forged_own_domain_action: ""
 
 # --- Sieve (server-side mail filtering, replaces procmail) ---
 email_sieve_enabled: false

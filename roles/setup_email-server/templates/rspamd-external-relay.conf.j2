@@ -1,0 +1,14 @@
+# Managed by Ansible (role setup_email-server).
+# Mail from a trusted upstream relay: use the first address in the Received headers that is not
+# a relay as the client address (SPF, DMARC, blocklists, DKIM signing decisions).
+enabled = true;
+rules {
+  trusted_relay {
+    strategy = "ip_map";
+    ip_map = [
+{% for ip in mail_trusted_relays %}
+      "{{ ip }}",
+{% endfor %}
+    ];
+  }
+}

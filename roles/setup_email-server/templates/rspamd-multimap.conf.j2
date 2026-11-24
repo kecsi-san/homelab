@@ -1,0 +1,9 @@
+# Managed by Ansible (role setup_email-server).
+OWN_DOMAIN_FROM {
+  type = "from";
+  filter = "email:domain";
+  map = "/etc/rspamd/own_domains.map";
+  symbol = "OWN_DOMAIN_FROM";
+  description = "Sender address is in a domain this server is responsible for";
+  score = 0.0;
+}

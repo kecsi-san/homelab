@@ -1,0 +1,9 @@
+# Managed by Ansible (role setup_email-server).
+# Mail that claims one of our domains as sender but fails DMARC (neither SPF nor DKIM aligned).
+rules {
+  FORGED_OWN_DOMAIN {
+    action = "{{ rspamd_forged_own_domain_action }}";
+    expression = "OWN_DOMAIN_FROM & (DMARC_POLICY_SOFTFAIL | DMARC_POLICY_QUARANTINE | DMARC_POLICY_REJECT)";
+    message = "Sender address forged: DMARC check failed for a domain served here";
+  }
+}
